@@ -1,0 +1,16 @@
+{
+  "name": "@universityos/api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:prod": "node dist/main.js",
+    "build": "nest build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@universityos/common": "1.0.0"
+  }
+}

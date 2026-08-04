@@ -1,0 +1,2041 @@
+// ============================================================
+// UniversityOS - Prisma Schema
+// Enterprise ERP + LMS Platform for Indian Higher Education
+// UUID PKs, Soft Delete, Audit Columns, Multi-Tenant
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// PLATFORM - TENANT
+// ============================================================
+
+model Tenant {
+  id           String       @id @default(uuid())
+  code         String       @unique
+  name         String
+  type         TenantType
+  status       TenantStatus @default(ACTIVE)
+  domain       String?      @unique
+  email        String?
+  phone        String?
+  address      Json?
+  logo         String?
+  favicon      String?
+  theme        Json? // branding/theme config
+  config       Json? // tenant-level configuration
+  timezone     String       @default("Asia/Kolkata")
+  locale       String       @default("en-IN")
+  academicYear String?
+  features     Json? // feature flags snapshot
+
+  // Audit
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  createdById String?
+  updatedById String?
+
+  institutions         Institution[]
+  campuses             Campus[]
+  users                User[]
+  roles                Role[]
+  permissions          Permission[]
+  featureFlags         FeatureFlag[]
+  documents            Document[]
+  media                Media[]
+  auditLogs            AuditLog[]
+  domains              TenantDomain[]
+  workflows            Workflow[]
+  notifications        Notification[]
+  apiKeys              ApiKey[]
+  sessions             Session[]
+  courses              Course[]
+  programs             Program[]
+  departments          Department[]
+  semesters            Semester[]
+  subjects             Subject[]
+  NotificationTemplate NotificationTemplate[]
+
+  @@index([code])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+enum TenantType {
+  UNIVERSITY
+  COLLEGE
+  B_ED
+  D_EL_ED
+  ENGINEERING
+  MEDICAL
+  PHARMACY
+  NURSING
+  LAW
+  POLYTECHNIC
+  ITI
+  AUTONOMOUS
+  INSTITUTE
+  SCHOOL
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  TRIAL
+  EXPIRED
+  PENDING
+  ARCHIVED
+}
+
+model TenantDomain {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  domain    String   @unique
+  isPrimary Boolean  @default(false)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+// ============================================================
+// PLATFORM - IDENTITY & ACCESS
+// ============================================================
+
+model User {
+  id                String     @id @default(uuid())
+  tenantId          String
+  tenant            Tenant     @relation(fields: [tenantId], references: [id])
+  email             String
+  phone             String?
+  passwordHash      String?
+  firstName         String
+  lastName          String
+  middleName        String?
+  avatarUrl         String?
+  gender            String?
+  dateOfBirth       DateTime?
+  status            UserStatus @default(ACTIVE)
+  type              UserType   @default(STAFF)
+  twoFactorEnabled  Boolean    @default(false)
+  twoFactorSecret   String?
+  lastLoginAt       DateTime?
+  lastLoginIp       String?
+  emailVerifiedAt   DateTime?
+  phoneVerifiedAt   DateTime?
+  passwordChangedAt DateTime?
+  locale            String?    @default("en-IN")
+  timezone          String?    @default("Asia/Kolkata")
+  metadata          Json?
+
+  // Audit
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  createdById String?
+  updatedById String?
+
+  // Relations
+  roles             UserRole[]
+  sessions          Session[]
+  refreshTokens     RefreshToken[]
+  apiKeys           ApiKey[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  students          Student[]
+  faculties         Faculty[]
+  documents         Document[]
+  media             Media[]
+  permissions       UserPermission[]
+  devices           Device[]
+  addresses         Address[]
+  emergencyContacts EmergencyContact[]
+  guardian          Guardian[]
+  educationHistory  EducationHistory[]
+  certificates      Certificate[]
+  issuedDocuments   DocumentIssue[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId, status])
+  @@index([email])
+  @@index([deletedAt])
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  LOCKED
+  PENDING
+  DELETED
+}
+
+enum UserType {
+  SUPER_ADMIN
+  ADMIN
+  STAFF
+  FACULTY
+  STUDENT
+  GUARDIAN
+  ALUMNI
+}
+
+model Role {
+  id          String  @id @default(uuid())
+  tenantId    String
+  tenant      Tenant  @relation(fields: [tenantId], references: [id])
+  name        String
+  slug        String
+  description String?
+  isSystem    Boolean @default(false)
+  status      Status  @default(ACTIVE)
+
+  // Audit
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  createdById String?
+  updatedById String?
+
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model Permission {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  name        String
+  slug        String
+  module      String
+  description String?
+  action      String // create, read, update, delete, manage
+  resource    String // student, faculty, course, etc.
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  rolePermissions RolePermission[]
+  userPermissions UserPermission[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, module])
+  @@index([deletedAt])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roleId])
+  @@index([roleId])
+}
+
+model UserPermission {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  granted      Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, permissionId])
+}
+
+model Session {
+  id             String        @id @default(uuid())
+  tenantId       String
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  tokenId        String        @unique
+  refreshTokenId String?       @unique
+  userAgent      String?
+  ipAddress      String?
+  deviceId       String?
+  device         Device?       @relation(fields: [deviceId], references: [id])
+  status         SessionStatus @default(ACTIVE)
+  expiresAt      DateTime
+  lastActiveAt   DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  revokedAt      DateTime?
+
+  @@index([tenantId, userId])
+  @@index([status])
+}
+
+enum SessionStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+  TERMINATED
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  tokenHash  String    @unique
+  sessionId  String?
+  userAgent  String?
+  ipAddress  String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  replacedBy String?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Device {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  sessions    Session[]
+  name        String
+  type        String // mobile, tablet, desktop
+  platform    String? // ios, android, windows, macos, linux
+  browser     String?
+  model       String?
+  fingerprint String?
+  isTrusted   Boolean   @default(false)
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  tenantId   String
+  tenant     Tenant    @relation(fields: [tenantId], references: [id])
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id])
+  name       String
+  keyHash    String    @unique
+  prefix     String
+  scopes     Json?
+  expiresAt  DateTime?
+  lastUsedAt DateTime?
+  status     Status    @default(ACTIVE)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  type       String // PERMANENT, CURRENT, LOCAL, PARENTAL
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  country    String   @default("India")
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model EmergencyContact {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  relation  String
+  phone     String
+  email     String?
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ============================================================
+// PLATFORM - FEATURE MANAGEMENT
+// ============================================================
+
+model FeatureFlag {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  key         String
+  name        String
+  module      String
+  description String?
+  enabled     Boolean   @default(true)
+  config      Json?
+  isPremium   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([tenantId, key])
+  @@index([tenantId, module])
+  @@index([deletedAt])
+}
+
+model Module {
+  id          String    @id @default(uuid())
+  code        String    @unique
+  name        String
+  description String?
+  version     String    @default("1.0.0")
+  status      Status    @default(ACTIVE)
+  order       Int       @default(0)
+  config      Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([deletedAt])
+}
+
+// ============================================================
+// PLATFORM - AUDIT
+// ============================================================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  module     String
+  resource   String
+  resourceId String?
+  ipAddress  String?
+  userAgent  String?
+  oldValue   Json?
+  newValue   Json?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, module])
+  @@index([tenantId, userId])
+  @@index([tenantId, resource, resourceId])
+  @@index([createdAt])
+}
+
+// ============================================================
+// PLATFORM - NOTIFICATIONS
+// ============================================================
+
+model Notification {
+  id        String             @id @default(uuid())
+  tenantId  String
+  tenant    Tenant             @relation(fields: [tenantId], references: [id])
+  userId    String?
+  user      User?              @relation(fields: [userId], references: [id])
+  type      String // email, sms, push, in_app
+  channel   String
+  subject   String?
+  body      String?
+  template  String?
+  data      Json?
+  status    NotificationStatus @default(PENDING)
+  readAt    DateTime?
+  sentAt    DateTime?
+  error     String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([tenantId, userId, status])
+  @@index([tenantId, type])
+}
+
+enum NotificationStatus {
+  PENDING
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+  CANCELLED
+}
+
+model NotificationTemplate {
+  id        String    @id @default(uuid())
+  tenantId  String?
+  tenant    Tenant?   @relation(fields: [tenantId], references: [id])
+  code      String
+  channel   String
+  subject   String?
+  body      String
+  variables Json?
+  isSystem  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([tenantId, code, channel])
+  @@index([deletedAt])
+}
+
+// ============================================================
+// PLATFORM - DOCUMENTS & MEDIA
+// ============================================================
+
+model Document {
+  id               String             @id @default(uuid())
+  tenantId         String
+  tenant           Tenant             @relation(fields: [tenantId], references: [id])
+  uploadedById     String?
+  uploadedBy       User?              @relation(fields: [uploadedById], references: [id])
+  name             String
+  description      String?
+  category         String? // certificate, id_card, transcript, marksheet
+  mimeType         String
+  extension        String
+  size             Int
+  storageKey       String
+  checksum         String?
+  metadata         Json?
+  status           DocumentStatus     @default(UPLOADED)
+  version          Int                @default(1)
+  digitalSignature String?
+  qrCode           String?
+  isPublic         Boolean            @default(false)
+  expiresAt        DateTime?
+  signedById       String?
+  signedAt         DateTime?
+  approvals        DocumentApproval[]
+  versions         DocumentVersion[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deletedAt        DateTime?
+
+  @@index([tenantId, category])
+  @@index([tenantId, status])
+  @@index([deletedAt])
+}
+
+enum DocumentStatus {
+  UPLOADED
+  PROCESSING
+  VERIFIED
+  SIGNED
+  APPROVED
+  REJECTED
+  EXPIRED
+  REVOKED
+}
+
+model DocumentVersion {
+  id          String   @id @default(uuid())
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id])
+  version     Int
+  storageKey  String
+  size        Int
+  checksum    String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@unique([documentId, version])
+}
+
+model DocumentApproval {
+  id           String         @id @default(uuid())
+  documentId   String
+  document     Document       @relation(fields: [documentId], references: [id])
+  approverId   String?
+  approverName String
+  sequence     Int
+  status       ApprovalStatus @default(PENDING)
+  comment      String?
+  signedAt     DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([documentId])
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SKIPPED
+  WITHDRAWN
+}
+
+model Media {
+  id           String    @id @default(uuid())
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id])
+  uploadedById String?
+  uploadedBy   User?     @relation(fields: [uploadedById], references: [id])
+  name         String
+  mimeType     String
+  size         Int
+  storageKey   String
+  url          String?
+  width        Int?
+  height       Int?
+  duration     Int?
+  altText      String?
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model DocumentIssue {
+  id          String    @id @default(uuid())
+  tenantId    String
+  documentId  String
+  issuedToId  String
+  issuedTo    User      @relation(fields: [issuedToId], references: [id])
+  issueNumber String    @unique
+  issuedAt    DateTime  @default(now())
+  issuedById  String?
+  purpose     String?
+  validUntil  DateTime?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId, issuedToId])
+  @@index([documentId])
+}
+
+// ============================================================
+// ACADEMIC
+// ============================================================
+
+model Institution {
+  id              String    @id @default(uuid())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  name            String
+  code            String?
+  type            String?
+  affiliatedTo    String?
+  establishedYear Int?
+  address         Json?
+  contact         Json?
+  accreditation   Json?
+  status          Status    @default(ACTIVE)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  programs    Program[]
+  departments Department[]
+  campuses    Campus[]
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model Campus {
+  id            String       @id @default(uuid())
+  tenantId      String
+  tenant        Tenant       @relation(fields: [tenantId], references: [id])
+  institutionId String?
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+  name          String
+  code          String?
+  address       Json?
+  contact       Json?
+  status        Status       @default(ACTIVE)
+  departments   Department[]
+  programs      Program[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model Department {
+  id                 String       @id @default(uuid())
+  tenantId           String
+  tenant             Tenant       @relation(fields: [tenantId], references: [id])
+  institutionId      String?
+  institution        Institution? @relation(fields: [institutionId], references: [id])
+  campusId           String?
+  campus             Campus?      @relation(fields: [campusId], references: [id])
+  name               String
+  code               String?
+  headOfDepartmentId String?
+  description        String?
+  status             Status       @default(ACTIVE)
+  programs           Program[]
+  faculties          Faculty[]
+  subjects           Subject[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  deletedAt          DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+  CLOSED
+  ARCHIVED
+}
+
+model Program {
+  id                   String                 @id @default(uuid())
+  tenantId             String
+  tenant               Tenant                 @relation(fields: [tenantId], references: [id])
+  institutionId        String?
+  institution          Institution?           @relation(fields: [institutionId], references: [id])
+  campusId             String?
+  campus               Campus?                @relation(fields: [campusId], references: [id])
+  departmentId         String?
+  department           Department?            @relation(fields: [departmentId], references: [id])
+  name                 String
+  code                 String?
+  level                String // UG, PG, Diploma, Certificate, Doctorate
+  durationYears        Int?
+  durationSemesters    Int?
+  degree               String?
+  specialization       String?
+  eligibility          Json?
+  fees                 Json?
+  intakeCapacity       Int?
+  affiliation          Json?
+  status               Status                 @default(ACTIVE)
+  courses              Course[]
+  batches              Batch[]
+  semesters            Semester[]
+  students             Student[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  deletedAt            DateTime?
+  AdmissionApplication AdmissionApplication[]
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model Semester {
+  id          String        @id @default(uuid())
+  tenantId    String
+  tenant      Tenant        @relation(fields: [tenantId], references: [id])
+  programId   String?
+  program     Program?      @relation(fields: [programId], references: [id])
+  name        String
+  code        String?
+  number      Int
+  startDate   DateTime?
+  endDate     DateTime?
+  isCurrent   Boolean       @default(false)
+  status      Status        @default(ACTIVE)
+  courses     Course[]
+  batches     Batch[]
+  subjects    Subject[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  Examination Examination[]
+
+  @@index([tenantId, programId])
+  @@index([deletedAt])
+}
+
+model Course {
+  id                 String          @id @default(uuid())
+  tenantId           String
+  tenant             Tenant          @relation(fields: [tenantId], references: [id])
+  programId          String?
+  program            Program?        @relation(fields: [programId], references: [id])
+  semesterId         String?
+  semester           Semester?       @relation(fields: [semesterId], references: [id])
+  code               String
+  name               String
+  description        String?
+  credits            Int?
+  courseType         String? // CORE, ELECTIVE, LAB, PROJECT
+  lectureHours       Int?
+  tutorialHours      Int?
+  practicalHours     Int?
+  syllabus           Json?
+  status             Status          @default(ACTIVE)
+  subjects           Subject[]
+  facultyAssignments FacultyCourse[]
+  enrollments        Enrollment[]
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  deletedAt          DateTime?
+  Examination        Examination[]
+  LmsCourse          LmsCourse[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId, programId])
+  @@index([deletedAt])
+}
+
+model Subject {
+  id            String         @id @default(uuid())
+  tenantId      String
+  tenant        Tenant         @relation(fields: [tenantId], references: [id])
+  courseId      String?
+  course        Course?        @relation(fields: [courseId], references: [id])
+  semesterId    String?
+  semester      Semester?      @relation(fields: [semesterId], references: [id])
+  departmentId  String?
+  department    Department?    @relation(fields: [departmentId], references: [id])
+  code          String
+  name          String
+  credits       Int?
+  subjectType   String? // THEORY, PRACTICAL, PROJECT, VIVA
+  internalMarks Int?
+  externalMarks Int?
+  passMarks     Int?
+  totalMarks    Int?
+  status        Status         @default(ACTIVE)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  ExamSchedule  ExamSchedule[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId, courseId])
+  @@index([deletedAt])
+}
+
+model Batch {
+  id           String    @id @default(uuid())
+  tenantId     String
+  programId    String?
+  program      Program?  @relation(fields: [programId], references: [id])
+  semesterId   String?
+  semester     Semester? @relation(fields: [semesterId], references: [id])
+  name         String
+  academicYear String
+  startDate    DateTime?
+  endDate      DateTime?
+  status       Status    @default(ACTIVE)
+  students     Student[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  @@index([tenantId, programId])
+  @@index([deletedAt])
+}
+
+// ============================================================
+// ADMISSION
+// ============================================================
+
+model AdmissionApplication {
+  id                  String              @id @default(uuid())
+  tenantId            String
+  programId           String?
+  program             Program?            @relation(fields: [programId], references: [id])
+  applicationNo       String              @unique
+  applicantName       String
+  email               String
+  phone               String
+  dateOfBirth         DateTime?
+  gender              String?
+  category            String?
+  fatherName          String?
+  motherName          String?
+  address             Json?
+  photo               String?
+  documents           Json?
+  academicDetails     Json?
+  entranceScore       Float?
+  meritScore          Float?
+  status              ApplicationStatus   @default(SUBMITTED)
+  currentStage        String?
+  submittedAt         DateTime?
+  reviewedById        String?
+  remarks             String?
+  metadata            Json?
+  enrolledStudentId   String?
+  student             Student?            @relation("ApplicationStudent", fields: [enrolledStudentId], references: [id])
+  timeline            AdmissionTimeline[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  deletedAt           DateTime?
+  AdmissionSchedule   AdmissionSchedule?  @relation(fields: [admissionScheduleId], references: [id])
+  admissionScheduleId String?
+
+  @@index([tenantId, status])
+  @@index([tenantId, programId])
+  @@index([email])
+  @@index([deletedAt])
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  SHORTLISTED
+  CALLED_FOR_INTERVIEW
+  OFFERED
+  ACCEPTED
+  REJECTED
+  WAITLISTED
+  ENROLLED
+  CANCELLED
+}
+
+model AdmissionTimeline {
+  id            String               @id @default(uuid())
+  applicationId String
+  application   AdmissionApplication @relation(fields: [applicationId], references: [id])
+  stage         String
+  status        ApplicationStatus
+  comment       String?
+  performedById String?
+  createdAt     DateTime             @default(now())
+
+  @@index([applicationId])
+}
+
+model AdmissionSchedule {
+  id           String                 @id @default(uuid())
+  tenantId     String
+  programId    String?
+  name         String
+  startDate    DateTime
+  endDate      DateTime?
+  description  String?
+  eligibility  Json?
+  fees         Json?
+  status       Status                 @default(ACTIVE)
+  applications AdmissionApplication[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  deletedAt    DateTime?
+
+  @@index([tenantId, programId])
+  @@index([deletedAt])
+}
+
+// ============================================================
+// STUDENT
+// ============================================================
+
+model Student {
+  id                   String                 @id @default(uuid())
+  tenantId             String
+  userId               String?
+  user                 User?                  @relation(fields: [userId], references: [id])
+  programId            String?
+  program              Program?               @relation(fields: [programId], references: [id])
+  batchId              String?
+  batch                Batch?                 @relation(fields: [batchId], references: [id])
+  admissionApplication AdmissionApplication[] @relation("ApplicationStudent")
+  enrollmentNo         String?                @unique
+  rollNumber           String?
+  registrationNo       String?
+  admissionDate        DateTime?
+  admissionType        String? // merit, management, sports, nri
+  category             String? // general, obc, sc, st, ews
+  religion             String?
+  nationality          String?                @default("Indian")
+  bloodGroup           String?
+  aadhaarNumber        String?
+  parents              Json?
+  localGuardian        Json?
+  status               StudentStatus          @default(ENROLLED)
+  metadata             Json?
+  enrollments          Enrollment[]
+  guardians            Guardian[]
+  educationHistory     EducationHistory[]
+  certificates         Certificate[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  deletedAt            DateTime?
+  HostelAllocation     HostelAllocation[]
+  TransportAssignment  TransportAssignment[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, programId])
+  @@index([deletedAt])
+}
+
+enum StudentStatus {
+  APPLIED
+  ENROLLED
+  ACTIVE
+  SUSPENDED
+  GRADUATED
+  WITHDRAWN
+  EXPELED
+  ALUMNI
+  PROBATION
+}
+
+model Guardian {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  studentId  String?
+  student    Student? @relation(fields: [studentId], references: [id])
+  name       String
+  relation   String // father, mother, guardian
+  occupation String?
+  email      String?
+  phone      String?
+  address    Json?
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([studentId])
+}
+
+model EducationHistory {
+  id            String   @id @default(uuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  studentId     String?
+  student       Student? @relation(fields: [studentId], references: [id])
+  degree        String
+  institution   String
+  board         String?
+  yearOfPassing Int
+  percentage    Float?
+  grade         String?
+  subjects      Json?
+  documents     Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([studentId])
+}
+
+model Enrollment {
+  id          String           @id @default(uuid())
+  tenantId    String
+  studentId   String
+  student     Student          @relation(fields: [studentId], references: [id])
+  courseId    String
+  course      Course           @relation(fields: [courseId], references: [id])
+  status      EnrollmentStatus @default(ACTIVE)
+  enrolledAt  DateTime         @default(now())
+  completedAt DateTime?
+  grade       String?
+  marks       Float?
+  results     Result[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([studentId, courseId])
+  @@index([tenantId, status])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+  INCOMPLETE
+  WAITLISTED
+}
+
+// ============================================================
+// FACULTY
+// ============================================================
+
+model Faculty {
+  id             String          @id @default(uuid())
+  tenantId       String
+  userId         String?
+  user           User?           @relation(fields: [userId], references: [id])
+  departmentId   String?
+  department     Department?     @relation(fields: [departmentId], references: [id])
+  employeeCode   String?         @unique
+  designation    String?
+  qualification  String?
+  specialization String?
+  joiningDate    DateTime?
+  employmentType String? // permanent, contractual, adjunct, visiting
+  subjects       Json?
+  status         Status          @default(ACTIVE)
+  courses        FacultyCourse[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+
+  @@index([tenantId, status])
+  @@index([tenantId, departmentId])
+  @@index([deletedAt])
+}
+
+model FacultyCourse {
+  id         String   @id @default(uuid())
+  facultyId  String
+  faculty    Faculty  @relation(fields: [facultyId], references: [id])
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id])
+  role       String? // instructor, co-instructor, coordinator
+  status     Status   @default(ACTIVE)
+  assignedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@unique([facultyId, courseId])
+  @@index([courseId])
+}
+
+// ============================================================
+// EXAMINATION & EVALUATION
+// ============================================================
+
+model Examination {
+  id         String         @id @default(uuid())
+  tenantId   String
+  courseId   String?
+  course     Course?        @relation(fields: [courseId], references: [id])
+  semesterId String?
+  semester   Semester?      @relation(fields: [semesterId], references: [id])
+  name       String
+  code       String?
+  type       String // internal, midterm, final, practical, viva
+  schedule   Json? // start/end times per room
+  maxMarks   Int?
+  passMarks  Int?
+  weightage  Float?
+  status     Status         @default(ACTIVE)
+  results    Result[]
+  schedules  ExamSchedule[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  deletedAt  DateTime?
+
+  @@index([tenantId, courseId])
+  @@index([deletedAt])
+}
+
+model ExamSchedule {
+  id            String      @id @default(uuid())
+  examinationId String
+  examination   Examination @relation(fields: [examinationId], references: [id])
+  subjectId     String?
+  subject       Subject?    @relation(fields: [subjectId], references: [id])
+  date          DateTime
+  startTime     String
+  endTime       String
+  room          String?
+  invigilatorId String?
+  students      Json? // student roll numbers list
+  status        Status      @default(ACTIVE)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([examinationId])
+}
+
+model Result {
+  id            String       @id @default(uuid())
+  tenantId      String
+  examinationId String
+  examination   Examination  @relation(fields: [examinationId], references: [id])
+  enrollmentId  String?
+  enrollment    Enrollment?  @relation(fields: [enrollmentId], references: [id])
+  studentId     String?
+  subjectId     String?
+  internalMarks Float?
+  externalMarks Float?
+  totalMarks    Float?
+  grade         String?
+  gradePoint    Float?
+  creditEarned  Float?
+  resultStatus  ResultStatus @default(PENDING)
+  remarks       String?
+  publishedAt   DateTime?
+  publishedById String?
+  metadata      Json?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([tenantId, studentId])
+  @@index([tenantId, examinationId])
+}
+
+enum ResultStatus {
+  PENDING
+  PASS
+  FAIL
+  SUPPLEMENTARY
+  COMPARTMENT
+  DISTINCTION
+  AWAITING
+  PUBLISHED
+}
+
+model GradeScale {
+  id        String    @id @default(uuid())
+  tenantId  String
+  name      String
+  grades    Json? // [{grade, min, max, point}]
+  isDefault Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model Certificate {
+  id               String    @id @default(uuid())
+  tenantId         String
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id])
+  studentId        String?
+  student          Student?  @relation(fields: [studentId], references: [id])
+  type             String // transfer, conduct, bonafide, provisional, degree, marksheet
+  templateId       String?
+  issueNumber      String    @unique
+  data             Json?
+  qrCode           String?
+  digitalSignature String?
+  issuedAt         DateTime?
+  issuedById       String?
+  metadata         Json?
+  status           Status    @default(PENDING)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  @@index([tenantId, studentId])
+  @@index([tenantId, type])
+  @@index([deletedAt])
+}
+
+// ============================================================
+// FINANCE
+// ============================================================
+
+model FeeHead {
+  id          String    @id @default(uuid())
+  tenantId    String
+  name        String
+  code        String?
+  category    String? // tuition, hostel, transport, library, lab, exam
+  amount      Decimal?  @db.Decimal(12, 2)
+  isMandatory Boolean   @default(true)
+  frequency   String? // one-time, yearly, semester, monthly
+  status      Status    @default(ACTIVE)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model FeeStructure {
+  id        String    @id @default(uuid())
+  tenantId  String
+  programId String?
+  batchId   String?
+  name      String
+  items     Json? // fee breakdown
+  total     Decimal?  @db.Decimal(12, 2)
+  status    Status    @default(ACTIVE)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([tenantId, programId])
+  @@index([deletedAt])
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  tenantId      String
+  studentId     String?
+  invoiceNumber String        @unique
+  invoiceType   String // tuition, hostel, transport, miscellaneous
+  items         Json?
+  subtotal      Decimal?      @db.Decimal(12, 2)
+  discounts     Decimal?      @default(0) @db.Decimal(12, 2)
+  total         Decimal?      @db.Decimal(12, 2)
+  dueDate       DateTime?
+  status        InvoiceStatus @default(PENDING)
+  payments      Payment[]
+  metadata      Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  @@index([tenantId, studentId])
+  @@index([tenantId, status])
+  @@index([deletedAt])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  tenantId      String
+  invoiceId     String?
+  invoice       Invoice?      @relation(fields: [invoiceId], references: [id])
+  studentId     String?
+  transactionId String?       @unique
+  amount        Decimal?      @db.Decimal(12, 2)
+  paymentMode   String // cash, card, upi, netbanking, cheque, bank_transfer
+  status        PaymentStatus @default(PENDING)
+  referenceNo   String?
+  gateway       String?
+  metadata      Json?
+  paidAt        DateTime?
+  receivedById  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([tenantId, invoiceId])
+  @@index([tenantId, studentId])
+  @@index([status])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+  CANCELLED
+  INITIATED
+}
+
+// ============================================================
+// LIBRARY
+// ============================================================
+
+model LibraryBook {
+  id                 String               @id @default(uuid())
+  tenantId           String
+  title              String
+  author             String?
+  isbn               String?
+  publisher          String?
+  edition            String?
+  category           String?
+  language           String?
+  location           String?
+  totalCopies        Int                  @default(1)
+  availableCopies    Int                  @default(1)
+  status             Status               @default(ACTIVE)
+  metadata           Json?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  deletedAt          DateTime?
+  LibraryTransaction LibraryTransaction[]
+
+  @@index([tenantId])
+  @@index([tenantId, category])
+  @@index([deletedAt])
+}
+
+model LibraryTransaction {
+  id         String                   @id @default(uuid())
+  tenantId   String
+  bookId     String?
+  book       LibraryBook?             @relation(fields: [bookId], references: [id])
+  userId     String?
+  issueDate  DateTime                 @default(now())
+  dueDate    DateTime
+  returnDate DateTime?
+  status     LibraryTransactionStatus @default(ISSUED)
+  fineAmount Decimal?                 @db.Decimal(10, 2)
+  finePaid   Boolean                  @default(false)
+  issuedById String?
+  createdAt  DateTime                 @default(now())
+  updatedAt  DateTime                 @updatedAt
+
+  @@index([tenantId, userId])
+  @@index([tenantId, bookId, status])
+}
+
+enum LibraryTransactionStatus {
+  ISSUED
+  RETURNED
+  OVERDUE
+  LOST
+  DAMAGED
+  RENEWED
+}
+
+// ============================================================
+// HOSTEL
+// ============================================================
+
+model Hostel {
+  id        String       @id @default(uuid())
+  tenantId  String
+  name      String
+  code      String?
+  type      String? // boys, girls, co-ed
+  capacity  Int?
+  wardenId  String?
+  address   Json?
+  status    Status       @default(ACTIVE)
+  rooms     HostelRoom[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  deletedAt DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model HostelRoom {
+  id          String             @id @default(uuid())
+  tenantId    String
+  hostelId    String?
+  hostel      Hostel?            @relation(fields: [hostelId], references: [id])
+  roomNumber  String
+  floor       String?
+  type        String? // single, double, triple, dormitory
+  capacity    Int?
+  occupied    Int                @default(0)
+  monthlyRent Decimal?           @db.Decimal(10, 2)
+  amenities   Json?
+  status      Status             @default(ACTIVE)
+  allocations HostelAllocation[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId, hostelId])
+  @@index([deletedAt])
+}
+
+model HostelAllocation {
+  id             String      @id @default(uuid())
+  tenantId       String
+  roomId         String?
+  room           HostelRoom? @relation(fields: [roomId], references: [id])
+  studentId      String?
+  student        Student?    @relation(fields: [studentId], references: [id])
+  allocationDate DateTime    @default(now())
+  vacateDate     DateTime?
+  status         Status      @default(ACTIVE)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([tenantId, roomId, status])
+  @@index([tenantId, studentId])
+}
+
+// ============================================================
+// TRANSPORT
+// ============================================================
+
+model TransportRoute {
+  id          String                @id @default(uuid())
+  tenantId    String
+  name        String
+  routeNumber String?
+  stops       Json?
+  distanceKm  Float?
+  fee         Decimal?              @db.Decimal(10, 2)
+  status      Status                @default(ACTIVE)
+  vehicles    TransportVehicle[]
+  assignments TransportAssignment[]
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model TransportVehicle {
+  id             String          @id @default(uuid())
+  tenantId       String
+  routeId        String?
+  route          TransportRoute? @relation(fields: [routeId], references: [id])
+  registrationNo String          @unique
+  make           String?
+  model          String?
+  capacity       Int?
+  driverName     String?
+  driverPhone    String?
+  status         Status          @default(ACTIVE)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model TransportAssignment {
+  id        String          @id @default(uuid())
+  tenantId  String
+  routeId   String?
+  route     TransportRoute? @relation(fields: [routeId], references: [id])
+  studentId String?
+  student   Student?        @relation(fields: [studentId], references: [id])
+  stop      String?
+  fee       Decimal?        @db.Decimal(10, 2)
+  status    Status          @default(ACTIVE)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([tenantId, studentId])
+  @@index([tenantId, routeId])
+}
+
+// ============================================================
+// PLACEMENT
+// ============================================================
+
+model PlacementDrive {
+  id                  String                 @id @default(uuid())
+  tenantId            String
+  companyName         String
+  companyDetails      Json?
+  jobTitle            String?
+  jobDescription      String?
+  eligibility         Json?
+  package             Json? // ctc, breakdown
+  vacancies           Int?
+  driveDate           DateTime?
+  applicationDeadline DateTime?
+  status              Status                 @default(ACTIVE)
+  applications        PlacementApplication[]
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  deletedAt           DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model PlacementApplication {
+  id           String          @id @default(uuid())
+  tenantId     String
+  driveId      String?
+  drive        PlacementDrive? @relation(fields: [driveId], references: [id])
+  studentId    String?
+  status       PlacementStatus @default(APPLIED)
+  resume       String?
+  roundResults Json?
+  offerDetails Json?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@unique([driveId, studentId])
+  @@index([tenantId, status])
+}
+
+enum PlacementStatus {
+  APPLIED
+  SHORTLISTED
+  IN_PROCESS
+  SELECTED
+  REJECTED
+  OFFERED
+  ACCEPTED
+  DECLINED
+  WAITLISTED
+}
+
+// ============================================================
+// RESEARCH
+// ============================================================
+
+model ResearchProject {
+  id                      String        @id @default(uuid())
+  tenantId                String
+  title                   String
+  description             String?
+  type                    String? // funded, consultancy, minor, major
+  fundingAgency           String?
+  fundingAmount           Decimal?      @db.Decimal(12, 2)
+  startDate               DateTime?
+  endDate                 DateTime?
+  principalInvestigatorId String?
+  coInvestigators         Json?
+  status                  Status        @default(ACTIVE)
+  publications            Publication[]
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+  deletedAt               DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model Publication {
+  id                String           @id @default(uuid())
+  tenantId          String
+  researchProjectId String?
+  researchProject   ResearchProject? @relation(fields: [researchProjectId], references: [id])
+  title             String
+  authors           Json?
+  journal           String?
+  issn              String?
+  doi               String?
+  year              Int?
+  volume            String?
+  issue             String?
+  pages             String?
+  type              String? // journal, conference, book, chapter, patent
+  status            Status           @default(ACTIVE)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  deletedAt         DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+// ============================================================
+// COMMITTEE
+// ============================================================
+
+model Committee {
+  id               String             @id @default(uuid())
+  tenantId         String
+  name             String
+  type             String? // academic, disciplinary, anti-ragging, admission
+  description      String?
+  chairpersonId    String?
+  members          Json?
+  constitutionDate DateTime?
+  status           Status             @default(ACTIVE)
+  meetings         CommitteeMeeting[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deletedAt        DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model CommitteeMeeting {
+  id          String     @id @default(uuid())
+  tenantId    String
+  committeeId String?
+  committee   Committee? @relation(fields: [committeeId], references: [id])
+  title       String
+  agenda      Json?
+  minutes     Json?
+  scheduledAt DateTime
+  status      Status     @default(PENDING)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([tenantId, committeeId])
+}
+
+// ============================================================
+// HR
+// ============================================================
+
+model Employee {
+  id             String         @id @default(uuid())
+  tenantId       String
+  userId         String?
+  employeeCode   String?        @unique
+  departmentId   String?
+  designation    String?
+  employmentType String?
+  joiningDate    DateTime?
+  salary         Decimal?       @db.Decimal(12, 2)
+  bankDetails    Json?
+  panNumber      String?
+  pfNumber       String?
+  uanNumber      String?
+  status         Status         @default(ACTIVE)
+  metadata       Json?
+  leaves         LeaveRequest[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model LeaveRequest {
+  id           String      @id @default(uuid())
+  tenantId     String
+  employeeId   String?
+  employee     Employee?   @relation(fields: [employeeId], references: [id])
+  leaveType    String // casual, sick, earned, unpaid, maternity, paternity
+  startDate    DateTime
+  endDate      DateTime
+  days         Float?
+  reason       String?
+  status       LeaveStatus @default(PENDING)
+  approvedById String?
+  approvedAt   DateTime?
+  metadata     Json?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([tenantId, employeeId])
+  @@index([tenantId, status])
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  IN_PROGRESS
+  COMPLETED
+}
+
+// ============================================================
+// LMS
+// ============================================================
+
+model LmsCourse {
+  id          String          @id @default(uuid())
+  tenantId    String
+  courseId    String?
+  course      Course?         @relation(fields: [courseId], references: [id])
+  title       String
+  description String?
+  coverImage  String?
+  status      Status          @default(ACTIVE)
+  modules     LmsModule[]
+  enrollments LmsEnrollment[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+model LmsModule {
+  id          String      @id @default(uuid())
+  tenantId    String
+  courseId    String?
+  course      LmsCourse?  @relation(fields: [courseId], references: [id])
+  title       String
+  description String?
+  order       Int         @default(0)
+  lessons     LmsLesson[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([tenantId, courseId])
+}
+
+model LmsLesson {
+  id          String        @id @default(uuid())
+  tenantId    String
+  moduleId    String?
+  module      LmsModule?    @relation(fields: [moduleId], references: [id])
+  title       String
+  content     String?
+  contentType String? // video, document, quiz, assignment, link
+  contentUrl  String?
+  duration    Int?
+  order       Int           @default(0)
+  isPublished Boolean       @default(true)
+  progress    LmsProgress[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([tenantId, moduleId])
+}
+
+model LmsEnrollment {
+  id              String           @id @default(uuid())
+  tenantId        String
+  lmsCourseId     String?
+  lmsCourse       LmsCourse?       @relation(fields: [lmsCourseId], references: [id])
+  userId          String?
+  enrolledAt      DateTime         @default(now())
+  completedAt     DateTime?
+  progress        Float?           @default(0)
+  status          EnrollmentStatus @default(ACTIVE)
+  progressRecords LmsProgress[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([lmsCourseId, userId])
+  @@index([tenantId, userId])
+}
+
+model LmsProgress {
+  id              String         @id @default(uuid())
+  tenantId        String
+  enrollmentId    String?
+  enrollment      LmsEnrollment? @relation(fields: [enrollmentId], references: [id])
+  lessonId        String?
+  lesson          LmsLesson?     @relation(fields: [lessonId], references: [id])
+  userId          String?
+  status          String? // not_started, in_progress, completed
+  progressPercent Float?         @default(0)
+  lastPosition    Float?
+  completedAt     DateTime?
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@unique([enrollmentId, lessonId])
+  @@index([tenantId, userId])
+}
+
+// ============================================================
+// CMS
+// ============================================================
+
+model CmsPage {
+  id          String    @id @default(uuid())
+  tenantId    String
+  title       String
+  slug        String
+  content     String?
+  contentJson Json?
+  template    String?
+  status      CmsStatus @default(DRAFT)
+  authorId    String?
+  publishedAt DateTime?
+  seo         Json?
+  metadata    Json?
+  version     Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, status])
+  @@index([deletedAt])
+}
+
+enum CmsStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+model CmsPost {
+  id          String    @id @default(uuid())
+  tenantId    String
+  title       String
+  slug        String
+  excerpt     String?
+  content     String?
+  coverImage  String?
+  category    String?
+  tags        Json?
+  authorId    String?
+  status      CmsStatus @default(DRAFT)
+  publishedAt DateTime?
+  seo         Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, status])
+  @@index([deletedAt])
+}
+
+model CmsMedia {
+  id         String    @id @default(uuid())
+  tenantId   String
+  name       String
+  mimeType   String
+  size       Int
+  storageKey String
+  url        String?
+  altText    String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+// ============================================================
+// WORKFLOW
+// ============================================================
+
+model Workflow {
+  id         String    @id @default(uuid())
+  tenantId   String
+  tenant     Tenant    @relation(fields: [tenantId], references: [id])
+  name       String
+  code       String?
+  module     String
+  entityType String
+  definition Json? // nodes and transitions
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@unique([tenantId, code])
+  @@index([tenantId, module])
+  @@index([deletedAt])
+}
+
+model WorkflowInstance {
+  id           String         @id @default(uuid())
+  tenantId     String
+  workflowId   String?
+  entityType   String
+  entityId     String
+  currentState String
+  states       Json?
+  createdById  String?
+  completedAt  DateTime?
+  status       WorkflowStatus @default(IN_PROGRESS)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([tenantId, entityType, entityId])
+  @@index([tenantId, status])
+}
+
+enum WorkflowStatus {
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  CANCELLED
+  PENDING_APPROVAL
+}
+
+// ============================================================
+// SEARCH INDEX
+// ============================================================
+
+model SearchIndex {
+  id         String   @id @default(uuid())
+  tenantId   String
+  entityType String
+  entityId   String
+  title      String?
+  content    String?
+  tags       Json?
+  metadata   Json?
+  isPublic   Boolean  @default(false)
+  indexedAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([tenantId, entityType, entityId])
+  @@index([tenantId, entityType])
+  @@index([tenantId, isPublic])
+}
+
+// ============================================================
+// REPORTS & ANALYTICS
+// ============================================================
+
+model Report {
+  id          String    @id @default(uuid())
+  tenantId    String
+  name        String
+  code        String?
+  category    String?
+  query       Json?
+  columns     Json?
+  filters     Json?
+  schedule    Json?
+  isPublic    Boolean   @default(false)
+  createdById String?
+  status      Status    @default(ACTIVE)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId, category])
+  @@index([deletedAt])
+}
+
+model DashboardWidget {
+  id        String    @id @default(uuid())
+  tenantId  String
+  name      String
+  type      String? // chart, table, metric, list
+  config    Json?
+  dashboard String?
+  order     Int       @default(0)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([tenantId])
+  @@index([deletedAt])
+}
+
+// ============================================================
+// AUTHENTICATION / AUTHORIZATION PRIMITIVES
+// ============================================================
+
+model Otp {
+  id         String    @id @default(uuid())
+  tenantId   String?
+  identifier String
+  purpose    String // login, forgot_password, verify_email, verify_phone, two_factor
+  codeHash   String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([identifier, purpose])
+  @@index([expiresAt])
+}
