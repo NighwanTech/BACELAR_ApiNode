@@ -9,6 +9,9 @@
     "packages/*"
   ],
   "scripts": {
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "dev": "nest start --watch",
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"packages/**/*.ts\"",
     "lint": "eslint \"{apps,packages}/**/*.ts\" --fix",
