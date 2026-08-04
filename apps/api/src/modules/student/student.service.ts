@@ -35,7 +35,6 @@ export class StudentService {
         parents: dto.parents,
         localGuardian: dto.localGuardian,
         metadata: dto.metadata,
-        createdById,
       },
     });
   }
@@ -134,7 +133,7 @@ export class StudentService {
     await this.findById(tenantId, id);
     return this.prisma.student.update({
       where: { id },
-      data: { status },
+      data: { status: status as any },
     });
   }
 

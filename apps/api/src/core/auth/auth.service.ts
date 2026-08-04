@@ -162,7 +162,7 @@ export class AuthService {
         middleName: dto.middleName,
         phone: dto.phone,
         passwordHash,
-        type: dto.type || 'STAFF',
+        type: (dto.type as any) || 'STAFF',
       },
     });
 

@@ -66,7 +66,7 @@ export class EnrollmentService {
   async updateStatus(tenantId: string, id: string, status: string) {
     return this.prisma.enrollment.update({
       where: { id },
-      data: { status, completedAt: status === 'COMPLETED' ? new Date() : undefined },
+      data: { status: status as any, completedAt: status === 'COMPLETED' ? new Date() : undefined },
     });
   }
 

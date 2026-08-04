@@ -36,6 +36,8 @@ import { CommitteeModule } from './modules/committee/committee.module';
 import { ReportModule } from './modules/report/report.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { DeveloperModule } from './platform/developer/developer.module';
+import { AuthModule } from './core/auth/auth.module';
+import { validate } from './config/env.validation';
 
 @Module({
   imports: [

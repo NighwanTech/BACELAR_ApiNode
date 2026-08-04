@@ -27,7 +27,7 @@ export class PermissionService {
   }
 
   async createMany(tenantId: string, permissions: CreatePermissionDto[]) {
-    const results = [];
+    const results: any[] = [];
     for (const perm of permissions) {
       results.push(await this.create(tenantId, perm));
     }

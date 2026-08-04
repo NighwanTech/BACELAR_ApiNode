@@ -93,7 +93,7 @@ export class AdmissionService {
     const application = await this.findById(tenantId, id);
     await this.prisma.admissionApplication.update({
       where: { id },
-      data: { status, currentStage: status },
+      data: { status: status as any, currentStage: status },
     });
     await this.prisma.admissionTimeline.create({
       data: {
@@ -127,7 +127,6 @@ export class AdmissionService {
         admissionType: dto.admissionType,
         category: application.category,
         status: 'ENROLLED',
-        createdById: performedById,
       },
     });
 

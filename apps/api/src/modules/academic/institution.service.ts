@@ -19,7 +19,6 @@ export class InstitutionService {
         address: dto.address,
         contact: dto.contact,
         accreditation: dto.accreditation,
-        createdById,
       },
     });
   }

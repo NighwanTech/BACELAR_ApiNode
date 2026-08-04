@@ -89,7 +89,7 @@ export class FacultyService {
       throw new BusinessException(ErrorCodes.RESOURCE_ALREADY_EXISTS, 'Faculty already assigned to this course', 409);
     }
     return this.prisma.facultyCourse.create({
-      data: { facultyId, courseId, role, tenantId },
+      data: { facultyId, courseId, role },
     });
   }
 

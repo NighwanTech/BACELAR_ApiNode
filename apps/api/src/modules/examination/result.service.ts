@@ -30,7 +30,7 @@ export class ResultService {
   }
 
   async bulkRecord(tenantId: string, results: any[]) {
-    const created = [];
+    const created: any[] = [];
     for (const result of results) {
       created.push(await this.record(tenantId, result));
     }

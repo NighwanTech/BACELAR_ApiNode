@@ -10,7 +10,7 @@ interface SearchClient {
 @Injectable()
 export class SearchService implements OnModuleInit {
   private readonly logger = new Logger(SearchService.name);
-  private client: SearchClient | null = null;
+  private client: any = null;
 
   constructor(private readonly config: ConfigService) {}
 

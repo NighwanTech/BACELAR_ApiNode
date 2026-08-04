@@ -47,7 +47,7 @@ export class PlacementService {
   async findById(tenantId: string, id: string) {
     const drive = await this.prisma.placementDrive.findFirst({
       where: { id, tenantId, deletedAt: null },
-      include: { applications: { include: { student: { include: { user: { select: { firstName: true, lastName: true, email: true } } } } } } },
+      include: { applications: true },
     });
     if (!drive) {
       throw new BusinessException(ErrorCodes.RESOURCE_NOT_FOUND, 'Placement drive not found', 404);
@@ -76,7 +76,7 @@ export class PlacementService {
   async updateStatus(tenantId: string, applicationId: string, status: string, offerDetails?: any, roundResults?: any) {
     return this.prisma.placementApplication.update({
       where: { id: applicationId },
-      data: { status, offerDetails, roundResults },
+      data: { status: status as any, offerDetails, roundResults },
     });
   }
 
@@ -95,7 +95,6 @@ export class PlacementService {
         orderBy: { createdAt: 'desc' },
         include: {
           drive: true,
-          student: { include: { user: { select: { firstName: true, lastName: true, email: true } } } },
         },
       }),
       this.prisma.placementApplication.count({ where }),

@@ -6,8 +6,8 @@ import { RABBITMQ_EXCHANGE, RabbitQueues } from './rabbit.constants';
 @Injectable()
 export class RabbitService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RabbitService.name);
-  private connection: Connection;
-  private channel: Channel;
+  private connection: any;
+  private channel: any;
   private readonly queues = Object.values(RabbitQueues);
 
   constructor(private readonly config: ConfigService) {}

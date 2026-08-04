@@ -121,11 +121,12 @@ export class LmsService {
         where: { enrollmentId },
         _avg: { progressPercent: true },
       });
+      const avgPercent = progress._avg.progressPercent || 0;
       await this.prisma.lmsEnrollment.update({
         where: { id: enrollmentId },
         data: {
-          progress: progress._avg.progressPercent || 0,
-          completedAt: progress._avg.progressPercent >= 100 ? new Date() : undefined,
+          progress: avgPercent,
+          completedAt: avgPercent >= 100 ? new Date() : undefined,
         },
       });
     }

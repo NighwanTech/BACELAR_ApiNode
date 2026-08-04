@@ -69,7 +69,7 @@ export class PaymentService {
     const payment = await this.prisma.payment.update({
       where: { id },
       data: {
-        status,
+        status: status as any,
         transactionId,
         paidAt: status === 'SUCCESS' ? new Date() : undefined,
       },

@@ -48,7 +48,6 @@ export class HrService {
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: { user: { select: { firstName: true, lastName: true, email: true } } },
       }),
       this.prisma.employee.count({ where }),
     ]);
@@ -58,7 +57,7 @@ export class HrService {
   async findById(tenantId: string, id: string) {
     const employee = await this.prisma.employee.findFirst({
       where: { id, tenantId, deletedAt: null },
-      include: { user: { select: { firstName: true, lastName: true, email: true, phone: true } }, leaves: true },
+      include: { leaves: true },
     });
     if (!employee) {
       throw new BusinessException(ErrorCodes.RESOURCE_NOT_FOUND, 'Employee not found', 404);
@@ -98,7 +97,7 @@ export class HrService {
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: { employee: { include: { user: { select: { firstName: true, lastName: true } } } } },
+        include: { employee: true },
       }),
       this.prisma.leaveRequest.count({ where }),
     ]);

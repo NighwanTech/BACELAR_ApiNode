@@ -32,7 +32,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       } else if (typeof res === 'object' && res !== null) {
         const body = res as Record<string, unknown>;
         message = (body.message as string) || exception.message;
-        code = (body.code as string) || this.mapStatusToCode(status);
+        code = ((body.code as string) || this.mapStatusToCode(status)) as any;
         details = body.details;
       }
     } else if (exception instanceof Error) {
