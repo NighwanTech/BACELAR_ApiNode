@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { StudentsController } from './students.controller';
+import { StudentProfileController } from './student-profile.controller';
+import { StudentAcademicModule } from './student-academic/student-academic.module';
+import { StudentAcademicSubjectModule } from './student-academic-subject/student-academic-subject.module';
+import { StudentPaymentModule } from './student-payment/student-payment.module';
 
 @Module({
   imports: [
@@ -15,7 +19,10 @@ import { StudentsController } from './students.controller';
         },
       },
     ]),
+    StudentAcademicModule,
+    StudentAcademicSubjectModule,
+    StudentPaymentModule,
   ],
-  controllers: [StudentsController],
+  controllers: [StudentsController, StudentProfileController],
 })
 export class StudentsModule {}
