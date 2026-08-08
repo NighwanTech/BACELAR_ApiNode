@@ -2528,12 +2528,13 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 const students_module_1 = __webpack_require__(/*! ./students/students.module */ "./apps/student-service/src/students/students.module.ts");
 const master_module_1 = __webpack_require__(/*! ./master/master.module */ "./apps/student-service/src/master/master.module.ts");
+const website_module_1 = __webpack_require__(/*! ./website/website.module */ "./apps/student-service/src/website/website.module.ts");
 let StudentServiceModule = class StudentServiceModule {
 };
 exports.StudentServiceModule = StudentServiceModule;
 exports.StudentServiceModule = StudentServiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule, students_module_1.StudentsModule, master_module_1.MasterModule],
+        imports: [prisma_1.PrismaModule, students_module_1.StudentsModule, master_module_1.MasterModule, website_module_1.WebsiteModule],
         controllers: [],
         providers: [],
     })
@@ -4410,6 +4411,274 @@ exports.StudentsService = StudentsService = __decorate([
 
 /***/ }),
 
+/***/ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.controller.ts":
+/*!********************************************************************************************!*\
+  !*** ./apps/student-service/src/website/campus-quick-link/campus-quick-link.controller.ts ***!
+  \********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CampusQuickLinkController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const campus_quick_link_service_1 = __webpack_require__(/*! ./campus-quick-link.service */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.service.ts");
+let CampusQuickLinkController = class CampusQuickLinkController {
+    constructor(campusQuickLinkService) {
+        this.campusQuickLinkService = campusQuickLinkService;
+    }
+    async create(data) {
+        try {
+            return await this.campusQuickLinkService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.campusQuickLinkService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.campusQuickLinkService.findOne(data.quickLinkId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { quickLinkId, ...updateData } = data;
+            return await this.campusQuickLinkService.update(quickLinkId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.campusQuickLinkService.softDelete(data.quickLinkId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.CampusQuickLinkController = CampusQuickLinkController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_campus_quick_link' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_campus_quick_links' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_campus_quick_link' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_campus_quick_link' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_campus_quick_link' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "softDelete", null);
+exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof campus_quick_link_service_1.CampusQuickLinkService !== "undefined" && campus_quick_link_service_1.CampusQuickLinkService) === "function" ? _a : Object])
+], CampusQuickLinkController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.module.ts":
+/*!****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/campus-quick-link/campus-quick-link.module.ts ***!
+  \****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CampusQuickLinkModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const campus_quick_link_controller_1 = __webpack_require__(/*! ./campus-quick-link.controller */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.controller.ts");
+const campus_quick_link_service_1 = __webpack_require__(/*! ./campus-quick-link.service */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.service.ts");
+let CampusQuickLinkModule = class CampusQuickLinkModule {
+};
+exports.CampusQuickLinkModule = CampusQuickLinkModule;
+exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [campus_quick_link_controller_1.CampusQuickLinkController],
+        providers: [campus_quick_link_service_1.CampusQuickLinkService],
+        exports: [campus_quick_link_service_1.CampusQuickLinkService],
+    })
+], CampusQuickLinkModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.service.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/campus-quick-link/campus-quick-link.service.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CampusQuickLinkService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let CampusQuickLinkService = class CampusQuickLinkService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.campusQuickLink.create({
+            data: {
+                quickLinkName: data.quickLinkName,
+                icon: data.icon || null,
+                pageUrl: data.pageUrl,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.campusQuickLink.findMany({
+            where: { IsDeleted: false },
+            orderBy: { quickLinkId: 'desc' },
+        });
+    }
+    async findOne(quickLinkId) {
+        const item = await this.prisma.campusQuickLink.findFirst({
+            where: { quickLinkId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Campus quick link with ID ${quickLinkId} not found`);
+        }
+        return item;
+    }
+    async update(quickLinkId, data) {
+        await this.findOne(quickLinkId);
+        return this.prisma.campusQuickLink.update({
+            where: { quickLinkId },
+            data: {
+                quickLinkName: data.quickLinkName,
+                icon: data.icon,
+                pageUrl: data.pageUrl,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(quickLinkId, DeletedBy, DeletedRemarks) {
+        await this.findOne(quickLinkId);
+        return this.prisma.campusQuickLink.update({
+            where: { quickLinkId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.CampusQuickLinkService = CampusQuickLinkService;
+exports.CampusQuickLinkService = CampusQuickLinkService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], CampusQuickLinkService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/website.module.ts":
+/*!************************************************************!*\
+  !*** ./apps/student-service/src/website/website.module.ts ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.WebsiteModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const campus_quick_link_module_1 = __webpack_require__(/*! ./campus-quick-link/campus-quick-link.module */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.module.ts");
+let WebsiteModule = class WebsiteModule {
+};
+exports.WebsiteModule = WebsiteModule;
+exports.WebsiteModule = WebsiteModule = __decorate([
+    (0, common_1.Module)({
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule],
+    })
+], WebsiteModule);
+
+
+/***/ }),
+
 /***/ "./libs/prisma/src/index.ts":
 /*!**********************************!*\
   !*** ./libs/prisma/src/index.ts ***!
@@ -4497,9 +4766,9 @@ function getDbConfig() {
         return {
             host: url.hostname,
             port: url.port ? Number(url.port) : 3306,
-            user: url.username,
-            password: url.password,
-            database: url.pathname.split('?')[0].replace(/^\//, ''),
+            user: decodeURIComponent(url.username),
+            password: decodeURIComponent(url.password),
+            database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
             connectionLimit: 2,
             connectTimeout: 30000,
             acquireTimeout: 30000,
