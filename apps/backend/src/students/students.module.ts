@@ -5,6 +5,7 @@ import { StudentProfileController } from './student-profile.controller';
 import { StudentAcademicModule } from './student-academic/student-academic.module';
 import { StudentAcademicSubjectModule } from './student-academic-subject/student-academic-subject.module';
 import { StudentPaymentModule } from './student-payment/student-payment.module';
+import { StudentAttachmentModule } from './student-attachment/student-attachment.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { StudentPaymentModule } from './student-payment/student-payment.module';
     StudentAcademicModule,
     StudentAcademicSubjectModule,
     StudentPaymentModule,
+    StudentAttachmentModule,
   ],
   controllers: [StudentsController, StudentProfileController],
 })

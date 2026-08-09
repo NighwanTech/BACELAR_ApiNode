@@ -21,6 +21,24 @@ try {
       user: url.username,
       password: url.password,
       database: url.pathname.split('?')[0].replace(/^\//, ''),
+      connectionLimit: 2,
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
+      ssl: false,
+      allowPublicKeyRetrieval: true,
+    };
+  } else {
+    dbConfig = {
+      host: '127.0.0.1',
+      port: 3306,
+      user: 'root',
+      password: '',
+      database: 'bacelar',
+      connectionLimit: 2,
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
+      ssl: false,
+      allowPublicKeyRetrieval: true,
     };
   }
 } catch (e) {
@@ -87,6 +105,207 @@ async function main() {
     });
   }
   console.log('Seeded BoardMaster successfully!');
+
+  // 2.25 Seed StateMaster + CityMaster (for profile address dropdowns)
+  const statesWithCities: Array<{
+    stateName: string;
+    stateShortCode: string;
+    cities: Array<{ cityName: string; cityShortCode: string }>;
+  }> = [
+    {
+      stateName: 'Uttar Pradesh',
+      stateShortCode: 'UP',
+      cities: [
+        { cityName: 'Lucknow', cityShortCode: 'LKO' },
+        { cityName: 'Noida', cityShortCode: 'NOI' },
+        { cityName: 'Kanpur', cityShortCode: 'KNP' },
+        { cityName: 'Varanasi', cityShortCode: 'VNS' },
+        { cityName: 'Ghaziabad', cityShortCode: 'GZB' },
+        { cityName: 'Gorakhpur', cityShortCode: 'GKP' },
+        { cityName: 'Prayagraj', cityShortCode: 'PRY' },
+        { cityName: 'Lalitpur', cityShortCode: 'LTP' },
+      ],
+    },
+    {
+      stateName: 'Bihar',
+      stateShortCode: 'BR',
+      cities: [
+        { cityName: 'Patna', cityShortCode: 'PAT' },
+        { cityName: 'Gaya', cityShortCode: 'GAY' },
+        { cityName: 'Muzaffarpur', cityShortCode: 'MZP' },
+        { cityName: 'Bhagalpur', cityShortCode: 'BGP' },
+        { cityName: 'Darbhanga', cityShortCode: 'DBG' },
+      ],
+    },
+    {
+      stateName: 'Delhi',
+      stateShortCode: 'DL',
+      cities: [
+        { cityName: 'New Delhi', cityShortCode: 'NDL' },
+        { cityName: 'North Delhi', cityShortCode: 'NDN' },
+        { cityName: 'South Delhi', cityShortCode: 'SDL' },
+        { cityName: 'East Delhi', cityShortCode: 'EDL' },
+        { cityName: 'West Delhi', cityShortCode: 'WDL' },
+      ],
+    },
+    {
+      stateName: 'Haryana',
+      stateShortCode: 'HR',
+      cities: [
+        { cityName: 'Gurugram', cityShortCode: 'GGN' },
+        { cityName: 'Faridabad', cityShortCode: 'FBD' },
+        { cityName: 'Panipat', cityShortCode: 'PNP' },
+        { cityName: 'Rohtak', cityShortCode: 'ROH' },
+      ],
+    },
+    {
+      stateName: 'Maharashtra',
+      stateShortCode: 'MH',
+      cities: [
+        { cityName: 'Mumbai', cityShortCode: 'MUM' },
+        { cityName: 'Pune', cityShortCode: 'PUN' },
+        { cityName: 'Nagpur', cityShortCode: 'NAG' },
+        { cityName: 'Thane', cityShortCode: 'THN' },
+        { cityName: 'Nashik', cityShortCode: 'NSK' },
+      ],
+    },
+    {
+      stateName: 'West Bengal',
+      stateShortCode: 'WB',
+      cities: [
+        { cityName: 'Kolkata', cityShortCode: 'KOL' },
+        { cityName: 'Howrah', cityShortCode: 'HWH' },
+        { cityName: 'Darjeeling', cityShortCode: 'DJL' },
+        { cityName: 'Siliguri', cityShortCode: 'SLG' },
+      ],
+    },
+    {
+      stateName: 'Madhya Pradesh',
+      stateShortCode: 'MP',
+      cities: [
+        { cityName: 'Bhopal', cityShortCode: 'BPL' },
+        { cityName: 'Indore', cityShortCode: 'IDR' },
+        { cityName: 'Jabalpur', cityShortCode: 'JBP' },
+        { cityName: 'Gwalior', cityShortCode: 'GWL' },
+      ],
+    },
+    {
+      stateName: 'Rajasthan',
+      stateShortCode: 'RJ',
+      cities: [
+        { cityName: 'Jaipur', cityShortCode: 'JPR' },
+        { cityName: 'Jodhpur', cityShortCode: 'JDH' },
+        { cityName: 'Udaipur', cityShortCode: 'UDR' },
+        { cityName: 'Kota', cityShortCode: 'KOT' },
+      ],
+    },
+  ];
+
+  for (const state of statesWithCities) {
+    const stateRecord = await prisma.stateMaster.upsert({
+      where: { stateName: state.stateName },
+      update: { stateShortCode: state.stateShortCode, IsActive: true, IsDeleted: false },
+      create: {
+        stateName: state.stateName,
+        stateShortCode: state.stateShortCode,
+        CreatedBy: 'System Seed',
+        IsActive: true,
+        IsDeleted: false,
+      },
+    });
+
+    for (const city of state.cities) {
+      const existingCity = await prisma.cityMaster.findFirst({
+        where: {
+          OR: [{ cityName: city.cityName }, { cityShortCode: city.cityShortCode }],
+        },
+      });
+
+      if (existingCity) {
+        await prisma.cityMaster.update({
+          where: { cityId: existingCity.cityId },
+          data: {
+            stateId: stateRecord.stateId,
+            cityName: city.cityName,
+            cityShortCode: city.cityShortCode,
+            IsActive: true,
+            IsDeleted: false,
+          },
+        });
+      } else {
+        await prisma.cityMaster.create({
+          data: {
+            stateId: stateRecord.stateId,
+            cityName: city.cityName,
+            cityShortCode: city.cityShortCode,
+            CreatedBy: 'System Seed',
+            IsActive: true,
+            IsDeleted: false,
+          },
+        });
+      }
+    }
+  }
+  console.log('Seeded StateMaster and CityMaster successfully!');
+
+  // 2.5 Seed SubjectMaster (with streams for 12th)
+  const subjectsToSeed = [
+    // 10th standard subjects
+    { name: 'Mathematics', code: '10MATH', classType: '10th', stream: null },
+    { name: 'Science', code: '10SCI', classType: '10th', stream: null },
+    { name: 'Social Science', code: '10SOC', classType: '10th', stream: null },
+    { name: 'English', code: '10ENG', classType: '10th', stream: null },
+    { name: 'Hindi', code: '10HIN', classType: '10th', stream: null },
+    { name: 'Sanskrit', code: '10SAN', classType: '10th', stream: null },
+
+    // 12th standard common subjects
+    { name: 'English', code: '12ENG', classType: '12th', stream: null },
+    { name: 'Hindi', code: '12HIN', classType: '12th', stream: null },
+
+    // 12th standard Science subjects
+    { name: 'Physics', code: '12PHY', classType: '12th', stream: 'SCIENCE' },
+    { name: 'Chemistry', code: '12CHEM', classType: '12th', stream: 'SCIENCE' },
+    { name: 'Mathematics', code: '12MATH', classType: '12th', stream: 'SCIENCE' },
+    { name: 'Biology', code: '12BIO', classType: '12th', stream: 'SCIENCE' },
+
+    // 12th standard Commerce subjects
+    { name: 'Accountancy', code: '12ACC', classType: '12th', stream: 'COMMERCE' },
+    { name: 'Business Studies', code: '12BST', classType: '12th', stream: 'COMMERCE' },
+    { name: 'Economics', code: '12ECO', classType: '12th', stream: 'COMMERCE' },
+
+    // 12th standard Arts subjects
+    { name: 'History', code: '12HIS', classType: '12th', stream: 'ARTS' },
+    { name: 'Geography', code: '12GEO', classType: '12th', stream: 'ARTS' },
+    { name: 'Political Science', code: '12POL', classType: '12th', stream: 'ARTS' },
+    { name: 'Sociology', code: '12SOC', classType: '12th', stream: 'ARTS' },
+    { name: 'Psychology', code: '12PSY', classType: '12th', stream: 'ARTS' },
+  ];
+
+  for (const sub of subjectsToSeed) {
+    const existing = await prisma.subjectMaster.findFirst({
+      where: { subjectCode: sub.code },
+    });
+
+    if (existing) {
+      await prisma.subjectMaster.update({
+        where: { subjectId: existing.subjectId },
+        data: { stream: sub.stream },
+      });
+    } else {
+      await prisma.subjectMaster.create({
+        data: {
+          subjectName: sub.name,
+          subjectCode: sub.code,
+          classType: sub.classType,
+          stream: sub.stream,
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    }
+  }
+  console.log('Seeded SubjectMaster successfully!');
 
   // 3. Seed Program Categories
   const categories = [

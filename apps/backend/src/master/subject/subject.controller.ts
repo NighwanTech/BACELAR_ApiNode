@@ -20,10 +20,15 @@ export class SubjectController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all active subjects (where IsDeleted is false)' })
+  @ApiOperation({ summary: 'Get all active subjects with optional filters' })
+  @ApiQuery({ name: 'classType', required: false, example: '12th' })
+  @ApiQuery({ name: 'stream', required: false, example: 'COMMERCE' })
   @ApiResponse({ status: 200, description: 'Return all subjects' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_subjects' }, {});
+  findAll(
+    @Query('classType') classType?: string,
+    @Query('stream') stream?: string,
+  ): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_subjects' }, { classType, stream });
   }
 
   @Get(':id')

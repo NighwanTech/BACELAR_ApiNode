@@ -105,11 +105,17 @@ export class SaveQualificationDto {
   @IsOptional()
   grade?: string;
 
-  @ApiProperty({ type: [SaveSubjectDto], description: 'Subjects list' })
+  @ApiProperty({ example: 'COMMERCE', description: 'Stream (SCIENCE, COMMERCE, ARTS)', required: false })
+  @IsString()
+  @IsOptional()
+  stream?: string;
+
+  @ApiProperty({ type: [SaveSubjectDto], description: 'Subjects list', required: false })
   @IsArray()
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => SaveSubjectDto)
-  subjects: SaveSubjectDto[];
+  subjects?: SaveSubjectDto[];
 }
 
 export class SaveAcademicDetailsDto {

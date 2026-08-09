@@ -16,9 +16,9 @@ export class SubjectController {
   }
 
   @MessagePattern({ cmd: 'find_all_subjects' })
-  async findAll() {
+  async findAll(@Payload() data?: { classType?: string; stream?: string }) {
     try {
-      return await this.subjectService.findAll();
+      return await this.subjectService.findAll(data);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

@@ -20,10 +20,15 @@ export class CityController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all active cities (where IsDeleted is false)' })
+  @ApiOperation({ summary: 'Get all active cities (optional filter by stateId)' })
+  @ApiQuery({ name: 'stateId', required: false, example: 1, description: 'Filter cities by stateId' })
   @ApiResponse({ status: 200, description: 'Return all cities' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_cities' }, {});
+  findAll(@Query('stateId') stateId?: string): Observable<any> {
+    const payload =
+      stateId !== undefined && stateId !== null && String(stateId).trim() !== ''
+        ? { stateId: Number(stateId) }
+        : {};
+    return this.studentClient.send({ cmd: 'find_all_cities' }, payload);
   }
 
   @Get(':id')

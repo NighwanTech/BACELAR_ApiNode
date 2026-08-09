@@ -40,6 +40,83 @@ exports.AppModule = AppModule = __decorate([
 
 /***/ }),
 
+/***/ "./apps/backend/src/main.ts":
+/*!**********************************!*\
+  !*** ./apps/backend/src/main.ts ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__webpack_require__(/*! dotenv/config */ "dotenv/config");
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const path = __importStar(__webpack_require__(/*! path */ "path"));
+const app_module_1 = __webpack_require__(/*! ./app.module */ "./apps/backend/src/app.module.ts");
+async function bootstrap() {
+    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.useStaticAssets(path.join(__dirname, '..', '..', '..', 'public'));
+    app.setGlobalPrefix('api/v1');
+    app.useGlobalPipes(new common_1.ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+    }));
+    app.enableCors();
+    const config = new swagger_1.DocumentBuilder()
+        .setTitle('Backend API')
+        .setDescription('BACELAR Backend API documentation')
+        .setVersion('1.0.0')
+        .addBearerAuth({
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+    }, 'JWT-auth')
+        .build();
+    const document = swagger_1.SwaggerModule.createDocument(app, config);
+    swagger_1.SwaggerModule.setup('api-docs', app, document);
+    const port = Number(process.env.PORT ?? 3003);
+    await app.listen(port);
+}
+void bootstrap();
+
+
+/***/ }),
+
 /***/ "./apps/backend/src/master/academic-session/academic-session.controller.ts":
 /*!*********************************************************************************!*\
   !*** ./apps/backend/src/master/academic-session/academic-session.controller.ts ***!
@@ -685,8 +762,11 @@ let CityController = class CityController {
     create(createCityDto) {
         return this.studentClient.send({ cmd: 'create_city' }, createCityDto);
     }
-    findAll() {
-        return this.studentClient.send({ cmd: 'find_all_cities' }, {});
+    findAll(stateId) {
+        const payload = stateId !== undefined && stateId !== null && String(stateId).trim() !== ''
+            ? { stateId: Number(stateId) }
+            : {};
+        return this.studentClient.send({ cmd: 'find_all_cities' }, payload);
     }
     findOne(id) {
         return this.studentClient.send({ cmd: 'find_one_city' }, { cityId: id });
@@ -710,10 +790,12 @@ __decorate([
 ], CityController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all active cities (where IsDeleted is false)' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active cities (optional filter by stateId)' }),
+    (0, swagger_1.ApiQuery)({ name: 'stateId', required: false, example: 1, description: 'Filter cities by stateId' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all cities' }),
+    __param(0, (0, common_1.Query)('stateId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
 ], CityController.prototype, "findAll", null);
 __decorate([
@@ -2644,12 +2726,18 @@ __decorate([
     __metadata("design:type", String)
 ], CreateSubjectDto.prototype, "subjectCode", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '12TH', description: 'Class type standard: 10TH, 12TH or BOTH' }),
+    (0, swagger_1.ApiProperty)({ example: '12th', description: 'Class type standard: 10th, 12th or BOTH' }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['10TH', '12TH', 'BOTH']),
+    (0, class_validator_1.IsIn)(['10th', '12th', '10TH', '12TH', 'BOTH']),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateSubjectDto.prototype, "classType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'SCIENCE', description: 'Optional stream: SCIENCE, COMMERCE, ARTS', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateSubjectDto.prototype, "stream", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator' }),
     (0, class_validator_1.IsString)(),
@@ -2702,12 +2790,18 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateSubjectDto.prototype, "subjectCode", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '12TH', description: 'Class type standard: 10TH, 12TH or BOTH', required: false }),
+    (0, swagger_1.ApiProperty)({ example: '12th', description: 'Class type standard: 10th, 12th or BOTH', required: false }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['10TH', '12TH', 'BOTH']),
+    (0, class_validator_1.IsIn)(['10th', '12th', '10TH', '12TH', 'BOTH']),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateSubjectDto.prototype, "classType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'SCIENCE', description: 'Optional stream: SCIENCE, COMMERCE, ARTS', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateSubjectDto.prototype, "stream", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Editor Admin', description: 'Username of editor' }),
     (0, class_validator_1.IsString)(),
@@ -2765,8 +2859,8 @@ let SubjectController = class SubjectController {
     create(createSubjectDto) {
         return this.studentClient.send({ cmd: 'create_subject' }, createSubjectDto);
     }
-    findAll() {
-        return this.studentClient.send({ cmd: 'find_all_subjects' }, {});
+    findAll(classType, stream) {
+        return this.studentClient.send({ cmd: 'find_all_subjects' }, { classType, stream });
     }
     findOne(id) {
         return this.studentClient.send({ cmd: 'find_one_subject' }, { subjectId: id });
@@ -2790,10 +2884,14 @@ __decorate([
 ], SubjectController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all active subjects (where IsDeleted is false)' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active subjects with optional filters' }),
+    (0, swagger_1.ApiQuery)({ name: 'classType', required: false, example: '12th' }),
+    (0, swagger_1.ApiQuery)({ name: 'stream', required: false, example: 'COMMERCE' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all subjects' }),
+    __param(0, (0, common_1.Query)('classType')),
+    __param(1, (0, common_1.Query)('stream')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
 ], SubjectController.prototype, "findAll", null);
 __decorate([
@@ -2876,6 +2974,159 @@ exports.SubjectModule = SubjectModule = __decorate([
         controllers: [subject_controller_1.SubjectController],
     })
 ], SubjectModule);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/shared/storage/storage.module.ts":
+/*!***********************************************************!*\
+  !*** ./apps/backend/src/shared/storage/storage.module.ts ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const storage_service_1 = __webpack_require__(/*! ./storage.service */ "./apps/backend/src/shared/storage/storage.service.ts");
+let StorageModule = class StorageModule {
+};
+exports.StorageModule = StorageModule;
+exports.StorageModule = StorageModule = __decorate([
+    (0, common_1.Module)({
+        providers: [storage_service_1.StorageService],
+        exports: [storage_service_1.StorageService],
+    })
+], StorageModule);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/shared/storage/storage.service.ts":
+/*!************************************************************!*\
+  !*** ./apps/backend/src/shared/storage/storage.service.ts ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const fs = __importStar(__webpack_require__(/*! fs */ "fs"));
+const path = __importStar(__webpack_require__(/*! path */ "path"));
+let StorageService = class StorageService {
+    constructor() {
+        this.uploadDir = process.env.UPLOAD_DIR || 'public/uploads';
+        this.storageProvider = process.env.STORAGE_PROVIDER || 'local';
+        if (this.storageProvider === 'local') {
+            const fullPath = path.resolve(this.uploadDir);
+            if (!fs.existsSync(fullPath)) {
+                fs.mkdirSync(fullPath, { recursive: true });
+            }
+        }
+    }
+    async uploadFile(file, folder = '') {
+        if (this.storageProvider === 's3') {
+            return this.uploadToS3(file, folder);
+        }
+        return this.uploadToLocal(file, folder);
+    }
+    async uploadToLocal(file, folder) {
+        try {
+            const targetFolder = folder ? path.join(this.uploadDir, folder) : this.uploadDir;
+            const targetFolderPath = path.resolve(targetFolder);
+            if (!fs.existsSync(targetFolderPath)) {
+                fs.mkdirSync(targetFolderPath, { recursive: true });
+            }
+            const ext = path.extname(file.originalname);
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+            const uniqueFilename = `${uniqueSuffix}${ext}`;
+            const destinationPath = path.join(targetFolderPath, uniqueFilename);
+            await fs.promises.writeFile(destinationPath, file.buffer);
+            const relativePath = folder ? `/uploads/${folder}/${uniqueFilename}` : `/uploads/${uniqueFilename}`;
+            return relativePath;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException(`Local upload failed: ${error.message}`);
+        }
+    }
+    async uploadToS3(file, folder) {
+        const bucketName = process.env.AWS_BUCKET_NAME;
+        const region = process.env.AWS_REGION;
+        const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+        const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+        const s3Endpoint = process.env.AWS_ENDPOINT;
+        if (!bucketName) {
+            throw new common_1.InternalServerErrorException('AWS S3 bucket name is not configured in .env');
+        }
+        try {
+            console.log(`[S3 Storage] Simulating file upload to bucket "${bucketName}"...`);
+            const host = s3Endpoint || `https://${bucketName}.s3.${region}.amazonaws.com`;
+            const cleanHost = host.replace(/\/$/, '');
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+            const ext = path.extname(file.originalname);
+            return folder
+                ? `${cleanHost}/${folder}/${uniqueSuffix}${ext}`
+                : `${cleanHost}/${uniqueSuffix}${ext}`;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException(`S3 upload failed: ${error.message}`);
+        }
+    }
+};
+exports.StorageService = StorageService;
+exports.StorageService = StorageService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], StorageService);
 
 
 /***/ }),
@@ -4238,8 +4489,15 @@ __decorate([
     __metadata("design:type", String)
 ], SaveQualificationDto.prototype, "grade", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: [SaveSubjectDto], description: 'Subjects list' }),
+    (0, swagger_1.ApiProperty)({ example: 'COMMERCE', description: 'Stream (SCIENCE, COMMERCE, ARTS)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SaveQualificationDto.prototype, "stream", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [SaveSubjectDto], description: 'Subjects list', required: false }),
     (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.ValidateNested)({ each: true }),
     (0, class_transformer_1.Type)(() => SaveSubjectDto),
     __metadata("design:type", Array)
@@ -4371,6 +4629,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], UpdateAcademicDetailDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'COMMERCE', description: 'Stream (SCIENCE, COMMERCE, ARTS)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAcademicDetailDto.prototype, "stream", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: true, description: 'Active status', required: false }),
     (0, class_validator_1.IsBoolean)(),
@@ -4552,6 +4816,427 @@ exports.StudentAcademicModule = StudentAcademicModule = __decorate([
         controllers: [student_academic_controller_1.StudentAcademicController],
     })
 ], StudentAcademicModule);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/student-attachment/dto/bulk-delete-student-attachments.dto.ts":
+/*!*************************************************************************************************!*\
+  !*** ./apps/backend/src/students/student-attachment/dto/bulk-delete-student-attachments.dto.ts ***!
+  \*************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BulkDeleteStudentAttachmentsDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class BulkDeleteStudentAttachmentsDto {
+}
+exports.BulkDeleteStudentAttachmentsDto = BulkDeleteStudentAttachmentsDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: [1, 2, 3], description: 'List of attachment IDs to delete' }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNumber)({}, { each: true }),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Array)
+], BulkDeleteStudentAttachmentsDto.prototype, "ids", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of deleter' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], BulkDeleteStudentAttachmentsDto.prototype, "DeletedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bulk delete attachments', description: 'Optional delete remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], BulkDeleteStudentAttachmentsDto.prototype, "DeletedRemarks", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/student-attachment/dto/create-student-attachment.dto.ts":
+/*!*******************************************************************************************!*\
+  !*** ./apps/backend/src/students/student-attachment/dto/create-student-attachment.dto.ts ***!
+  \*******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateStudentAttachmentDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateStudentAttachmentDto {
+}
+exports.CreateStudentAttachmentDto = CreateStudentAttachmentDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'ID of the Student registration' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateStudentAttachmentDto.prototype, "studentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'PHOTO', description: 'Document Type (e.g. PHOTO, SIGNATURE)' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateStudentAttachmentDto.prototype, "documentType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '/uploads/photos/my-photo.jpg', description: 'URL or storage path of the file' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateStudentAttachmentDto.prototype, "fileUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateStudentAttachmentDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Profile photo uploaded during signup', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStudentAttachmentDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/student-attachment/dto/update-student-attachment.dto.ts":
+/*!*******************************************************************************************!*\
+  !*** ./apps/backend/src/students/student-attachment/dto/update-student-attachment.dto.ts ***!
+  \*******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateStudentAttachmentDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UpdateStudentAttachmentDto {
+}
+exports.UpdateStudentAttachmentDto = UpdateStudentAttachmentDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'PHOTO', description: 'Document Type (e.g. PHOTO, SIGNATURE)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentAttachmentDto.prototype, "documentType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '/uploads/photos/my-photo.jpg', description: 'URL or storage path of the file', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentAttachmentDto.prototype, "fileUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of updater' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateStudentAttachmentDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Active status', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateStudentAttachmentDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated photo path', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentAttachmentDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/student-attachment/dto/upload-student-attachment.dto.ts":
+/*!*******************************************************************************************!*\
+  !*** ./apps/backend/src/students/student-attachment/dto/upload-student-attachment.dto.ts ***!
+  \*******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UploadStudentAttachmentDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UploadStudentAttachmentDto {
+}
+exports.UploadStudentAttachmentDto = UploadStudentAttachmentDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '1', description: 'ID of the Student registration (passed as string in form-data)' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UploadStudentAttachmentDto.prototype, "studentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'PHOTO', description: 'Document Type (e.g. PHOTO, SIGNATURE)' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UploadStudentAttachmentDto.prototype, "documentType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: 'string', format: 'binary', description: 'The file to upload' }),
+    __metadata("design:type", Object)
+], UploadStudentAttachmentDto.prototype, "file", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UploadStudentAttachmentDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Profile photo upload', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UploadStudentAttachmentDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/student-attachment/student-attachment.controller.ts":
+/*!***************************************************************************************!*\
+  !*** ./apps/backend/src/students/student-attachment/student-attachment.controller.ts ***!
+  \***************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAttachmentController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const platform_express_1 = __webpack_require__(/*! @nestjs/platform-express */ "@nestjs/platform-express");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const rxjs_1 = __webpack_require__(/*! rxjs */ "rxjs");
+const operators_1 = __webpack_require__(/*! rxjs/operators */ "rxjs/operators");
+const create_student_attachment_dto_1 = __webpack_require__(/*! ./dto/create-student-attachment.dto */ "./apps/backend/src/students/student-attachment/dto/create-student-attachment.dto.ts");
+const update_student_attachment_dto_1 = __webpack_require__(/*! ./dto/update-student-attachment.dto */ "./apps/backend/src/students/student-attachment/dto/update-student-attachment.dto.ts");
+const bulk_delete_student_attachments_dto_1 = __webpack_require__(/*! ./dto/bulk-delete-student-attachments.dto */ "./apps/backend/src/students/student-attachment/dto/bulk-delete-student-attachments.dto.ts");
+const upload_student_attachment_dto_1 = __webpack_require__(/*! ./dto/upload-student-attachment.dto */ "./apps/backend/src/students/student-attachment/dto/upload-student-attachment.dto.ts");
+const storage_service_1 = __webpack_require__(/*! ../../shared/storage/storage.service */ "./apps/backend/src/shared/storage/storage.service.ts");
+let StudentAttachmentController = class StudentAttachmentController {
+    constructor(studentClient, storageService) {
+        this.studentClient = studentClient;
+        this.storageService = storageService;
+    }
+    upload(body, file) {
+        const folder = body.documentType.toLowerCase();
+        return (0, rxjs_1.from)(this.storageService.uploadFile(file, folder)).pipe((0, operators_1.switchMap)((fileUrl) => {
+            const createDto = {
+                studentId: Number(body.studentId),
+                documentType: body.documentType,
+                fileUrl: fileUrl,
+                CreatedBy: body.CreatedBy,
+                Remarks: body.Remarks,
+            };
+            return this.studentClient.send({ cmd: 'create_student_attachment' }, createDto);
+        }));
+    }
+    create(createDto) {
+        return this.studentClient.send({ cmd: 'create_student_attachment' }, createDto);
+    }
+    findAll() {
+        return this.studentClient.send({ cmd: 'find_all_student_attachments' }, {});
+    }
+    findByStudent(studentId) {
+        return this.studentClient.send({ cmd: 'find_student_attachments_by_student' }, { studentId });
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_student_attachment' }, { attachmentId: id });
+    }
+    update(id, updateDto) {
+        return this.studentClient.send({ cmd: 'update_student_attachment' }, { attachmentId: id, ...updateDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_student_attachment' }, { attachmentId: id, DeletedBy, DeletedRemarks });
+    }
+    bulkRemove(bulkDeleteDto) {
+        return this.studentClient.send({ cmd: 'bulk_delete_student_attachments' }, bulkDeleteDto);
+    }
+};
+exports.StudentAttachmentController = StudentAttachmentController;
+__decorate([
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiOperation)({ summary: 'Upload file (Photo/Signature) and save attachment record' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'File uploaded and registered successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof upload_student_attachment_dto_1.UploadStudentAttachmentDto !== "undefined" && upload_student_attachment_dto_1.UploadStudentAttachmentDto) === "function" ? _c : Object, Object]),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], StudentAttachmentController.prototype, "upload", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Register an already uploaded attachment file record' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Attachment record registered successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof create_student_attachment_dto_1.CreateStudentAttachmentDto !== "undefined" && create_student_attachment_dto_1.CreateStudentAttachmentDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _f : Object)
+], StudentAttachmentController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all student attachment records' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all attachments' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], StudentAttachmentController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('student/:studentId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all attachment records for a specific Student Registration ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return student attachments' }),
+    __param(0, (0, common_1.Param)('studentId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], StudentAttachmentController.prototype, "findByStudent", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get attachment details by ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return attachment details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+], StudentAttachmentController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update attachment record path or type' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Attachment record updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_k = typeof update_student_attachment_dto_1.UpdateStudentAttachmentDto !== "undefined" && update_student_attachment_dto_1.UpdateStudentAttachmentDto) === "function" ? _k : Object]),
+    __metadata("design:returntype", typeof (_l = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _l : Object)
+], StudentAttachmentController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete attachment record by ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Obsolete document' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Attachment record soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
+], StudentAttachmentController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)('bulk-delete'),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk soft delete multiple attachment records' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Attachment records bulk soft deleted successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_o = typeof bulk_delete_student_attachments_dto_1.BulkDeleteStudentAttachmentsDto !== "undefined" && bulk_delete_student_attachments_dto_1.BulkDeleteStudentAttachmentsDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _p : Object)
+], StudentAttachmentController.prototype, "bulkRemove", null);
+exports.StudentAttachmentController = StudentAttachmentController = __decorate([
+    (0, swagger_1.ApiTags)('Student - Attachments'),
+    (0, common_1.Controller)('students-attachments'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object, typeof (_b = typeof storage_service_1.StorageService !== "undefined" && storage_service_1.StorageService) === "function" ? _b : Object])
+], StudentAttachmentController);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/student-attachment/student-attachment.module.ts":
+/*!***********************************************************************************!*\
+  !*** ./apps/backend/src/students/student-attachment/student-attachment.module.ts ***!
+  \***********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAttachmentModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const student_attachment_controller_1 = __webpack_require__(/*! ./student-attachment.controller */ "./apps/backend/src/students/student-attachment/student-attachment.controller.ts");
+const storage_module_1 = __webpack_require__(/*! ../../shared/storage/storage.module */ "./apps/backend/src/shared/storage/storage.module.ts");
+let StudentAttachmentModule = class StudentAttachmentModule {
+};
+exports.StudentAttachmentModule = StudentAttachmentModule;
+exports.StudentAttachmentModule = StudentAttachmentModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT) || 4001,
+                    },
+                },
+            ]),
+            storage_module_1.StorageModule,
+        ],
+        controllers: [student_attachment_controller_1.StudentAttachmentController],
+    })
+], StudentAttachmentModule);
 
 
 /***/ }),
@@ -5224,6 +5909,7 @@ const student_profile_controller_1 = __webpack_require__(/*! ./student-profile.c
 const student_academic_module_1 = __webpack_require__(/*! ./student-academic/student-academic.module */ "./apps/backend/src/students/student-academic/student-academic.module.ts");
 const student_academic_subject_module_1 = __webpack_require__(/*! ./student-academic-subject/student-academic-subject.module */ "./apps/backend/src/students/student-academic-subject/student-academic-subject.module.ts");
 const student_payment_module_1 = __webpack_require__(/*! ./student-payment/student-payment.module */ "./apps/backend/src/students/student-payment/student-payment.module.ts");
+const student_attachment_module_1 = __webpack_require__(/*! ./student-attachment/student-attachment.module */ "./apps/backend/src/students/student-attachment/student-attachment.module.ts");
 let StudentsModule = class StudentsModule {
 };
 exports.StudentsModule = StudentsModule;
@@ -5243,6 +5929,7 @@ exports.StudentsModule = StudentsModule = __decorate([
             student_academic_module_1.StudentAcademicModule,
             student_academic_subject_module_1.StudentAcademicSubjectModule,
             student_payment_module_1.StudentPaymentModule,
+            student_attachment_module_1.StudentAttachmentModule,
         ],
         controllers: [students_controller_1.StudentsController, student_profile_controller_1.StudentProfileController],
     })
@@ -6722,6 +7409,16 @@ module.exports = require("@nestjs/microservices");
 
 /***/ }),
 
+/***/ "@nestjs/platform-express":
+/*!*******************************************!*\
+  !*** external "@nestjs/platform-express" ***!
+  \*******************************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/platform-express");
+
+/***/ }),
+
 /***/ "@nestjs/swagger":
 /*!**********************************!*\
   !*** external "@nestjs/swagger" ***!
@@ -6770,6 +7467,36 @@ module.exports = require("dotenv/config");
 
 module.exports = require("rxjs");
 
+/***/ }),
+
+/***/ "rxjs/operators":
+/*!*********************************!*\
+  !*** external "rxjs/operators" ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = require("rxjs/operators");
+
+/***/ }),
+
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+
+/***/ "path":
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+/***/ ((module) => {
+
+module.exports = require("path");
+
 /***/ })
 
 /******/ 	});
@@ -6799,47 +7526,11 @@ module.exports = require("rxjs");
 /******/ 	}
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
-(() => {
-var exports = __webpack_exports__;
-/*!**********************************!*\
-  !*** ./apps/backend/src/main.ts ***!
-  \**********************************/
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__webpack_require__(/*! dotenv/config */ "dotenv/config");
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
-const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
-const app_module_1 = __webpack_require__(/*! ./app.module */ "./apps/backend/src/app.module.ts");
-async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new common_1.ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-    }));
-    app.enableCors();
-    const config = new swagger_1.DocumentBuilder()
-        .setTitle('Backend API')
-        .setDescription('BACELAR Backend API documentation')
-        .setVersion('1.0.0')
-        .addBearerAuth({
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-    }, 'JWT-auth')
-        .build();
-    const document = swagger_1.SwaggerModule.createDocument(app, config);
-    swagger_1.SwaggerModule.setup('api-docs', app, document);
-    const port = Number(process.env.PORT ?? 3003);
-    await app.listen(port);
-}
-void bootstrap();
-
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__("./apps/backend/src/main.ts");
+/******/ 	
 /******/ })()
 ;

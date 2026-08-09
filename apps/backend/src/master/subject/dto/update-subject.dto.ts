@@ -12,11 +12,16 @@ export class UpdateSubjectDto {
   @IsOptional()
   subjectCode?: string;
 
-  @ApiProperty({ example: '12TH', description: 'Class type standard: 10TH, 12TH or BOTH', required: false })
+  @ApiProperty({ example: '12th', description: 'Class type standard: 10th, 12th or BOTH', required: false })
   @IsString()
-  @IsIn(['10TH', '12TH', 'BOTH'])
+  @IsIn(['10th', '12th', '10TH', '12TH', 'BOTH'])
   @IsOptional()
   classType?: string;
+
+  @ApiProperty({ example: 'SCIENCE', description: 'Optional stream: SCIENCE, COMMERCE, ARTS', required: false })
+  @IsString()
+  @IsOptional()
+  stream?: string;
 
   @ApiProperty({ example: 'Editor Admin', description: 'Username of editor' })
   @IsString()
