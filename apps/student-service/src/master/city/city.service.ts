@@ -33,9 +33,12 @@ export class CityService {
     });
   }
 
-  async findAll() {
+  async findAll(stateId?: number) {
     return this.prisma.cityMaster.findMany({
-      where: { IsDeleted: false },
+      where: {
+        IsDeleted: false,
+        ...(stateId ? { stateId: Number(stateId) } : {}),
+      },
       orderBy: { cityName: 'asc' },
     });
   }

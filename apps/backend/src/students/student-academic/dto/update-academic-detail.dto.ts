@@ -67,6 +67,11 @@ export class UpdateAcademicDetailDto {
   @IsNotEmpty()
   UpdatedBy: string;
 
+  @ApiProperty({ example: 'COMMERCE', description: 'Stream (SCIENCE, COMMERCE, ARTS)', required: false })
+  @IsString()
+  @IsOptional()
+  stream?: string;
+
   @ApiProperty({ example: true, description: 'Active status', required: false })
   @IsBoolean()
   @IsOptional()

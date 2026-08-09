@@ -27,6 +27,7 @@ model Student {
   studentProfile        StudentProfile?
   academicDetails       StudentAcademicDetail[]
   studentPayments       StudentPayment[]
+  studentAttachments    StudentAttachment[]
 
   @@map("students")
 }
@@ -146,6 +147,7 @@ model SubjectMaster {
   subjectName    String    @db.VarChar(100)
   subjectCode    String    @db.VarChar(50)
   classType      String    @db.VarChar(20)
+  stream         String?   @db.VarChar(50) // "SCIENCE", "COMMERCE", "ARTS"
   CreatedOn      DateTime  @default(now())
   CreatedBy      String    @db.VarChar(255)
   UpdatedOn      DateTime? @updatedAt
@@ -245,6 +247,7 @@ model StudentAcademicDetail {
   percentage          Float
   division            String?                  @db.VarChar(50)
   grade               String?                  @db.VarChar(20)
+  stream              String?                  @db.VarChar(50) // "SCIENCE", "COMMERCE", "ARTS"
   subjects            StudentAcademicSubject[]
   CreatedOn           DateTime                 @default(now())
   CreatedBy           String                   @db.VarChar(255)
@@ -367,4 +370,26 @@ model StudentPayment {
   Remarks             String?              @db.VarChar(255)
 
   @@map("studentPayments")
+}
+
+model StudentAttachment {
+  attachmentId        Int                  @id @default(autoincrement())
+  studentId           Int
+  student             Student              @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
+  documentType        String               @db.VarChar(50) // E.g., "PHOTO", "SIGNATURE"
+  fileUrl             String               @db.VarChar(2000)
+
+  // Common Audit Fields
+  CreatedOn           DateTime             @default(now())
+  CreatedBy           String               @db.VarChar(255)
+  UpdatedOn           DateTime?            @updatedAt
+  UpdatedBy           String?              @db.VarChar(255)
+  IsActive            Boolean              @default(true)
+  IsDeleted           Boolean              @default(false)
+  DeletedRemarks      String?              @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?              @db.VarChar(255)
+  Remarks             String?              @db.VarChar(255)
+
+  @@map("studentAttachments")
 }

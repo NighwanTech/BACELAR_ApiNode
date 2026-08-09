@@ -11,6 +11,7 @@ export class SubjectService {
         subjectName: data.subjectName,
         subjectCode: data.subjectCode,
         classType: data.classType,
+        stream: data.stream || null,
         CreatedBy: data.CreatedBy,
         Remarks: data.Remarks || null,
         IsActive: true,
@@ -19,9 +20,22 @@ export class SubjectService {
     });
   }
 
-  async findAll() {
+  async findAll(filters?: { classType?: string; stream?: string }) {
+    const whereClause: any = { IsDeleted: false };
+
+    if (filters?.classType) {
+      whereClause.classType = filters.classType;
+    }
+
+    if (filters?.stream) {
+      whereClause.OR = [
+        { stream: filters.stream },
+        { stream: null },
+      ];
+    }
+
     return this.prisma.subjectMaster.findMany({
-      where: { IsDeleted: false },
+      where: whereClause,
       orderBy: { subjectName: 'asc' },
     });
   }
@@ -45,6 +59,7 @@ export class SubjectService {
         subjectName: data.subjectName,
         subjectCode: data.subjectCode,
         classType: data.classType,
+        stream: data.stream,
         UpdatedBy: data.UpdatedBy,
         IsActive: data.IsActive,
         Remarks: data.Remarks,
