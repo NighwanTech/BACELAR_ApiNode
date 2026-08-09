@@ -4411,6 +4411,296 @@ exports.StudentsService = StudentsService = __decorate([
 
 /***/ }),
 
+/***/ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.controller.ts":
+/*!********************************************************************************************!*\
+  !*** ./apps/student-service/src/website/admission-enquiry/admission-enquiry.controller.ts ***!
+  \********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdmissionEnquiryController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const admission_enquiry_service_1 = __webpack_require__(/*! ./admission-enquiry.service */ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.service.ts");
+let AdmissionEnquiryController = class AdmissionEnquiryController {
+    constructor(admissionEnquiryService) {
+        this.admissionEnquiryService = admissionEnquiryService;
+    }
+    async create(data) {
+        try {
+            return await this.admissionEnquiryService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.admissionEnquiryService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.admissionEnquiryService.findOne(data.admissionEnquiryId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { admissionEnquiryId, ...updateData } = data;
+            return await this.admissionEnquiryService.update(admissionEnquiryId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.admissionEnquiryService.softDelete(data.admissionEnquiryId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.AdmissionEnquiryController = AdmissionEnquiryController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_admission_enquiry' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdmissionEnquiryController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_admission_enquiries' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdmissionEnquiryController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_admission_enquiry' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdmissionEnquiryController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_admission_enquiry' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdmissionEnquiryController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_admission_enquiry' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdmissionEnquiryController.prototype, "softDelete", null);
+exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof admission_enquiry_service_1.AdmissionEnquiryService !== "undefined" && admission_enquiry_service_1.AdmissionEnquiryService) === "function" ? _a : Object])
+], AdmissionEnquiryController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.module.ts":
+/*!****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/admission-enquiry/admission-enquiry.module.ts ***!
+  \****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdmissionEnquiryModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const admission_enquiry_controller_1 = __webpack_require__(/*! ./admission-enquiry.controller */ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.controller.ts");
+const admission_enquiry_service_1 = __webpack_require__(/*! ./admission-enquiry.service */ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.service.ts");
+let AdmissionEnquiryModule = class AdmissionEnquiryModule {
+};
+exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
+exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [admission_enquiry_controller_1.AdmissionEnquiryController],
+        providers: [admission_enquiry_service_1.AdmissionEnquiryService],
+        exports: [admission_enquiry_service_1.AdmissionEnquiryService],
+    })
+], AdmissionEnquiryModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.service.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/admission-enquiry/admission-enquiry.service.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdmissionEnquiryService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let AdmissionEnquiryService = class AdmissionEnquiryService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    generateEnquiryNumber() {
+        const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const randomDigits = Math.floor(1000 + Math.random() * 9000);
+        return `ENQ-${today}-${randomDigits}`;
+    }
+    async create(data) {
+        const enquiryNumber = data.enquiryNumber || this.generateEnquiryNumber();
+        return this.prisma.admissionEnquiry.create({
+            data: {
+                enquiryNumber,
+                name: data.name,
+                contactNo: data.contactNo,
+                whatsappNo: data.whatsappNo || null,
+                email: data.email || null,
+                address: data.address || null,
+                courseId: data.courseId ? Number(data.courseId) : null,
+                courseName: data.courseName || null,
+                sessionId: data.sessionId ? Number(data.sessionId) : null,
+                sessionName: data.sessionName || null,
+                message: data.message || null,
+                status: data.status || 'PENDING',
+                source: data.source || 'WEBSITE',
+                adminNotes: data.adminNotes || null,
+                followUpDate: data.followUpDate ? new Date(data.followUpDate) : null,
+                assignedTo: data.assignedTo || null,
+                isRead: data.isRead ?? false,
+                CreatedBy: data.CreatedBy || 'System',
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.admissionEnquiry.findMany({
+            where: { IsDeleted: false },
+            orderBy: { admissionEnquiryId: 'desc' },
+        });
+    }
+    async findOne(admissionEnquiryId) {
+        const item = await this.prisma.admissionEnquiry.findFirst({
+            where: { admissionEnquiryId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Admission enquiry entry with ID ${admissionEnquiryId} not found`);
+        }
+        return item;
+    }
+    async update(admissionEnquiryId, data) {
+        await this.findOne(admissionEnquiryId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.name !== undefined)
+            updatePayload.name = data.name;
+        if (data.contactNo !== undefined)
+            updatePayload.contactNo = data.contactNo;
+        if (data.whatsappNo !== undefined)
+            updatePayload.whatsappNo = data.whatsappNo;
+        if (data.email !== undefined)
+            updatePayload.email = data.email;
+        if (data.address !== undefined)
+            updatePayload.address = data.address;
+        if (data.courseId !== undefined)
+            updatePayload.courseId = data.courseId ? Number(data.courseId) : null;
+        if (data.courseName !== undefined)
+            updatePayload.courseName = data.courseName;
+        if (data.sessionId !== undefined)
+            updatePayload.sessionId = data.sessionId ? Number(data.sessionId) : null;
+        if (data.sessionName !== undefined)
+            updatePayload.sessionName = data.sessionName;
+        if (data.message !== undefined)
+            updatePayload.message = data.message;
+        if (data.status !== undefined)
+            updatePayload.status = data.status;
+        if (data.source !== undefined)
+            updatePayload.source = data.source;
+        if (data.adminNotes !== undefined)
+            updatePayload.adminNotes = data.adminNotes;
+        if (data.followUpDate !== undefined)
+            updatePayload.followUpDate = data.followUpDate ? new Date(data.followUpDate) : null;
+        if (data.assignedTo !== undefined)
+            updatePayload.assignedTo = data.assignedTo;
+        if (data.isRead !== undefined)
+            updatePayload.isRead = data.isRead;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.prisma.admissionEnquiry.update({
+            where: { admissionEnquiryId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(admissionEnquiryId, DeletedBy, DeletedRemarks) {
+        await this.findOne(admissionEnquiryId);
+        return this.prisma.admissionEnquiry.update({
+            where: { admissionEnquiryId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.AdmissionEnquiryService = AdmissionEnquiryService;
+exports.AdmissionEnquiryService = AdmissionEnquiryService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], AdmissionEnquiryService);
+
+
+/***/ }),
+
 /***/ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.controller.ts":
 /*!********************************************************************************************!*\
   !*** ./apps/student-service/src/website/campus-quick-link/campus-quick-link.controller.ts ***!
@@ -4649,6 +4939,533 @@ exports.CampusQuickLinkService = CampusQuickLinkService = __decorate([
 
 /***/ }),
 
+/***/ "./apps/student-service/src/website/hero-section/hero-section.controller.ts":
+/*!**********************************************************************************!*\
+  !*** ./apps/student-service/src/website/hero-section/hero-section.controller.ts ***!
+  \**********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeroSectionController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const hero_section_service_1 = __webpack_require__(/*! ./hero-section.service */ "./apps/student-service/src/website/hero-section/hero-section.service.ts");
+let HeroSectionController = class HeroSectionController {
+    constructor(heroSectionService) {
+        this.heroSectionService = heroSectionService;
+    }
+    async create(data) {
+        try {
+            return await this.heroSectionService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.heroSectionService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.heroSectionService.findOne(data.heroSectionId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { heroSectionId, ...updateData } = data;
+            return await this.heroSectionService.update(heroSectionId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.heroSectionService.softDelete(data.heroSectionId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.HeroSectionController = HeroSectionController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_hero_section' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HeroSectionController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_hero_sections' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HeroSectionController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_hero_section' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HeroSectionController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_hero_section' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HeroSectionController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_hero_section' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HeroSectionController.prototype, "softDelete", null);
+exports.HeroSectionController = HeroSectionController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof hero_section_service_1.HeroSectionService !== "undefined" && hero_section_service_1.HeroSectionService) === "function" ? _a : Object])
+], HeroSectionController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/hero-section/hero-section.module.ts":
+/*!******************************************************************************!*\
+  !*** ./apps/student-service/src/website/hero-section/hero-section.module.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeroSectionModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const hero_section_controller_1 = __webpack_require__(/*! ./hero-section.controller */ "./apps/student-service/src/website/hero-section/hero-section.controller.ts");
+const hero_section_service_1 = __webpack_require__(/*! ./hero-section.service */ "./apps/student-service/src/website/hero-section/hero-section.service.ts");
+let HeroSectionModule = class HeroSectionModule {
+};
+exports.HeroSectionModule = HeroSectionModule;
+exports.HeroSectionModule = HeroSectionModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [hero_section_controller_1.HeroSectionController],
+        providers: [hero_section_service_1.HeroSectionService],
+        exports: [hero_section_service_1.HeroSectionService],
+    })
+], HeroSectionModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/hero-section/hero-section.service.ts":
+/*!*******************************************************************************!*\
+  !*** ./apps/student-service/src/website/hero-section/hero-section.service.ts ***!
+  \*******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeroSectionService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let HeroSectionService = class HeroSectionService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.heroSection.create({
+            data: {
+                badgeText: data.badgeText || null,
+                title: data.title,
+                highlightedTitle: data.highlightedTitle || null,
+                description: data.description || null,
+                backgroundImage: data.backgroundImage || null,
+                primaryButtonText: data.primaryButtonText || null,
+                primaryButtonLink: data.primaryButtonLink || null,
+                secondaryButtonText: data.secondaryButtonText || null,
+                secondaryButtonLink: data.secondaryButtonLink || null,
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy || 'Admin',
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.heroSection.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { heroSectionId: 'desc' }],
+        });
+    }
+    async findOne(heroSectionId) {
+        const item = await this.prisma.heroSection.findFirst({
+            where: { heroSectionId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Hero section entry with ID ${heroSectionId} not found`);
+        }
+        return item;
+    }
+    async update(heroSectionId, data) {
+        await this.findOne(heroSectionId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.badgeText !== undefined)
+            updatePayload.badgeText = data.badgeText;
+        if (data.title !== undefined)
+            updatePayload.title = data.title;
+        if (data.highlightedTitle !== undefined)
+            updatePayload.highlightedTitle = data.highlightedTitle;
+        if (data.description !== undefined)
+            updatePayload.description = data.description;
+        if (data.backgroundImage !== undefined)
+            updatePayload.backgroundImage = data.backgroundImage;
+        if (data.primaryButtonText !== undefined)
+            updatePayload.primaryButtonText = data.primaryButtonText;
+        if (data.primaryButtonLink !== undefined)
+            updatePayload.primaryButtonLink = data.primaryButtonLink;
+        if (data.secondaryButtonText !== undefined)
+            updatePayload.secondaryButtonText = data.secondaryButtonText;
+        if (data.secondaryButtonLink !== undefined)
+            updatePayload.secondaryButtonLink = data.secondaryButtonLink;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.prisma.heroSection.update({
+            where: { heroSectionId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(heroSectionId, DeletedBy, DeletedRemarks) {
+        await this.findOne(heroSectionId);
+        return this.prisma.heroSection.update({
+            where: { heroSectionId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.HeroSectionService = HeroSectionService;
+exports.HeroSectionService = HeroSectionService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], HeroSectionService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/latest-update/latest-update.controller.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/website/latest-update/latest-update.controller.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LatestUpdateController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const latest_update_service_1 = __webpack_require__(/*! ./latest-update.service */ "./apps/student-service/src/website/latest-update/latest-update.service.ts");
+let LatestUpdateController = class LatestUpdateController {
+    constructor(latestUpdateService) {
+        this.latestUpdateService = latestUpdateService;
+    }
+    async create(data) {
+        try {
+            return await this.latestUpdateService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.latestUpdateService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.latestUpdateService.findOne(data.latestUpdateId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { latestUpdateId, ...updateData } = data;
+            return await this.latestUpdateService.update(latestUpdateId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.latestUpdateService.softDelete(data.latestUpdateId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.LatestUpdateController = LatestUpdateController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_latest_update' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_latest_updates' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_latest_update' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_latest_update' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_latest_update' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "softDelete", null);
+exports.LatestUpdateController = LatestUpdateController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof latest_update_service_1.LatestUpdateService !== "undefined" && latest_update_service_1.LatestUpdateService) === "function" ? _a : Object])
+], LatestUpdateController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/latest-update/latest-update.module.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/latest-update/latest-update.module.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LatestUpdateModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const latest_update_controller_1 = __webpack_require__(/*! ./latest-update.controller */ "./apps/student-service/src/website/latest-update/latest-update.controller.ts");
+const latest_update_service_1 = __webpack_require__(/*! ./latest-update.service */ "./apps/student-service/src/website/latest-update/latest-update.service.ts");
+let LatestUpdateModule = class LatestUpdateModule {
+};
+exports.LatestUpdateModule = LatestUpdateModule;
+exports.LatestUpdateModule = LatestUpdateModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [latest_update_controller_1.LatestUpdateController],
+        providers: [latest_update_service_1.LatestUpdateService],
+        exports: [latest_update_service_1.LatestUpdateService],
+    })
+], LatestUpdateModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/latest-update/latest-update.service.ts":
+/*!*********************************************************************************!*\
+  !*** ./apps/student-service/src/website/latest-update/latest-update.service.ts ***!
+  \*********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LatestUpdateService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let LatestUpdateService = class LatestUpdateService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.latestUpdate.create({
+            data: {
+                title: data.title,
+                shortName: data.shortName || null,
+                grade: data.grade || null,
+                logo: data.logo || null,
+                description: data.description || null,
+                validFrom: data.validFrom ? new Date(data.validFrom) : null,
+                validUntil: data.validUntil ? new Date(data.validUntil) : null,
+                linkUrl: data.linkUrl || null,
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.latestUpdate.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { latestUpdateId: 'desc' }],
+        });
+    }
+    async findOne(latestUpdateId) {
+        const item = await this.prisma.latestUpdate.findFirst({
+            where: { latestUpdateId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Latest update entry with ID ${latestUpdateId} not found`);
+        }
+        return item;
+    }
+    async update(latestUpdateId, data) {
+        await this.findOne(latestUpdateId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy,
+        };
+        if (data.title !== undefined)
+            updatePayload.title = data.title;
+        if (data.shortName !== undefined)
+            updatePayload.shortName = data.shortName;
+        if (data.grade !== undefined)
+            updatePayload.grade = data.grade;
+        if (data.logo !== undefined)
+            updatePayload.logo = data.logo;
+        if (data.description !== undefined)
+            updatePayload.description = data.description;
+        if (data.validFrom !== undefined)
+            updatePayload.validFrom = data.validFrom ? new Date(data.validFrom) : null;
+        if (data.validUntil !== undefined)
+            updatePayload.validUntil = data.validUntil ? new Date(data.validUntil) : null;
+        if (data.linkUrl !== undefined)
+            updatePayload.linkUrl = data.linkUrl;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.prisma.latestUpdate.update({
+            where: { latestUpdateId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(latestUpdateId, DeletedBy, DeletedRemarks) {
+        await this.findOne(latestUpdateId);
+        return this.prisma.latestUpdate.update({
+            where: { latestUpdateId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.LatestUpdateService = LatestUpdateService;
+exports.LatestUpdateService = LatestUpdateService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], LatestUpdateService);
+
+
+/***/ }),
+
 /***/ "./apps/student-service/src/website/website.module.ts":
 /*!************************************************************!*\
   !*** ./apps/student-service/src/website/website.module.ts ***!
@@ -4666,13 +5483,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.WebsiteModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const campus_quick_link_module_1 = __webpack_require__(/*! ./campus-quick-link/campus-quick-link.module */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.module.ts");
+const latest_update_module_1 = __webpack_require__(/*! ./latest-update/latest-update.module */ "./apps/student-service/src/website/latest-update/latest-update.module.ts");
+const admission_enquiry_module_1 = __webpack_require__(/*! ./admission-enquiry/admission-enquiry.module */ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.module.ts");
+const hero_section_module_1 = __webpack_require__(/*! ./hero-section/hero-section.module */ "./apps/student-service/src/website/hero-section/hero-section.module.ts");
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
 exports.WebsiteModule = WebsiteModule = __decorate([
     (0, common_1.Module)({
-        imports: [campus_quick_link_module_1.CampusQuickLinkModule],
-        exports: [campus_quick_link_module_1.CampusQuickLinkModule],
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule],
     })
 ], WebsiteModule);
 

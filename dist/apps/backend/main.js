@@ -5043,13 +5043,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.WebsiteModule = void 0;
 const common_1 = __webpack_require__(2);
 const campus_quick_link_module_1 = __webpack_require__(80);
+const latest_update_module_1 = __webpack_require__(84);
+const admission_enquiry_module_1 = __webpack_require__(88);
+const hero_section_module_1 = __webpack_require__(92);
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
 exports.WebsiteModule = WebsiteModule = __decorate([
     (0, common_1.Module)({
-        imports: [campus_quick_link_module_1.CampusQuickLinkModule],
-        exports: [campus_quick_link_module_1.CampusQuickLinkModule],
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule],
     })
 ], WebsiteModule);
 
@@ -5306,6 +5309,1086 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateCampusQuickLinkDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 84 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LatestUpdateModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(8);
+const latest_update_controller_1 = __webpack_require__(85);
+let LatestUpdateModule = class LatestUpdateModule {
+};
+exports.LatestUpdateModule = LatestUpdateModule;
+exports.LatestUpdateModule = LatestUpdateModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [latest_update_controller_1.LatestUpdateController],
+    })
+], LatestUpdateModule);
+
+
+/***/ }),
+/* 85 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LatestUpdateController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(8);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(10);
+const create_latest_update_dto_1 = __webpack_require__(86);
+const update_latest_update_dto_1 = __webpack_require__(87);
+let LatestUpdateController = class LatestUpdateController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createDto) {
+        return this.studentClient.send({ cmd: 'create_latest_update' }, createDto);
+    }
+    findAll() {
+        return this.studentClient.send({ cmd: 'find_all_latest_updates' }, {});
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_latest_update' }, { latestUpdateId: id });
+    }
+    update(id, updateDto) {
+        return this.studentClient.send({ cmd: 'update_latest_update' }, { latestUpdateId: id, ...updateDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_latest_update' }, { latestUpdateId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.LatestUpdateController = LatestUpdateController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new latest update entry' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Latest update created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_latest_update_dto_1.CreateLatestUpdateDto !== "undefined" && create_latest_update_dto_1.CreateLatestUpdateDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], LatestUpdateController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active latest updates (where IsDeleted is false)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all latest updates' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], LatestUpdateController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get latest update details by latestUpdateId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return latest update details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], LatestUpdateController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update latest update details by latestUpdateId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Latest update updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_latest_update_dto_1.UpdateLatestUpdateDto !== "undefined" && update_latest_update_dto_1.UpdateLatestUpdateDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], LatestUpdateController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete a latest update entry by latestUpdateId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Obsolete update' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Latest update soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], LatestUpdateController.prototype, "remove", null);
+exports.LatestUpdateController = LatestUpdateController = __decorate([
+    (0, swagger_1.ApiTags)('Website - Latest Updates'),
+    (0, common_1.Controller)('website/latest-updates'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], LatestUpdateController);
+
+
+/***/ }),
+/* 86 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateLatestUpdateDto = void 0;
+const class_validator_1 = __webpack_require__(12);
+const swagger_1 = __webpack_require__(4);
+class CreateLatestUpdateDto {
+}
+exports.CreateLatestUpdateDto = CreateLatestUpdateDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admissions Open 2026-27', description: 'Title of the update' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admissions2026', description: 'Short name/identifier for update', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "shortName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'UG/PG', description: 'Grade or Category tag', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "grade", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/logo.png', description: 'Logo or Image URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "logo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Applications are invited for UG & PG courses for academic year 2026-27.', description: 'Detailed description', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-08-01T00:00:00.000Z', description: 'Validity start date (ISO string)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "validFrom", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-09-30T23:59:59.000Z', description: 'Validity end date (ISO string)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "validUntil", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://bacelar.edu/admissions', description: 'Target URL link', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "linkUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Display order priority', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateLatestUpdateDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admissions announcement', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLatestUpdateDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 87 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateLatestUpdateDto = void 0;
+const class_validator_1 = __webpack_require__(12);
+const swagger_1 = __webpack_require__(4);
+class UpdateLatestUpdateDto {
+}
+exports.UpdateLatestUpdateDto = UpdateLatestUpdateDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admissions Open 2026-27', description: 'Title of the update', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admissions2026', description: 'Short name/identifier for update', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "shortName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'UG/PG', description: 'Grade or Category tag', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "grade", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/logo.png', description: 'Logo or Image URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "logo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Applications are invited for UG & PG courses for academic year 2026-27.', description: 'Detailed description', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-08-01T00:00:00.000Z', description: 'Validity start date (ISO string)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "validFrom", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-09-30T23:59:59.000Z', description: 'Validity end date (ISO string)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "validUntil", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://bacelar.edu/admissions', description: 'Target URL link', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "linkUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Display order priority', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateLatestUpdateDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Editor Admin', description: 'Username of editor' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is update entry active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateLatestUpdateDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated announcement details', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLatestUpdateDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 88 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdmissionEnquiryModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(8);
+const admission_enquiry_controller_1 = __webpack_require__(89);
+let AdmissionEnquiryModule = class AdmissionEnquiryModule {
+};
+exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
+exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [admission_enquiry_controller_1.AdmissionEnquiryController],
+    })
+], AdmissionEnquiryModule);
+
+
+/***/ }),
+/* 89 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdmissionEnquiryController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(8);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(10);
+const create_admission_enquiry_dto_1 = __webpack_require__(90);
+const update_admission_enquiry_dto_1 = __webpack_require__(91);
+let AdmissionEnquiryController = class AdmissionEnquiryController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createDto) {
+        return this.studentClient.send({ cmd: 'create_admission_enquiry' }, createDto);
+    }
+    findAll() {
+        return this.studentClient.send({ cmd: 'find_all_admission_enquiries' }, {});
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_admission_enquiry' }, { admissionEnquiryId: id });
+    }
+    update(id, updateDto) {
+        return this.studentClient.send({ cmd: 'update_admission_enquiry' }, { admissionEnquiryId: id, ...updateDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_admission_enquiry' }, { admissionEnquiryId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.AdmissionEnquiryController = AdmissionEnquiryController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Submit / Create a new admission enquiry' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Admission enquiry created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_admission_enquiry_dto_1.CreateAdmissionEnquiryDto !== "undefined" && create_admission_enquiry_dto_1.CreateAdmissionEnquiryDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], AdmissionEnquiryController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active admission enquiries (where IsDeleted is false)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all admission enquiries' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], AdmissionEnquiryController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get admission enquiry details by admissionEnquiryId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return admission enquiry details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], AdmissionEnquiryController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update admission enquiry details by admissionEnquiryId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Admission enquiry updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_admission_enquiry_dto_1.UpdateAdmissionEnquiryDto !== "undefined" && update_admission_enquiry_dto_1.UpdateAdmissionEnquiryDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], AdmissionEnquiryController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete an admission enquiry by admissionEnquiryId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Duplicate entry' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Admission enquiry soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], AdmissionEnquiryController.prototype, "remove", null);
+exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
+    (0, swagger_1.ApiTags)('Website - Admission Enquiries'),
+    (0, common_1.Controller)('website/admission-enquiries'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], AdmissionEnquiryController);
+
+
+/***/ }),
+/* 90 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateAdmissionEnquiryDto = void 0;
+const class_validator_1 = __webpack_require__(12);
+const swagger_1 = __webpack_require__(4);
+class CreateAdmissionEnquiryDto {
+}
+exports.CreateAdmissionEnquiryDto = CreateAdmissionEnquiryDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'ENQ-20260809-0001', description: 'Enquiry Reference Number (Auto-generated if left empty)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "enquiryNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Rahul Kumar', description: 'Name of candidate' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9876543210', description: 'Contact phone number' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "contactNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9876543210', description: 'WhatsApp phone number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "whatsappNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'rahul@example.com', description: 'Email address', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123 Main Street, Patna, Bihar', description: 'Residential Address', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "address", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 101, description: 'Course ID', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateAdmissionEnquiryDto.prototype, "courseId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bachelor of Computer Applications (BCA)', description: 'Course Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "courseName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 2026, description: 'Academic Session ID', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateAdmissionEnquiryDto.prototype, "sessionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-2027', description: 'Academic Session Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "sessionName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Interested in direct admission process and fee structure.', description: 'Enquiry Message', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'PENDING', description: 'Status of enquiry (e.g., PENDING, CONTACTED, ADMITTED, REJECTED)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'WEBSITE', description: 'Lead source (e.g. WEBSITE, LANDING_PAGE, REFERRAL)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "source", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Called on 10th Aug. Student asked to call back.', description: 'Admin Notes', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "adminNotes", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-08-12T10:00:00.000Z', description: 'Follow-up Date (ISO String)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "followUpDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Counsellor Amit', description: 'Assigned Staff / Counsellor', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "assignedTo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: false, description: 'Has admin read the enquiry?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateAdmissionEnquiryDto.prototype, "isRead", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'System / Website', description: 'Creator identifier', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Submitted via website form', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdmissionEnquiryDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 91 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateAdmissionEnquiryDto = void 0;
+const class_validator_1 = __webpack_require__(12);
+const swagger_1 = __webpack_require__(4);
+class UpdateAdmissionEnquiryDto {
+}
+exports.UpdateAdmissionEnquiryDto = UpdateAdmissionEnquiryDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Rahul Kumar', description: 'Name of candidate', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9876543210', description: 'Contact phone number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "contactNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9876543210', description: 'WhatsApp phone number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "whatsappNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'rahul@example.com', description: 'Email address', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123 Main Street, Patna, Bihar', description: 'Residential Address', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "address", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 101, description: 'Course ID', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateAdmissionEnquiryDto.prototype, "courseId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bachelor of Computer Applications (BCA)', description: 'Course Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "courseName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 2026, description: 'Academic Session ID', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateAdmissionEnquiryDto.prototype, "sessionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-2027', description: 'Academic Session Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "sessionName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Interested in direct admission process and fee structure.', description: 'Enquiry Message', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'CONTACTED', description: 'Status of enquiry', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'WEBSITE', description: 'Lead source', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "source", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Called candidate. Sent prospectus via WhatsApp.', description: 'Admin Notes', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "adminNotes", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-08-15T10:00:00.000Z', description: 'Follow-up Date (ISO String)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "followUpDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Counsellor Amit', description: 'Assigned Staff / Counsellor', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "assignedTo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Has admin read the enquiry?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateAdmissionEnquiryDto.prototype, "isRead", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of editor' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is enquiry record active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateAdmissionEnquiryDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated enquiry notes', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAdmissionEnquiryDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 92 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeroSectionModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(8);
+const hero_section_controller_1 = __webpack_require__(93);
+let HeroSectionModule = class HeroSectionModule {
+};
+exports.HeroSectionModule = HeroSectionModule;
+exports.HeroSectionModule = HeroSectionModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [hero_section_controller_1.HeroSectionController],
+    })
+], HeroSectionModule);
+
+
+/***/ }),
+/* 93 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeroSectionController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(8);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(10);
+const create_hero_section_dto_1 = __webpack_require__(94);
+const update_hero_section_dto_1 = __webpack_require__(95);
+let HeroSectionController = class HeroSectionController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createDto) {
+        return this.studentClient.send({ cmd: 'create_hero_section' }, createDto);
+    }
+    findAll() {
+        return this.studentClient.send({ cmd: 'find_all_hero_sections' }, {});
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_hero_section' }, { heroSectionId: id });
+    }
+    update(id, updateDto) {
+        return this.studentClient.send({ cmd: 'update_hero_section' }, { heroSectionId: id, ...updateDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_hero_section' }, { heroSectionId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.HeroSectionController = HeroSectionController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new hero section entry' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Hero section entry created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_hero_section_dto_1.CreateHeroSectionDto !== "undefined" && create_hero_section_dto_1.CreateHeroSectionDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], HeroSectionController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active hero sections (where IsDeleted is false)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all hero sections' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], HeroSectionController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get hero section details by heroSectionId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return hero section details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], HeroSectionController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update hero section details by heroSectionId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Hero section updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_hero_section_dto_1.UpdateHeroSectionDto !== "undefined" && update_hero_section_dto_1.UpdateHeroSectionDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], HeroSectionController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete a hero section entry by heroSectionId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Obsolete hero banner' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Hero section soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], HeroSectionController.prototype, "remove", null);
+exports.HeroSectionController = HeroSectionController = __decorate([
+    (0, swagger_1.ApiTags)('Website - Hero Sections'),
+    (0, common_1.Controller)('website/hero-sections'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], HeroSectionController);
+
+
+/***/ }),
+/* 94 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateHeroSectionDto = void 0;
+const class_validator_1 = __webpack_require__(12);
+const swagger_1 = __webpack_require__(4);
+class CreateHeroSectionDto {
+}
+exports.CreateHeroSectionDto = CreateHeroSectionDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admissions Open 2026-27', description: 'Badge text shown above main title', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "badgeText", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Empowering Minds, Shaping Futures at', description: 'Main hero title' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bacelar University', description: 'Highlighted portion of main title', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "highlightedTitle", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Join Bihar’s premier educational institution offering world-class infrastructure and high-placement academic programs.', description: 'Subheading / description text', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/hero-bg.jpg', description: 'Background image URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "backgroundImage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Apply Now', description: 'Primary action button text', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "primaryButtonText", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '/admissions', description: 'Primary button URL link', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "primaryButtonLink", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Explore Courses', description: 'Secondary action button text', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "secondaryButtonText", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '/courses', description: 'Secondary button URL link', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "secondaryButtonLink", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Display order priority', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateHeroSectionDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Homepage main banner', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateHeroSectionDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 95 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateHeroSectionDto = void 0;
+const class_validator_1 = __webpack_require__(12);
+const swagger_1 = __webpack_require__(4);
+class UpdateHeroSectionDto {
+}
+exports.UpdateHeroSectionDto = UpdateHeroSectionDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admissions Open 2026-27', description: 'Badge text shown above main title', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "badgeText", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Empowering Minds, Shaping Futures at', description: 'Main hero title', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bacelar University', description: 'Highlighted portion of main title', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "highlightedTitle", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Join Bihar’s premier educational institution offering world-class infrastructure and high-placement academic programs.', description: 'Subheading / description text', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/hero-bg.jpg', description: 'Background image URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "backgroundImage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Apply Now', description: 'Primary action button text', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "primaryButtonText", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '/admissions', description: 'Primary button URL link', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "primaryButtonLink", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Explore Courses', description: 'Secondary action button text', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "secondaryButtonText", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '/courses', description: 'Secondary button URL link', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "secondaryButtonLink", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Display order priority', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateHeroSectionDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Editor Admin', description: 'Username of editor' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is hero section active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateHeroSectionDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated hero banner text', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateHeroSectionDto.prototype, "Remarks", void 0);
 
 
 /***/ })

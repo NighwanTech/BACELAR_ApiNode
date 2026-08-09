@@ -390,3 +390,105 @@ model CampusQuickLink {
   @@map("campusQuickLinks")
 }
 
+model LatestUpdate {
+  latestUpdateId      Int       @id @default(autoincrement())
+  title               String    @db.VarChar(255)
+  shortName           String?   @db.VarChar(100)
+  grade               String?   @db.VarChar(50)
+  logo                String?   @db.VarChar(500)
+  description         String?   @db.Text
+  validFrom           DateTime?
+  validUntil          DateTime?
+  linkUrl             String?   @db.VarChar(500)
+  displayOrder        Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn           DateTime  @default(now())
+  CreatedBy           String    @db.VarChar(255)
+  UpdatedOn           DateTime? @updatedAt
+  UpdatedBy           String?   @db.VarChar(255)
+  IsActive            Boolean   @default(true)
+  IsDeleted           Boolean   @default(false)
+  DeletedRemarks      String?   @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?   @db.VarChar(255)
+  Remarks             String?   @db.VarChar(255)
+
+  @@map("latestUpdates")
+}
+
+model AdmissionEnquiry {
+  admissionEnquiryId Int       @id @default(autoincrement())
+  enquiryNumber      String?   @db.VarChar(100)
+
+  name               String    @db.VarChar(255)
+  contactNo          String    @db.VarChar(20)
+  whatsappNo         String?   @db.VarChar(20)
+  email              String?   @db.VarChar(255)
+  address            String?   @db.Text
+
+  courseId           Int?
+  courseName         String?   @db.VarChar(255)
+
+  sessionId          Int?
+  sessionName        String?   @db.VarChar(255)
+
+  message            String?   @db.Text
+
+  status             String?   @default("PENDING") @db.VarChar(50)
+  source             String?   @default("WEBSITE") @db.VarChar(100)
+
+  adminNotes         String?   @db.Text
+  followUpDate       DateTime?
+  assignedTo         String?   @db.VarChar(255)
+
+  isRead             Boolean   @default(false)
+
+  // Common Audit Fields
+  CreatedOn          DateTime  @default(now())
+  CreatedBy          String?   @db.VarChar(255)
+  UpdatedOn          DateTime? @updatedAt
+  UpdatedBy          String?   @db.VarChar(255)
+  IsActive           Boolean   @default(true)
+  IsDeleted          Boolean   @default(false)
+  DeletedRemarks     String?   @db.VarChar(255)
+  DeletedOn          DateTime?
+  DeletedBy          String?   @db.VarChar(255)
+  Remarks            String?   @db.VarChar(255)
+
+  @@map("admissionEnquiries")
+}
+
+model HeroSection {
+  heroSectionId       Int       @id @default(autoincrement())
+  badgeText           String?   @db.VarChar(255)
+  title               String    @db.VarChar(255)
+  highlightedTitle    String?   @db.VarChar(255)
+  description         String?   @db.Text
+  backgroundImage     String?   @db.VarChar(500)
+
+  primaryButtonText   String?   @db.VarChar(100)
+  primaryButtonLink   String?   @db.VarChar(500)
+  secondaryButtonText String?   @db.VarChar(100)
+  secondaryButtonLink String?   @db.VarChar(500)
+
+  displayOrder        Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn           DateTime  @default(now())
+  CreatedBy           String?   @db.VarChar(255)
+  UpdatedOn           DateTime? @updatedAt
+  UpdatedBy           String?   @db.VarChar(255)
+  IsActive            Boolean   @default(true)
+  IsDeleted           Boolean   @default(false)
+  DeletedRemarks      String?   @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?   @db.VarChar(255)
+  Remarks             String?   @db.VarChar(255)
+
+  @@map("heroSections")
+}
+
+
+
+
