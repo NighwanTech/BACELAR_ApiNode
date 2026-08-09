@@ -9,9 +9,9 @@ function getDbConfig() {
 		return {
 			host: url.hostname,
 			port: url.port ? Number(url.port) : 3306,
-			user: url.username,
-			password: url.password,
-			database: url.pathname.split('?')[0].replace(/^\//, ''),
+			user: decodeURIComponent(url.username),
+			password: decodeURIComponent(url.password),
+			database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
 			connectionLimit: 2,
 			connectTimeout: 30000,
 			acquireTimeout: 30000,
