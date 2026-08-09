@@ -520,3 +520,161 @@ model HeroSection {
 
   @@map("heroSections")
 }
+
+model NoticeBoard {
+  noticeBoardId  Int       @id @default(autoincrement())
+  title          String    @db.VarChar(255)
+  category       String?   @db.VarChar(100)
+  badgeText      String?   @db.VarChar(100)
+  description    String?   @db.Text
+  publishDate    DateTime?
+  status         String?   @default("ACTIVE") @db.VarChar(50)
+  pdf            String?   @db.VarChar(500)
+  link           String?   @db.VarChar(500)
+  isPinned       Boolean   @default(false)
+  displayOrder   Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@map("noticeBoards")
+}
+
+model AccreditationSlider {
+  accreditationSliderId Int       @id @default(autoincrement())
+  title                 String    @db.VarChar(255)
+  image                 String?   @db.VarChar(500)
+  link                  String?   @db.VarChar(500)
+  displayOrder          Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn             DateTime  @default(now())
+  CreatedBy             String?   @db.VarChar(255)
+  UpdatedOn             DateTime? @updatedAt
+  UpdatedBy             String?   @db.VarChar(255)
+  IsActive              Boolean   @default(true)
+  IsDeleted             Boolean   @default(false)
+  DeletedRemarks        String?   @db.VarChar(255)
+  DeletedOn             DateTime?
+  DeletedBy             String?   @db.VarChar(255)
+  Remarks               String?   @db.VarChar(255)
+
+  @@map("accreditationSliders")
+}
+
+model TopAchiever {
+  topAchieverId  Int       @id @default(autoincrement())
+  name           String    @db.VarChar(255)
+  image          String?   @db.VarChar(500)
+  designation    String?   @db.VarChar(255)
+  achievement    String?   @db.VarChar(255)
+  batch          String?   @db.VarChar(100)
+  course         String?   @db.VarChar(255)
+  description    String?   @db.Text
+  link           String?   @db.VarChar(500)
+  displayOrder   Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@map("topAchievers")
+}
+
+model ImageGallery {
+  imageGalleryId Int       @id @default(autoincrement())
+  category       String?   @db.VarChar(100)
+  title          String    @db.VarChar(255)
+  description    String?   @db.Text
+  images         String?   @db.Text
+  date           DateTime?
+  displayOrder   Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@map("imageGalleries")
+}
+
+model VideoGallery {
+  videoGalleryId Int       @id @default(autoincrement())
+  category       String?   @db.VarChar(100)
+  title          String    @db.VarChar(255)
+  description    String?   @db.Text
+  thumbnail      String?   @db.VarChar(500)
+  video          String?   @db.VarChar(500)
+  videoUrl       String?   @db.VarChar(500)
+  duration       String?   @db.VarChar(50)
+  displayOrder   Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@map("videoGalleries")
+}
+
+model ContactEnquiry {
+  contactEnquiryId Int       @id @default(autoincrement())
+  name             String    @db.VarChar(255)
+  phoneNumber      String    @db.VarChar(20)
+  email            String?   @db.VarChar(255)
+  course           String?   @db.VarChar(255)
+  message          String?   @db.Text
+  status           String?   @default("PENDING") @db.VarChar(50)
+  isRead           Boolean   @default(false)
+
+  // Common Audit Fields
+  CreatedOn        DateTime  @default(now())
+  CreatedBy        String?   @db.VarChar(255)
+  UpdatedOn        DateTime? @updatedAt
+  UpdatedBy        String?   @db.VarChar(255)
+  IsActive         Boolean   @default(true)
+  IsDeleted        Boolean   @default(false)
+  DeletedRemarks   String?   @db.VarChar(255)
+  DeletedOn        DateTime?
+  DeletedBy        String?   @db.VarChar(255)
+  Remarks          String?   @db.VarChar(255)
+
+  @@map("contactEnquiries")
+}
+
+
+
+
+
+
