@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -27,7 +27,19 @@ export class StudentAttachmentController {
     @Body() body: UploadStudentAttachmentDto,
     @UploadedFile() file: any,
   ): Observable<any> {
-    const folder = body.documentType.toLowerCase();
+    if (!file) {
+      throw new BadRequestException(
+        'File is required. Send multipart/form-data with field name "file".',
+      );
+    }
+    if (!body?.documentType) {
+      throw new BadRequestException('documentType is required (e.g. PHOTO, SIGNATURE).');
+    }
+    if (!body?.studentId) {
+      throw new BadRequestException('studentId is required.');
+    }
+
+    const folder = String(body.documentType).toLowerCase();
 
     // 1. Upload file dynamically using decoupled StorageService (Local or S3 depending on env)
     return from(this.storageService.uploadFile(file, folder)).pipe(

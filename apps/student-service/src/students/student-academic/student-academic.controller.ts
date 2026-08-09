@@ -7,9 +7,22 @@ export class StudentAcademicController {
   constructor(private readonly academicService: StudentAcademicService) {}
 
   @MessagePattern({ cmd: 'save_student_academic_details' })
-  async save(@Payload() data: { studentId: number; qualifications: any[]; CreatedBy: string }) {
+  async save(
+    @Payload()
+    data: {
+      studentId: number;
+      qualifications: any[];
+      CreatedBy: string;
+      programId: number;
+    },
+  ) {
     try {
-      return await this.academicService.save(data.studentId, data.qualifications, data.CreatedBy);
+      return await this.academicService.save(
+        data.studentId,
+        data.qualifications,
+        data.CreatedBy,
+        data.programId,
+      );
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

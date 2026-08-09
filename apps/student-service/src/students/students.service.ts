@@ -187,6 +187,12 @@ export class StudentsService {
         StudentRegistrationId,
         IsDeleted: false,
       },
+      include: {
+        program: {
+          include: { programCategory: true },
+        },
+        session: true,
+      },
     });
 
     if (!student) {

@@ -14,10 +14,9 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
-    "baseUrl": "./",
     "paths": {
-      "@app/prisma": ["libs/prisma/src"],
-      "@app/prisma/*": ["libs/prisma/src/*"]
+      "@app/prisma": ["./libs/prisma/src"],
+      "@app/prisma/*": ["./libs/prisma/src/*"]
     }
   },
   "exclude": [
