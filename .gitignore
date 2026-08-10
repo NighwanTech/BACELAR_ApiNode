@@ -1,4 +1,30 @@
-#dependencies
+# Dependencies
 node_modules/
 
+# Build output
+dist/
+build/
+*.tsbuildinfo
 
+# Env / secrets (never commit)
+.env
+.env.*
+!.env.example
+
+# Logs & OS
+logs/
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Uploads (user photos/signatures — local files)
+public/uploads/
+
+# Coverage
+coverage/

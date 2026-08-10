@@ -70,7 +70,10 @@ export class SaveQualificationDto {
   @IsNotEmpty()
   rollNo: string;
 
-  @ApiProperty({ example: 'Pass', description: 'Result Status (Pass/Fail/Appearing)' })
+  @ApiProperty({
+    example: 'Pass',
+    description: 'Result Status: Pass | Appearing | Fail (stored as-is in studentAcademicDetails.resultStatus)',
+  })
   @IsString()
   @IsNotEmpty()
   resultStatus: string;
@@ -123,6 +126,14 @@ export class SaveAcademicDetailsDto {
   @IsInt()
   @IsNotEmpty()
   studentId: number;
+
+  @ApiProperty({
+    example: 5,
+    description: 'Selected Program ID (sessionId is auto-assigned from active AcademicSession)',
+  })
+  @IsInt()
+  @IsNotEmpty()
+  programId: number;
 
   @ApiProperty({ example: 'Rishi', description: 'Created By' })
   @IsString()

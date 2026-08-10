@@ -267,6 +267,7 @@ async function main() {
     { name: 'Chemistry', code: '12CHEM', classType: '12th', stream: 'SCIENCE' },
     { name: 'Mathematics', code: '12MATH', classType: '12th', stream: 'SCIENCE' },
     { name: 'Biology', code: '12BIO', classType: '12th', stream: 'SCIENCE' },
+    { name: 'Agriculture', code: '12AGRI', classType: '12th', stream: 'SCIENCE' },
 
     // 12th standard Commerce subjects
     { name: 'Accountancy', code: '12ACC', classType: '12th', stream: 'COMMERCE' },

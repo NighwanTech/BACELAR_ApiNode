@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UploadStudentAttachmentDto {
   @ApiProperty({ example: '1', description: 'ID of the Student registration (passed as string in form-data)' })
@@ -21,6 +21,7 @@ export class UploadStudentAttachmentDto {
   CreatedBy: string;
 
   @ApiProperty({ example: 'Profile photo upload', description: 'Optional remarks', required: false })
+  @IsOptional()
   @IsString()
   Remarks?: string;
 }

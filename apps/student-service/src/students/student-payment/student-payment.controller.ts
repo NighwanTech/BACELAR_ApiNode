@@ -1,6 +1,9 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { StudentPaymentService } from './student-payment.service';
+import {
+  extractErrorMessage,
+  StudentPaymentService,
+} from './student-payment.service';
 
 @Controller()
 export class StudentPaymentController {
@@ -10,8 +13,28 @@ export class StudentPaymentController {
   async create(@Payload() data: any) {
     try {
       return await this.paymentService.create(data);
-    } catch (error: any) {
-      return { status: 'error', message: error.message || 'Unknown error' };
+    } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
+    }
+  }
+
+  @MessagePattern({ cmd: 'create_razorpay_order' })
+  async createRazorpayOrder(@Payload() data: any) {
+    try {
+      return await this.paymentService.createRazorpayOrder(data);
+    } catch (error: unknown) {
+      console.error('[create_razorpay_order]', error);
+      return { status: 'error', message: extractErrorMessage(error) };
+    }
+  }
+
+  @MessagePattern({ cmd: 'verify_razorpay_payment' })
+  async verifyRazorpayPayment(@Payload() data: any) {
+    try {
+      return await this.paymentService.verifyRazorpayPayment(data);
+    } catch (error: unknown) {
+      console.error('[verify_razorpay_payment]', error);
+      return { status: 'error', message: extractErrorMessage(error) };
     }
   }
 
@@ -19,8 +42,8 @@ export class StudentPaymentController {
   async findAll() {
     try {
       return await this.paymentService.findAll();
-    } catch (error: any) {
-      return { status: 'error', message: error.message || 'Unknown error' };
+    } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
     }
   }
 
@@ -28,8 +51,8 @@ export class StudentPaymentController {
   async findOne(@Payload() data: { paymentId: number }) {
     try {
       return await this.paymentService.findOne(data.paymentId);
-    } catch (error: any) {
-      return { status: 'error', message: error.message || 'Unknown error' };
+    } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
     }
   }
 
@@ -37,8 +60,8 @@ export class StudentPaymentController {
   async findByStudent(@Payload() data: { studentId: number }) {
     try {
       return await this.paymentService.findByStudent(data.studentId);
-    } catch (error: any) {
-      return { status: 'error', message: error.message || 'Unknown error' };
+    } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
     }
   }
 
@@ -46,8 +69,8 @@ export class StudentPaymentController {
   async findByOrderId(@Payload() data: { razorpayOrderId: string }) {
     try {
       return await this.paymentService.findByOrderId(data.razorpayOrderId);
-    } catch (error: any) {
-      return { status: 'error', message: error.message || 'Unknown error' };
+    } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
     }
   }
 
@@ -56,8 +79,8 @@ export class StudentPaymentController {
     try {
       const { paymentId, ...updateData } = data;
       return await this.paymentService.update(paymentId, updateData);
-    } catch (error: any) {
-      return { status: 'error', message: error.message || 'Unknown error' };
+    } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
     }
   }
 
@@ -69,8 +92,8 @@ export class StudentPaymentController {
         data.DeletedBy,
         data.DeletedRemarks,
       );
-    } catch (error: any) {
-      return { status: 'error', message: error.message || 'Unknown error' };
+    } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
     }
   }
 
@@ -82,8 +105,8 @@ export class StudentPaymentController {
         data.DeletedBy,
         data.DeletedRemarks,
       );
-    } catch (error: any) {
-      return { status: 'error', message: error.message || 'Unknown error' };
+    } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
     }
   }
 }

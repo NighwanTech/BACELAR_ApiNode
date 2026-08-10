@@ -3,6 +3,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateStudentPaymentDto } from './dto/create-student-payment.dto';
+import { CreateRazorpayOrderDto } from './dto/create-razorpay-order.dto';
+import { VerifyRazorpayPaymentDto } from './dto/verify-razorpay-payment.dto';
 import { UpdateStudentPaymentDto } from './dto/update-student-payment.dto';
 import { BulkDeleteStudentPaymentsDto } from './dto/bulk-delete-student-payments.dto';
 
@@ -18,6 +20,20 @@ export class StudentPaymentController {
   @ApiResponse({ status: 201, description: 'Payment record created successfully' })
   create(@Body() createDto: CreateStudentPaymentDto): Observable<any> {
     return this.studentClient.send({ cmd: 'create_student_payment' }, createDto);
+  }
+
+  @Post('create-order')
+  @ApiOperation({ summary: 'Create Razorpay order + PENDING payment from programFeeConfig' })
+  @ApiResponse({ status: 201, description: 'Razorpay order created successfully' })
+  createOrder(@Body() createDto: CreateRazorpayOrderDto): Observable<any> {
+    return this.studentClient.send({ cmd: 'create_razorpay_order' }, createDto);
+  }
+
+  @Post('verify')
+  @ApiOperation({ summary: 'Verify Razorpay payment signature and mark SUCCESS' })
+  @ApiResponse({ status: 200, description: 'Payment verified successfully' })
+  verify(@Body() verifyDto: VerifyRazorpayPaymentDto): Observable<any> {
+    return this.studentClient.send({ cmd: 'verify_razorpay_payment' }, verifyDto);
   }
 
   @Get()
