@@ -37,6 +37,11 @@ export class CreateContactEnquiryDto {
   @IsOptional()
   isRead?: boolean;
 
+  @ApiProperty({ example: true, description: 'Is enquiry active?', required: false })
+  @IsBoolean()
+  @IsOptional()
+  IsActive?: boolean;
+
   @ApiProperty({ example: 'System / Website', description: 'Creator identifier', required: false })
   @IsString()
   @IsOptional()

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCampusQuickLinkDto {
@@ -16,6 +16,11 @@ export class CreateCampusQuickLinkDto {
   @IsString()
   @IsNotEmpty()
   pageUrl: string;
+
+  @ApiProperty({ example: true, description: 'Is quick link active?', required: false })
+  @IsBoolean()
+  @IsOptional()
+  IsActive?: boolean;
 
   @ApiProperty({ example: 'Admin User', description: 'Username of creator' })
   @IsString()

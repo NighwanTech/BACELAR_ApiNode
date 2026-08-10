@@ -22,6 +22,11 @@ export class CreateAccreditationSliderDto {
   @IsOptional()
   displayOrder?: number;
 
+  @ApiProperty({ example: true, description: 'Is accreditation slider active on website?', required: false })
+  @IsBoolean()
+  @IsOptional()
+  IsActive?: boolean;
+
   @ApiProperty({ example: 'Admin User', description: 'Username of creator', required: false })
   @IsString()
   @IsOptional()

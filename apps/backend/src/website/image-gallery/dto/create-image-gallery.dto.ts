@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateImageGalleryDto {
@@ -34,6 +34,11 @@ export class CreateImageGalleryDto {
   @IsInt()
   @IsOptional()
   displayOrder?: number;
+
+  @ApiProperty({ example: true, description: 'Is album active on website?', required: false })
+  @IsBoolean()
+  @IsOptional()
+  IsActive?: boolean;
 
   @ApiProperty({ example: 'Admin User', description: 'Username of creator', required: false })
   @IsString()

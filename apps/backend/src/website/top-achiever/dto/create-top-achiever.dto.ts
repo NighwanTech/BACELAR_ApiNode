@@ -47,6 +47,11 @@ export class CreateTopAchieverDto {
   @IsOptional()
   displayOrder?: number;
 
+  @ApiProperty({ example: true, description: 'Is top achiever active on website?', required: false })
+  @IsBoolean()
+  @IsOptional()
+  IsActive?: boolean;
+
   @ApiProperty({ example: 'Admin User', description: 'Username of creator', required: false })
   @IsString()
   @IsOptional()
