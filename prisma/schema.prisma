@@ -666,8 +666,79 @@ model ContactEnquiry {
   @@map("contactEnquiries")
 }
 
+model CollegeMaster {
+  collegeId              Int       @id @default(autoincrement())
+  registrationNumber     String?   @db.VarChar(100)
+  collegeCode            String?   @db.VarChar(50)
+  collegeName            String    @db.VarChar(255)
+  shortName              String?   @db.VarChar(50)
+  collegeAddress         String?   @db.Text
+  primaryContactNumber   String?   @db.VarChar(20)
+  alternateContactNumber String?   @db.VarChar(20)
+  emailId                String?   @db.VarChar(255)
+  collegeWebsite         String?   @db.VarChar(500)
 
+  // Common Audit Fields
+  CreatedOn              DateTime  @default(now())
+  CreatedBy              String?   @db.VarChar(255)
+  UpdatedOn              DateTime? @updatedAt
+  UpdatedBy              String?   @db.VarChar(255)
+  IsActive               Boolean   @default(true)
+  IsDeleted              Boolean   @default(false)
+  DeletedRemarks         String?   @db.VarChar(255)
+  DeletedOn              DateTime?
+  DeletedBy              String?   @db.VarChar(255)
+  Remarks                String?   @db.VarChar(255)
 
+  @@map("collegeMaster")
+}
 
+model StatsCounter {
+  statsCounterId      Int       @id @default(autoincrement())
+  title               String    @db.VarChar(255)
+  value               String    @db.VarChar(100)
+  suffix              String?   @db.VarChar(50)
+  icon                String?   @db.VarChar(255)
+  backgroundImage     String?   @db.VarChar(500)
+  displayOrder        Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn           DateTime  @default(now())
+  CreatedBy           String?   @db.VarChar(255)
+  UpdatedOn           DateTime? @updatedAt
+  UpdatedBy           String?   @db.VarChar(255)
+  IsActive            Boolean   @default(true)
+  IsDeleted           Boolean   @default(false)
+  DeletedRemarks      String?   @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?   @db.VarChar(255)
+  Remarks             String?   @db.VarChar(255)
+
+  @@map("statsCounters")
+}
+
+model Testimonial {
+  testimonialId       Int       @id @default(autoincrement())
+  name                String    @db.VarChar(255)
+  role                String?   @db.VarChar(255)
+  message             String?   @db.Text
+  rating              Float?    @default(5.0)
+  image               String?   @db.VarChar(500)
+  displayOrder        Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn           DateTime  @default(now())
+  CreatedBy           String?   @db.VarChar(255)
+  UpdatedOn           DateTime? @updatedAt
+  UpdatedBy           String?   @db.VarChar(255)
+  IsActive            Boolean   @default(true)
+  IsDeleted           Boolean   @default(false)
+  DeletedRemarks      String?   @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?   @db.VarChar(255)
+  Remarks             String?   @db.VarChar(255)
+
+  @@map("testimonials")
+}
 
 

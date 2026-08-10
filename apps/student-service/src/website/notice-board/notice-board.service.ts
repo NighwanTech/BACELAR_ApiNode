@@ -20,7 +20,7 @@ export class NoticeBoardService {
         displayOrder: data.displayOrder ?? 0,
         CreatedBy: data.CreatedBy || 'Admin',
         Remarks: data.Remarks || null,
-        IsActive: true,
+        IsActive: data.IsActive !== undefined ? data.IsActive : true,
         IsDeleted: false,
       },
     });

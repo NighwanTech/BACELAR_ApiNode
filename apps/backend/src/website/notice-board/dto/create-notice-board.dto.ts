@@ -52,6 +52,11 @@ export class CreateNoticeBoardDto {
   @IsOptional()
   displayOrder?: number;
 
+  @ApiProperty({ example: true, description: 'Is notice active on website?', required: false })
+  @IsBoolean()
+  @IsOptional()
+  IsActive?: boolean;
+
   @ApiProperty({ example: 'Admin User', description: 'Username of creator', required: false })
   @IsString()
   @IsOptional()

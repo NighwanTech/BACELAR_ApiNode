@@ -47,6 +47,11 @@ export class CreateLatestUpdateDto {
   @IsOptional()
   displayOrder?: number;
 
+  @ApiProperty({ example: true, description: 'Is update active on website?', required: false })
+  @IsBoolean()
+  @IsOptional()
+  IsActive?: boolean;
+
   @ApiProperty({ example: 'Admin User', description: 'Username of creator' })
   @IsString()
   @IsNotEmpty()

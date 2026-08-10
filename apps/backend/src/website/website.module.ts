@@ -10,12 +10,16 @@ import { TopAchieverModule } from './top-achiever/top-achiever.module';
 import { ImageGalleryModule } from './image-gallery/image-gallery.module';
 import { VideoGalleryModule } from './video-gallery/video-gallery.module';
 import { ContactEnquiryModule } from './contact-enquiry/contact-enquiry.module';
+import { StatsCounterModule } from './stats-counter/stats-counter.module';
+import { TestimonialModule } from './testimonial/testimonial.module';
 
 @Module({
-  imports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, UploadModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule],
-  exports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, UploadModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule],
+  imports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, UploadModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule],
+  exports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, UploadModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule],
 })
 export class WebsiteModule {}
+
+
 
 
 

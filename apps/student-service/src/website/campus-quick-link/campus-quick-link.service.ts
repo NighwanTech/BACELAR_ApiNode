@@ -13,7 +13,7 @@ export class CampusQuickLinkService {
         pageUrl: data.pageUrl,
         CreatedBy: data.CreatedBy,
         Remarks: data.Remarks || null,
-        IsActive: true,
+        IsActive: data.IsActive !== undefined ? data.IsActive : true,
         IsDeleted: false,
       },
     });

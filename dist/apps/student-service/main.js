@@ -809,6 +809,259 @@ exports.CityService = CityService = __decorate([
 
 /***/ }),
 
+/***/ "./apps/student-service/src/master/college/college.controller.ts":
+/*!***********************************************************************!*\
+  !*** ./apps/student-service/src/master/college/college.controller.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CollegeController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const college_service_1 = __webpack_require__(/*! ./college.service */ "./apps/student-service/src/master/college/college.service.ts");
+let CollegeController = class CollegeController {
+    constructor(collegeService) {
+        this.collegeService = collegeService;
+    }
+    async create(data) {
+        try {
+            return await this.collegeService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.collegeService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.collegeService.findOne(data.collegeId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { collegeId, ...updateData } = data;
+            return await this.collegeService.update(collegeId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.collegeService.softDelete(data.collegeId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.CollegeController = CollegeController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_college' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CollegeController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_colleges' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CollegeController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_college' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CollegeController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_college' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CollegeController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_college' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CollegeController.prototype, "softDelete", null);
+exports.CollegeController = CollegeController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof college_service_1.CollegeService !== "undefined" && college_service_1.CollegeService) === "function" ? _a : Object])
+], CollegeController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/college/college.module.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/student-service/src/master/college/college.module.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CollegeModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const college_controller_1 = __webpack_require__(/*! ./college.controller */ "./apps/student-service/src/master/college/college.controller.ts");
+const college_service_1 = __webpack_require__(/*! ./college.service */ "./apps/student-service/src/master/college/college.service.ts");
+let CollegeModule = class CollegeModule {
+};
+exports.CollegeModule = CollegeModule;
+exports.CollegeModule = CollegeModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [college_controller_1.CollegeController],
+        providers: [college_service_1.CollegeService],
+        exports: [college_service_1.CollegeService],
+    })
+], CollegeModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/college/college.service.ts":
+/*!********************************************************************!*\
+  !*** ./apps/student-service/src/master/college/college.service.ts ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CollegeService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let CollegeService = class CollegeService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get collegeMaster() {
+        return this.prisma.collegeMaster;
+    }
+    async create(data) {
+        return this.collegeMaster.create({
+            data: {
+                registrationNumber: data.registrationNumber || null,
+                collegeCode: data.collegeCode || null,
+                collegeName: data.collegeName,
+                shortName: data.shortName || null,
+                collegeAddress: data.collegeAddress || null,
+                primaryContactNumber: data.primaryContactNumber || null,
+                alternateContactNumber: data.alternateContactNumber || null,
+                emailId: data.emailId || null,
+                collegeWebsite: data.collegeWebsite || null,
+                CreatedBy: data.CreatedBy || null,
+                Remarks: data.Remarks || null,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.collegeMaster.findMany({
+            where: { IsDeleted: false },
+            orderBy: { collegeName: 'asc' },
+        });
+    }
+    async findOne(collegeId) {
+        const college = await this.collegeMaster.findFirst({
+            where: { collegeId, IsDeleted: false },
+        });
+        if (!college) {
+            throw new common_1.NotFoundException(`College with ID ${collegeId} not found`);
+        }
+        return college;
+    }
+    async update(collegeId, data) {
+        await this.findOne(collegeId);
+        return this.collegeMaster.update({
+            where: { collegeId },
+            data: {
+                ...(data.registrationNumber !== undefined && { registrationNumber: data.registrationNumber }),
+                ...(data.collegeCode !== undefined && { collegeCode: data.collegeCode }),
+                ...(data.collegeName !== undefined && { collegeName: data.collegeName }),
+                ...(data.shortName !== undefined && { shortName: data.shortName }),
+                ...(data.collegeAddress !== undefined && { collegeAddress: data.collegeAddress }),
+                ...(data.primaryContactNumber !== undefined && { primaryContactNumber: data.primaryContactNumber }),
+                ...(data.alternateContactNumber !== undefined && { alternateContactNumber: data.alternateContactNumber }),
+                ...(data.emailId !== undefined && { emailId: data.emailId }),
+                ...(data.collegeWebsite !== undefined && { collegeWebsite: data.collegeWebsite }),
+                ...(data.UpdatedBy !== undefined && { UpdatedBy: data.UpdatedBy }),
+                ...(data.IsActive !== undefined && { IsActive: data.IsActive }),
+                ...(data.Remarks !== undefined && { Remarks: data.Remarks }),
+            },
+        });
+    }
+    async softDelete(collegeId, DeletedBy, DeletedRemarks) {
+        await this.findOne(collegeId);
+        return this.collegeMaster.update({
+            where: { collegeId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.CollegeService = CollegeService;
+exports.CollegeService = CollegeService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], CollegeService);
+
+
+/***/ }),
+
 /***/ "./apps/student-service/src/master/master.module.ts":
 /*!**********************************************************!*\
   !*** ./apps/student-service/src/master/master.module.ts ***!
@@ -834,6 +1087,7 @@ const board_module_1 = __webpack_require__(/*! ./board/board.module */ "./apps/s
 const qualification_module_1 = __webpack_require__(/*! ./qualification/qualification.module */ "./apps/student-service/src/master/qualification/qualification.module.ts");
 const academic_session_module_1 = __webpack_require__(/*! ./academic-session/academic-session.module */ "./apps/student-service/src/master/academic-session/academic-session.module.ts");
 const program_fee_config_module_1 = __webpack_require__(/*! ./program-fee-config/program-fee-config.module */ "./apps/student-service/src/master/program-fee-config/program-fee-config.module.ts");
+const college_module_1 = __webpack_require__(/*! ./college/college.module */ "./apps/student-service/src/master/college/college.module.ts");
 let MasterModule = class MasterModule {
 };
 exports.MasterModule = MasterModule;
@@ -849,6 +1103,7 @@ exports.MasterModule = MasterModule = __decorate([
             qualification_module_1.QualificationModule,
             academic_session_module_1.AcademicSessionModule,
             program_fee_config_module_1.ProgramFeeConfigModule,
+            college_module_1.CollegeModule,
         ],
         exports: [
             state_module_1.StateModule,
@@ -860,6 +1115,7 @@ exports.MasterModule = MasterModule = __decorate([
             qualification_module_1.QualificationModule,
             academic_session_module_1.AcademicSessionModule,
             program_fee_config_module_1.ProgramFeeConfigModule,
+            college_module_1.CollegeModule,
         ],
     })
 ], MasterModule);
@@ -5454,7 +5710,7 @@ let CampusQuickLinkService = class CampusQuickLinkService {
                 pageUrl: data.pageUrl,
                 CreatedBy: data.CreatedBy,
                 Remarks: data.Remarks || null,
-                IsActive: true,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
                 IsDeleted: false,
             },
         });
@@ -6742,7 +6998,7 @@ let NoticeBoardService = class NoticeBoardService {
                 displayOrder: data.displayOrder ?? 0,
                 CreatedBy: data.CreatedBy || 'Admin',
                 Remarks: data.Remarks || null,
-                IsActive: true,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
                 IsDeleted: false,
             },
         });
@@ -6815,6 +7071,518 @@ exports.NoticeBoardService = NoticeBoardService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
 ], NoticeBoardService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/stats-counter/stats-counter.controller.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/website/stats-counter/stats-counter.controller.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StatsCounterController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const stats_counter_service_1 = __webpack_require__(/*! ./stats-counter.service */ "./apps/student-service/src/website/stats-counter/stats-counter.service.ts");
+let StatsCounterController = class StatsCounterController {
+    constructor(statsCounterService) {
+        this.statsCounterService = statsCounterService;
+    }
+    async create(data) {
+        try {
+            return await this.statsCounterService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.statsCounterService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.statsCounterService.findOne(data.statsCounterId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { statsCounterId, ...updateData } = data;
+            return await this.statsCounterService.update(statsCounterId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.statsCounterService.softDelete(data.statsCounterId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StatsCounterController = StatsCounterController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_stats_counter' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StatsCounterController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_stats_counters' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StatsCounterController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_stats_counter' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StatsCounterController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_stats_counter' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StatsCounterController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_stats_counter' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StatsCounterController.prototype, "softDelete", null);
+exports.StatsCounterController = StatsCounterController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof stats_counter_service_1.StatsCounterService !== "undefined" && stats_counter_service_1.StatsCounterService) === "function" ? _a : Object])
+], StatsCounterController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/stats-counter/stats-counter.module.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/stats-counter/stats-counter.module.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StatsCounterModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const stats_counter_controller_1 = __webpack_require__(/*! ./stats-counter.controller */ "./apps/student-service/src/website/stats-counter/stats-counter.controller.ts");
+const stats_counter_service_1 = __webpack_require__(/*! ./stats-counter.service */ "./apps/student-service/src/website/stats-counter/stats-counter.service.ts");
+let StatsCounterModule = class StatsCounterModule {
+};
+exports.StatsCounterModule = StatsCounterModule;
+exports.StatsCounterModule = StatsCounterModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [stats_counter_controller_1.StatsCounterController],
+        providers: [stats_counter_service_1.StatsCounterService],
+        exports: [stats_counter_service_1.StatsCounterService],
+    })
+], StatsCounterModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/stats-counter/stats-counter.service.ts":
+/*!*********************************************************************************!*\
+  !*** ./apps/student-service/src/website/stats-counter/stats-counter.service.ts ***!
+  \*********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StatsCounterService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StatsCounterService = class StatsCounterService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get statsCounter() {
+        return this.prisma.statsCounter;
+    }
+    async create(data) {
+        return this.statsCounter.create({
+            data: {
+                title: data.title,
+                value: data.value,
+                suffix: data.suffix || null,
+                icon: data.icon || null,
+                backgroundImage: data.backgroundImage || null,
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy || 'Admin',
+                Remarks: data.Remarks || null,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.statsCounter.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { statsCounterId: 'desc' }],
+        });
+    }
+    async findOne(statsCounterId) {
+        const item = await this.statsCounter.findFirst({
+            where: { statsCounterId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Stats counter entry with ID ${statsCounterId} not found`);
+        }
+        return item;
+    }
+    async update(statsCounterId, data) {
+        await this.findOne(statsCounterId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.title !== undefined)
+            updatePayload.title = data.title;
+        if (data.value !== undefined)
+            updatePayload.value = data.value;
+        if (data.suffix !== undefined)
+            updatePayload.suffix = data.suffix;
+        if (data.icon !== undefined)
+            updatePayload.icon = data.icon;
+        if (data.backgroundImage !== undefined)
+            updatePayload.backgroundImage = data.backgroundImage;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.statsCounter.update({
+            where: { statsCounterId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(statsCounterId, DeletedBy, DeletedRemarks) {
+        await this.findOne(statsCounterId);
+        return this.statsCounter.update({
+            where: { statsCounterId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.StatsCounterService = StatsCounterService;
+exports.StatsCounterService = StatsCounterService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], StatsCounterService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/testimonial/testimonial.controller.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/testimonial/testimonial.controller.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestimonialController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const testimonial_service_1 = __webpack_require__(/*! ./testimonial.service */ "./apps/student-service/src/website/testimonial/testimonial.service.ts");
+let TestimonialController = class TestimonialController {
+    constructor(testimonialService) {
+        this.testimonialService = testimonialService;
+    }
+    async create(data) {
+        try {
+            return await this.testimonialService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.testimonialService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.testimonialService.findOne(data.testimonialId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { testimonialId, ...updateData } = data;
+            return await this.testimonialService.update(testimonialId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.testimonialService.softDelete(data.testimonialId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.TestimonialController = TestimonialController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_testimonial' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_testimonials' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_testimonial' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_testimonial' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_testimonial' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "softDelete", null);
+exports.TestimonialController = TestimonialController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof testimonial_service_1.TestimonialService !== "undefined" && testimonial_service_1.TestimonialService) === "function" ? _a : Object])
+], TestimonialController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/testimonial/testimonial.module.ts":
+/*!****************************************************************************!*\
+  !*** ./apps/student-service/src/website/testimonial/testimonial.module.ts ***!
+  \****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestimonialModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const testimonial_controller_1 = __webpack_require__(/*! ./testimonial.controller */ "./apps/student-service/src/website/testimonial/testimonial.controller.ts");
+const testimonial_service_1 = __webpack_require__(/*! ./testimonial.service */ "./apps/student-service/src/website/testimonial/testimonial.service.ts");
+let TestimonialModule = class TestimonialModule {
+};
+exports.TestimonialModule = TestimonialModule;
+exports.TestimonialModule = TestimonialModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [testimonial_controller_1.TestimonialController],
+        providers: [testimonial_service_1.TestimonialService],
+        exports: [testimonial_service_1.TestimonialService],
+    })
+], TestimonialModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/testimonial/testimonial.service.ts":
+/*!*****************************************************************************!*\
+  !*** ./apps/student-service/src/website/testimonial/testimonial.service.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestimonialService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let TestimonialService = class TestimonialService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get testimonial() {
+        return this.prisma.testimonial;
+    }
+    async create(data) {
+        return this.testimonial.create({
+            data: {
+                name: data.name,
+                role: data.role || null,
+                message: data.message || null,
+                rating: data.rating !== undefined ? data.rating : 5.0,
+                image: data.image || null,
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy || 'Admin',
+                Remarks: data.Remarks || null,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.testimonial.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { testimonialId: 'desc' }],
+        });
+    }
+    async findOne(testimonialId) {
+        const item = await this.testimonial.findFirst({
+            where: { testimonialId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Testimonial entry with ID ${testimonialId} not found`);
+        }
+        return item;
+    }
+    async update(testimonialId, data) {
+        await this.findOne(testimonialId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.name !== undefined)
+            updatePayload.name = data.name;
+        if (data.role !== undefined)
+            updatePayload.role = data.role;
+        if (data.message !== undefined)
+            updatePayload.message = data.message;
+        if (data.rating !== undefined)
+            updatePayload.rating = data.rating;
+        if (data.image !== undefined)
+            updatePayload.image = data.image;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.testimonial.update({
+            where: { testimonialId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(testimonialId, DeletedBy, DeletedRemarks) {
+        await this.findOne(testimonialId);
+        return this.testimonial.update({
+            where: { testimonialId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.TestimonialService = TestimonialService;
+exports.TestimonialService = TestimonialService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], TestimonialService);
 
 
 /***/ }),
@@ -7366,13 +8134,15 @@ const top_achiever_module_1 = __webpack_require__(/*! ./top-achiever/top-achieve
 const image_gallery_module_1 = __webpack_require__(/*! ./image-gallery/image-gallery.module */ "./apps/student-service/src/website/image-gallery/image-gallery.module.ts");
 const video_gallery_module_1 = __webpack_require__(/*! ./video-gallery/video-gallery.module */ "./apps/student-service/src/website/video-gallery/video-gallery.module.ts");
 const contact_enquiry_module_1 = __webpack_require__(/*! ./contact-enquiry/contact-enquiry.module */ "./apps/student-service/src/website/contact-enquiry/contact-enquiry.module.ts");
+const stats_counter_module_1 = __webpack_require__(/*! ./stats-counter/stats-counter.module */ "./apps/student-service/src/website/stats-counter/stats-counter.module.ts");
+const testimonial_module_1 = __webpack_require__(/*! ./testimonial/testimonial.module */ "./apps/student-service/src/website/testimonial/testimonial.module.ts");
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
 exports.WebsiteModule = WebsiteModule = __decorate([
     (0, common_1.Module)({
-        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule],
-        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule],
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule],
     })
 ], WebsiteModule);
 

@@ -8,6 +8,7 @@ import { BoardModule } from './board/board.module';
 import { QualificationModule } from './qualification/qualification.module';
 import { AcademicSessionModule } from './academic-session/academic-session.module';
 import { ProgramFeeConfigModule } from './program-fee-config/program-fee-config.module';
+import { CollegeModule } from './college/college.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProgramFeeConfigModule } from './program-fee-config/program-fee-config.
     QualificationModule,
     AcademicSessionModule,
     ProgramFeeConfigModule,
+    CollegeModule,
   ],
   exports: [
     StateModule,
@@ -31,6 +33,8 @@ import { ProgramFeeConfigModule } from './program-fee-config/program-fee-config.
     QualificationModule,
     AcademicSessionModule,
     ProgramFeeConfigModule,
+    CollegeModule,
   ],
 })
 export class MasterModule {}
+

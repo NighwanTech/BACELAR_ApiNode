@@ -120,7 +120,7 @@ const common_1 = __webpack_require__(2);
 const config_1 = __webpack_require__(7);
 const students_module_1 = __webpack_require__(8);
 const master_module_1 = __webpack_require__(49);
-const website_module_1 = __webpack_require__(91);
+const website_module_1 = __webpack_require__(95);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -3032,6 +3032,7 @@ const board_module_1 = __webpack_require__(71);
 const qualification_module_1 = __webpack_require__(76);
 const academic_session_module_1 = __webpack_require__(81);
 const program_fee_config_module_1 = __webpack_require__(86);
+const college_module_1 = __webpack_require__(91);
 let MasterModule = class MasterModule {
 };
 exports.MasterModule = MasterModule;
@@ -3047,6 +3048,7 @@ exports.MasterModule = MasterModule = __decorate([
             qualification_module_1.QualificationModule,
             academic_session_module_1.AcademicSessionModule,
             program_fee_config_module_1.ProgramFeeConfigModule,
+            college_module_1.CollegeModule,
         ],
         exports: [
             state_module_1.StateModule,
@@ -3058,6 +3060,7 @@ exports.MasterModule = MasterModule = __decorate([
             qualification_module_1.QualificationModule,
             academic_session_module_1.AcademicSessionModule,
             program_fee_config_module_1.ProgramFeeConfigModule,
+            college_module_1.CollegeModule,
         ],
     })
 ], MasterModule);
@@ -5714,28 +5717,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WebsiteModule = void 0;
+exports.CollegeModule = void 0;
 const common_1 = __webpack_require__(2);
-const campus_quick_link_module_1 = __webpack_require__(92);
-const latest_update_module_1 = __webpack_require__(96);
-const admission_enquiry_module_1 = __webpack_require__(100);
-const hero_section_module_1 = __webpack_require__(104);
-const upload_module_1 = __webpack_require__(108);
-const notice_board_module_1 = __webpack_require__(110);
-const accreditation_slider_module_1 = __webpack_require__(114);
-const top_achiever_module_1 = __webpack_require__(118);
-const image_gallery_module_1 = __webpack_require__(122);
-const video_gallery_module_1 = __webpack_require__(126);
-const contact_enquiry_module_1 = __webpack_require__(130);
-let WebsiteModule = class WebsiteModule {
+const microservices_1 = __webpack_require__(9);
+const college_controller_1 = __webpack_require__(92);
+let CollegeModule = class CollegeModule {
 };
-exports.WebsiteModule = WebsiteModule;
-exports.WebsiteModule = WebsiteModule = __decorate([
+exports.CollegeModule = CollegeModule;
+exports.CollegeModule = CollegeModule = __decorate([
     (0, common_1.Module)({
-        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule],
-        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule],
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [college_controller_1.CollegeController],
     })
-], WebsiteModule);
+], CollegeModule);
 
 
 /***/ }),
@@ -5749,11 +5754,343 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CollegeController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_college_dto_1 = __webpack_require__(93);
+const update_college_dto_1 = __webpack_require__(94);
+let CollegeController = class CollegeController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createCollegeDto) {
+        return this.studentClient.send({ cmd: 'create_college' }, createCollegeDto);
+    }
+    findAll() {
+        return this.studentClient.send({ cmd: 'find_all_colleges' }, {});
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_college' }, { collegeId: id });
+    }
+    update(id, updateCollegeDto) {
+        return this.studentClient.send({ cmd: 'update_college' }, { collegeId: id, ...updateCollegeDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_college' }, { collegeId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.CollegeController = CollegeController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new college master entry' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'College created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_college_dto_1.CreateCollegeDto !== "undefined" && create_college_dto_1.CreateCollegeDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], CollegeController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active colleges (where IsDeleted is false)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all colleges' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], CollegeController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get college details by collegeId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return college details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], CollegeController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update college details by collegeId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'College updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_college_dto_1.UpdateCollegeDto !== "undefined" && update_college_dto_1.UpdateCollegeDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], CollegeController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete a college by collegeId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Mistake entry' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'College soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], CollegeController.prototype, "remove", null);
+exports.CollegeController = CollegeController = __decorate([
+    (0, swagger_1.ApiTags)('Master - Colleges'),
+    (0, common_1.Controller)('master/colleges'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], CollegeController);
+
+
+/***/ }),
+/* 93 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateCollegeDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class CreateCollegeDto {
+}
+exports.CreateCollegeDto = CreateCollegeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'REG12345', description: 'Registration Number of the College', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "registrationNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'CLG001', description: 'College Code', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "collegeCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bacelar Institute of Technology', description: 'Name of the College' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "collegeName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'BIT', description: 'Short Name of the College', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "shortName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123 Tech Park, Knowledge Park III, Greater Noida', description: 'Address of the College', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "collegeAddress", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '+919876543210', description: 'Primary Contact Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "primaryContactNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '+919876543211', description: 'Alternate Contact Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "alternateContactNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'info@bacelarinstitute.edu.in', description: 'Email ID', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "emailId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://bacelarinstitute.edu.in', description: 'College Website URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "collegeWebsite", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is college active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateCollegeDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'College master entry', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateCollegeDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 94 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateCollegeDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class UpdateCollegeDto {
+}
+exports.UpdateCollegeDto = UpdateCollegeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'REG12345', description: 'Registration Number of the College', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "registrationNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'CLG001', description: 'College Code', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "collegeCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bacelar Institute of Technology', description: 'Name of the College', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "collegeName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'BIT', description: 'Short Name of the College', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "shortName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123 Tech Park, Knowledge Park III, Greater Noida', description: 'Address of the College', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "collegeAddress", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '+919876543210', description: 'Primary Contact Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "primaryContactNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '+919876543211', description: 'Alternate Contact Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "alternateContactNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'info@bacelarinstitute.edu.in', description: 'Email ID', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "emailId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://bacelarinstitute.edu.in', description: 'College Website URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "collegeWebsite", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Editor Admin', description: 'Username of editor', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is college active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateCollegeDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated college details', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCollegeDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 95 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.WebsiteModule = void 0;
+const common_1 = __webpack_require__(2);
+const campus_quick_link_module_1 = __webpack_require__(96);
+const latest_update_module_1 = __webpack_require__(100);
+const admission_enquiry_module_1 = __webpack_require__(104);
+const hero_section_module_1 = __webpack_require__(108);
+const upload_module_1 = __webpack_require__(112);
+const notice_board_module_1 = __webpack_require__(114);
+const accreditation_slider_module_1 = __webpack_require__(118);
+const top_achiever_module_1 = __webpack_require__(122);
+const image_gallery_module_1 = __webpack_require__(126);
+const video_gallery_module_1 = __webpack_require__(130);
+const contact_enquiry_module_1 = __webpack_require__(134);
+const stats_counter_module_1 = __webpack_require__(138);
+const testimonial_module_1 = __webpack_require__(142);
+let WebsiteModule = class WebsiteModule {
+};
+exports.WebsiteModule = WebsiteModule;
+exports.WebsiteModule = WebsiteModule = __decorate([
+    (0, common_1.Module)({
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule],
+    })
+], WebsiteModule);
+
+
+/***/ }),
+/* 96 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CampusQuickLinkModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const campus_quick_link_controller_1 = __webpack_require__(93);
+const campus_quick_link_controller_1 = __webpack_require__(97);
 let CampusQuickLinkModule = class CampusQuickLinkModule {
 };
 exports.CampusQuickLinkModule = CampusQuickLinkModule;
@@ -5777,7 +6114,7 @@ exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
 
 
 /***/ }),
-/* 93 */
+/* 97 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5800,8 +6137,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_campus_quick_link_dto_1 = __webpack_require__(94);
-const update_campus_quick_link_dto_1 = __webpack_require__(95);
+const create_campus_quick_link_dto_1 = __webpack_require__(98);
+const update_campus_quick_link_dto_1 = __webpack_require__(99);
 let CampusQuickLinkController = class CampusQuickLinkController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -5881,7 +6218,7 @@ exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
 
 
 /***/ }),
-/* 94 */
+/* 98 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5920,6 +6257,12 @@ __decorate([
     __metadata("design:type", String)
 ], CreateCampusQuickLinkDto.prototype, "pageUrl", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is quick link active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateCampusQuickLinkDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -5934,7 +6277,7 @@ __decorate([
 
 
 /***/ }),
-/* 95 */
+/* 99 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5993,7 +6336,7 @@ __decorate([
 
 
 /***/ }),
-/* 96 */
+/* 100 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6007,7 +6350,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LatestUpdateModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const latest_update_controller_1 = __webpack_require__(97);
+const latest_update_controller_1 = __webpack_require__(101);
 let LatestUpdateModule = class LatestUpdateModule {
 };
 exports.LatestUpdateModule = LatestUpdateModule;
@@ -6031,7 +6374,7 @@ exports.LatestUpdateModule = LatestUpdateModule = __decorate([
 
 
 /***/ }),
-/* 97 */
+/* 101 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6054,8 +6397,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_latest_update_dto_1 = __webpack_require__(98);
-const update_latest_update_dto_1 = __webpack_require__(99);
+const create_latest_update_dto_1 = __webpack_require__(102);
+const update_latest_update_dto_1 = __webpack_require__(103);
 let LatestUpdateController = class LatestUpdateController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -6135,7 +6478,7 @@ exports.LatestUpdateController = LatestUpdateController = __decorate([
 
 
 /***/ }),
-/* 98 */
+/* 102 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6210,6 +6553,12 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateLatestUpdateDto.prototype, "displayOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is update active on website?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateLatestUpdateDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -6224,7 +6573,7 @@ __decorate([
 
 
 /***/ }),
-/* 99 */
+/* 103 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6319,7 +6668,7 @@ __decorate([
 
 
 /***/ }),
-/* 100 */
+/* 104 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6333,7 +6682,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const admission_enquiry_controller_1 = __webpack_require__(101);
+const admission_enquiry_controller_1 = __webpack_require__(105);
 let AdmissionEnquiryModule = class AdmissionEnquiryModule {
 };
 exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
@@ -6357,7 +6706,7 @@ exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 101 */
+/* 105 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6380,8 +6729,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_admission_enquiry_dto_1 = __webpack_require__(102);
-const update_admission_enquiry_dto_1 = __webpack_require__(103);
+const create_admission_enquiry_dto_1 = __webpack_require__(106);
+const update_admission_enquiry_dto_1 = __webpack_require__(107);
 let AdmissionEnquiryController = class AdmissionEnquiryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -6461,7 +6810,7 @@ exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
 
 
 /***/ }),
-/* 102 */
+/* 106 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6584,6 +6933,12 @@ __decorate([
     __metadata("design:type", Boolean)
 ], CreateAdmissionEnquiryDto.prototype, "isRead", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is enquiry active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateAdmissionEnquiryDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'System / Website', description: 'Creator identifier', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -6598,7 +6953,7 @@ __decorate([
 
 
 /***/ }),
-/* 103 */
+/* 107 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6735,7 +7090,7 @@ __decorate([
 
 
 /***/ }),
-/* 104 */
+/* 108 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6749,7 +7104,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const hero_section_controller_1 = __webpack_require__(105);
+const hero_section_controller_1 = __webpack_require__(109);
 let HeroSectionModule = class HeroSectionModule {
 };
 exports.HeroSectionModule = HeroSectionModule;
@@ -6773,7 +7128,7 @@ exports.HeroSectionModule = HeroSectionModule = __decorate([
 
 
 /***/ }),
-/* 105 */
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6796,8 +7151,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_hero_section_dto_1 = __webpack_require__(106);
-const update_hero_section_dto_1 = __webpack_require__(107);
+const create_hero_section_dto_1 = __webpack_require__(110);
+const update_hero_section_dto_1 = __webpack_require__(111);
 let HeroSectionController = class HeroSectionController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -6877,7 +7232,7 @@ exports.HeroSectionController = HeroSectionController = __decorate([
 
 
 /***/ }),
-/* 106 */
+/* 110 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6958,6 +7313,12 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateHeroSectionDto.prototype, "displayOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is hero slide active on website?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateHeroSectionDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -6972,7 +7333,7 @@ __decorate([
 
 
 /***/ }),
-/* 107 */
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7073,7 +7434,7 @@ __decorate([
 
 
 /***/ }),
-/* 108 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7086,7 +7447,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UploadModule = void 0;
 const common_1 = __webpack_require__(2);
-const upload_controller_1 = __webpack_require__(109);
+const upload_controller_1 = __webpack_require__(113);
 const storage_module_1 = __webpack_require__(48);
 let UploadModule = class UploadModule {
 };
@@ -7100,7 +7461,7 @@ exports.UploadModule = UploadModule = __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7180,7 +7541,7 @@ exports.UploadController = UploadController = __decorate([
 
 
 /***/ }),
-/* 110 */
+/* 114 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7194,7 +7555,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const notice_board_controller_1 = __webpack_require__(111);
+const notice_board_controller_1 = __webpack_require__(115);
 let NoticeBoardModule = class NoticeBoardModule {
 };
 exports.NoticeBoardModule = NoticeBoardModule;
@@ -7218,7 +7579,7 @@ exports.NoticeBoardModule = NoticeBoardModule = __decorate([
 
 
 /***/ }),
-/* 111 */
+/* 115 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7241,8 +7602,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_notice_board_dto_1 = __webpack_require__(112);
-const update_notice_board_dto_1 = __webpack_require__(113);
+const create_notice_board_dto_1 = __webpack_require__(116);
+const update_notice_board_dto_1 = __webpack_require__(117);
 let NoticeBoardController = class NoticeBoardController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -7322,7 +7683,7 @@ exports.NoticeBoardController = NoticeBoardController = __decorate([
 
 
 /***/ }),
-/* 112 */
+/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7403,6 +7764,12 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateNoticeBoardDto.prototype, "displayOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is notice active on website?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateNoticeBoardDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -7417,7 +7784,7 @@ __decorate([
 
 
 /***/ }),
-/* 113 */
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7518,7 +7885,7 @@ __decorate([
 
 
 /***/ }),
-/* 114 */
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7532,7 +7899,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AccreditationSliderModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const accreditation_slider_controller_1 = __webpack_require__(115);
+const accreditation_slider_controller_1 = __webpack_require__(119);
 let AccreditationSliderModule = class AccreditationSliderModule {
 };
 exports.AccreditationSliderModule = AccreditationSliderModule;
@@ -7556,7 +7923,7 @@ exports.AccreditationSliderModule = AccreditationSliderModule = __decorate([
 
 
 /***/ }),
-/* 115 */
+/* 119 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7579,8 +7946,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_accreditation_slider_dto_1 = __webpack_require__(116);
-const update_accreditation_slider_dto_1 = __webpack_require__(117);
+const create_accreditation_slider_dto_1 = __webpack_require__(120);
+const update_accreditation_slider_dto_1 = __webpack_require__(121);
 let AccreditationSliderController = class AccreditationSliderController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -7660,7 +8027,7 @@ exports.AccreditationSliderController = AccreditationSliderController = __decora
 
 
 /***/ }),
-/* 116 */
+/* 120 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7705,6 +8072,12 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateAccreditationSliderDto.prototype, "displayOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is accreditation slider active on website?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateAccreditationSliderDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -7719,7 +8092,7 @@ __decorate([
 
 
 /***/ }),
-/* 117 */
+/* 121 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7784,7 +8157,7 @@ __decorate([
 
 
 /***/ }),
-/* 118 */
+/* 122 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7798,7 +8171,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const top_achiever_controller_1 = __webpack_require__(119);
+const top_achiever_controller_1 = __webpack_require__(123);
 let TopAchieverModule = class TopAchieverModule {
 };
 exports.TopAchieverModule = TopAchieverModule;
@@ -7822,7 +8195,7 @@ exports.TopAchieverModule = TopAchieverModule = __decorate([
 
 
 /***/ }),
-/* 119 */
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7845,8 +8218,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_top_achiever_dto_1 = __webpack_require__(120);
-const update_top_achiever_dto_1 = __webpack_require__(121);
+const create_top_achiever_dto_1 = __webpack_require__(124);
+const update_top_achiever_dto_1 = __webpack_require__(125);
 let TopAchieverController = class TopAchieverController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -7926,7 +8299,7 @@ exports.TopAchieverController = TopAchieverController = __decorate([
 
 
 /***/ }),
-/* 120 */
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8001,6 +8374,12 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateTopAchieverDto.prototype, "displayOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is top achiever active on website?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateTopAchieverDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -8015,7 +8394,7 @@ __decorate([
 
 
 /***/ }),
-/* 121 */
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8110,7 +8489,7 @@ __decorate([
 
 
 /***/ }),
-/* 122 */
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8124,7 +8503,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageGalleryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const image_gallery_controller_1 = __webpack_require__(123);
+const image_gallery_controller_1 = __webpack_require__(127);
 let ImageGalleryModule = class ImageGalleryModule {
 };
 exports.ImageGalleryModule = ImageGalleryModule;
@@ -8148,7 +8527,7 @@ exports.ImageGalleryModule = ImageGalleryModule = __decorate([
 
 
 /***/ }),
-/* 123 */
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8171,8 +8550,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_image_gallery_dto_1 = __webpack_require__(124);
-const update_image_gallery_dto_1 = __webpack_require__(125);
+const create_image_gallery_dto_1 = __webpack_require__(128);
+const update_image_gallery_dto_1 = __webpack_require__(129);
 let ImageGalleryController = class ImageGalleryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -8252,7 +8631,7 @@ exports.ImageGalleryController = ImageGalleryController = __decorate([
 
 
 /***/ }),
-/* 124 */
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8312,6 +8691,12 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateImageGalleryDto.prototype, "displayOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is album active on website?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateImageGalleryDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -8326,7 +8711,7 @@ __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8406,7 +8791,7 @@ __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 130 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8420,7 +8805,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const video_gallery_controller_1 = __webpack_require__(127);
+const video_gallery_controller_1 = __webpack_require__(131);
 let VideoGalleryModule = class VideoGalleryModule {
 };
 exports.VideoGalleryModule = VideoGalleryModule;
@@ -8444,7 +8829,7 @@ exports.VideoGalleryModule = VideoGalleryModule = __decorate([
 
 
 /***/ }),
-/* 127 */
+/* 131 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8467,8 +8852,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_video_gallery_dto_1 = __webpack_require__(128);
-const update_video_gallery_dto_1 = __webpack_require__(129);
+const create_video_gallery_dto_1 = __webpack_require__(132);
+const update_video_gallery_dto_1 = __webpack_require__(133);
 let VideoGalleryController = class VideoGalleryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -8548,7 +8933,7 @@ exports.VideoGalleryController = VideoGalleryController = __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8617,6 +9002,12 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateVideoGalleryDto.prototype, "displayOrder", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is video active on website?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateVideoGalleryDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -8631,7 +9022,7 @@ __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8720,7 +9111,7 @@ __decorate([
 
 
 /***/ }),
-/* 130 */
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8734,7 +9125,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ContactEnquiryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const contact_enquiry_controller_1 = __webpack_require__(131);
+const contact_enquiry_controller_1 = __webpack_require__(135);
 let ContactEnquiryModule = class ContactEnquiryModule {
 };
 exports.ContactEnquiryModule = ContactEnquiryModule;
@@ -8758,7 +9149,7 @@ exports.ContactEnquiryModule = ContactEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 131 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8781,8 +9172,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_contact_enquiry_dto_1 = __webpack_require__(132);
-const update_contact_enquiry_dto_1 = __webpack_require__(133);
+const create_contact_enquiry_dto_1 = __webpack_require__(136);
+const update_contact_enquiry_dto_1 = __webpack_require__(137);
 let ContactEnquiryController = class ContactEnquiryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -8862,7 +9253,7 @@ exports.ContactEnquiryController = ContactEnquiryController = __decorate([
 
 
 /***/ }),
-/* 132 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8925,6 +9316,12 @@ __decorate([
     __metadata("design:type", Boolean)
 ], CreateContactEnquiryDto.prototype, "isRead", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is enquiry active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateContactEnquiryDto.prototype, "IsActive", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'System / Website', description: 'Creator identifier', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -8939,7 +9336,7 @@ __decorate([
 
 
 /***/ }),
-/* 133 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9019,6 +9416,602 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateContactEnquiryDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 138 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StatsCounterModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const stats_counter_controller_1 = __webpack_require__(139);
+let StatsCounterModule = class StatsCounterModule {
+};
+exports.StatsCounterModule = StatsCounterModule;
+exports.StatsCounterModule = StatsCounterModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [stats_counter_controller_1.StatsCounterController],
+    })
+], StatsCounterModule);
+
+
+/***/ }),
+/* 139 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StatsCounterController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_stats_counter_dto_1 = __webpack_require__(140);
+const update_stats_counter_dto_1 = __webpack_require__(141);
+let StatsCounterController = class StatsCounterController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createDto) {
+        return this.studentClient.send({ cmd: 'create_stats_counter' }, createDto);
+    }
+    findAll() {
+        return this.studentClient.send({ cmd: 'find_all_stats_counters' }, {});
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_stats_counter' }, { statsCounterId: id });
+    }
+    update(id, updateDto) {
+        return this.studentClient.send({ cmd: 'update_stats_counter' }, { statsCounterId: id, ...updateDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_stats_counter' }, { statsCounterId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.StatsCounterController = StatsCounterController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new stats counter entry' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Stats counter created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_stats_counter_dto_1.CreateStatsCounterDto !== "undefined" && create_stats_counter_dto_1.CreateStatsCounterDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], StatsCounterController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active stats counters (where IsDeleted is false)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all stats counters' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], StatsCounterController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get stats counter details by statsCounterId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return stats counter details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], StatsCounterController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update stats counter details by statsCounterId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Stats counter updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_stats_counter_dto_1.UpdateStatsCounterDto !== "undefined" && update_stats_counter_dto_1.UpdateStatsCounterDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], StatsCounterController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete a stats counter entry by statsCounterId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Obsolete stats entry' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Stats counter soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], StatsCounterController.prototype, "remove", null);
+exports.StatsCounterController = StatsCounterController = __decorate([
+    (0, swagger_1.ApiTags)('Website - Stats Counters'),
+    (0, common_1.Controller)('website/stats-counters'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], StatsCounterController);
+
+
+/***/ }),
+/* 140 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateStatsCounterDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class CreateStatsCounterDto {
+}
+exports.CreateStatsCounterDto = CreateStatsCounterDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Students Enrolled', description: 'Title of the stats counter' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateStatsCounterDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '5000', description: 'Value of the counter' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateStatsCounterDto.prototype, "value", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '+', description: 'Suffix for the counter (e.g. +, %, k+)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStatsCounterDto.prototype, "suffix", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'fa-user-graduate', description: 'Icon class or name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStatsCounterDto.prototype, "icon", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/bg.jpg', description: 'Background Image URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStatsCounterDto.prototype, "backgroundImage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Display order sequence', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateStatsCounterDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is active flag', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateStatsCounterDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStatsCounterDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Stats counter entry', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStatsCounterDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 141 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateStatsCounterDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class UpdateStatsCounterDto {
+}
+exports.UpdateStatsCounterDto = UpdateStatsCounterDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Students Enrolled', description: 'Title of the stats counter', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStatsCounterDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '5000', description: 'Value of the counter', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStatsCounterDto.prototype, "value", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '+', description: 'Suffix for the counter', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStatsCounterDto.prototype, "suffix", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'fa-user-graduate', description: 'Icon class or name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStatsCounterDto.prototype, "icon", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/bg.jpg', description: 'Background Image URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStatsCounterDto.prototype, "backgroundImage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Display order sequence', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateStatsCounterDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is active flag', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateStatsCounterDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Editor Admin', description: 'Username of editor', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStatsCounterDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated stats entry', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStatsCounterDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 142 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestimonialModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const testimonial_controller_1 = __webpack_require__(143);
+let TestimonialModule = class TestimonialModule {
+};
+exports.TestimonialModule = TestimonialModule;
+exports.TestimonialModule = TestimonialModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [testimonial_controller_1.TestimonialController],
+    })
+], TestimonialModule);
+
+
+/***/ }),
+/* 143 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestimonialController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_testimonial_dto_1 = __webpack_require__(144);
+const update_testimonial_dto_1 = __webpack_require__(145);
+let TestimonialController = class TestimonialController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createDto) {
+        return this.studentClient.send({ cmd: 'create_testimonial' }, createDto);
+    }
+    findAll() {
+        return this.studentClient.send({ cmd: 'find_all_testimonials' }, {});
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_testimonial' }, { testimonialId: id });
+    }
+    update(id, updateDto) {
+        return this.studentClient.send({ cmd: 'update_testimonial' }, { testimonialId: id, ...updateDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_testimonial' }, { testimonialId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.TestimonialController = TestimonialController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new testimonial entry' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Testimonial created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_testimonial_dto_1.CreateTestimonialDto !== "undefined" && create_testimonial_dto_1.CreateTestimonialDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], TestimonialController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active testimonials (where IsDeleted is false)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all testimonials' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], TestimonialController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get testimonial details by testimonialId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return testimonial details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], TestimonialController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update testimonial details by testimonialId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Testimonial updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_testimonial_dto_1.UpdateTestimonialDto !== "undefined" && update_testimonial_dto_1.UpdateTestimonialDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], TestimonialController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete a testimonial entry by testimonialId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Obsolete testimonial' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Testimonial soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], TestimonialController.prototype, "remove", null);
+exports.TestimonialController = TestimonialController = __decorate([
+    (0, swagger_1.ApiTags)('Website - Testimonials'),
+    (0, common_1.Controller)('website/testimonials'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], TestimonialController);
+
+
+/***/ }),
+/* 144 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateTestimonialDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class CreateTestimonialDto {
+}
+exports.CreateTestimonialDto = CreateTestimonialDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Rahul Sharma', description: 'Name of the person giving testimonial' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateTestimonialDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'B.Tech Alumni (Batch 2024)', description: 'Role or designation', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateTestimonialDto.prototype, "role", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bacelar Institute provided me with amazing learning opportunities.', description: 'Testimonial feedback message', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateTestimonialDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 5.0, description: 'Rating score (1 to 5)', required: false }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(5),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateTestimonialDto.prototype, "rating", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/student.jpg', description: 'Profile picture / image URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateTestimonialDto.prototype, "image", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Display order sequence', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateTestimonialDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is active flag', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateTestimonialDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateTestimonialDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Testimonial entry', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateTestimonialDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 145 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateTestimonialDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class UpdateTestimonialDto {
+}
+exports.UpdateTestimonialDto = UpdateTestimonialDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Rahul Sharma', description: 'Name of the person', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateTestimonialDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'B.Tech Alumni (Batch 2024)', description: 'Role or designation', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateTestimonialDto.prototype, "role", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bacelar Institute provided me with amazing learning opportunities.', description: 'Testimonial feedback message', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateTestimonialDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 5.0, description: 'Rating score (1 to 5)', required: false }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.Max)(5),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateTestimonialDto.prototype, "rating", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/student.jpg', description: 'Profile picture / image URL', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateTestimonialDto.prototype, "image", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Display order sequence', required: false }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateTestimonialDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is active flag', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateTestimonialDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Editor Admin', description: 'Username of editor', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateTestimonialDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated testimonial entry', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateTestimonialDto.prototype, "Remarks", void 0);
 
 
 /***/ })
