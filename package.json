@@ -10,8 +10,8 @@
     "start:student": "nest start --watch student-service",
     "start:dev:all": "concurrently -k -p \"[{name}]\" -n \"BACKEND,STUDENT\" -c \"cyan,yellow\" \"nest start --watch backend\" \"nest start --watch student-service\"",
     "start:all": "concurrently -k -p \"[{name}]\" -n \"BACKEND,STUDENT\" -c \"cyan,yellow\" \"nest start backend\" \"nest start student-service\"",
-    "start:prod": "node dist/apps/backend/main",
-    "build": "nest build",
+    "start:prod": "node scripts/start-prod.js",
+    "build": "npm run prisma:generate && nest build student-service && nest build backend",
     "prisma:generate": "prisma generate --config prisma.config.ts",
     "prisma:migrate": "prisma migrate dev --config prisma.config.ts",
     "prisma:studio": "prisma studio --config prisma.config.ts"
