@@ -9,14 +9,20 @@ import { QualificationModule } from './qualification/qualification.module';
 import { AcademicSessionModule } from './academic-session/academic-session.module';
 import { ProgramFeeConfigModule } from './program-fee-config/program-fee-config.module';
 import { CollegeModule } from './college/college.module';
+import { ZipcodeModule } from './zipcode/zipcode.module';
+import { ProgramEligibilityModule } from './program-eligibility/program-eligibility.module';
+import { StreamModule } from './stream/stream.module';
 
 @Module({
   imports: [
     StateModule,
     CityModule,
+    ZipcodeModule,
     ProgramCategoryModule,
     SubjectModule,
     ProgramModule,
+    StreamModule,
+    ProgramEligibilityModule,
     BoardModule,
     QualificationModule,
     AcademicSessionModule,
@@ -26,9 +32,12 @@ import { CollegeModule } from './college/college.module';
   exports: [
     StateModule,
     CityModule,
+    ZipcodeModule,
     ProgramCategoryModule,
     SubjectModule,
     ProgramModule,
+    StreamModule,
+    ProgramEligibilityModule,
     BoardModule,
     QualificationModule,
     AcademicSessionModule,

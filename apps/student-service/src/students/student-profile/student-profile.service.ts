@@ -42,7 +42,9 @@ export class StudentProfileService {
         certificateAttachment: data.certificateAttachment || null,
         aadharIdNo: data.aadharIdNo || null,
         apaarIdNo: data.apaarIdNo || null,
-        
+        nameAsPerAdhar: data.nameAsPerAdhar || null,
+        dobAsPerAdhar: data.dobAsPerAdhar ? new Date(data.dobAsPerAdhar) : null,
+
         // Correspondence Address
         CaddressLine1: data.CaddressLine1 || null,
         CaddressLine2: data.CaddressLine2 || null,
@@ -115,7 +117,13 @@ export class StudentProfileService {
         certificateAttachment: data.certificateAttachment,
         aadharIdNo: data.aadharIdNo,
         apaarIdNo: data.apaarIdNo,
-        
+        nameAsPerAdhar: data.nameAsPerAdhar,
+        dobAsPerAdhar: data.dobAsPerAdhar
+          ? new Date(data.dobAsPerAdhar)
+          : data.dobAsPerAdhar === null
+            ? null
+            : undefined,
+
         // Correspondence Address
         CaddressLine1: data.CaddressLine1,
         CaddressLine2: data.CaddressLine2,

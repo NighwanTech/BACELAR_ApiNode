@@ -74,6 +74,29 @@ model CityMaster {
   @@map("cityMaster")
 }
 
+model ZipcodeMaster {
+  zipcodeId      Int       @id @default(autoincrement())
+  zipCode        String    @db.VarChar(20)
+  stateId        Int
+  cityId         Int
+  locality       String    @db.VarChar(255)
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([stateId])
+  @@index([cityId])
+  @@index([zipCode])
+  @@map("zipcodeMaster")
+}
+
 model ProgramCategory {
   programCategoryId   Int       @id @default(autoincrement())
   programCategoryName String    @db.VarChar(100)
@@ -115,7 +138,9 @@ model StudentProfile {
   certificateAttachment String?   @db.VarChar(255)
   aadharIdNo            String?   @db.VarChar(50)
   apaarIdNo             String?   @db.VarChar(50)
-  
+  nameAsPerAdhar        String?   @db.VarChar(255)
+  dobAsPerAdhar         DateTime?
+
   // Correspondence Address
   CaddressLine1         String?   @db.VarChar(255)
   CaddressLine2         String?   @db.VarChar(255)
@@ -181,6 +206,8 @@ model Program {
   sequenceNo          Int
   feeConfigs          ProgramFeeConfig[]
   students            Student[]
+  eligibilityRules    ProgramEligibility[]
+  streams             StreamMaster[]
 
   // Common Audit Fields
   CreatedOn           DateTime          @default(now())
@@ -195,6 +222,59 @@ model Program {
   Remarks             String?           @db.VarChar(255)
 
   @@map("programs")
+}
+
+model StreamMaster {
+  streamId       Int       @id @default(autoincrement())
+  programId      Int
+  program        Program   @relation(fields: [programId], references: [programId], onDelete: Cascade)
+  streamName     String    @db.VarChar(100)
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([programId])
+  @@map("streamMaster")
+}
+
+model ProgramEligibility {
+  eligibilityId       Int       @id @default(autoincrement())
+  programId           Int
+  program             Program   @relation(fields: [programId], references: [programId], onDelete: Cascade)
+  /// SUBJECT | MIN_PERCENT | STREAM | QUALIFICATION
+  ruleType            String    @db.VarChar(30)
+  /// 10TH | 12TH | GRAD | PG | ALL
+  qualificationLevel  String    @db.VarChar(20)
+  /// GEN | OBC | SC | ST | MINORITY | GENERAL | RESERVED | ALL
+  category            String    @db.VarChar(30) @default("ALL")
+  /// e.g. 12MATH, AGGREGATE, SCIENCE, GRADUATION, or OR-list 12BIO|12AGRI
+  ruleKey             String?   @db.VarChar(100)
+  minPercent          Decimal?  @db.Decimal(5, 2)
+  /// Compulsory | Recommended
+  severity            String    @db.VarChar(20) @default("Compulsory")
+  displayOrder        Int       @default(0)
+  message             String    @db.VarChar(500)
+  CreatedOn           DateTime  @default(now())
+  CreatedBy           String    @db.VarChar(255)
+  UpdatedOn           DateTime? @updatedAt
+  UpdatedBy           String?   @db.VarChar(255)
+  IsActive            Boolean   @default(true)
+  IsDeleted           Boolean   @default(false)
+  DeletedRemarks      String?   @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?   @db.VarChar(255)
+  Remarks             String?   @db.VarChar(255)
+
+  @@index([programId])
+  @@index([ruleType])
+  @@map("programEligibility")
 }
 
 model BoardMaster {

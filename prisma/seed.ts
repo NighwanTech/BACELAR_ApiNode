@@ -48,6 +48,15 @@ try {
 const adapter = new PrismaMariaDb(dbConfig);
 const prisma = new PrismaClient({ adapter });
 
+// Adapter + PrismaClient generics can confuse IDE until TS server reloads generated types.
+type ProgramEligibilityDb = {
+  findFirst: (args: unknown) => Promise<{ eligibilityId: number } | null>;
+  create: (args: unknown) => Promise<unknown>;
+};
+const programEligibilityDb = (
+  prisma as unknown as { programEligibility: ProgramEligibilityDb }
+).programEligibility;
+
 function calculateFinal(base: number): number {
   if (!base || base <= 0) return 0;
   // pgCharge = base * 2%
@@ -422,6 +431,268 @@ async function main() {
   }
 
   console.log('Seeded Programs and Program Fee Configurations successfully!');
+
+  // 6. Seed Program Eligibility rules (idempotent by programId + message)
+  const eligibilityByCode: Record<
+    string,
+    Array<{
+      ruleType: string;
+      qualificationLevel: string;
+      category: string;
+      ruleKey?: string;
+      minPercent?: number;
+      severity: string;
+      displayOrder: number;
+      message: string;
+    }>
+  > = {
+    '5': [
+      {
+        ruleType: 'SUBJECT',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12MATH',
+        severity: 'Compulsory',
+        displayOrder: 1,
+        message: 'Compulsory: Mathematics must be selected in 12th Subject Details.',
+      },
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'GENERAL',
+        ruleKey: 'AGGREGATE',
+        minPercent: 50,
+        severity: 'Compulsory',
+        displayOrder: 2,
+        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
+      },
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'RESERVED',
+        ruleKey: 'AGGREGATE',
+        minPercent: 45,
+        severity: 'Compulsory',
+        displayOrder: 3,
+        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
+      },
+      {
+        ruleType: 'STREAM',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: 'SCIENCE',
+        severity: 'Recommended',
+        displayOrder: 4,
+        message: 'Recommended: Science stream in 12th (with Mathematics).',
+      },
+    ],
+    '8': [
+      {
+        ruleType: 'SUBJECT',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12BIO|12AGRI',
+        severity: 'Compulsory',
+        displayOrder: 1,
+        message:
+          'Compulsory: Biology or Agriculture must be selected in 12th Subject Details.',
+      },
+      {
+        ruleType: 'STREAM',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: 'SCIENCE',
+        severity: 'Compulsory',
+        displayOrder: 2,
+        message: 'Compulsory: 12th stream must be Science.',
+      },
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'GENERAL',
+        ruleKey: 'AGGREGATE',
+        minPercent: 50,
+        severity: 'Compulsory',
+        displayOrder: 3,
+        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
+      },
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'RESERVED',
+        ruleKey: 'AGGREGATE',
+        minPercent: 45,
+        severity: 'Compulsory',
+        displayOrder: 4,
+        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
+      },
+    ],
+    '6': [
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'GENERAL',
+        ruleKey: 'AGGREGATE',
+        minPercent: 50,
+        severity: 'Compulsory',
+        displayOrder: 1,
+        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
+      },
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'RESERVED',
+        ruleKey: 'AGGREGATE',
+        minPercent: 45,
+        severity: 'Compulsory',
+        displayOrder: 2,
+        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
+      },
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'GRADUATION',
+        severity: 'Compulsory',
+        displayOrder: 3,
+        message: 'Compulsory: Graduation University/College details are required.',
+      },
+    ],
+    '7': [
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'GENERAL',
+        ruleKey: 'AGGREGATE',
+        minPercent: 50,
+        severity: 'Compulsory',
+        displayOrder: 1,
+        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
+      },
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'RESERVED',
+        ruleKey: 'AGGREGATE',
+        minPercent: 45,
+        severity: 'Compulsory',
+        displayOrder: 2,
+        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
+      },
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'GRADUATION',
+        severity: 'Compulsory',
+        displayOrder: 3,
+        message: 'Compulsory: Graduation University/College details are required.',
+      },
+    ],
+    '14': [
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'GENERAL',
+        ruleKey: 'AGGREGATE',
+        minPercent: 50,
+        severity: 'Compulsory',
+        displayOrder: 1,
+        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
+      },
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'RESERVED',
+        ruleKey: 'AGGREGATE',
+        minPercent: 45,
+        severity: 'Compulsory',
+        displayOrder: 2,
+        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
+      },
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'GRADUATION',
+        severity: 'Compulsory',
+        displayOrder: 3,
+        message: 'Compulsory: Graduation University/College details are required.',
+      },
+    ],
+    '9': [
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'GENERAL',
+        ruleKey: 'AGGREGATE',
+        minPercent: 50,
+        severity: 'Compulsory',
+        displayOrder: 1,
+        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
+      },
+      {
+        ruleType: 'MIN_PERCENT',
+        qualificationLevel: '12TH',
+        category: 'RESERVED',
+        ruleKey: 'AGGREGATE',
+        minPercent: 45,
+        severity: 'Compulsory',
+        displayOrder: 2,
+        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
+      },
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'GRADUATION',
+        severity: 'Compulsory',
+        displayOrder: 3,
+        message: 'Compulsory: Graduation University/College details are required.',
+      },
+    ],
+  };
+  // M.A. History / Sociology same as Hindi
+  eligibilityByCode['10'] = eligibilityByCode['9'];
+  eligibilityByCode['11'] = eligibilityByCode['9'];
+
+  for (const [code, rules] of Object.entries(eligibilityByCode)) {
+    const program = await prisma.program.findFirst({
+      where: { programCode: code, IsDeleted: false },
+    });
+    if (!program) continue;
+
+    for (const rule of rules) {
+      const exists = await programEligibilityDb.findFirst({
+        where: {
+          programId: program.programId,
+          message: rule.message,
+          ruleType: rule.ruleType,
+          category: rule.category,
+          IsDeleted: false,
+        },
+      });
+      if (exists) continue;
+
+      await programEligibilityDb.create({
+        data: {
+          programId: program.programId,
+          ruleType: rule.ruleType,
+          qualificationLevel: rule.qualificationLevel,
+          category: rule.category,
+          ruleKey: rule.ruleKey || null,
+          minPercent: rule.minPercent ?? null,
+          severity: rule.severity,
+          displayOrder: rule.displayOrder,
+          message: rule.message,
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    }
+  }
+  console.log('Seeded Program Eligibility rules successfully!');
 }
 
 main()

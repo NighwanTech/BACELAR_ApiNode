@@ -92,6 +92,16 @@ export class CreateStudentProfileDto {
   @IsOptional()
   apaarIdNo?: string;
 
+  @ApiProperty({ example: 'RAM KUMAR SINGH', required: false, description: 'Name as per Aadhaar' })
+  @IsString()
+  @IsOptional()
+  nameAsPerAdhar?: string;
+
+  @ApiProperty({ example: '2001-08-15', required: false, description: 'DOB as per Aadhaar' })
+  @IsString()
+  @IsOptional()
+  dobAsPerAdhar?: string;
+
   // Correspondence Address
   @ApiProperty({ example: 'Flat 101, block A', required: false })
   @IsString()

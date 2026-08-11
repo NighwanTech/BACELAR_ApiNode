@@ -122,7 +122,7 @@ const common_1 = __webpack_require__(2);
 const config_1 = __webpack_require__(7);
 const students_module_1 = __webpack_require__(8);
 const master_module_1 = __webpack_require__(51);
-const website_module_1 = __webpack_require__(97);
+const website_module_1 = __webpack_require__(110);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -849,6 +849,18 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStudentProfileDto.prototype, "apaarIdNo", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: 'RAM KUMAR SINGH', required: false, description: 'Name as per Aadhaar' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStudentProfileDto.prototype, "nameAsPerAdhar", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2001-08-15', required: false, description: 'DOB as per Aadhaar' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStudentProfileDto.prototype, "dobAsPerAdhar", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Flat 101, block A', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
@@ -1057,6 +1069,18 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentProfileDto.prototype, "apaarIdNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'RAM KUMAR SINGH', required: false, description: 'Name as per Aadhaar' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentProfileDto.prototype, "nameAsPerAdhar", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2001-08-15', required: false, description: 'DOB as per Aadhaar' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentProfileDto.prototype, "dobAsPerAdhar", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Flat 101, block A', required: false }),
     (0, class_validator_1.IsString)(),
@@ -3187,6 +3211,9 @@ const qualification_module_1 = __webpack_require__(78);
 const academic_session_module_1 = __webpack_require__(83);
 const program_fee_config_module_1 = __webpack_require__(88);
 const college_module_1 = __webpack_require__(93);
+const zipcode_module_1 = __webpack_require__(97);
+const program_eligibility_module_1 = __webpack_require__(101);
+const stream_module_1 = __webpack_require__(106);
 let MasterModule = class MasterModule {
 };
 exports.MasterModule = MasterModule;
@@ -3195,9 +3222,12 @@ exports.MasterModule = MasterModule = __decorate([
         imports: [
             state_module_1.StateModule,
             city_module_1.CityModule,
+            zipcode_module_1.ZipcodeModule,
             program_category_module_1.ProgramCategoryModule,
             subject_module_1.SubjectModule,
             program_module_1.ProgramModule,
+            stream_module_1.StreamModule,
+            program_eligibility_module_1.ProgramEligibilityModule,
             board_module_1.BoardModule,
             qualification_module_1.QualificationModule,
             academic_session_module_1.AcademicSessionModule,
@@ -3207,9 +3237,12 @@ exports.MasterModule = MasterModule = __decorate([
         exports: [
             state_module_1.StateModule,
             city_module_1.CityModule,
+            zipcode_module_1.ZipcodeModule,
             program_category_module_1.ProgramCategoryModule,
             subject_module_1.SubjectModule,
             program_module_1.ProgramModule,
+            stream_module_1.StreamModule,
+            program_eligibility_module_1.ProgramEligibilityModule,
             board_module_1.BoardModule,
             qualification_module_1.QualificationModule,
             academic_session_module_1.AcademicSessionModule,
@@ -6203,31 +6236,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WebsiteModule = void 0;
+exports.ZipcodeModule = void 0;
 const common_1 = __webpack_require__(2);
-const campus_quick_link_module_1 = __webpack_require__(98);
-const latest_update_module_1 = __webpack_require__(102);
-const admission_enquiry_module_1 = __webpack_require__(106);
-const hero_section_module_1 = __webpack_require__(110);
-const upload_module_1 = __webpack_require__(114);
-const notice_board_module_1 = __webpack_require__(116);
-const accreditation_slider_module_1 = __webpack_require__(120);
-const top_achiever_module_1 = __webpack_require__(124);
-const image_gallery_module_1 = __webpack_require__(128);
-const video_gallery_module_1 = __webpack_require__(132);
-const contact_enquiry_module_1 = __webpack_require__(136);
-const stats_counter_module_1 = __webpack_require__(140);
-const testimonial_module_1 = __webpack_require__(144);
-const header_button_module_1 = __webpack_require__(148);
-let WebsiteModule = class WebsiteModule {
+const microservices_1 = __webpack_require__(9);
+const zipcode_controller_1 = __webpack_require__(98);
+let ZipcodeModule = class ZipcodeModule {
 };
-exports.WebsiteModule = WebsiteModule;
-exports.WebsiteModule = WebsiteModule = __decorate([
+exports.ZipcodeModule = ZipcodeModule;
+exports.ZipcodeModule = ZipcodeModule = __decorate([
     (0, common_1.Module)({
-        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule],
-        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule],
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [zipcode_controller_1.ZipcodeController],
     })
-], WebsiteModule);
+], ZipcodeModule);
 
 
 /***/ }),
@@ -6241,11 +6273,1021 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ZipcodeController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_zipcode_dto_1 = __webpack_require__(99);
+const update_zipcode_dto_1 = __webpack_require__(100);
+let ZipcodeController = class ZipcodeController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createZipcodeDto) {
+        return this.studentClient.send({ cmd: 'create_zipcode' }, createZipcodeDto);
+    }
+    findAll(stateId, cityId, zipCode) {
+        const payload = {};
+        if (stateId !== undefined && stateId !== null && String(stateId).trim() !== '') {
+            payload.stateId = Number(stateId);
+        }
+        if (cityId !== undefined && cityId !== null && String(cityId).trim() !== '') {
+            payload.cityId = Number(cityId);
+        }
+        if (zipCode !== undefined && zipCode !== null && String(zipCode).trim() !== '') {
+            payload.zipCode = String(zipCode).trim();
+        }
+        return this.studentClient.send({ cmd: 'find_all_zipcodes' }, payload);
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_zipcode' }, { zipcodeId: id });
+    }
+    update(id, updateZipcodeDto) {
+        return this.studentClient.send({ cmd: 'update_zipcode' }, { zipcodeId: id, ...updateZipcodeDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_zipcode' }, { zipcodeId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.ZipcodeController = ZipcodeController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new zipcode master entry' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Zipcode created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_zipcode_dto_1.CreateZipcodeDto !== "undefined" && create_zipcode_dto_1.CreateZipcodeDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], ZipcodeController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active zipcodes (optional filters)' }),
+    (0, swagger_1.ApiQuery)({ name: 'stateId', required: false, example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'cityId', required: false, example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'zipCode', required: false, example: '226001' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all zipcodes' }),
+    __param(0, (0, common_1.Query)('stateId')),
+    __param(1, (0, common_1.Query)('cityId')),
+    __param(2, (0, common_1.Query)('zipCode')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], ZipcodeController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get zipcode details by zipcodeId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return zipcode details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], ZipcodeController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update zipcode details by zipcodeId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Zipcode updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_zipcode_dto_1.UpdateZipcodeDto !== "undefined" && update_zipcode_dto_1.UpdateZipcodeDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], ZipcodeController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete a zipcode by zipcodeId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Mistake entry' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Zipcode soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], ZipcodeController.prototype, "remove", null);
+exports.ZipcodeController = ZipcodeController = __decorate([
+    (0, swagger_1.ApiTags)('Master - Zipcodes'),
+    (0, common_1.Controller)('master/zipcodes'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], ZipcodeController);
+
+
+/***/ }),
+/* 99 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateZipcodeDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class CreateZipcodeDto {
+}
+exports.CreateZipcodeDto = CreateZipcodeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '226001', description: 'Postal / ZIP code' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateZipcodeDto.prototype, "zipCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'State ID' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateZipcodeDto.prototype, "stateId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'City ID' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateZipcodeDto.prototype, "cityId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Hazratganj', description: 'Locality / area name' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateZipcodeDto.prototype, "locality", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateZipcodeDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Zipcode master entry', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateZipcodeDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 100 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateZipcodeDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class UpdateZipcodeDto {
+}
+exports.UpdateZipcodeDto = UpdateZipcodeDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '226001', description: 'Postal / ZIP code', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateZipcodeDto.prototype, "zipCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'State ID', required: false }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateZipcodeDto.prototype, "stateId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'City ID', required: false }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateZipcodeDto.prototype, "cityId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Hazratganj', description: 'Locality / area name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateZipcodeDto.prototype, "locality", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Editor Admin', description: 'Username of editor' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateZipcodeDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is zipcode active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateZipcodeDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated zipcode details', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateZipcodeDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 101 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProgramEligibilityModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const program_eligibility_controller_1 = __webpack_require__(102);
+let ProgramEligibilityModule = class ProgramEligibilityModule {
+};
+exports.ProgramEligibilityModule = ProgramEligibilityModule;
+exports.ProgramEligibilityModule = ProgramEligibilityModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [program_eligibility_controller_1.ProgramEligibilityController],
+    })
+], ProgramEligibilityModule);
+
+
+/***/ }),
+/* 102 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProgramEligibilityController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_program_eligibility_dto_1 = __webpack_require__(103);
+const update_program_eligibility_dto_1 = __webpack_require__(104);
+const validate_program_eligibility_dto_1 = __webpack_require__(105);
+let ProgramEligibilityController = class ProgramEligibilityController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(dto) {
+        return this.studentClient.send({ cmd: 'create_program_eligibility' }, dto);
+    }
+    validate(dto) {
+        return this.studentClient.send({ cmd: 'validate_program_eligibility' }, dto);
+    }
+    findAll(programId, ruleType, category, severity) {
+        const payload = {};
+        if (programId?.trim())
+            payload.programId = Number(programId);
+        if (ruleType?.trim())
+            payload.ruleType = ruleType;
+        if (category?.trim())
+            payload.category = category;
+        if (severity?.trim())
+            payload.severity = severity;
+        return this.studentClient.send({ cmd: 'find_all_program_eligibilities' }, payload);
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_program_eligibility' }, { eligibilityId: id });
+    }
+    update(id, dto) {
+        return this.studentClient.send({ cmd: 'update_program_eligibility' }, { eligibilityId: id, ...dto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_program_eligibility' }, { eligibilityId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.ProgramEligibilityController = ProgramEligibilityController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a program eligibility rule (admin)' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Eligibility rule created' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_program_eligibility_dto_1.CreateProgramEligibilityDto !== "undefined" && create_program_eligibility_dto_1.CreateProgramEligibilityDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], ProgramEligibilityController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('validate'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Validate academic snapshot against compulsory eligibility rules',
+    }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: '{ ok, errors[] }' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof validate_program_eligibility_dto_1.ValidateProgramEligibilityDto !== "undefined" && validate_program_eligibility_dto_1.ValidateProgramEligibilityDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], ProgramEligibilityController.prototype, "validate", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'List eligibility rules (filter by programId / category)' }),
+    (0, swagger_1.ApiQuery)({ name: 'programId', required: false, example: 5 }),
+    (0, swagger_1.ApiQuery)({ name: 'ruleType', required: false, example: 'MIN_PERCENT' }),
+    (0, swagger_1.ApiQuery)({ name: 'category', required: false, example: 'GEN' }),
+    (0, swagger_1.ApiQuery)({ name: 'severity', required: false, example: 'Compulsory' }),
+    __param(0, (0, common_1.Query)('programId')),
+    __param(1, (0, common_1.Query)('ruleType')),
+    __param(2, (0, common_1.Query)('category')),
+    __param(3, (0, common_1.Query)('severity')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", typeof (_f = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _f : Object)
+], ProgramEligibilityController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get eligibility rule by ID' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], ProgramEligibilityController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update eligibility rule' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_h = typeof update_program_eligibility_dto_1.UpdateProgramEligibilityDto !== "undefined" && update_program_eligibility_dto_1.UpdateProgramEligibilityDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+], ProgramEligibilityController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete eligibility rule' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
+], ProgramEligibilityController.prototype, "remove", null);
+exports.ProgramEligibilityController = ProgramEligibilityController = __decorate([
+    (0, swagger_1.ApiTags)('Master - Program Eligibility'),
+    (0, common_1.Controller)('master/program-eligibilities'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], ProgramEligibilityController);
+
+
+/***/ }),
+/* 103 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateProgramEligibilityDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+const class_transformer_1 = __webpack_require__(25);
+class CreateProgramEligibilityDto {
+}
+exports.CreateProgramEligibilityDto = CreateProgramEligibilityDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 5, description: 'Program ID' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateProgramEligibilityDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'SUBJECT',
+        enum: ['SUBJECT', 'MIN_PERCENT', 'STREAM', 'QUALIFICATION'],
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['SUBJECT', 'MIN_PERCENT', 'STREAM', 'QUALIFICATION']),
+    __metadata("design:type", String)
+], CreateProgramEligibilityDto.prototype, "ruleType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '12TH',
+        enum: ['10TH', '12TH', 'GRAD', 'PG', 'ALL'],
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['10TH', '12TH', 'GRAD', 'PG', 'ALL']),
+    __metadata("design:type", String)
+], CreateProgramEligibilityDto.prototype, "qualificationLevel", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'ALL',
+        description: 'GEN | OBC | SC | ST | MINORITY | GENERAL | RESERVED | ALL',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateProgramEligibilityDto.prototype, "category", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '12MATH',
+        description: 'Subject code / AGGREGATE / SCIENCE / GRADUATION. Use | for OR (12BIO|12AGRI)',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateProgramEligibilityDto.prototype, "ruleKey", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 50, description: 'Required for MIN_PERCENT', required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateProgramEligibilityDto.prototype, "minPercent", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Compulsory', enum: ['Compulsory', 'Recommended'], required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['Compulsory', 'Recommended']),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateProgramEligibilityDto.prototype, "severity", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateProgramEligibilityDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'Compulsory: Mathematics must be selected in 12th Subject Details.',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateProgramEligibilityDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateProgramEligibilityDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateProgramEligibilityDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 104 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateProgramEligibilityDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+const class_transformer_1 = __webpack_require__(25);
+class UpdateProgramEligibilityDto {
+}
+exports.UpdateProgramEligibilityDto = UpdateProgramEligibilityDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateProgramEligibilityDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ enum: ['SUBJECT', 'MIN_PERCENT', 'STREAM', 'QUALIFICATION'], required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['SUBJECT', 'MIN_PERCENT', 'STREAM', 'QUALIFICATION']),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProgramEligibilityDto.prototype, "ruleType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ enum: ['10TH', '12TH', 'GRAD', 'PG', 'ALL'], required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['10TH', '12TH', 'GRAD', 'PG', 'ALL']),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProgramEligibilityDto.prototype, "qualificationLevel", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProgramEligibilityDto.prototype, "category", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProgramEligibilityDto.prototype, "ruleKey", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateProgramEligibilityDto.prototype, "minPercent", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ enum: ['Compulsory', 'Recommended'], required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsIn)(['Compulsory', 'Recommended']),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProgramEligibilityDto.prototype, "severity", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateProgramEligibilityDto.prototype, "displayOrder", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProgramEligibilityDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Editor Admin' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateProgramEligibilityDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateProgramEligibilityDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProgramEligibilityDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 105 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidateProgramEligibilityDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+const class_transformer_1 = __webpack_require__(25);
+class ValidateProgramEligibilityDto {
+}
+exports.ValidateProgramEligibilityDto = ValidateProgramEligibilityDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 5 }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], ValidateProgramEligibilityDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'GEN', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], ValidateProgramEligibilityDto.prototype, "category", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 65.5, required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ValidateProgramEligibilityDto.prototype, "tenthPercentage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 62.0, required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ValidateProgramEligibilityDto.prototype, "twelfthPercentage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 55.0, required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ValidateProgramEligibilityDto.prototype, "graduationPercentage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 60.0, required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], ValidateProgramEligibilityDto.prototype, "pgPercentage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'SCIENCE', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], ValidateProgramEligibilityDto.prototype, "twelfthStream", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: ['12MATH', '12ENG'],
+        description: 'Selected 12th subject codes',
+        required: false,
+    }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], ValidateProgramEligibilityDto.prototype, "twelfthSubjectCodes", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], ValidateProgramEligibilityDto.prototype, "hasGraduation", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: false, required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], ValidateProgramEligibilityDto.prototype, "hasPg", void 0);
+
+
+/***/ }),
+/* 106 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StreamModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const stream_controller_1 = __webpack_require__(107);
+let StreamModule = class StreamModule {
+};
+exports.StreamModule = StreamModule;
+exports.StreamModule = StreamModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [stream_controller_1.StreamController],
+    })
+], StreamModule);
+
+
+/***/ }),
+/* 107 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StreamController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_stream_dto_1 = __webpack_require__(108);
+const update_stream_dto_1 = __webpack_require__(109);
+let StreamController = class StreamController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createStreamDto) {
+        return this.studentClient.send({ cmd: 'create_stream' }, createStreamDto);
+    }
+    findAll(programId) {
+        const payload = programId !== undefined && programId !== null && String(programId).trim() !== ''
+            ? { programId: Number(programId) }
+            : {};
+        return this.studentClient.send({ cmd: 'find_all_streams' }, payload);
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_stream' }, { streamId: id });
+    }
+    update(id, updateStreamDto) {
+        return this.studentClient.send({ cmd: 'update_stream' }, { streamId: id, ...updateStreamDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_stream' }, { streamId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.StreamController = StreamController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new stream master entry' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Stream created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_stream_dto_1.CreateStreamDto !== "undefined" && create_stream_dto_1.CreateStreamDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], StreamController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active streams (optional filter by programId)' }),
+    (0, swagger_1.ApiQuery)({ name: 'programId', required: false, example: 5 }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all streams' }),
+    __param(0, (0, common_1.Query)('programId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], StreamController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get stream details by streamId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return stream details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], StreamController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update stream details by streamId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Stream updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_stream_dto_1.UpdateStreamDto !== "undefined" && update_stream_dto_1.UpdateStreamDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], StreamController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete a stream by streamId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Mistake entry' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Stream soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], StreamController.prototype, "remove", null);
+exports.StreamController = StreamController = __decorate([
+    (0, swagger_1.ApiTags)('Master - Streams'),
+    (0, common_1.Controller)('master/streams'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], StreamController);
+
+
+/***/ }),
+/* 108 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateStreamDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+const class_transformer_1 = __webpack_require__(25);
+class CreateStreamDto {
+}
+exports.CreateStreamDto = CreateStreamDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 5, description: 'Program ID this stream belongs to' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateStreamDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'SCIENCE', description: 'Stream name' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateStreamDto.prototype, "streamName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of creator' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateStreamDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Stream master entry', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStreamDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 109 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateStreamDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+const class_transformer_1 = __webpack_require__(25);
+class UpdateStreamDto {
+}
+exports.UpdateStreamDto = UpdateStreamDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 5, required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateStreamDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'SCIENCE', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStreamDto.prototype, "streamName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Editor Admin' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateStreamDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateStreamDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStreamDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 110 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.WebsiteModule = void 0;
+const common_1 = __webpack_require__(2);
+const campus_quick_link_module_1 = __webpack_require__(111);
+const latest_update_module_1 = __webpack_require__(115);
+const admission_enquiry_module_1 = __webpack_require__(119);
+const hero_section_module_1 = __webpack_require__(123);
+const upload_module_1 = __webpack_require__(127);
+const notice_board_module_1 = __webpack_require__(129);
+const accreditation_slider_module_1 = __webpack_require__(133);
+const top_achiever_module_1 = __webpack_require__(137);
+const image_gallery_module_1 = __webpack_require__(141);
+const video_gallery_module_1 = __webpack_require__(145);
+const contact_enquiry_module_1 = __webpack_require__(149);
+const stats_counter_module_1 = __webpack_require__(153);
+const testimonial_module_1 = __webpack_require__(157);
+const header_button_module_1 = __webpack_require__(161);
+let WebsiteModule = class WebsiteModule {
+};
+exports.WebsiteModule = WebsiteModule;
+exports.WebsiteModule = WebsiteModule = __decorate([
+    (0, common_1.Module)({
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule],
+    })
+], WebsiteModule);
+
+
+/***/ }),
+/* 111 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CampusQuickLinkModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const campus_quick_link_controller_1 = __webpack_require__(99);
+const campus_quick_link_controller_1 = __webpack_require__(112);
 let CampusQuickLinkModule = class CampusQuickLinkModule {
 };
 exports.CampusQuickLinkModule = CampusQuickLinkModule;
@@ -6269,7 +7311,7 @@ exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
 
 
 /***/ }),
-/* 99 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6292,8 +7334,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_campus_quick_link_dto_1 = __webpack_require__(100);
-const update_campus_quick_link_dto_1 = __webpack_require__(101);
+const create_campus_quick_link_dto_1 = __webpack_require__(113);
+const update_campus_quick_link_dto_1 = __webpack_require__(114);
 let CampusQuickLinkController = class CampusQuickLinkController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -6373,7 +7415,7 @@ exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
 
 
 /***/ }),
-/* 100 */
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6432,7 +7474,7 @@ __decorate([
 
 
 /***/ }),
-/* 101 */
+/* 114 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6491,7 +7533,7 @@ __decorate([
 
 
 /***/ }),
-/* 102 */
+/* 115 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6505,7 +7547,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LatestUpdateModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const latest_update_controller_1 = __webpack_require__(103);
+const latest_update_controller_1 = __webpack_require__(116);
 let LatestUpdateModule = class LatestUpdateModule {
 };
 exports.LatestUpdateModule = LatestUpdateModule;
@@ -6529,7 +7571,7 @@ exports.LatestUpdateModule = LatestUpdateModule = __decorate([
 
 
 /***/ }),
-/* 103 */
+/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6552,8 +7594,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_latest_update_dto_1 = __webpack_require__(104);
-const update_latest_update_dto_1 = __webpack_require__(105);
+const create_latest_update_dto_1 = __webpack_require__(117);
+const update_latest_update_dto_1 = __webpack_require__(118);
 let LatestUpdateController = class LatestUpdateController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -6633,7 +7675,7 @@ exports.LatestUpdateController = LatestUpdateController = __decorate([
 
 
 /***/ }),
-/* 104 */
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6728,7 +7770,7 @@ __decorate([
 
 
 /***/ }),
-/* 105 */
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6823,7 +7865,7 @@ __decorate([
 
 
 /***/ }),
-/* 106 */
+/* 119 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6837,7 +7879,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const admission_enquiry_controller_1 = __webpack_require__(107);
+const admission_enquiry_controller_1 = __webpack_require__(120);
 let AdmissionEnquiryModule = class AdmissionEnquiryModule {
 };
 exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
@@ -6861,7 +7903,7 @@ exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 107 */
+/* 120 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6884,8 +7926,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_admission_enquiry_dto_1 = __webpack_require__(108);
-const update_admission_enquiry_dto_1 = __webpack_require__(109);
+const create_admission_enquiry_dto_1 = __webpack_require__(121);
+const update_admission_enquiry_dto_1 = __webpack_require__(122);
 let AdmissionEnquiryController = class AdmissionEnquiryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -6965,7 +8007,7 @@ exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
 
 
 /***/ }),
-/* 108 */
+/* 121 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7108,7 +8150,7 @@ __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 122 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7245,7 +8287,7 @@ __decorate([
 
 
 /***/ }),
-/* 110 */
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7259,7 +8301,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const hero_section_controller_1 = __webpack_require__(111);
+const hero_section_controller_1 = __webpack_require__(124);
 let HeroSectionModule = class HeroSectionModule {
 };
 exports.HeroSectionModule = HeroSectionModule;
@@ -7283,7 +8325,7 @@ exports.HeroSectionModule = HeroSectionModule = __decorate([
 
 
 /***/ }),
-/* 111 */
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7306,8 +8348,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_hero_section_dto_1 = __webpack_require__(112);
-const update_hero_section_dto_1 = __webpack_require__(113);
+const create_hero_section_dto_1 = __webpack_require__(125);
+const update_hero_section_dto_1 = __webpack_require__(126);
 let HeroSectionController = class HeroSectionController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -7387,7 +8429,7 @@ exports.HeroSectionController = HeroSectionController = __decorate([
 
 
 /***/ }),
-/* 112 */
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7488,7 +8530,7 @@ __decorate([
 
 
 /***/ }),
-/* 113 */
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7589,7 +8631,7 @@ __decorate([
 
 
 /***/ }),
-/* 114 */
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7602,7 +8644,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UploadModule = void 0;
 const common_1 = __webpack_require__(2);
-const upload_controller_1 = __webpack_require__(115);
+const upload_controller_1 = __webpack_require__(128);
 const storage_module_1 = __webpack_require__(50);
 let UploadModule = class UploadModule {
 };
@@ -7616,7 +8658,7 @@ exports.UploadModule = UploadModule = __decorate([
 
 
 /***/ }),
-/* 115 */
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7696,7 +8738,7 @@ exports.UploadController = UploadController = __decorate([
 
 
 /***/ }),
-/* 116 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7710,7 +8752,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const notice_board_controller_1 = __webpack_require__(117);
+const notice_board_controller_1 = __webpack_require__(130);
 let NoticeBoardModule = class NoticeBoardModule {
 };
 exports.NoticeBoardModule = NoticeBoardModule;
@@ -7734,7 +8776,7 @@ exports.NoticeBoardModule = NoticeBoardModule = __decorate([
 
 
 /***/ }),
-/* 117 */
+/* 130 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7757,8 +8799,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_notice_board_dto_1 = __webpack_require__(118);
-const update_notice_board_dto_1 = __webpack_require__(119);
+const create_notice_board_dto_1 = __webpack_require__(131);
+const update_notice_board_dto_1 = __webpack_require__(132);
 let NoticeBoardController = class NoticeBoardController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -7838,7 +8880,7 @@ exports.NoticeBoardController = NoticeBoardController = __decorate([
 
 
 /***/ }),
-/* 118 */
+/* 131 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7939,7 +8981,7 @@ __decorate([
 
 
 /***/ }),
-/* 119 */
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8040,7 +9082,7 @@ __decorate([
 
 
 /***/ }),
-/* 120 */
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8054,7 +9096,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AccreditationSliderModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const accreditation_slider_controller_1 = __webpack_require__(121);
+const accreditation_slider_controller_1 = __webpack_require__(134);
 let AccreditationSliderModule = class AccreditationSliderModule {
 };
 exports.AccreditationSliderModule = AccreditationSliderModule;
@@ -8078,7 +9120,7 @@ exports.AccreditationSliderModule = AccreditationSliderModule = __decorate([
 
 
 /***/ }),
-/* 121 */
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8101,8 +9143,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_accreditation_slider_dto_1 = __webpack_require__(122);
-const update_accreditation_slider_dto_1 = __webpack_require__(123);
+const create_accreditation_slider_dto_1 = __webpack_require__(135);
+const update_accreditation_slider_dto_1 = __webpack_require__(136);
 let AccreditationSliderController = class AccreditationSliderController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -8182,7 +9224,7 @@ exports.AccreditationSliderController = AccreditationSliderController = __decora
 
 
 /***/ }),
-/* 122 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8247,7 +9289,7 @@ __decorate([
 
 
 /***/ }),
-/* 123 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8312,7 +9354,7 @@ __decorate([
 
 
 /***/ }),
-/* 124 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8326,7 +9368,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const top_achiever_controller_1 = __webpack_require__(125);
+const top_achiever_controller_1 = __webpack_require__(138);
 let TopAchieverModule = class TopAchieverModule {
 };
 exports.TopAchieverModule = TopAchieverModule;
@@ -8350,7 +9392,7 @@ exports.TopAchieverModule = TopAchieverModule = __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8373,8 +9415,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_top_achiever_dto_1 = __webpack_require__(126);
-const update_top_achiever_dto_1 = __webpack_require__(127);
+const create_top_achiever_dto_1 = __webpack_require__(139);
+const update_top_achiever_dto_1 = __webpack_require__(140);
 let TopAchieverController = class TopAchieverController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -8454,7 +9496,7 @@ exports.TopAchieverController = TopAchieverController = __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8549,7 +9591,7 @@ __decorate([
 
 
 /***/ }),
-/* 127 */
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8644,7 +9686,7 @@ __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8658,7 +9700,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageGalleryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const image_gallery_controller_1 = __webpack_require__(129);
+const image_gallery_controller_1 = __webpack_require__(142);
 let ImageGalleryModule = class ImageGalleryModule {
 };
 exports.ImageGalleryModule = ImageGalleryModule;
@@ -8682,7 +9724,7 @@ exports.ImageGalleryModule = ImageGalleryModule = __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8705,8 +9747,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_image_gallery_dto_1 = __webpack_require__(130);
-const update_image_gallery_dto_1 = __webpack_require__(131);
+const create_image_gallery_dto_1 = __webpack_require__(143);
+const update_image_gallery_dto_1 = __webpack_require__(144);
 let ImageGalleryController = class ImageGalleryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -8786,7 +9828,7 @@ exports.ImageGalleryController = ImageGalleryController = __decorate([
 
 
 /***/ }),
-/* 130 */
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8866,7 +9908,7 @@ __decorate([
 
 
 /***/ }),
-/* 131 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8946,7 +9988,7 @@ __decorate([
 
 
 /***/ }),
-/* 132 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8960,7 +10002,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const video_gallery_controller_1 = __webpack_require__(133);
+const video_gallery_controller_1 = __webpack_require__(146);
 let VideoGalleryModule = class VideoGalleryModule {
 };
 exports.VideoGalleryModule = VideoGalleryModule;
@@ -8984,7 +10026,7 @@ exports.VideoGalleryModule = VideoGalleryModule = __decorate([
 
 
 /***/ }),
-/* 133 */
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9007,8 +10049,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_video_gallery_dto_1 = __webpack_require__(134);
-const update_video_gallery_dto_1 = __webpack_require__(135);
+const create_video_gallery_dto_1 = __webpack_require__(147);
+const update_video_gallery_dto_1 = __webpack_require__(148);
 let VideoGalleryController = class VideoGalleryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -9088,7 +10130,7 @@ exports.VideoGalleryController = VideoGalleryController = __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 147 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9177,7 +10219,7 @@ __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 148 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9266,7 +10308,7 @@ __decorate([
 
 
 /***/ }),
-/* 136 */
+/* 149 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9280,7 +10322,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ContactEnquiryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const contact_enquiry_controller_1 = __webpack_require__(137);
+const contact_enquiry_controller_1 = __webpack_require__(150);
 let ContactEnquiryModule = class ContactEnquiryModule {
 };
 exports.ContactEnquiryModule = ContactEnquiryModule;
@@ -9304,7 +10346,7 @@ exports.ContactEnquiryModule = ContactEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 137 */
+/* 150 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9327,8 +10369,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_contact_enquiry_dto_1 = __webpack_require__(138);
-const update_contact_enquiry_dto_1 = __webpack_require__(139);
+const create_contact_enquiry_dto_1 = __webpack_require__(151);
+const update_contact_enquiry_dto_1 = __webpack_require__(152);
 let ContactEnquiryController = class ContactEnquiryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -9408,7 +10450,7 @@ exports.ContactEnquiryController = ContactEnquiryController = __decorate([
 
 
 /***/ }),
-/* 138 */
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9491,7 +10533,7 @@ __decorate([
 
 
 /***/ }),
-/* 139 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9574,7 +10616,7 @@ __decorate([
 
 
 /***/ }),
-/* 140 */
+/* 153 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9588,7 +10630,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatsCounterModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const stats_counter_controller_1 = __webpack_require__(141);
+const stats_counter_controller_1 = __webpack_require__(154);
 let StatsCounterModule = class StatsCounterModule {
 };
 exports.StatsCounterModule = StatsCounterModule;
@@ -9612,7 +10654,7 @@ exports.StatsCounterModule = StatsCounterModule = __decorate([
 
 
 /***/ }),
-/* 141 */
+/* 154 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9635,8 +10677,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_stats_counter_dto_1 = __webpack_require__(142);
-const update_stats_counter_dto_1 = __webpack_require__(143);
+const create_stats_counter_dto_1 = __webpack_require__(155);
+const update_stats_counter_dto_1 = __webpack_require__(156);
 let StatsCounterController = class StatsCounterController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -9716,7 +10758,7 @@ exports.StatsCounterController = StatsCounterController = __decorate([
 
 
 /***/ }),
-/* 142 */
+/* 155 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9793,7 +10835,7 @@ __decorate([
 
 
 /***/ }),
-/* 143 */
+/* 156 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9870,7 +10912,7 @@ __decorate([
 
 
 /***/ }),
-/* 144 */
+/* 157 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9884,7 +10926,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestimonialModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const testimonial_controller_1 = __webpack_require__(145);
+const testimonial_controller_1 = __webpack_require__(158);
 let TestimonialModule = class TestimonialModule {
 };
 exports.TestimonialModule = TestimonialModule;
@@ -9908,7 +10950,7 @@ exports.TestimonialModule = TestimonialModule = __decorate([
 
 
 /***/ }),
-/* 145 */
+/* 158 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9931,8 +10973,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_testimonial_dto_1 = __webpack_require__(146);
-const update_testimonial_dto_1 = __webpack_require__(147);
+const create_testimonial_dto_1 = __webpack_require__(159);
+const update_testimonial_dto_1 = __webpack_require__(160);
 let TestimonialController = class TestimonialController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -10012,7 +11054,7 @@ exports.TestimonialController = TestimonialController = __decorate([
 
 
 /***/ }),
-/* 146 */
+/* 159 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10091,7 +11133,7 @@ __decorate([
 
 
 /***/ }),
-/* 147 */
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10170,7 +11212,7 @@ __decorate([
 
 
 /***/ }),
-/* 148 */
+/* 161 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10184,7 +11226,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderButtonModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const header_button_controller_1 = __webpack_require__(149);
+const header_button_controller_1 = __webpack_require__(162);
 let HeaderButtonModule = class HeaderButtonModule {
 };
 exports.HeaderButtonModule = HeaderButtonModule;
@@ -10208,7 +11250,7 @@ exports.HeaderButtonModule = HeaderButtonModule = __decorate([
 
 
 /***/ }),
-/* 149 */
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10231,8 +11273,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_header_button_dto_1 = __webpack_require__(150);
-const update_header_button_dto_1 = __webpack_require__(151);
+const create_header_button_dto_1 = __webpack_require__(163);
+const update_header_button_dto_1 = __webpack_require__(164);
 let HeaderButtonController = class HeaderButtonController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -10312,7 +11354,7 @@ exports.HeaderButtonController = HeaderButtonController = __decorate([
 
 
 /***/ }),
-/* 150 */
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10383,7 +11425,7 @@ __decorate([
 
 
 /***/ }),
-/* 151 */
+/* 164 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
