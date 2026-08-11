@@ -21,9 +21,9 @@ try {
       user: url.username,
       password: url.password,
       database: url.pathname.split('?')[0].replace(/^\//, ''),
-      connectionLimit: 2,
-      connectTimeout: 30000,
-      acquireTimeout: 30000,
+      connectionLimit: 5,
+      connectTimeout: 60000,
+      acquireTimeout: 60000,
       ssl: false,
       allowPublicKeyRetrieval: true,
     };
@@ -34,9 +34,9 @@ try {
       user: 'root',
       password: '',
       database: 'bacelar',
-      connectionLimit: 2,
-      connectTimeout: 30000,
-      acquireTimeout: 30000,
+      connectionLimit: 5,
+      connectTimeout: 60000,
+      acquireTimeout: 60000,
       ssl: false,
       allowPublicKeyRetrieval: true,
     };
@@ -342,27 +342,38 @@ async function main() {
           IsDeleted: false,
         },
       });
+    } else {
+      record = await prisma.programCategory.update({
+        where: { programCategoryId: record.programCategoryId },
+        data: {
+          pcShortName: cat.pcShortName,
+          sequenceNo: cat.sequenceNo,
+          IsActive: true,
+          IsDeleted: false,
+          UpdatedBy: 'System Seed',
+        },
+      });
     }
     categoryMap.set(cat.programCategoryName, record.programCategoryId);
   }
   console.log('Seeded Program Categories successfully!');
 
-  // 4. Seed Programs
+  // 4. Seed Programs (codes 1–14)
   const programsData = [
-    { name: 'B.A.', code: '1', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
-    { name: 'B.Sc.', code: '2', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
-    { name: 'B.Com.', code: '3', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
-    { name: 'B.B.A.', code: '4', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
-    { name: 'B.C.A.', code: '5', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
-    { name: 'B.P.Ed.', code: '6', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
-    { name: 'B.Ed.', code: '7', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 2, terms: 2, termType: 'ANNUAL', regFee: 0, examFee: 4250 },
-    { name: 'B.Sc. Ag.', code: '8', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 4, terms: 8, termType: 'SEMESTER', regFee: 50, examFee: 1575 },
-    { name: 'M.A. Hindi', code: '9', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
-    { name: 'M.A. History', code: '10', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
-    { name: 'M.A. Sociology', code: '11', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
-    { name: 'B.A. B.Ed.', code: '12', cat: 'INTEGRATED TEACHER EDUCATION PROGRAMME (ITEP)', years: 4, terms: 8, termType: 'SEMESTER', regFee: 100, examFee: 0 },
-    { name: 'B.Sc. B.Ed.', code: '13', cat: 'INTEGRATED TEACHER EDUCATION PROGRAMME (ITEP)', years: 4, terms: 8, termType: 'SEMESTER', regFee: 100, examFee: 0 },
-    { name: 'D.El.Ed.', code: '14', cat: 'DIPLOMA PROGRAM', years: 2, terms: 4, termType: 'SEMESTER', regFee: 0, examFee: 0 },
+    { name: 'B.A.', short: 'BA', code: '1', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
+    { name: 'B.Sc.', short: 'B.Sc.', code: '2', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
+    { name: 'B.Com.', short: 'B.Com.', code: '3', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
+    { name: 'B.B.A.', short: 'BBA', code: '4', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
+    { name: 'B.C.A.', short: 'BCA', code: '5', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
+    { name: 'B.P.Ed.', short: 'BPEd', code: '6', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
+    { name: 'B.Ed.', short: 'B.Ed.', code: '7', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 2, terms: 2, termType: 'ANNUAL', regFee: 0, examFee: 4250 },
+    { name: 'B.Sc. Ag.', short: 'B.Sc. Ag.', code: '8', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 4, terms: 8, termType: 'SEMESTER', regFee: 50, examFee: 1575 },
+    { name: 'M.A. Hindi', short: 'MA Hindi', code: '9', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
+    { name: 'M.A. History', short: 'MA History', code: '10', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
+    { name: 'M.A. Sociology', short: 'MA Socio', code: '11', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
+    { name: 'B.A. B.Ed.', short: 'BA B.Ed.', code: '12', cat: 'INTEGRATED TEACHER EDUCATION PROGRAMME (ITEP)', years: 4, terms: 8, termType: 'SEMESTER', regFee: 100, examFee: 0 },
+    { name: 'B.Sc. B.Ed.', short: 'BSc B.Ed.', code: '13', cat: 'INTEGRATED TEACHER EDUCATION PROGRAMME (ITEP)', years: 4, terms: 8, termType: 'SEMESTER', regFee: 100, examFee: 0 },
+    { name: 'D.El.Ed.', short: 'DElEd', code: '14', cat: 'DIPLOMA PROGRAM', years: 2, terms: 4, termType: 'SEMESTER', regFee: 0, examFee: 0 },
   ];
 
   // 5. Seed Academic Session
@@ -378,21 +389,27 @@ async function main() {
   });
   console.log('Seeded Academic Session successfully!');
 
+  const programIdByCode = new Map<string, number>();
   let seq = 1;
   for (const prog of programsData) {
     const categoryId = categoryMap.get(prog.cat);
     if (!categoryId) continue;
 
-    // Find or create program
     let programRecord = await prisma.program.findFirst({
-      where: { programName: prog.name, programCategoryId: categoryId },
+      where: { programCode: prog.code, IsDeleted: false },
     });
+    if (!programRecord) {
+      programRecord = await prisma.program.findFirst({
+        where: { programName: prog.name, programCategoryId: categoryId },
+      });
+    }
+
     if (!programRecord) {
       programRecord = await prisma.program.create({
         data: {
           programCategoryId: categoryId,
           programName: prog.name,
-          programShortName: prog.name,
+          programShortName: prog.short,
           programCode: prog.code,
           durationYears: prog.years,
           termType: prog.termType,
@@ -403,9 +420,26 @@ async function main() {
           IsDeleted: false,
         },
       });
+    } else {
+      programRecord = await prisma.program.update({
+        where: { programId: programRecord.programId },
+        data: {
+          programCategoryId: categoryId,
+          programName: prog.name,
+          programShortName: prog.short,
+          programCode: prog.code,
+          durationYears: prog.years,
+          termType: prog.termType,
+          totalTerms: prog.terms,
+          sequenceNo: seq++,
+          IsActive: true,
+          IsDeleted: false,
+          UpdatedBy: 'System Seed',
+        },
+      });
     }
+    programIdByCode.set(prog.code, programRecord.programId);
 
-    // Find or create associated fee config for session 2026-2027
     const feeConfig = await prisma.programFeeConfig.findFirst({
       where: { programId: programRecord.programId, sessionId: session.sessionId },
     });
@@ -415,12 +449,12 @@ async function main() {
           programId: programRecord.programId,
           sessionId: session.sessionId,
           registrationBaseFee: prog.regFee,
-          registrationPgRate: 2.00,
-          registrationGstRate: 18.00,
+          registrationPgRate: 2.0,
+          registrationGstRate: 18.0,
           registrationFinal: calculateFinal(prog.regFee),
           examinationBaseFee: prog.examFee,
-          examinationPgRate: 2.00,
-          examinationGstRate: 18.00,
+          examinationPgRate: 2.0,
+          examinationGstRate: 18.0,
           examinationFinal: calculateFinal(prog.examFee),
           CreatedBy: 'System Seed',
           IsActive: true,
@@ -432,21 +466,212 @@ async function main() {
 
   console.log('Seeded Programs and Program Fee Configurations successfully!');
 
-  // 6. Seed Program Eligibility rules (idempotent by programId + message)
-  const eligibilityByCode: Record<
-    string,
-    Array<{
-      ruleType: string;
-      qualificationLevel: string;
-      category: string;
-      ruleKey?: string;
-      minPercent?: number;
-      severity: string;
-      displayOrder: number;
-      message: string;
-    }>
-  > = {
+  // 5.5 Seed StreamMaster (program-wise allowed streams)
+  const STREAMS_COMMON = ['ART', 'SCIENCE', 'COMMERCE', 'AGRICULTURE', 'OTHER'];
+  const streamsByCode: Record<string, string[]> = {
+    '1': STREAMS_COMMON, // B.A.
+    '2': ['SCIENCE'], // B.Sc.
+    '3': STREAMS_COMMON, // B.Com.
+    '4': STREAMS_COMMON, // B.B.A.
+    '5': ['SCIENCE WITH MATHEMATICS SUBJECT'], // B.C.A.
+    '6': STREAMS_COMMON, // B.P.Ed.
+    '7': STREAMS_COMMON, // B.Ed.
+    '8': ['SCIENCE (BIO)', 'AGRICULTURE'], // B.Sc. Ag.
+    '9': STREAMS_COMMON, // M.A. Hindi
+    '10': STREAMS_COMMON,
+    '11': STREAMS_COMMON,
+    '12': STREAMS_COMMON, // B.A. B.Ed. (ITEP)
+    '13': ['SCIENCE'], // B.Sc. B.Ed.
+    '14': STREAMS_COMMON, // D.El.Ed.
+  };
+
+  for (const [code, streamNames] of Object.entries(streamsByCode)) {
+    const programId = programIdByCode.get(code);
+    if (!programId) continue;
+    for (const streamName of streamNames) {
+      const existing = await prisma.streamMaster.findFirst({
+        where: { programId, streamName, IsDeleted: false },
+      });
+      if (existing) {
+        await prisma.streamMaster.update({
+          where: { streamId: existing.streamId },
+          data: { IsActive: true, IsDeleted: false, UpdatedBy: 'System Seed' },
+        });
+      } else {
+        await prisma.streamMaster.create({
+          data: {
+            programId,
+            streamName,
+            CreatedBy: 'System Seed',
+            IsActive: true,
+            IsDeleted: false,
+          },
+        });
+      }
+    }
+  }
+  console.log('Seeded StreamMaster successfully!');
+
+  // 6. Seed Program Eligibility rules (Excel-aligned)
+  type EligRule = {
+    ruleType: string;
+    qualificationLevel: string;
+    category: string;
+    ruleKey?: string;
+    minPercent?: number;
+    severity: string;
+    displayOrder: number;
+    message: string;
+  };
+
+  const OTHER_STATE_NOTE: EligRule = {
+    ruleType: 'QUALIFICATION',
+    qualificationLevel: 'ALL',
+    category: 'ALL',
+    ruleKey: 'OTHER_STATE_GEN',
+    severity: 'Recommended',
+    displayOrder: 0,
+    message:
+      'Note: Other state students are considered as General Category students.',
+  };
+
+  const streamRule = (
+    ruleKey: string,
+    message: string,
+    displayOrder: number,
+  ): EligRule => ({
+    ruleType: 'STREAM',
+    qualificationLevel: '12TH',
+    category: 'ALL',
+    ruleKey,
+    severity: 'Compulsory',
+    displayOrder,
+    message,
+  });
+
+  const pct12 = (
+    category: 'GENERAL' | 'RESERVED',
+    minPercent: number,
+    displayOrder: number,
+  ): EligRule => ({
+    ruleType: 'MIN_PERCENT',
+    qualificationLevel: '12TH',
+    category,
+    ruleKey: 'AGGREGATE',
+    minPercent,
+    severity: 'Compulsory',
+    displayOrder,
+    message:
+      category === 'GENERAL'
+        ? `Compulsory: Minimum 12th aggregate ${minPercent}% required for GEN/OBC/Minority.`
+        : `Compulsory: Minimum 12th aggregate ${minPercent}% required for SC/ST.`,
+  });
+
+  const pctGrad = (
+    category: 'GENERAL' | 'RESERVED',
+    minPercent: number,
+    displayOrder: number,
+  ): EligRule => ({
+    ruleType: 'MIN_PERCENT',
+    qualificationLevel: 'GRAD',
+    category,
+    ruleKey: 'AGGREGATE',
+    minPercent,
+    severity: 'Compulsory',
+    displayOrder,
+    message:
+      category === 'GENERAL'
+        ? `Compulsory: Minimum Graduation aggregate ${minPercent}% required for GEN/OBC/Minority.`
+        : `Compulsory: Minimum Graduation aggregate ${minPercent}% required for SC/ST.`,
+  });
+
+  const gradRequired = (displayOrder: number): EligRule => ({
+    ruleType: 'QUALIFICATION',
+    qualificationLevel: 'GRAD',
+    category: 'ALL',
+    ruleKey: 'GRADUATION',
+    severity: 'Compulsory',
+    displayOrder,
+    message: 'Compulsory: Graduation University/College details are required.',
+  });
+
+  const STREAM_KEY_COMMON = 'ART|SCIENCE|COMMERCE|AGRICULTURE|OTHER';
+
+  const eligibilityByCode: Record<string, EligRule[]> = {
+    // B.A.
+    '1': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_OR_POLY',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message: 'Eligibility: 12th Pass OR Polytechnic Diploma.',
+      },
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream in 12th (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        2,
+      ),
+    ],
+    // B.Sc.
+    '2': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_SCI_OR_POLY',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message:
+          'Eligibility: 12th Pass from Science OR Polytechnic Diploma (Engineering/Technology PCM-based OR Medical/Health PCB).',
+      },
+      streamRule('SCIENCE', 'Compulsory: 12th stream must be SCIENCE.', 2),
+    ],
+    // B.Com.
+    '3': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_COMMERCE',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message: 'Eligibility: 12th Pass from Commerce.',
+      },
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream in 12th (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        2,
+      ),
+    ],
+    // B.B.A.
+    '4': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_ANY',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message: 'Eligibility: Class 12 passed from any stream.',
+      },
+      pct12('GENERAL', 50, 2),
+      pct12('RESERVED', 45, 3),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream in 12th (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        4,
+      ),
+    ],
+    // B.C.A.
     '5': [
+      OTHER_STATE_NOTE,
       {
         ruleType: 'SUBJECT',
         qualificationLevel: '12TH',
@@ -454,39 +679,74 @@ async function main() {
         ruleKey: '12MATH',
         severity: 'Compulsory',
         displayOrder: 1,
-        message: 'Compulsory: Mathematics must be selected in 12th Subject Details.',
+        message:
+          'Compulsory: Mathematics must be selected in 12th Subject Details (Subject Master).',
+      },
+      pct12('GENERAL', 50, 2),
+      pct12('RESERVED', 45, 3),
+      streamRule(
+        'SCIENCE WITH MATHEMATICS SUBJECT',
+        'Compulsory: 12th stream must be SCIENCE WITH MATHEMATICS SUBJECT.',
+        4,
+      ),
+    ],
+    // B.P.Ed.
+    '6': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'BPED_SPORTS_OR_PE',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message:
+          'BPEd: (A) Bachelor’s degree with 50% + recognized sports participation (SC/ST 45%); (B) Bachelor’s with 45% + 1st/2nd/3rd National/Inter-University (SC/ST 40%); (C) Bachelor’s with 45% in Physical Education / PE subject (SC/ST 40%); (D) Bachelor’s with international sports participation.',
       },
       {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'GENERAL',
-        ruleKey: 'AGGREGATE',
-        minPercent: 50,
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'BPED_CONFIRM',
         severity: 'Compulsory',
         displayOrder: 2,
-        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
+        message:
+          'Confirm: PE as subject in all 3 years of graduation OR District/State/University sport certificate OR NCC-C certificate.',
       },
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'RESERVED',
-        ruleKey: 'AGGREGATE',
-        minPercent: 45,
-        severity: 'Compulsory',
-        displayOrder: 3,
-        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
-      },
-      {
-        ruleType: 'STREAM',
-        qualificationLevel: '12TH',
-        category: 'ALL',
-        ruleKey: 'SCIENCE',
-        severity: 'Recommended',
-        displayOrder: 4,
-        message: 'Recommended: Science stream in 12th (with Mathematics).',
-      },
+      pct12('GENERAL', 50, 3),
+      pct12('RESERVED', 45, 4),
+      gradRequired(5),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        6,
+      ),
     ],
+    // B.Ed.
+    '7': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'GRAD_OR_PG',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message:
+          'Eligibility: Minimum Graduate with required marks OR last qualified exam (PG).',
+      },
+      pctGrad('GENERAL', 50, 2),
+      pctGrad('RESERVED', 45, 3),
+      gradRequired(4),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        5,
+      ),
+    ],
+    // B.Sc. Ag.
     '8': [
+      OTHER_STATE_NOTE,
       {
         ruleType: 'SUBJECT',
         qualificationLevel: '12TH',
@@ -495,188 +755,96 @@ async function main() {
         severity: 'Compulsory',
         displayOrder: 1,
         message:
-          'Compulsory: Biology or Agriculture must be selected in 12th Subject Details.',
-      },
-      {
-        ruleType: 'STREAM',
-        qualificationLevel: '12TH',
-        category: 'ALL',
-        ruleKey: 'SCIENCE',
-        severity: 'Compulsory',
-        displayOrder: 2,
-        message: 'Compulsory: 12th stream must be Science.',
-      },
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'GENERAL',
-        ruleKey: 'AGGREGATE',
-        minPercent: 50,
-        severity: 'Compulsory',
-        displayOrder: 3,
-        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
-      },
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'RESERVED',
-        ruleKey: 'AGGREGATE',
-        minPercent: 45,
-        severity: 'Compulsory',
-        displayOrder: 4,
-        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
-      },
-    ],
-    '6': [
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'GENERAL',
-        ruleKey: 'AGGREGATE',
-        minPercent: 50,
-        severity: 'Compulsory',
-        displayOrder: 1,
-        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
-      },
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'RESERVED',
-        ruleKey: 'AGGREGATE',
-        minPercent: 45,
-        severity: 'Compulsory',
-        displayOrder: 2,
-        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
+          'Compulsory: Biology or Agriculture must be selected in 12th Subject Details (Subject Master).',
       },
       {
         ruleType: 'QUALIFICATION',
-        qualificationLevel: 'GRAD',
+        qualificationLevel: '12TH',
         category: 'ALL',
-        ruleKey: 'GRADUATION',
-        severity: 'Compulsory',
-        displayOrder: 3,
-        message: 'Compulsory: Graduation University/College details are required.',
-      },
-    ],
-    '7': [
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'GENERAL',
-        ruleKey: 'AGGREGATE',
-        minPercent: 50,
-        severity: 'Compulsory',
-        displayOrder: 1,
-        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
-      },
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'RESERVED',
-        ruleKey: 'AGGREGATE',
-        minPercent: 45,
-        severity: 'Compulsory',
+        ruleKey: '12TH_SCI_OR_AGRI_POLY',
+        severity: 'Recommended',
         displayOrder: 2,
-        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
+        message:
+          'Eligibility: 12th Pass from Science OR Polytechnic Diploma from Agriculture/related fields.',
       },
-      {
-        ruleType: 'QUALIFICATION',
-        qualificationLevel: 'GRAD',
-        category: 'ALL',
-        ruleKey: 'GRADUATION',
-        severity: 'Compulsory',
-        displayOrder: 3,
-        message: 'Compulsory: Graduation University/College details are required.',
-      },
+      pct12('GENERAL', 50, 3),
+      pct12('RESERVED', 45, 4),
+      streamRule(
+        'SCIENCE (BIO)|AGRICULTURE',
+        'Compulsory: 12th stream must be SCIENCE (BIO) or AGRICULTURE.',
+        5,
+      ),
     ],
-    '14': [
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'GENERAL',
-        ruleKey: 'AGGREGATE',
-        minPercent: 50,
-        severity: 'Compulsory',
-        displayOrder: 1,
-        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
-      },
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'RESERVED',
-        ruleKey: 'AGGREGATE',
-        minPercent: 45,
-        severity: 'Compulsory',
-        displayOrder: 2,
-        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
-      },
-      {
-        ruleType: 'QUALIFICATION',
-        qualificationLevel: 'GRAD',
-        category: 'ALL',
-        ruleKey: 'GRADUATION',
-        severity: 'Compulsory',
-        displayOrder: 3,
-        message: 'Compulsory: Graduation University/College details are required.',
-      },
-    ],
+    // M.A. Hindi / History / Sociology
     '9': [
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'GENERAL',
-        ruleKey: 'AGGREGATE',
-        minPercent: 50,
-        severity: 'Compulsory',
-        displayOrder: 1,
-        message: 'Compulsory: Minimum 12th aggregate 50% required for GEN/OBC/Minority.',
-      },
-      {
-        ruleType: 'MIN_PERCENT',
-        qualificationLevel: '12TH',
-        category: 'RESERVED',
-        ruleKey: 'AGGREGATE',
-        minPercent: 45,
-        severity: 'Compulsory',
-        displayOrder: 2,
-        message: 'Compulsory: Minimum 12th aggregate 45% required for SC/ST.',
-      },
-      {
-        ruleType: 'QUALIFICATION',
-        qualificationLevel: 'GRAD',
-        category: 'ALL',
-        ruleKey: 'GRADUATION',
-        severity: 'Compulsory',
-        displayOrder: 3,
-        message: 'Compulsory: Graduation University/College details are required.',
-      },
+      OTHER_STATE_NOTE,
+      pctGrad('GENERAL', 50, 1),
+      pctGrad('RESERVED', 45, 2),
+      gradRequired(3),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        4,
+      ),
+    ],
+    // ITEP B.A. B.Ed. — treat like B.Ed. + streams
+    '12': [
+      OTHER_STATE_NOTE,
+      pctGrad('GENERAL', 50, 1),
+      pctGrad('RESERVED', 45, 2),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        3,
+      ),
+    ],
+    // ITEP B.Sc. B.Ed.
+    '13': [
+      OTHER_STATE_NOTE,
+      pctGrad('GENERAL', 50, 1),
+      pctGrad('RESERVED', 45, 2),
+      streamRule('SCIENCE', 'Compulsory: Stream must be SCIENCE.', 3),
+    ],
+    // D.El.Ed.
+    '14': [
+      OTHER_STATE_NOTE,
+      pctGrad('GENERAL', 50, 1),
+      pctGrad('RESERVED', 45, 2),
+      gradRequired(3),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        4,
+      ),
     ],
   };
-  // M.A. History / Sociology same as Hindi
   eligibilityByCode['10'] = eligibilityByCode['9'];
   eligibilityByCode['11'] = eligibilityByCode['9'];
 
   for (const [code, rules] of Object.entries(eligibilityByCode)) {
-    const program = await prisma.program.findFirst({
-      where: { programCode: code, IsDeleted: false },
+    const programId = programIdByCode.get(code);
+    if (!programId) continue;
+
+    // Soft-delete previous System Seed rules for this program (clean reseed)
+    await prisma.programEligibility.updateMany({
+      where: {
+        programId,
+        CreatedBy: 'System Seed',
+        IsDeleted: false,
+      },
+      data: {
+        IsDeleted: true,
+        IsActive: false,
+        DeletedOn: new Date(),
+        DeletedBy: 'System Seed',
+        DeletedRemarks: 'Reseeded from Excel eligibility sheet',
+      },
     });
-    if (!program) continue;
 
     for (const rule of rules) {
-      const exists = await programEligibilityDb.findFirst({
-        where: {
-          programId: program.programId,
-          message: rule.message,
-          ruleType: rule.ruleType,
-          category: rule.category,
-          IsDeleted: false,
-        },
-      });
-      if (exists) continue;
-
       await programEligibilityDb.create({
         data: {
-          programId: program.programId,
+          programId,
           ruleType: rule.ruleType,
           qualificationLevel: rule.qualificationLevel,
           category: rule.category,
