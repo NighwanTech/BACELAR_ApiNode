@@ -18,12 +18,13 @@ try {
     dbConfig = {
       host: url.hostname,
       port: url.port ? Number(url.port) : 3306,
-      user: url.username,
-      password: url.password,
-      database: url.pathname.split('?')[0].replace(/^\//, ''),
-      connectionLimit: 5,
-      connectTimeout: 60000,
-      acquireTimeout: 60000,
+      user: decodeURIComponent(url.username),
+      password: decodeURIComponent(url.password),
+      database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
+      // Hostinger shared MySQL: keep pool tiny to avoid pool timeouts
+      connectionLimit: 2,
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
       ssl: false,
       allowPublicKeyRetrieval: true,
     };
@@ -34,9 +35,9 @@ try {
       user: 'root',
       password: '',
       database: 'bacelar',
-      connectionLimit: 5,
-      connectTimeout: 60000,
-      acquireTimeout: 60000,
+      connectionLimit: 2,
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
       ssl: false,
       allowPublicKeyRetrieval: true,
     };

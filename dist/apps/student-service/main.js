@@ -5869,11 +5869,16 @@ let ProgramEligibilityService = class ProgramEligibilityService {
                 continue;
             }
             if (rule.ruleType === 'STREAM') {
-                const required = String(rule.ruleKey || '').trim().toUpperCase();
-                if (required && stream && stream !== required) {
+                const requiredKeys = String(rule.ruleKey || '')
+                    .split('|')
+                    .map((k) => k.trim().toUpperCase())
+                    .filter(Boolean);
+                if (requiredKeys.length === 0)
+                    continue;
+                if (!stream) {
                     errors.push(rule.message);
                 }
-                else if (required && !stream) {
+                else if (!requiredKeys.includes(stream)) {
                     errors.push(rule.message);
                 }
                 continue;
