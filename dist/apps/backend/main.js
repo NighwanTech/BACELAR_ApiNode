@@ -215,7 +215,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StudentsController = void 0;
 const common_1 = __webpack_require__(2);
@@ -236,6 +236,9 @@ let StudentsController = class StudentsController {
     }
     changePassword(changePasswordDto) {
         return this.studentClient.send({ cmd: 'change_password_student' }, changePasswordDto);
+    }
+    adminResetPassword(id, body) {
+        return this.studentClient.send({ cmd: 'admin_reset_password_student' }, { StudentRegistrationId: id, UpdatedBy: body?.UpdatedBy || 'Admin User' });
     }
     create(createStudentDto) {
         return this.studentClient.send({ cmd: 'create_student' }, createStudentDto);
@@ -276,13 +279,25 @@ __decorate([
     __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
 ], StudentsController.prototype, "changePassword", null);
 __decorate([
+    (0, common_1.Post)(':id/reset-password'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Admin reset student password — returns new plainTextPassword once (original is not recoverable)',
+    }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Password reset; plainTextPassword returned once' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", typeof (_f = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _f : Object)
+], StudentsController.prototype, "adminResetPassword", null);
+__decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Register/Create a new student' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Student registered successfully' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_f = typeof create_student_dto_1.CreateStudentDto !== "undefined" && create_student_dto_1.CreateStudentDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [typeof (_g = typeof create_student_dto_1.CreateStudentDto !== "undefined" && create_student_dto_1.CreateStudentDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
 ], StudentsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
@@ -290,7 +305,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all active students' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
 ], StudentsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
@@ -299,7 +314,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
 ], StudentsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Put)(':id'),
@@ -308,8 +323,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_k = typeof update_student_dto_1.UpdateStudentDto !== "undefined" && update_student_dto_1.UpdateStudentDto) === "function" ? _k : Object]),
-    __metadata("design:returntype", typeof (_l = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _l : Object)
+    __metadata("design:paramtypes", [Number, typeof (_l = typeof update_student_dto_1.UpdateStudentDto !== "undefined" && update_student_dto_1.UpdateStudentDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
 ], StudentsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
@@ -322,7 +337,7 @@ __decorate([
     __param(2, (0, common_1.Query)('DeletedRemarks')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, String, String]),
-    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
+    __metadata("design:returntype", typeof (_o = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _o : Object)
 ], StudentsController.prototype, "remove", null);
 __decorate([
     (0, common_1.Post)('bulk-delete'),
@@ -330,8 +345,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Students bulk soft deleted successfully' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof bulk_delete_dto_1.BulkDeleteDto !== "undefined" && bulk_delete_dto_1.BulkDeleteDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_p = typeof bulk_delete_dto_1.BulkDeleteDto !== "undefined" && bulk_delete_dto_1.BulkDeleteDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", typeof (_q = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _q : Object)
 ], StudentsController.prototype, "bulkRemove", null);
 exports.StudentsController = StudentsController = __decorate([
     (0, swagger_1.ApiTags)('Students'),

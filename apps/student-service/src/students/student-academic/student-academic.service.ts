@@ -1,6 +1,56 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
 
+/** Compute percentage / grade / division for DB columns (best done on backend). */
+export function computeAcademicResult(input: {
+  marksType?: string | null;
+  maxMarks?: number | null;
+  obtainedMarks?: number | null;
+  percentage?: number | null;
+}) {
+  const marksType = String(input.marksType || 'Percentage').toUpperCase();
+  const max = Number(input.maxMarks);
+  const obtained = Number(input.obtainedMarks);
+  let percentage =
+    input.percentage !== undefined && input.percentage !== null
+      ? Number(input.percentage)
+      : NaN;
+
+  if (!Number.isFinite(percentage)) {
+    if (marksType.includes('CGPA')) {
+      // treat obtained as CGPA on scale max (usually 10)
+      percentage =
+        Number.isFinite(obtained) && Number.isFinite(max) && max > 0
+          ? (obtained / max) * 100
+          : Number.isFinite(obtained)
+            ? obtained * 10
+            : 0;
+    } else if (Number.isFinite(obtained) && Number.isFinite(max) && max > 0) {
+      percentage = (obtained / max) * 100;
+    } else {
+      percentage = 0;
+    }
+  }
+
+  percentage = Math.round(percentage * 100) / 100;
+
+  let grade = 'F';
+  if (percentage >= 90) grade = 'A+';
+  else if (percentage >= 80) grade = 'A';
+  else if (percentage >= 70) grade = 'B+';
+  else if (percentage >= 60) grade = 'B';
+  else if (percentage >= 50) grade = 'C';
+  else if (percentage >= 40) grade = 'D';
+  else if (percentage >= 33) grade = 'E';
+
+  let division = 'Fail';
+  if (percentage >= 60) division = 'First';
+  else if (percentage >= 45) division = 'Second';
+  else if (percentage >= 33) division = 'Third';
+
+  return { percentage, grade, division };
+}
+
 @Injectable()
 export class StudentAcademicService {
   constructor(private readonly prisma: PrismaService) {}
@@ -65,6 +115,12 @@ export class StudentAcademicService {
       // 2. Insert new academic details
       const createdDetails = [];
       for (const qual of qualifications) {
+        const computed = computeAcademicResult({
+          marksType: qual.marksType,
+          maxMarks: qual.maxMarks,
+          obtainedMarks: qual.obtainedMarks,
+          percentage: qual.percentage,
+        });
         const detail = await tx.studentAcademicDetail.create({
           data: {
             studentId: Number(studentId),
@@ -77,27 +133,34 @@ export class StudentAcademicService {
             marksType: qual.marksType,
             maxMarks: Number(qual.maxMarks),
             obtainedMarks: Number(qual.obtainedMarks),
-            percentage: Number(qual.percentage),
-            division: qual.division || null,
-            grade: qual.grade || null,
+            percentage: computed.percentage,
+            division: qual.division || computed.division,
+            grade: qual.grade || computed.grade,
             stream: qual.stream || null,
             CreatedBy: CreatedBy || 'System',
             IsActive: true,
             IsDeleted: false,
             subjects: {
-              create: (qual.subjects || []).map((sub: any) => ({
+              create: (qual.subjects || []).map((sub: any) => {
+                const subComputed = computeAcademicResult({
+                  marksType: 'Percentage',
+                  maxMarks: sub.maxMarks,
+                  obtainedMarks: sub.obtainedMarks,
+                });
+                return {
                 subjectId: Number(sub.subjectId),
                 maxMarks: Number(sub.maxMarks),
                 minMarks: Number(sub.minMarks || 33),
                 obtainedMarks: Number(sub.obtainedMarks),
-                grade: sub.grade || null,
+                grade: sub.grade || subComputed.grade,
                 practicalMarks: sub.practicalMarks ? Number(sub.practicalMarks) : null,
                 theoryMarks: sub.theoryMarks ? Number(sub.theoryMarks) : null,
                 isOptional: !!sub.isOptional,
                 CreatedBy: CreatedBy || 'System',
                 IsActive: true,
                 IsDeleted: false,
-              })),
+              };
+              }),
             },
           },
           include: {
@@ -178,7 +241,24 @@ export class StudentAcademicService {
   }
 
   async update(academicDetailId: number, data: any) {
-    await this.findOne(academicDetailId);
+    const existing = await this.findOne(academicDetailId);
+
+    const marksType = data.marksType !== undefined ? data.marksType : existing.marksType;
+    const maxMarks =
+      data.maxMarks !== undefined ? Number(data.maxMarks) : Number(existing.maxMarks);
+    const obtainedMarks =
+      data.obtainedMarks !== undefined
+        ? Number(data.obtainedMarks)
+        : Number(existing.obtainedMarks);
+    const percentageInput =
+      data.percentage !== undefined ? Number(data.percentage) : Number(existing.percentage);
+
+    const computed = computeAcademicResult({
+      marksType,
+      maxMarks,
+      obtainedMarks,
+      percentage: percentageInput,
+    });
 
     return this.prisma.studentAcademicDetail.update({
       where: { academicDetailId },
@@ -192,9 +272,14 @@ export class StudentAcademicService {
         marksType: data.marksType,
         maxMarks: data.maxMarks !== undefined ? Number(data.maxMarks) : undefined,
         obtainedMarks: data.obtainedMarks !== undefined ? Number(data.obtainedMarks) : undefined,
-        percentage: data.percentage !== undefined ? Number(data.percentage) : undefined,
-        division: data.division,
-        grade: data.grade,
+        percentage: computed.percentage,
+        // Always refresh grade/division from marks unless explicitly provided
+        division: data.division !== undefined && data.division !== null && data.division !== ''
+          ? data.division
+          : computed.division,
+        grade: data.grade !== undefined && data.grade !== null && data.grade !== ''
+          ? data.grade
+          : computed.grade,
         stream: data.stream,
         UpdatedBy: data.UpdatedBy,
         IsActive: data.IsActive,

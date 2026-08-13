@@ -33,6 +33,21 @@ export class StudentsController {
     return this.studentClient.send({ cmd: 'change_password_student' }, changePasswordDto);
   }
 
+  @Post(':id/reset-password')
+  @ApiOperation({
+    summary: 'Admin reset student password — returns new plainTextPassword once (original is not recoverable)',
+  })
+  @ApiResponse({ status: 200, description: 'Password reset; plainTextPassword returned once' })
+  adminResetPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body?: { UpdatedBy?: string },
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'admin_reset_password_student' },
+      { StudentRegistrationId: id, UpdatedBy: body?.UpdatedBy || 'Admin User' },
+    );
+  }
+
   @Post()
   @ApiOperation({ summary: 'Register/Create a new student' })
   @ApiResponse({ status: 201, description: 'Student registered successfully' })

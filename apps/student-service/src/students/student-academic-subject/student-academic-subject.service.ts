@@ -1,19 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { computeAcademicResult } from '../student-academic/student-academic.service';
 
 @Injectable()
 export class StudentAcademicSubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: any) {
+    const maxMarks = Number(data.maxMarks);
+    const obtainedMarks = Number(data.obtainedMarks);
+    const computed = computeAcademicResult({ maxMarks, obtainedMarks });
     return this.prisma.studentAcademicSubject.create({
       data: {
         academicDetailId: Number(data.academicDetailId),
         subjectId: Number(data.subjectId),
-        maxMarks: Number(data.maxMarks),
+        maxMarks,
         minMarks: Number(data.minMarks ?? 33),
-        obtainedMarks: Number(data.obtainedMarks),
-        grade: data.grade || null,
+        obtainedMarks,
+        grade: data.grade || computed.grade,
         practicalMarks: data.practicalMarks ? Number(data.practicalMarks) : null,
         theoryMarks: data.theoryMarks ? Number(data.theoryMarks) : null,
         isOptional: !!data.isOptional,
@@ -64,17 +68,27 @@ export class StudentAcademicSubjectService {
   }
 
   async update(studentAcademicSubjectId: number, data: any) {
-    await this.findOne(studentAcademicSubjectId);
+    const existing = await this.findOne(studentAcademicSubjectId);
+    const maxMarks =
+      data.maxMarks !== undefined ? Number(data.maxMarks) : Number(existing.maxMarks);
+    const obtainedMarks =
+      data.obtainedMarks !== undefined
+        ? Number(data.obtainedMarks)
+        : Number(existing.obtainedMarks);
+    const computed = computeAcademicResult({ maxMarks, obtainedMarks });
 
     return this.prisma.studentAcademicSubject.update({
       where: { studentAcademicSubjectId },
       data: {
         academicDetailId: data.academicDetailId ? Number(data.academicDetailId) : undefined,
         subjectId: data.subjectId ? Number(data.subjectId) : undefined,
-        maxMarks: data.maxMarks ? Number(data.maxMarks) : undefined,
-        minMarks: data.minMarks ? Number(data.minMarks) : undefined,
-        obtainedMarks: data.obtainedMarks ? Number(data.obtainedMarks) : undefined,
-        grade: data.grade,
+        maxMarks: data.maxMarks !== undefined ? maxMarks : undefined,
+        minMarks: data.minMarks !== undefined ? Number(data.minMarks) : undefined,
+        obtainedMarks: data.obtainedMarks !== undefined ? obtainedMarks : undefined,
+        grade:
+          data.grade !== undefined && data.grade !== null && data.grade !== ''
+            ? data.grade
+            : computed.grade,
         practicalMarks: data.practicalMarks ? Number(data.practicalMarks) : null,
         theoryMarks: data.theoryMarks ? Number(data.theoryMarks) : null,
         isOptional: data.isOptional !== undefined ? !!data.isOptional : undefined,

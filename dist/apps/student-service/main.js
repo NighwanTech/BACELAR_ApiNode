@@ -275,6 +275,14 @@ let StudentsController = class StudentsController {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
+    async adminResetPassword(data) {
+        try {
+            return await this.studentsService.adminResetPassword(data.StudentRegistrationId, data.UpdatedBy || 'Admin User');
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
     async create(data) {
         try {
             return await this.studentsService.create(data);
@@ -340,6 +348,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StudentsController.prototype, "changePassword", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_reset_password_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "adminResetPassword", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'create_student' }),
     __param(0, (0, microservices_1.Payload)()),
@@ -446,6 +461,10 @@ let StudentsService = class StudentsService {
         this.prisma = prisma;
         this.jwtService = jwtService;
     }
+    sanitizeStudent(student) {
+        const { password: _password, ...rest } = student;
+        return rest;
+    }
     generateRandomPassword() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const digits = '0123456789';
@@ -520,6 +539,7 @@ let StudentsService = class StudentsService {
                 mobileNo: data.mobileNo,
                 registrationNo: regNo,
                 password: hashedPassword,
+                loginPasswordPlain: plainTextPassword,
                 CreatedBy: data.CreatedBy,
                 Remarks: data.Remarks,
                 IsActive: true,
@@ -527,7 +547,7 @@ let StudentsService = class StudentsService {
             },
         });
         return {
-            ...newStudent,
+            ...this.sanitizeStudent(newStudent),
             plainTextPassword,
         };
     }
@@ -544,15 +564,16 @@ let StudentsService = class StudentsService {
         }
         const payload = { sub: student.StudentRegistrationId, registrationNo: student.registrationNo };
         const token = this.jwtService.sign(payload);
-        const { password, ...sanitizedStudent } = student;
+        const sanitized = this.sanitizeStudent(student);
+        delete sanitized.loginPasswordPlain;
         return {
             status: 'success',
             token,
-            student: sanitizedStudent,
+            student: sanitized,
         };
     }
     async findAll() {
-        return this.prisma.student.findMany({
+        const rows = await this.prisma.student.findMany({
             where: {
                 IsDeleted: false,
             },
@@ -560,6 +581,7 @@ let StudentsService = class StudentsService {
                 CreatedOn: 'desc',
             },
         });
+        return rows.map((s) => this.sanitizeStudent(s));
     }
     async findOne(StudentRegistrationId) {
         const student = await this.prisma.student.findFirst({
@@ -577,7 +599,7 @@ let StudentsService = class StudentsService {
         if (!student) {
             throw new common_1.NotFoundException(`Student with Registration ID ${StudentRegistrationId} not found`);
         }
-        return student;
+        return this.sanitizeStudent(student);
     }
     async update(StudentRegistrationId, data) {
         await this.findOne(StudentRegistrationId);
@@ -603,7 +625,7 @@ let StudentsService = class StudentsService {
                 throw new common_1.ConflictException('Registration number already in use by another student');
             }
         }
-        return this.prisma.student.update({
+        const updated = await this.prisma.student.update({
             where: { StudentRegistrationId },
             data: {
                 candidateName: data.candidateName,
@@ -616,10 +638,11 @@ let StudentsService = class StudentsService {
                 Remarks: data.Remarks,
             },
         });
+        return this.sanitizeStudent(updated);
     }
     async softDelete(StudentRegistrationId, DeletedBy, DeletedRemarks) {
         await this.findOne(StudentRegistrationId);
-        return this.prisma.student.update({
+        const deleted = await this.prisma.student.update({
             where: { StudentRegistrationId },
             data: {
                 IsDeleted: true,
@@ -629,6 +652,7 @@ let StudentsService = class StudentsService {
                 DeletedRemarks: DeletedRemarks || null,
             },
         });
+        return this.sanitizeStudent(deleted);
     }
     async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
         const result = await this.prisma.student.updateMany({
@@ -665,9 +689,36 @@ let StudentsService = class StudentsService {
             where: { StudentRegistrationId: student.StudentRegistrationId },
             data: {
                 password: hashedNewPassword,
+                loginPasswordPlain: newPasswordString,
             },
         });
         return { status: 'success', message: 'Password changed successfully' };
+    }
+    async adminResetPassword(StudentRegistrationId, UpdatedBy = 'Admin User') {
+        const student = await this.prisma.student.findFirst({
+            where: { StudentRegistrationId, IsDeleted: false },
+        });
+        if (!student) {
+            throw new common_1.NotFoundException(`Student with ID ${StudentRegistrationId} not found`);
+        }
+        const plainTextPassword = this.generateRandomPassword();
+        const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
+        await this.prisma.student.update({
+            where: { StudentRegistrationId },
+            data: {
+                password: hashedPassword,
+                loginPasswordPlain: plainTextPassword,
+                UpdatedBy,
+                UpdatedOn: new Date(),
+            },
+        });
+        return {
+            status: 'success',
+            message: 'Password reset successfully',
+            StudentRegistrationId,
+            registrationNo: student.registrationNo,
+            plainTextPassword,
+        };
     }
 };
 exports.StudentsService = StudentsService;
@@ -1194,8 +1245,57 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StudentAcademicService = void 0;
+exports.computeAcademicResult = computeAcademicResult;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
+function computeAcademicResult(input) {
+    const marksType = String(input.marksType || 'Percentage').toUpperCase();
+    const max = Number(input.maxMarks);
+    const obtained = Number(input.obtainedMarks);
+    let percentage = input.percentage !== undefined && input.percentage !== null
+        ? Number(input.percentage)
+        : NaN;
+    if (!Number.isFinite(percentage)) {
+        if (marksType.includes('CGPA')) {
+            percentage =
+                Number.isFinite(obtained) && Number.isFinite(max) && max > 0
+                    ? (obtained / max) * 100
+                    : Number.isFinite(obtained)
+                        ? obtained * 10
+                        : 0;
+        }
+        else if (Number.isFinite(obtained) && Number.isFinite(max) && max > 0) {
+            percentage = (obtained / max) * 100;
+        }
+        else {
+            percentage = 0;
+        }
+    }
+    percentage = Math.round(percentage * 100) / 100;
+    let grade = 'F';
+    if (percentage >= 90)
+        grade = 'A+';
+    else if (percentage >= 80)
+        grade = 'A';
+    else if (percentage >= 70)
+        grade = 'B+';
+    else if (percentage >= 60)
+        grade = 'B';
+    else if (percentage >= 50)
+        grade = 'C';
+    else if (percentage >= 40)
+        grade = 'D';
+    else if (percentage >= 33)
+        grade = 'E';
+    let division = 'Fail';
+    if (percentage >= 60)
+        division = 'First';
+    else if (percentage >= 45)
+        division = 'Second';
+    else if (percentage >= 33)
+        division = 'Third';
+    return { percentage, grade, division };
+}
 let StudentAcademicService = class StudentAcademicService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -1240,6 +1340,12 @@ let StudentAcademicService = class StudentAcademicService {
             });
             const createdDetails = [];
             for (const qual of qualifications) {
+                const computed = computeAcademicResult({
+                    marksType: qual.marksType,
+                    maxMarks: qual.maxMarks,
+                    obtainedMarks: qual.obtainedMarks,
+                    percentage: qual.percentage,
+                });
                 const detail = await tx.studentAcademicDetail.create({
                     data: {
                         studentId: Number(studentId),
@@ -1252,27 +1358,34 @@ let StudentAcademicService = class StudentAcademicService {
                         marksType: qual.marksType,
                         maxMarks: Number(qual.maxMarks),
                         obtainedMarks: Number(qual.obtainedMarks),
-                        percentage: Number(qual.percentage),
-                        division: qual.division || null,
-                        grade: qual.grade || null,
+                        percentage: computed.percentage,
+                        division: qual.division || computed.division,
+                        grade: qual.grade || computed.grade,
                         stream: qual.stream || null,
                         CreatedBy: CreatedBy || 'System',
                         IsActive: true,
                         IsDeleted: false,
                         subjects: {
-                            create: (qual.subjects || []).map((sub) => ({
-                                subjectId: Number(sub.subjectId),
-                                maxMarks: Number(sub.maxMarks),
-                                minMarks: Number(sub.minMarks || 33),
-                                obtainedMarks: Number(sub.obtainedMarks),
-                                grade: sub.grade || null,
-                                practicalMarks: sub.practicalMarks ? Number(sub.practicalMarks) : null,
-                                theoryMarks: sub.theoryMarks ? Number(sub.theoryMarks) : null,
-                                isOptional: !!sub.isOptional,
-                                CreatedBy: CreatedBy || 'System',
-                                IsActive: true,
-                                IsDeleted: false,
-                            })),
+                            create: (qual.subjects || []).map((sub) => {
+                                const subComputed = computeAcademicResult({
+                                    marksType: 'Percentage',
+                                    maxMarks: sub.maxMarks,
+                                    obtainedMarks: sub.obtainedMarks,
+                                });
+                                return {
+                                    subjectId: Number(sub.subjectId),
+                                    maxMarks: Number(sub.maxMarks),
+                                    minMarks: Number(sub.minMarks || 33),
+                                    obtainedMarks: Number(sub.obtainedMarks),
+                                    grade: sub.grade || subComputed.grade,
+                                    practicalMarks: sub.practicalMarks ? Number(sub.practicalMarks) : null,
+                                    theoryMarks: sub.theoryMarks ? Number(sub.theoryMarks) : null,
+                                    isOptional: !!sub.isOptional,
+                                    CreatedBy: CreatedBy || 'System',
+                                    IsActive: true,
+                                    IsDeleted: false,
+                                };
+                            }),
                         },
                     },
                     include: {
@@ -1348,7 +1461,19 @@ let StudentAcademicService = class StudentAcademicService {
         });
     }
     async update(academicDetailId, data) {
-        await this.findOne(academicDetailId);
+        const existing = await this.findOne(academicDetailId);
+        const marksType = data.marksType !== undefined ? data.marksType : existing.marksType;
+        const maxMarks = data.maxMarks !== undefined ? Number(data.maxMarks) : Number(existing.maxMarks);
+        const obtainedMarks = data.obtainedMarks !== undefined
+            ? Number(data.obtainedMarks)
+            : Number(existing.obtainedMarks);
+        const percentageInput = data.percentage !== undefined ? Number(data.percentage) : Number(existing.percentage);
+        const computed = computeAcademicResult({
+            marksType,
+            maxMarks,
+            obtainedMarks,
+            percentage: percentageInput,
+        });
         return this.prisma.studentAcademicDetail.update({
             where: { academicDetailId },
             data: {
@@ -1361,9 +1486,13 @@ let StudentAcademicService = class StudentAcademicService {
                 marksType: data.marksType,
                 maxMarks: data.maxMarks !== undefined ? Number(data.maxMarks) : undefined,
                 obtainedMarks: data.obtainedMarks !== undefined ? Number(data.obtainedMarks) : undefined,
-                percentage: data.percentage !== undefined ? Number(data.percentage) : undefined,
-                division: data.division,
-                grade: data.grade,
+                percentage: computed.percentage,
+                division: data.division !== undefined && data.division !== null && data.division !== ''
+                    ? data.division
+                    : computed.division,
+                grade: data.grade !== undefined && data.grade !== null && data.grade !== ''
+                    ? data.grade
+                    : computed.grade,
                 stream: data.stream,
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
@@ -1600,19 +1729,23 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StudentAcademicSubjectService = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
+const student_academic_service_1 = __webpack_require__(21);
 let StudentAcademicSubjectService = class StudentAcademicSubjectService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async create(data) {
+        const maxMarks = Number(data.maxMarks);
+        const obtainedMarks = Number(data.obtainedMarks);
+        const computed = (0, student_academic_service_1.computeAcademicResult)({ maxMarks, obtainedMarks });
         return this.prisma.studentAcademicSubject.create({
             data: {
                 academicDetailId: Number(data.academicDetailId),
                 subjectId: Number(data.subjectId),
-                maxMarks: Number(data.maxMarks),
+                maxMarks,
                 minMarks: Number(data.minMarks ?? 33),
-                obtainedMarks: Number(data.obtainedMarks),
-                grade: data.grade || null,
+                obtainedMarks,
+                grade: data.grade || computed.grade,
                 practicalMarks: data.practicalMarks ? Number(data.practicalMarks) : null,
                 theoryMarks: data.theoryMarks ? Number(data.theoryMarks) : null,
                 isOptional: !!data.isOptional,
@@ -1659,16 +1792,23 @@ let StudentAcademicSubjectService = class StudentAcademicSubjectService {
         });
     }
     async update(studentAcademicSubjectId, data) {
-        await this.findOne(studentAcademicSubjectId);
+        const existing = await this.findOne(studentAcademicSubjectId);
+        const maxMarks = data.maxMarks !== undefined ? Number(data.maxMarks) : Number(existing.maxMarks);
+        const obtainedMarks = data.obtainedMarks !== undefined
+            ? Number(data.obtainedMarks)
+            : Number(existing.obtainedMarks);
+        const computed = (0, student_academic_service_1.computeAcademicResult)({ maxMarks, obtainedMarks });
         return this.prisma.studentAcademicSubject.update({
             where: { studentAcademicSubjectId },
             data: {
                 academicDetailId: data.academicDetailId ? Number(data.academicDetailId) : undefined,
                 subjectId: data.subjectId ? Number(data.subjectId) : undefined,
-                maxMarks: data.maxMarks ? Number(data.maxMarks) : undefined,
-                minMarks: data.minMarks ? Number(data.minMarks) : undefined,
-                obtainedMarks: data.obtainedMarks ? Number(data.obtainedMarks) : undefined,
-                grade: data.grade,
+                maxMarks: data.maxMarks !== undefined ? maxMarks : undefined,
+                minMarks: data.minMarks !== undefined ? Number(data.minMarks) : undefined,
+                obtainedMarks: data.obtainedMarks !== undefined ? obtainedMarks : undefined,
+                grade: data.grade !== undefined && data.grade !== null && data.grade !== ''
+                    ? data.grade
+                    : computed.grade,
                 practicalMarks: data.practicalMarks ? Number(data.practicalMarks) : null,
                 theoryMarks: data.theoryMarks ? Number(data.theoryMarks) : null,
                 isOptional: data.isOptional !== undefined ? !!data.isOptional : undefined,

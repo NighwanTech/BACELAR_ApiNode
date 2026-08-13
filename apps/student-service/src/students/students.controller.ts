@@ -24,6 +24,18 @@ export class StudentsController {
     }
   }
 
+  @MessagePattern({ cmd: 'admin_reset_password_student' })
+  async adminResetPassword(@Payload() data: { StudentRegistrationId: number; UpdatedBy?: string }) {
+    try {
+      return await this.studentsService.adminResetPassword(
+        data.StudentRegistrationId,
+        data.UpdatedBy || 'Admin User',
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'create_student' })
   async create(@Payload() data: any) {
     try {

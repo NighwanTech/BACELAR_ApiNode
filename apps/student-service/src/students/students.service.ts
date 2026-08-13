@@ -10,6 +10,12 @@ export class StudentsService {
     private readonly jwtService: JwtService,
   ) {}
 
+  /** Never expose bcrypt hash; keep loginPasswordPlain for admin list. */
+  private sanitizeStudent<T extends { password?: string | null }>(student: T) {
+    const { password: _password, ...rest } = student as T & { password?: string | null };
+    return rest;
+  }
+
   /**
    * Helper to generate a random 8-character password containing 4 digits and 4 uppercase letters.
    */
@@ -115,6 +121,7 @@ export class StudentsService {
         mobileNo: data.mobileNo,
         registrationNo: regNo,
         password: hashedPassword, // Store the secure hash
+        loginPasswordPlain: plainTextPassword, // Admin / slip display
         CreatedBy: data.CreatedBy,
         Remarks: data.Remarks,
         IsActive: true,
@@ -122,10 +129,9 @@ export class StudentsService {
       },
     });
 
-    // Return the student info ALONG WITH the plain-text password
-    // so the client application can display it in the verification slip
+    // Return sanitized student + plain password for verification slip
     return {
-      ...newStudent,
+      ...this.sanitizeStudent(newStudent),
       plainTextPassword,
     };
   }
@@ -153,12 +159,13 @@ export class StudentsService {
     const payload = { sub: student.StudentRegistrationId, registrationNo: student.registrationNo };
     const token = this.jwtService.sign(payload);
 
-    // Return sanitized student record and the token
-    const { password, ...sanitizedStudent } = student;
+    // Login response: hide bcrypt hash AND plain password
+    const sanitized = this.sanitizeStudent(student) as any;
+    delete sanitized.loginPasswordPlain;
     return {
       status: 'success',
       token,
-      student: sanitizedStudent,
+      student: sanitized,
     };
   }
 
@@ -167,7 +174,7 @@ export class StudentsService {
    * Filtering: Only returns records where IsDeleted is false
    */
   async findAll() {
-    return this.prisma.student.findMany({
+    const rows = await this.prisma.student.findMany({
       where: {
         IsDeleted: false,
       },
@@ -175,6 +182,7 @@ export class StudentsService {
         CreatedOn: 'desc',
       },
     });
+    return rows.map((s) => this.sanitizeStudent(s));
   }
 
   /**
@@ -199,7 +207,7 @@ export class StudentsService {
       throw new NotFoundException(`Student with Registration ID ${StudentRegistrationId} not found`);
     }
 
-    return student;
+    return this.sanitizeStudent(student);
   }
 
   /**
@@ -236,7 +244,7 @@ export class StudentsService {
     }
 
     // Update in MySQL database
-    return this.prisma.student.update({
+    const updated = await this.prisma.student.update({
       where: { StudentRegistrationId },
       data: {
         candidateName: data.candidateName,
@@ -249,6 +257,7 @@ export class StudentsService {
         Remarks: data.Remarks,
       },
     });
+    return this.sanitizeStudent(updated);
   }
 
   /**
@@ -260,7 +269,7 @@ export class StudentsService {
     await this.findOne(StudentRegistrationId);
 
     // Perform soft delete
-    return this.prisma.student.update({
+    const deleted = await this.prisma.student.update({
       where: { StudentRegistrationId },
       data: {
         IsDeleted: true,
@@ -270,6 +279,7 @@ export class StudentsService {
         DeletedRemarks: DeletedRemarks || null,
       },
     });
+    return this.sanitizeStudent(deleted);
   }
 
   /**
@@ -315,17 +325,51 @@ export class StudentsService {
       return { status: 'error', message: 'Current password is incorrect' };
     }
 
-    // Hash the new password
+    // Hash the new password + keep admin-visible plain copy in sync
     const hashedNewPassword = await bcrypt.hash(newPasswordString, 10);
 
-    // Update in database
     await this.prisma.student.update({
       where: { StudentRegistrationId: student.StudentRegistrationId },
       data: {
         password: hashedNewPassword,
+        loginPasswordPlain: newPasswordString,
       },
     });
 
     return { status: 'success', message: 'Password changed successfully' };
+  }
+
+  /**
+   * 8. ADMIN RESET PASSWORD: generate new plain password, store hash + plain for admin list.
+   */
+  async adminResetPassword(StudentRegistrationId: number, UpdatedBy = 'Admin User') {
+    const student = await this.prisma.student.findFirst({
+      where: { StudentRegistrationId, IsDeleted: false },
+    });
+
+    if (!student) {
+      throw new NotFoundException(`Student with ID ${StudentRegistrationId} not found`);
+    }
+
+    const plainTextPassword = this.generateRandomPassword();
+    const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
+
+    await this.prisma.student.update({
+      where: { StudentRegistrationId },
+      data: {
+        password: hashedPassword,
+        loginPasswordPlain: plainTextPassword,
+        UpdatedBy,
+        UpdatedOn: new Date(),
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Password reset successfully',
+      StudentRegistrationId,
+      registrationNo: student.registrationNo,
+      plainTextPassword,
+    };
   }
 }
