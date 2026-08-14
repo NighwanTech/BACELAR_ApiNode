@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AcademicSessionController } from './academic-session.controller';
+import { ExaminationDetailsController } from './examination-details.controller';
 
 @Module({
   imports: [
@@ -15,6 +15,6 @@ import { AcademicSessionController } from './academic-session.controller';
       },
     ]),
   ],
-  controllers: [AcademicSessionController],
+  controllers: [ExaminationDetailsController],
 })
-export class AcademicSessionModule {}
+export class ExaminationDetailsModule {}

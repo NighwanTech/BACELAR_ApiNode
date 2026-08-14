@@ -7,10 +7,10 @@ export class CreateProgramFeeConfigDto {
   @IsNotEmpty()
   programId: number;
 
-  @ApiProperty({ example: 1, description: 'Academic Session ID' })
+  @ApiProperty({ example: 1, description: 'Admission Session ID' })
   @IsNumber()
   @IsNotEmpty()
-  sessionId: number;
+  admissionSessionId: number;
 
   @ApiProperty({ example: 1000.00, description: 'Registration Base Fee', required: false })
   @IsNumber()

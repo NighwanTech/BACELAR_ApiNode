@@ -199,7 +199,7 @@ export class StudentsService {
         program: {
           include: { programCategory: true },
         },
-        session: true,
+        admissionSession: true,
       },
     });
 

@@ -377,18 +377,18 @@ async function main() {
     { name: 'D.El.Ed.', short: 'DElEd', code: '14', cat: 'DIPLOMA PROGRAM', years: 2, terms: 4, termType: 'SEMESTER', regFee: 0, examFee: 0 },
   ];
 
-  // 5. Seed Academic Session
-  const session = await prisma.academicSession.upsert({
-    where: { sessionName: '2026-2027' },
+  // 5. Seed Admission Session
+  const session = await prisma.admissionSession.upsert({
+    where: { admissionSessionName: '2026-2027' },
     update: {},
     create: {
-      sessionName: '2026-2027',
+      admissionSessionName: '2026-2027',
       CreatedBy: 'System Seed',
       IsActive: true,
       IsDeleted: false,
     },
   });
-  console.log('Seeded Academic Session successfully!');
+  console.log('Seeded Admission Session successfully!');
 
   const programIdByCode = new Map<string, number>();
   let seq = 1;
@@ -442,13 +442,13 @@ async function main() {
     programIdByCode.set(prog.code, programRecord.programId);
 
     const feeConfig = await prisma.programFeeConfig.findFirst({
-      where: { programId: programRecord.programId, sessionId: session.sessionId },
+      where: { programId: programRecord.programId, admissionSessionId: session.admissionSessionId },
     });
     if (!feeConfig) {
       await prisma.programFeeConfig.create({
         data: {
           programId: programRecord.programId,
-          sessionId: session.sessionId,
+          admissionSessionId: session.admissionSessionId,
           registrationBaseFee: prog.regFee,
           registrationPgRate: 2.0,
           registrationGstRate: 18.0,

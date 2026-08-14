@@ -10,7 +10,7 @@ export class UpdateProgramFeeConfigDto {
   @ApiProperty({ example: 1, description: 'Academic Session ID', required: false })
   @IsNumber()
   @IsOptional()
-  sessionId?: number;
+  admissionSessionId?: number;
 
   @ApiProperty({ example: 1000.00, description: 'Registration Base Fee', required: false })
   @IsNumber()

@@ -129,7 +129,7 @@ export class SaveAcademicDetailsDto {
 
   @ApiProperty({
     example: 5,
-    description: 'Selected Program ID (sessionId is auto-assigned from active AcademicSession)',
+    description: 'Selected Program ID (admissionSessionId is auto-assigned from active AdmissionSession)',
   })
   @IsInt()
   @IsNotEmpty()

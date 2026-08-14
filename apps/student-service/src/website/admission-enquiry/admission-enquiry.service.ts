@@ -24,8 +24,8 @@ export class AdmissionEnquiryService {
         address: data.address || null,
         courseId: data.courseId ? Number(data.courseId) : null,
         courseName: data.courseName || null,
-        sessionId: data.sessionId ? Number(data.sessionId) : null,
-        sessionName: data.sessionName || null,
+        admissionSessionId: data.admissionSessionId ? Number(data.admissionSessionId) : null,
+        admissionSessionName: data.admissionSessionName || null,
         message: data.message || null,
         status: data.status || 'PENDING',
         source: data.source || 'WEBSITE',
@@ -72,8 +72,8 @@ export class AdmissionEnquiryService {
     if (data.address !== undefined) updatePayload.address = data.address;
     if (data.courseId !== undefined) updatePayload.courseId = data.courseId ? Number(data.courseId) : null;
     if (data.courseName !== undefined) updatePayload.courseName = data.courseName;
-    if (data.sessionId !== undefined) updatePayload.sessionId = data.sessionId ? Number(data.sessionId) : null;
-    if (data.sessionName !== undefined) updatePayload.sessionName = data.sessionName;
+    if (data.admissionSessionId !== undefined) updatePayload.admissionSessionId = data.admissionSessionId ? Number(data.admissionSessionId) : null;
+    if (data.admissionSessionName !== undefined) updatePayload.admissionSessionName = data.admissionSessionName;
     if (data.message !== undefined) updatePayload.message = data.message;
     if (data.status !== undefined) updatePayload.status = data.status;
     if (data.source !== undefined) updatePayload.source = data.source;

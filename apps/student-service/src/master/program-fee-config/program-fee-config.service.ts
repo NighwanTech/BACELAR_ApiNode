@@ -29,7 +29,7 @@ export class ProgramFeeConfigService {
     return this.prisma.programFeeConfig.create({
       data: {
         programId: Number(data.programId),
-        sessionId: Number(data.sessionId),
+        admissionSessionId: Number(data.admissionSessionId),
         registrationBaseFee: Number(data.registrationBaseFee ?? 0.0),
         registrationPgRate: Number(data.registrationPgRate ?? 2.0),
         registrationGstRate: Number(data.registrationGstRate ?? 18.0),
@@ -45,7 +45,7 @@ export class ProgramFeeConfigService {
       },
       include: {
         program: true,
-        session: true,
+        admissionSession: true,
       },
     });
   }
@@ -55,7 +55,7 @@ export class ProgramFeeConfigService {
       where: { IsDeleted: false },
       include: {
         program: true,
-        session: true,
+        admissionSession: true,
       },
       orderBy: { CreatedOn: 'desc' },
     });
@@ -66,7 +66,7 @@ export class ProgramFeeConfigService {
       where: { feeConfigId, IsDeleted: false },
       include: {
         program: true,
-        session: true,
+        admissionSession: true,
       },
     });
     if (!config) {
@@ -75,16 +75,16 @@ export class ProgramFeeConfigService {
     return config;
   }
 
-  async findByProgramAndSession(programId: number, sessionId: number) {
+  async findByProgramAndSession(programId: number, admissionSessionId: number) {
     const config = await this.prisma.programFeeConfig.findFirst({
-      where: { programId, sessionId, IsDeleted: false },
+      where: { programId, admissionSessionId, IsDeleted: false },
       include: {
         program: true,
-        session: true,
+        admissionSession: true,
       },
     });
     if (!config) {
-      throw new NotFoundException(`Fee Configuration for Program ID ${programId} and Session ID ${sessionId} not found`);
+      throw new NotFoundException(`Fee Configuration for Program ID ${programId} and Session ID ${admissionSessionId} not found`);
     }
     return config;
   }
@@ -106,7 +106,7 @@ export class ProgramFeeConfigService {
       where: { feeConfigId },
       data: {
         programId: data.programId !== undefined ? Number(data.programId) : undefined,
-        sessionId: data.sessionId !== undefined ? Number(data.sessionId) : undefined,
+        admissionSessionId: data.admissionSessionId !== undefined ? Number(data.admissionSessionId) : undefined,
         registrationBaseFee: regBase,
         registrationPgRate: regPg,
         registrationGstRate: regGst,
@@ -121,7 +121,7 @@ export class ProgramFeeConfigService {
       },
       include: {
         program: true,
-        session: true,
+        admissionSession: true,
       },
     });
   }

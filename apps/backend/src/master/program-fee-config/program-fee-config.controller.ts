@@ -27,16 +27,16 @@ export class ProgramFeeConfigController {
     return this.studentClient.send({ cmd: 'find_all_program_fee_configs' }, {});
   }
 
-  @Get('program/:programId/session/:sessionId')
-  @ApiOperation({ summary: 'Find fee configuration for a specific Program ID and Session ID' })
+  @Get('program/:programId/admission-session/:admissionSessionId')
+  @ApiOperation({ summary: 'Find fee configuration for a specific Program ID and Admission Session ID' })
   @ApiResponse({ status: 200, description: 'Return active fee configuration' })
   findByProgramAndSession(
     @Param('programId', ParseIntPipe) programId: number,
-    @Param('sessionId', ParseIntPipe) sessionId: number,
+    @Param('admissionSessionId', ParseIntPipe) admissionSessionId: number,
   ): Observable<any> {
     return this.studentClient.send(
       { cmd: 'find_program_fee_config_by_program_and_session' },
-      { programId, sessionId },
+      { programId, admissionSessionId },
     );
   }
 

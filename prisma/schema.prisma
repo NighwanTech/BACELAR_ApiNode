@@ -13,11 +13,11 @@ model Student {
   email                 String    @unique @db.VarChar(255)
   mobileNo              String    @db.VarChar(20)
   registrationNo        String    @unique @db.VarChar(100)
-  // Selected admission program + auto-assigned active academic session
+  // Selected admission program + auto-assigned active admission session
   programId             Int?
   program               Program?  @relation(fields: [programId], references: [programId])
-  sessionId             Int?
-  session               AcademicSession? @relation(fields: [sessionId], references: [sessionId])
+  admissionSessionId    Int?
+  admissionSession      AdmissionSession? @relation(fields: [admissionSessionId], references: [admissionSessionId])
   CreatedOn             DateTime  @default(now())
   CreatedBy             String    @db.VarChar(255)
   UpdatedOn             DateTime? @updatedAt
@@ -211,6 +211,7 @@ model Program {
   students            Student[]
   eligibilityRules    ProgramEligibility[]
   streams             StreamMaster[]
+  programSubjects     ProgramSubjectMaster[]
 
   // Common Audit Fields
   CreatedOn           DateTime          @default(now())
@@ -245,6 +246,26 @@ model StreamMaster {
 
   @@index([programId])
   @@map("streamMaster")
+}
+
+model ProgramSubjectMaster {
+  programSubjectId   Int       @id @default(autoincrement())
+  programId          Int
+  program            Program   @relation(fields: [programId], references: [programId], onDelete: Cascade)
+  programSubjectName String    @db.VarChar(100)
+  CreatedOn          DateTime  @default(now())
+  CreatedBy          String    @db.VarChar(255)
+  UpdatedOn          DateTime? @updatedAt
+  UpdatedBy          String?   @db.VarChar(255)
+  IsActive           Boolean   @default(true)
+  IsDeleted          Boolean   @default(false)
+  DeletedRemarks     String?   @db.VarChar(255)
+  DeletedOn          DateTime?
+  DeletedBy          String?   @db.VarChar(255)
+  Remarks            String?   @db.VarChar(255)
+
+  @@index([programId])
+  @@map("programSubjectMaster")
 }
 
 model ProgramEligibility {
@@ -379,33 +400,33 @@ model StudentAcademicSubject {
   @@map("studentAcademicSubjects")
 }
 
-model AcademicSession {
-  sessionId           Int                  @id @default(autoincrement())
-  sessionName         String               @unique @db.VarChar(50)
-  feeConfigs          ProgramFeeConfig[]
-  students            Student[]
+model AdmissionSession {
+  admissionSessionId   Int                  @id @default(autoincrement())
+  admissionSessionName String               @unique @db.VarChar(50)
+  feeConfigs           ProgramFeeConfig[]
+  students             Student[]
 
   // Common Audit Fields
-  CreatedOn           DateTime             @default(now())
-  CreatedBy           String               @db.VarChar(255)
-  UpdatedOn           DateTime?            @updatedAt
-  UpdatedBy           String?              @db.VarChar(255)
-  IsActive            Boolean              @default(true)
-  IsDeleted           Boolean              @default(false)
-  DeletedRemarks      String?              @db.VarChar(255)
-  DeletedOn           DateTime?
-  DeletedBy           String?              @db.VarChar(255)
-  Remarks             String?              @db.VarChar(255)
+  CreatedOn            DateTime             @default(now())
+  CreatedBy            String               @db.VarChar(255)
+  UpdatedOn            DateTime?            @updatedAt
+  UpdatedBy            String?              @db.VarChar(255)
+  IsActive             Boolean              @default(true)
+  IsDeleted            Boolean              @default(false)
+  DeletedRemarks       String?              @db.VarChar(255)
+  DeletedOn            DateTime?
+  DeletedBy            String?              @db.VarChar(255)
+  Remarks              String?              @db.VarChar(255)
 
-  @@map("academicSessions")
+  @@map("admissionSessions")
 }
 
 model ProgramFeeConfig {
   feeConfigId         Int             @id @default(autoincrement())
   programId           Int
   program             Program         @relation(fields: [programId], references: [programId], onDelete: Cascade)
-  sessionId           Int
-  session             AcademicSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+  admissionSessionId  Int
+  admissionSession    AdmissionSession @relation(fields: [admissionSessionId], references: [admissionSessionId], onDelete: Cascade)
 
   registrationBaseFee Float           @default(0.0)
   registrationPgRate  Float           @default(2.0)
@@ -429,7 +450,7 @@ model ProgramFeeConfig {
   DeletedBy           String?         @db.VarChar(255)
   Remarks             String?         @db.VarChar(255)
 
-  @@unique([programId, sessionId])
+  @@unique([programId, admissionSessionId])
   @@map("programFeeConfigs")
 }
 
@@ -545,8 +566,8 @@ model AdmissionEnquiry {
   courseId           Int?
   courseName         String?   @db.VarChar(255)
 
-  sessionId          Int?
-  sessionName        String?   @db.VarChar(255)
+  admissionSessionId   Int?
+  admissionSessionName String?   @db.VarChar(255)
 
   message            String?   @db.Text
 
@@ -767,6 +788,7 @@ model CollegeMaster {
   alternateContactNumber String?   @db.VarChar(20)
   emailId                String?   @db.VarChar(255)
   collegeWebsite         String?   @db.VarChar(500)
+  academicSessions       AcademicSession[]
 
   // Common Audit Fields
   CreatedOn              DateTime  @default(now())
@@ -781,6 +803,51 @@ model CollegeMaster {
   Remarks                String?   @db.VarChar(255)
 
   @@map("collegeMaster")
+}
+
+model AcademicSession {
+  academicSessionId   Int                   @id @default(autoincrement())
+  collegeId           Int
+  college             CollegeMaster         @relation(fields: [collegeId], references: [collegeId], onDelete: Cascade)
+  academicSessionName String                @db.VarChar(100)
+  startMonth          Int
+  startYear           Int
+  endMonth            Int
+  endYear             Int
+  examinationDetails  ExaminationDetails[]
+  CreatedOn           DateTime              @default(now())
+  CreatedBy           String                @db.VarChar(255)
+  UpdatedOn           DateTime?             @updatedAt
+  UpdatedBy           String?               @db.VarChar(255)
+  IsActive            Boolean               @default(true)
+  IsDeleted           Boolean               @default(false)
+  DeletedRemarks      String?               @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?               @db.VarChar(255)
+  Remarks             String?               @db.VarChar(255)
+
+  @@index([collegeId])
+  @@map("academicSessionMaster")
+}
+
+model ExaminationDetails {
+  examinationId   Int             @id @default(autoincrement())
+  academicId      Int
+  academicSession AcademicSession @relation(fields: [academicId], references: [academicSessionId], onDelete: Cascade)
+  examinationName String          @db.VarChar(100)
+  CreatedOn       DateTime        @default(now())
+  CreatedBy       String          @db.VarChar(255)
+  UpdatedOn       DateTime?       @updatedAt
+  UpdatedBy       String?         @db.VarChar(255)
+  IsActive        Boolean         @default(true)
+  IsDeleted       Boolean         @default(false)
+  DeletedRemarks  String?         @db.VarChar(255)
+  DeletedOn       DateTime?
+  DeletedBy       String?         @db.VarChar(255)
+  Remarks         String?         @db.VarChar(255)
+
+  @@index([academicId])
+  @@map("examinationDetails")
 }
 
 model StatsCounter {

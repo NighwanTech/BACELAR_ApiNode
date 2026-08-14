@@ -113,28 +113,28 @@ export class StudentPaymentService {
 
     const student = await this.prisma.student.findFirst({
       where: { StudentRegistrationId: studentId, IsDeleted: false },
-      include: { program: true, session: true },
+      include: { program: true, admissionSession: true },
     });
     if (!student) {
       throw new NotFoundException(`Student with ID ${studentId} not found`);
     }
-    if (!student.programId || !student.sessionId) {
+    if (!student.programId || !student.admissionSessionId) {
       throw new BadRequestException(
-        'Student program and academic session must be saved before payment',
+        'Student program and admission session must be saved before payment',
       );
     }
 
     const feeConfig = await this.prisma.programFeeConfig.findFirst({
       where: {
         programId: student.programId,
-        sessionId: student.sessionId,
+        admissionSessionId: student.admissionSessionId,
         IsDeleted: false,
         IsActive: true,
       },
     });
     if (!feeConfig) {
       throw new NotFoundException(
-        `Fee configuration not found for program ${student.programId} and session ${student.sessionId}`,
+        `Fee configuration not found for program ${student.programId} and session ${student.admissionSessionId}`,
       );
     }
 
@@ -204,7 +204,7 @@ export class StudentPaymentService {
         student: {
           include: {
             program: { include: { programCategory: true } },
-            session: true,
+            admissionSession: true,
           },
         },
       },

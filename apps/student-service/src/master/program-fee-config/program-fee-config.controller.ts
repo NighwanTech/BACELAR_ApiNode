@@ -34,9 +34,9 @@ export class ProgramFeeConfigController {
   }
 
   @MessagePattern({ cmd: 'find_program_fee_config_by_program_and_session' })
-  async findByProgramAndSession(@Payload() data: { programId: number; sessionId: number }) {
+  async findByProgramAndSession(@Payload() data: { programId: number; admissionSessionId: number }) {
     try {
-      return await this.feeConfigService.findByProgramAndSession(data.programId, data.sessionId);
+      return await this.feeConfigService.findByProgramAndSession(data.programId, data.admissionSessionId);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

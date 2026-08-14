@@ -37,15 +37,15 @@ export class UpdateAdmissionEnquiryDto {
   @IsOptional()
   courseName?: string;
 
-  @ApiProperty({ example: 2026, description: 'Academic Session ID', required: false })
+  @ApiProperty({ example: 2026, description: 'Admission Session ID', required: false })
   @IsInt()
   @IsOptional()
-  sessionId?: number;
+  admissionSessionId?: number;
 
-  @ApiProperty({ example: '2026-2027', description: 'Academic Session Name', required: false })
+  @ApiProperty({ example: '2026-2027', description: 'Admission Session Name', required: false })
   @IsString()
   @IsOptional()
-  sessionName?: string;
+  admissionSessionName?: string;
 
   @ApiProperty({ example: 'Interested in direct admission process and fee structure.', description: 'Enquiry Message', required: false })
   @IsString()

@@ -57,7 +57,7 @@ export class StudentAcademicService {
 
   /**
    * Save (overwrite) all academic qualifications and their subjects for a student.
-   * Also stores selected programId and auto-assigns active sessionId on Student.
+   * Also stores selected programId and auto-assigns active admissionSessionId on Student.
    */
   async save(
     studentId: number,
@@ -84,25 +84,25 @@ export class StudentAcademicService {
         throw new NotFoundException(`Program with ID ${programId} not found`);
       }
 
-      const activeSession = await tx.academicSession.findFirst({
+      const activeSession = await tx.admissionSession.findFirst({
         where: { IsActive: true, IsDeleted: false },
         orderBy: { CreatedOn: 'desc' },
       });
       if (!activeSession) {
         throw new NotFoundException(
-          'No active academic session found. Please activate a session in masters.',
+          'No active admission session found. Please activate a session in masters.',
         );
       }
 
       const assignedProgramId = program.programId;
-      const assignedSessionId = activeSession.sessionId;
-      const assignedSessionName = activeSession.sessionName;
+      const assignedAdmissionSessionId = activeSession.admissionSessionId;
+      const assignedAdmissionSessionName = activeSession.admissionSessionName;
 
       await tx.student.update({
         where: { StudentRegistrationId: Number(studentId) },
         data: {
           programId: assignedProgramId,
-          sessionId: assignedSessionId,
+          admissionSessionId: assignedAdmissionSessionId,
           UpdatedBy: CreatedBy || 'System',
         },
       });
@@ -181,8 +181,8 @@ export class StudentAcademicService {
         message: 'Academic qualifications and subjects saved successfully',
         data: createdDetails,
         programId: assignedProgramId,
-        sessionId: assignedSessionId,
-        sessionName: assignedSessionName,
+        admissionSessionId: assignedAdmissionSessionId,
+        admissionSessionName: assignedAdmissionSessionName,
       };
     });
   }

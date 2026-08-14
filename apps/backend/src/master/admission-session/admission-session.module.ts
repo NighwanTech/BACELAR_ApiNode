@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AcademicSessionController } from './academic-session.controller';
+import { AdmissionSessionController } from './admission-session.controller';
 
 @Module({
   imports: [
@@ -10,11 +10,11 @@ import { AcademicSessionController } from './academic-session.controller';
         transport: Transport.TCP,
         options: {
           host: '127.0.0.1',
-          port: Number(process.env.TCP_PORT ?? 4001),
+          port: Number(process.env.TCP_PORT) || 4001,
         },
       },
     ]),
   ],
-  controllers: [AcademicSessionController],
+  controllers: [AdmissionSessionController],
 })
-export class AcademicSessionModule {}
+export class AdmissionSessionModule {}
