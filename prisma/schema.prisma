@@ -28,16 +28,47 @@ model Student {
   DeletedOn             DateTime?
   DeletedBy             String?   @db.VarChar(255)
   Remarks               String?   @db.VarChar(255)
-  /// bcrypt hash — used only for login (never return to clients)
-  password              String    @default("") @db.VarChar(255)
-  /// Plain password for admin display / slip (login still uses bcrypt hash)
-  loginPasswordPlain    String?   @db.VarChar(50)
   studentProfile        StudentProfile?
   academicDetails       StudentAcademicDetail[]
+  programSubjects       StudentProgramSubject[]
   studentPayments       StudentPayment[]
   studentAttachments    StudentAttachment[]
+  loginMaster           LoginMaster?
 
   @@map("students")
+}
+
+model LoginMaster {
+  LoginId           Int       @id @default(autoincrement())
+  StudentId         Int       @unique
+  student           Student   @relation(fields: [StudentId], references: [StudentRegistrationId], onDelete: Cascade)
+  RegistrationNo    String    @unique @db.VarChar(100)
+  LoginName         String?   @db.VarChar(255)
+  Mobile            String?   @db.VarChar(20)
+  EmailId           String?   @db.VarChar(255)
+  Password          String    @db.VarChar(255)
+  PlainPassword     String?   @db.VarChar(50)
+  OldPassword       String?   @db.VarChar(255)
+  IsPasswordUpdated Boolean   @default(false)
+  PasswordChangeOn  DateTime?
+  OTP               String?   @db.VarChar(20)
+  OTPSendTime       DateTime?
+  RoleId            Int       @default(1)
+  ClientId          Int?
+  ProfilePhoto      String?   @db.VarChar(500)
+  LastLogin         DateTime?
+  IpAddress         String?   @db.VarChar(100)
+  MACAddress        String?   @db.VarChar(100)
+  IsActive          Boolean   @default(true)
+  CreatedOn         DateTime  @default(now())
+  CreatedBy         String?   @db.VarChar(255)
+  ModifyOn          DateTime? @updatedAt
+  ModifyBy          String?   @db.VarChar(255)
+  Remarks           String?   @db.VarChar(255)
+
+  @@index([EmailId])
+  @@index([Mobile])
+  @@map("loginMaster")
 }
 
 model StateMaster {
@@ -249,23 +280,49 @@ model StreamMaster {
 }
 
 model ProgramSubjectMaster {
-  programSubjectId   Int       @id @default(autoincrement())
-  programId          Int
-  program            Program   @relation(fields: [programId], references: [programId], onDelete: Cascade)
-  programSubjectName String    @db.VarChar(100)
-  CreatedOn          DateTime  @default(now())
-  CreatedBy          String    @db.VarChar(255)
-  UpdatedOn          DateTime? @updatedAt
-  UpdatedBy          String?   @db.VarChar(255)
-  IsActive           Boolean   @default(true)
-  IsDeleted          Boolean   @default(false)
-  DeletedRemarks     String?   @db.VarChar(255)
-  DeletedOn          DateTime?
-  DeletedBy          String?   @db.VarChar(255)
-  Remarks            String?   @db.VarChar(255)
+  programSubjectId       Int                     @id @default(autoincrement())
+  programId              Int
+  program                Program                 @relation(fields: [programId], references: [programId], onDelete: Cascade)
+  programSubjectName     String                  @db.VarChar(100)
+  studentProgramSubjects StudentProgramSubject[]
+  CreatedOn              DateTime                @default(now())
+  CreatedBy              String                  @db.VarChar(255)
+  UpdatedOn              DateTime?               @updatedAt
+  UpdatedBy              String?                 @db.VarChar(255)
+  IsActive               Boolean                 @default(true)
+  IsDeleted              Boolean                 @default(false)
+  DeletedRemarks         String?                 @db.VarChar(255)
+  DeletedOn              DateTime?
+  DeletedBy              String?                 @db.VarChar(255)
+  Remarks                String?                 @db.VarChar(255)
 
   @@index([programId])
   @@map("programSubjectMaster")
+}
+
+model StudentProgramSubject {
+  studentProgramSubjectId Int                   @id @default(autoincrement())
+  studentId               Int
+  student                 Student               @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
+  programSubjectId        Int
+  programSubject          ProgramSubjectMaster  @relation(fields: [programSubjectId], references: [programSubjectId], onDelete: Cascade)
+  sequenceNo              Int
+
+  // Common Audit Fields
+  CreatedOn               DateTime              @default(now())
+  CreatedBy               String                @db.VarChar(255)
+  UpdatedOn               DateTime?             @updatedAt
+  UpdatedBy               String?               @db.VarChar(255)
+  IsActive                Boolean               @default(true)
+  IsDeleted               Boolean               @default(false)
+  DeletedRemarks          String?               @db.VarChar(255)
+  DeletedOn               DateTime?
+  DeletedBy               String?               @db.VarChar(255)
+  Remarks                 String?               @db.VarChar(255)
+
+  @@index([studentId])
+  @@index([programSubjectId])
+  @@map("studentProgramSubjects")
 }
 
 model ProgramEligibility {

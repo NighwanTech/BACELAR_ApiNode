@@ -3,6 +3,9 @@ import { PrismaService } from '@app/prisma';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
+/** Student role in loginMaster */
+const STUDENT_ROLE_ID = 1;
+
 @Injectable()
 export class StudentsService {
   constructor(
@@ -10,45 +13,49 @@ export class StudentsService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /** Never expose bcrypt hash; keep loginPasswordPlain for admin list. */
-  private sanitizeStudent<T extends { password?: string | null }>(student: T) {
-    const { password: _password, ...rest } = student as T & { password?: string | null };
-    return rest;
+  /**
+   * Never expose bcrypt hash. Attach admin-visible plain from loginMaster as loginPasswordPlain
+   * (keeps Admin UI field name unchanged).
+   */
+  private sanitizeStudent<T extends Record<string, any>>(student: T) {
+    const { loginMaster, ...rest } = student as T & {
+      loginMaster?: {
+        PlainPassword?: string | null;
+        IsPasswordUpdated?: boolean;
+        LastLogin?: Date | null;
+      } | null;
+    };
+
+    return {
+      ...rest,
+      loginPasswordPlain: loginMaster?.PlainPassword ?? null,
+      IsPasswordUpdated: loginMaster?.IsPasswordUpdated ?? false,
+      LastLogin: loginMaster?.LastLogin ?? null,
+    };
   }
 
-  /**
-   * Helper to generate a random 8-character password containing 4 digits and 4 uppercase letters.
-   */
   private generateRandomPassword(): string {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const digits = '0123456789';
     let pwd = '';
-    
-    // Pick 4 random uppercase letters
+
     for (let i = 0; i < 4; i++) {
       pwd += letters.charAt(Math.floor(Math.random() * letters.length));
     }
-    // Pick 4 random digits
     for (let i = 0; i < 4; i++) {
       pwd += digits.charAt(Math.floor(Math.random() * digits.length));
     }
     return pwd;
   }
 
-  /**
-   * Helper to generate a unique Registration Number in case the client did not send one.
-   * Format: yyyymmddXXXX (12 digits, where XXXX is a 4-digit serial resetting every April 1st)
-   */
   private async generateRegistrationNumber(): Promise<string> {
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth(); // 0-indexed: 3 = April
+    const month = now.getMonth();
 
-    // Financial/Academic year cycle starts April 1st
     const cycleStartYear = month >= 3 ? year : year - 1;
     const cycleStartDate = new Date(cycleStartYear, 3, 1, 0, 0, 0, 0);
 
-    // Count how many students were registered after or on the cycle start date
     const count = await this.prisma.student.count({
       where: {
         CreatedOn: {
@@ -60,11 +67,10 @@ export class StudentsService {
     const yyyy = year.toString();
     const mm = (month + 1).toString().padStart(2, '0');
     const dd = now.getDate().toString().padStart(2, '0');
-    
+
     let serial = count + 1;
     let regNo = `${yyyy}${mm}${dd}${serial.toString().padStart(4, '0')}`;
 
-    // Loop to ensure uniqueness in case of race conditions
     let isUnique = false;
     while (!isUnique) {
       const existingRegNo = await this.prisma.student.findUnique({
@@ -82,10 +88,9 @@ export class StudentsService {
   }
 
   /**
-   * 1. CREATE Operation: Register a new student
+   * CREATE: Register student + create loginMaster (auth only in loginMaster).
    */
   async create(data: any) {
-    // Check if email already exists
     const existingEmail = await this.prisma.student.findUnique({
       where: { email: data.email },
     });
@@ -93,12 +98,10 @@ export class StudentsService {
       throw new ConflictException('Email already registered');
     }
 
-    // Determine registration number
     let regNo = data.registrationNo;
     if (!regNo) {
       regNo = await this.generateRegistrationNumber();
     } else {
-      // Check if user-provided registration number already exists
       const existingReg = await this.prisma.student.findUnique({
         where: { registrationNo: regNo },
       });
@@ -107,61 +110,110 @@ export class StudentsService {
       }
     }
 
-    // Generate 8-character plain-text password
     const plainTextPassword = this.generateRandomPassword();
-    // Hash password using bcrypt before saving
     const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
+    const createdBy = data.CreatedBy || 'System';
 
-    // Save in MySQL database using Prisma
-    const newStudent = await this.prisma.student.create({
-      data: {
-        candidateName: data.candidateName,
-        fatherName: data.fatherName,
-        email: data.email,
-        mobileNo: data.mobileNo,
-        registrationNo: regNo,
-        password: hashedPassword, // Store the secure hash
-        loginPasswordPlain: plainTextPassword, // Admin / slip display
-        CreatedBy: data.CreatedBy,
-        Remarks: data.Remarks,
-        IsActive: true,
-        IsDeleted: false,
-      },
+    const newStudent = await this.prisma.$transaction(async (tx) => {
+      const student = await tx.student.create({
+        data: {
+          candidateName: data.candidateName,
+          fatherName: data.fatherName,
+          email: data.email,
+          mobileNo: data.mobileNo,
+          registrationNo: regNo,
+          CreatedBy: createdBy,
+          Remarks: data.Remarks,
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+
+      await tx.loginMaster.create({
+        data: {
+          StudentId: student.StudentRegistrationId,
+          RegistrationNo: regNo,
+          LoginName: data.candidateName || regNo,
+          Mobile: data.mobileNo,
+          EmailId: data.email,
+          Password: hashedPassword,
+          PlainPassword: plainTextPassword,
+          OldPassword: null,
+          IsPasswordUpdated: false,
+          RoleId: STUDENT_ROLE_ID,
+          ClientId: data.ClientId != null ? Number(data.ClientId) : null,
+          IsActive: true,
+          CreatedBy: createdBy,
+          Remarks: data.Remarks || null,
+        },
+      });
+
+      return tx.student.findUnique({
+        where: { StudentRegistrationId: student.StudentRegistrationId },
+        include: { loginMaster: true },
+      });
     });
 
-    // Return sanitized student + plain password for verification slip
     return {
-      ...this.sanitizeStudent(newStudent),
+      ...this.sanitizeStudent(newStudent as any),
       plainTextPassword,
     };
   }
 
   /**
-   * AUTHENTICATION: Login student using Registration Number and Password
+   * AUTH: Login via loginMaster (RegistrationNo + Password hash).
    */
-  async login(registrationNo: string, passwordString: string) {
-    const student = await this.prisma.student.findUnique({
-      where: { registrationNo },
+  async login(
+    registrationNo: string,
+    passwordString: string,
+    meta?: { IpAddress?: string; MACAddress?: string },
+  ) {
+    const login = await this.prisma.loginMaster.findUnique({
+      where: { RegistrationNo: registrationNo },
+      include: {
+        student: true,
+      },
     });
 
-    // Verify user exists, is active, and not deleted
-    if (!student || student.IsDeleted || !student.IsActive) {
+    if (
+      !login ||
+      !login.IsActive ||
+      !login.student ||
+      login.student.IsDeleted ||
+      !login.student.IsActive
+    ) {
       throw new UnauthorizedException('Invalid credentials or account is disabled');
     }
 
-    // Compare plain password with stored bcrypt hash
-    const isPasswordValid = await bcrypt.compare(passwordString, student.password);
+    const isPasswordValid = await bcrypt.compare(passwordString, login.Password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials or account is disabled');
     }
 
-    // Password matches, generate JWT Token
-    const payload = { sub: student.StudentRegistrationId, registrationNo: student.registrationNo };
+    await this.prisma.loginMaster.update({
+      where: { LoginId: login.LoginId },
+      data: {
+        LastLogin: new Date(),
+        IpAddress: meta?.IpAddress || login.IpAddress,
+        MACAddress: meta?.MACAddress || login.MACAddress,
+        ModifyBy: 'System-Login',
+      },
+    });
+
+    const payload = {
+      sub: login.student.StudentRegistrationId,
+      registrationNo: login.student.registrationNo,
+      loginId: login.LoginId,
+      roleId: login.RoleId,
+    };
     const token = this.jwtService.sign(payload);
 
-    // Login response: hide bcrypt hash AND plain password
-    const sanitized = this.sanitizeStudent(student) as any;
+    const sanitized = this.sanitizeStudent({
+      ...login.student,
+      loginMaster: login,
+    }) as any;
     delete sanitized.loginPasswordPlain;
+
     return {
       status: 'success',
       token,
@@ -169,14 +221,13 @@ export class StudentsService {
     };
   }
 
-  /**
-   * 2. READ (Find All) Operation: Get all active students
-   * Filtering: Only returns records where IsDeleted is false
-   */
   async findAll() {
     const rows = await this.prisma.student.findMany({
       where: {
         IsDeleted: false,
+      },
+      include: {
+        loginMaster: true,
       },
       orderBy: {
         CreatedOn: 'desc',
@@ -185,10 +236,6 @@ export class StudentsService {
     return rows.map((s) => this.sanitizeStudent(s));
   }
 
-  /**
-   * 3. READ (Find One) Operation: Get student details by ID
-   * Filtering: Checks if the record is active and not deleted
-   */
   async findOne(StudentRegistrationId: number) {
     const student = await this.prisma.student.findFirst({
       where: {
@@ -200,24 +247,22 @@ export class StudentsService {
           include: { programCategory: true },
         },
         admissionSession: true,
+        loginMaster: true,
       },
     });
 
     if (!student) {
-      throw new NotFoundException(`Student with Registration ID ${StudentRegistrationId} not found`);
+      throw new NotFoundException(
+        `Student with Registration ID ${StudentRegistrationId} not found`,
+      );
     }
 
     return this.sanitizeStudent(student);
   }
 
-  /**
-   * 4. UPDATE Operation: Modify student details
-   */
   async update(StudentRegistrationId: number, data: any) {
-    // Verify student exists and is active
     await this.findOne(StudentRegistrationId);
 
-    // If updating email, check for duplicate conflicts
     if (data.email) {
       const existingEmail = await this.prisma.student.findFirst({
         where: {
@@ -230,7 +275,6 @@ export class StudentsService {
       }
     }
 
-    // If updating registration number, check for duplicates
     if (data.registrationNo) {
       const existingReg = await this.prisma.student.findFirst({
         where: {
@@ -239,66 +283,113 @@ export class StudentsService {
         },
       });
       if (existingReg) {
-        throw new ConflictException('Registration number already in use by another student');
+        throw new ConflictException(
+          'Registration number already in use by another student',
+        );
       }
     }
 
-    // Update in MySQL database
-    const updated = await this.prisma.student.update({
-      where: { StudentRegistrationId },
-      data: {
-        candidateName: data.candidateName,
-        fatherName: data.fatherName,
-        email: data.email,
-        mobileNo: data.mobileNo,
-        registrationNo: data.registrationNo,
-        UpdatedBy: data.UpdatedBy,
-        IsActive: data.IsActive,
-        Remarks: data.Remarks,
-      },
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const student = await tx.student.update({
+        where: { StudentRegistrationId },
+        data: {
+          candidateName: data.candidateName,
+          fatherName: data.fatherName,
+          email: data.email,
+          mobileNo: data.mobileNo,
+          registrationNo: data.registrationNo,
+          UpdatedBy: data.UpdatedBy,
+          IsActive: data.IsActive,
+          Remarks: data.Remarks,
+        },
+      });
+
+      const login = await tx.loginMaster.findUnique({
+        where: { StudentId: StudentRegistrationId },
+      });
+
+      if (login) {
+        await tx.loginMaster.update({
+          where: { LoginId: login.LoginId },
+          data: {
+            RegistrationNo: student.registrationNo,
+            LoginName: student.candidateName,
+            Mobile: student.mobileNo,
+            EmailId: student.email,
+            IsActive: student.IsActive,
+            ModifyBy: data.UpdatedBy || null,
+            Remarks: data.Remarks !== undefined ? data.Remarks : undefined,
+          },
+        });
+      }
+
+      return tx.student.findUnique({
+        where: { StudentRegistrationId },
+        include: { loginMaster: true },
+      });
     });
-    return this.sanitizeStudent(updated);
+
+    return this.sanitizeStudent(updated as any);
   }
 
-  /**
-   * 5. DELETE Operation: Soft delete a student
-   * Instead of hard deleting, we update IsDeleted=true and keep audit tracking fields.
-   */
-  async softDelete(StudentRegistrationId: number, DeletedBy: string, DeletedRemarks?: string) {
-    // Verify student exists
+  async softDelete(
+    StudentRegistrationId: number,
+    DeletedBy: string,
+    DeletedRemarks?: string,
+  ) {
     await this.findOne(StudentRegistrationId);
 
-    // Perform soft delete
-    const deleted = await this.prisma.student.update({
-      where: { StudentRegistrationId },
-      data: {
-        IsDeleted: true,
-        IsActive: false, // Turn off active status
-        DeletedOn: new Date(),
-        DeletedBy: DeletedBy,
-        DeletedRemarks: DeletedRemarks || null,
-      },
+    const deleted = await this.prisma.$transaction(async (tx) => {
+      const student = await tx.student.update({
+        where: { StudentRegistrationId },
+        data: {
+          IsDeleted: true,
+          IsActive: false,
+          DeletedOn: new Date(),
+          DeletedBy: DeletedBy,
+          DeletedRemarks: DeletedRemarks || null,
+        },
+      });
+
+      await tx.loginMaster.updateMany({
+        where: { StudentId: StudentRegistrationId },
+        data: {
+          IsActive: false,
+          ModifyBy: DeletedBy,
+        },
+      });
+
+      return student;
     });
+
     return this.sanitizeStudent(deleted);
   }
 
-  /**
-   * 6. BULK DELETE Operation: Soft delete multiple students at once
-   */
   async bulkSoftDelete(ids: number[], DeletedBy: string, DeletedRemarks?: string) {
-    // Perform bulk updateMany to soft delete matching ids
-    const result = await this.prisma.student.updateMany({
-      where: {
-        StudentRegistrationId: { in: ids },
-        IsDeleted: false, // Only update those that aren't already deleted
-      },
-      data: {
-        IsDeleted: true,
-        IsActive: false,
-        DeletedOn: new Date(),
-        DeletedBy: DeletedBy,
-        DeletedRemarks: DeletedRemarks || null,
-      },
+    const result = await this.prisma.$transaction(async (tx) => {
+      const studentResult = await tx.student.updateMany({
+        where: {
+          StudentRegistrationId: { in: ids },
+          IsDeleted: false,
+        },
+        data: {
+          IsDeleted: true,
+          IsActive: false,
+          DeletedOn: new Date(),
+          DeletedBy: DeletedBy,
+          DeletedRemarks: DeletedRemarks || null,
+        },
+      });
+
+      await tx.loginMaster.updateMany({
+        where: { StudentId: { in: ids } },
+        data: {
+          IsActive: false,
+          ModifyBy: DeletedBy,
+        },
+      });
+
+      return studentResult;
     });
 
     return {
@@ -307,44 +398,46 @@ export class StudentsService {
     };
   }
 
-  /**
-   * 7. CHANGE PASSWORD: Change student password
-   */
-  async changePassword(registrationNo: string, currentPasswordString: string, newPasswordString: string) {
-    const student = await this.prisma.student.findUnique({
-      where: { registrationNo },
+  async changePassword(
+    registrationNo: string,
+    currentPasswordString: string,
+    newPasswordString: string,
+  ) {
+    const login = await this.prisma.loginMaster.findUnique({
+      where: { RegistrationNo: registrationNo },
+      include: { student: true },
     });
 
-    if (!student || student.IsDeleted) {
+    if (!login || !login.student || login.student.IsDeleted) {
       return { status: 'error', message: 'Student account not found' };
     }
 
-    // Compare current password with stored hash
-    const isPasswordValid = await bcrypt.compare(currentPasswordString, student.password);
+    const isPasswordValid = await bcrypt.compare(currentPasswordString, login.Password);
     if (!isPasswordValid) {
       return { status: 'error', message: 'Current password is incorrect' };
     }
 
-    // Hash the new password + keep admin-visible plain copy in sync
     const hashedNewPassword = await bcrypt.hash(newPasswordString, 10);
 
-    await this.prisma.student.update({
-      where: { StudentRegistrationId: student.StudentRegistrationId },
+    await this.prisma.loginMaster.update({
+      where: { LoginId: login.LoginId },
       data: {
-        password: hashedNewPassword,
-        loginPasswordPlain: newPasswordString,
+        OldPassword: login.PlainPassword || login.Password,
+        Password: hashedNewPassword,
+        PlainPassword: newPasswordString,
+        IsPasswordUpdated: true,
+        PasswordChangeOn: new Date(),
+        ModifyBy: registrationNo,
       },
     });
 
     return { status: 'success', message: 'Password changed successfully' };
   }
 
-  /**
-   * 8. ADMIN RESET PASSWORD: generate new plain password, store hash + plain for admin list.
-   */
   async adminResetPassword(StudentRegistrationId: number, UpdatedBy = 'Admin User') {
     const student = await this.prisma.student.findFirst({
       where: { StudentRegistrationId, IsDeleted: false },
+      include: { loginMaster: true },
     });
 
     if (!student) {
@@ -354,15 +447,37 @@ export class StudentsService {
     const plainTextPassword = this.generateRandomPassword();
     const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
 
-    await this.prisma.student.update({
-      where: { StudentRegistrationId },
-      data: {
-        password: hashedPassword,
-        loginPasswordPlain: plainTextPassword,
-        UpdatedBy,
-        UpdatedOn: new Date(),
-      },
-    });
+    if (student.loginMaster) {
+      await this.prisma.loginMaster.update({
+        where: { LoginId: student.loginMaster.LoginId },
+        data: {
+          OldPassword: student.loginMaster.PlainPassword || student.loginMaster.Password,
+          Password: hashedPassword,
+          PlainPassword: plainTextPassword,
+          IsPasswordUpdated: false,
+          PasswordChangeOn: new Date(),
+          ModifyBy: UpdatedBy,
+        },
+      });
+    } else {
+      await this.prisma.loginMaster.create({
+        data: {
+          StudentId: StudentRegistrationId,
+          RegistrationNo: student.registrationNo,
+          LoginName: student.candidateName,
+          Mobile: student.mobileNo,
+          EmailId: student.email,
+          Password: hashedPassword,
+          PlainPassword: plainTextPassword,
+          IsPasswordUpdated: false,
+          PasswordChangeOn: new Date(),
+          RoleId: STUDENT_ROLE_ID,
+          IsActive: true,
+          CreatedBy: UpdatedBy,
+          ModifyBy: UpdatedBy,
+        },
+      });
+    }
 
     return {
       status: 'success',

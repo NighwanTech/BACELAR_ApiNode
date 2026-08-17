@@ -64,6 +64,7 @@ export class StudentAcademicService {
     qualifications: any[],
     CreatedBy: string,
     programId: number,
+    programSubjectIds?: number[],
   ) {
     return this.prisma.$transaction(async (tx) => {
       const student = await tx.student.findFirst({
@@ -174,6 +175,44 @@ export class StudentAcademicService {
           },
         });
         createdDetails.push(detail);
+      }
+
+      if (Array.isArray(programSubjectIds)) {
+        const ids = [
+          ...new Set(
+            programSubjectIds
+              .map((id) => Number(id))
+              .filter((id) => Number.isFinite(id) && id > 0),
+          ),
+        ];
+        await tx.studentProgramSubject.deleteMany({
+          where: { studentId: Number(studentId) },
+        });
+        if (ids.length > 0) {
+          const masters = await tx.programSubjectMaster.findMany({
+            where: {
+              programSubjectId: { in: ids },
+              programId: assignedProgramId,
+              IsDeleted: false,
+            },
+          });
+          const allowed = new Set(masters.map((m) => m.programSubjectId));
+          if (ids.some((id) => !allowed.has(id))) {
+            throw new BadRequestException(
+              'One or more program subjects are invalid for this program',
+            );
+          }
+          await tx.studentProgramSubject.createMany({
+            data: ids.map((id, idx) => ({
+              studentId: Number(studentId),
+              programSubjectId: id,
+              sequenceNo: idx + 1,
+              CreatedBy: CreatedBy || 'System',
+              IsActive: true,
+              IsDeleted: false,
+            })),
+          });
+        }
       }
 
       return {

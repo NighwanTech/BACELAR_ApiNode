@@ -6,6 +6,7 @@ import { StudentsService } from './students.service';
 import { StudentProfileModule } from './student-profile/student-profile.module';
 import { StudentAcademicModule } from './student-academic/student-academic.module';
 import { StudentAcademicSubjectModule } from './student-academic-subject/student-academic-subject.module';
+import { StudentProgramSubjectModule } from './student-program-subject/student-program-subject.module';
 import { StudentPaymentModule } from './student-payment/student-payment.module';
 import { StudentAttachmentModule } from './student-attachment/student-attachment.module';
 
@@ -19,6 +20,7 @@ import { StudentAttachmentModule } from './student-attachment/student-attachment
     StudentProfileModule,
     StudentAcademicModule,
     StudentAcademicSubjectModule,
+    StudentProgramSubjectModule,
     StudentPaymentModule,
     StudentAttachmentModule,
   ],

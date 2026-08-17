@@ -1,239 +1,11 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ([
-/* 0 */,
-/* 1 */
-/***/ ((module) => {
+/******/ 	var __webpack_modules__ = ({
 
-module.exports = require("dotenv/config");
-
-/***/ }),
-/* 2 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/core");
-
-/***/ }),
-/* 3 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/microservices");
-
-/***/ }),
-/* 4 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentServiceModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const students_module_1 = __webpack_require__(11);
-const master_module_1 = __webpack_require__(33);
-const website_module_1 = __webpack_require__(82);
-let StudentServiceModule = class StudentServiceModule {
-};
-exports.StudentServiceModule = StudentServiceModule;
-exports.StudentServiceModule = StudentServiceModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule, students_module_1.StudentsModule, master_module_1.MasterModule, website_module_1.WebsiteModule],
-        controllers: [],
-        providers: [],
-    })
-], StudentServiceModule);
-
-
-/***/ }),
-/* 5 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/common");
-
-/***/ }),
-/* 6 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-__exportStar(__webpack_require__(7), exports);
-__exportStar(__webpack_require__(8), exports);
-
-
-/***/ }),
-/* 7 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PrismaModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_service_1 = __webpack_require__(8);
-let PrismaModule = class PrismaModule {
-};
-exports.PrismaModule = PrismaModule;
-exports.PrismaModule = PrismaModule = __decorate([
-    (0, common_1.Global)(),
-    (0, common_1.Module)({
-        providers: [prisma_service_1.PrismaService],
-        exports: [prisma_service_1.PrismaService],
-    })
-], PrismaModule);
-
-
-/***/ }),
-/* 8 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PrismaService = void 0;
-const common_1 = __webpack_require__(5);
-const adapter_mariadb_1 = __webpack_require__(9);
-const client_1 = __webpack_require__(10);
-function getDbConfig() {
-    const databaseUrl = process.env.DATABASE_URL || '';
-    try {
-        const url = new URL(databaseUrl);
-        return {
-            host: url.hostname,
-            port: url.port ? Number(url.port) : 3306,
-            user: decodeURIComponent(url.username),
-            password: decodeURIComponent(url.password),
-            database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
-            connectionLimit: 2,
-            connectTimeout: 30000,
-            acquireTimeout: 30000,
-            ssl: false,
-            allowPublicKeyRetrieval: true,
-        };
-    }
-    catch {
-        return {
-            host: '127.0.0.1',
-            port: 3306,
-            user: 'root',
-            password: '',
-            database: 'backend_db',
-        };
-    }
-}
-let PrismaService = class PrismaService extends client_1.PrismaClient {
-    constructor() {
-        const adapter = new adapter_mariadb_1.PrismaMariaDb(getDbConfig());
-        super({ adapter });
-    }
-    async onModuleDestroy() {
-        await this.$disconnect();
-    }
-};
-exports.PrismaService = PrismaService;
-exports.PrismaService = PrismaService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
-], PrismaService);
-
-
-/***/ }),
-/* 9 */
-/***/ ((module) => {
-
-module.exports = require("@prisma/adapter-mariadb");
-
-/***/ }),
-/* 10 */
-/***/ ((module) => {
-
-module.exports = require("@prisma/client");
-
-/***/ }),
-/* 11 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentsModule = void 0;
-const common_1 = __webpack_require__(5);
-const jwt_1 = __webpack_require__(12);
-const prisma_1 = __webpack_require__(6);
-const students_controller_1 = __webpack_require__(13);
-const students_service_1 = __webpack_require__(14);
-const student_profile_module_1 = __webpack_require__(16);
-const student_academic_module_1 = __webpack_require__(19);
-const student_academic_subject_module_1 = __webpack_require__(22);
-const student_payment_module_1 = __webpack_require__(25);
-const student_attachment_module_1 = __webpack_require__(30);
-let StudentsModule = class StudentsModule {
-};
-exports.StudentsModule = StudentsModule;
-exports.StudentsModule = StudentsModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            prisma_1.PrismaModule,
-            jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET || 'super-secret-jwt-key',
-                signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
-            }),
-            student_profile_module_1.StudentProfileModule,
-            student_academic_module_1.StudentAcademicModule,
-            student_academic_subject_module_1.StudentAcademicSubjectModule,
-            student_payment_module_1.StudentPaymentModule,
-            student_attachment_module_1.StudentAttachmentModule,
-        ],
-        controllers: [students_controller_1.StudentsController],
-        providers: [students_service_1.StudentsService],
-    })
-], StudentsModule);
-
-
-/***/ }),
-/* 12 */
-/***/ ((module) => {
-
-module.exports = require("@nestjs/jwt");
-
-/***/ }),
-/* 13 */
+/***/ "./apps/student-service/src/master/academic-session/academic-session.controller.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/master/academic-session/academic-session.controller.ts ***!
+  \*****************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -251,3022 +23,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentsController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const students_service_1 = __webpack_require__(14);
-let StudentsController = class StudentsController {
-    constructor(studentsService) {
-        this.studentsService = studentsService;
-    }
-    async login(data) {
-        try {
-            return await this.studentsService.login(data.registrationNo, data.password);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async changePassword(data) {
-        try {
-            return await this.studentsService.changePassword(data.registrationNo, data.currentPassword, data.newPassword);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async adminResetPassword(data) {
-        try {
-            return await this.studentsService.adminResetPassword(data.StudentRegistrationId, data.UpdatedBy || 'Admin User');
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
+exports.AcademicSessionController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const academic_session_service_1 = __webpack_require__(/*! ./academic-session.service */ "./apps/student-service/src/master/academic-session/academic-session.service.ts");
+let AcademicSessionController = class AcademicSessionController {
+    constructor(academicSessionService) {
+        this.academicSessionService = academicSessionService;
     }
     async create(data) {
         try {
-            return await this.studentsService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.studentsService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.studentsService.findOne(data.StudentRegistrationId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { StudentRegistrationId, ...updateData } = data;
-            return await this.studentsService.update(StudentRegistrationId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.studentsService.softDelete(data.StudentRegistrationId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.studentsService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.StudentsController = StudentsController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'login_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "login", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'change_password_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "changePassword", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'admin_reset_password_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "adminResetPassword", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_students' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'soft_delete_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_soft_delete_students' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentsController.prototype, "bulkSoftDelete", null);
-exports.StudentsController = StudentsController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof students_service_1.StudentsService !== "undefined" && students_service_1.StudentsService) === "function" ? _a : Object])
-], StudentsController);
-
-
-/***/ }),
-/* 14 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentsService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const jwt_1 = __webpack_require__(12);
-const bcrypt = __importStar(__webpack_require__(15));
-let StudentsService = class StudentsService {
-    constructor(prisma, jwtService) {
-        this.prisma = prisma;
-        this.jwtService = jwtService;
-    }
-    sanitizeStudent(student) {
-        const { password: _password, ...rest } = student;
-        return rest;
-    }
-    generateRandomPassword() {
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const digits = '0123456789';
-        let pwd = '';
-        for (let i = 0; i < 4; i++) {
-            pwd += letters.charAt(Math.floor(Math.random() * letters.length));
-        }
-        for (let i = 0; i < 4; i++) {
-            pwd += digits.charAt(Math.floor(Math.random() * digits.length));
-        }
-        return pwd;
-    }
-    async generateRegistrationNumber() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth();
-        const cycleStartYear = month >= 3 ? year : year - 1;
-        const cycleStartDate = new Date(cycleStartYear, 3, 1, 0, 0, 0, 0);
-        const count = await this.prisma.student.count({
-            where: {
-                CreatedOn: {
-                    gte: cycleStartDate,
-                },
-            },
-        });
-        const yyyy = year.toString();
-        const mm = (month + 1).toString().padStart(2, '0');
-        const dd = now.getDate().toString().padStart(2, '0');
-        let serial = count + 1;
-        let regNo = `${yyyy}${mm}${dd}${serial.toString().padStart(4, '0')}`;
-        let isUnique = false;
-        while (!isUnique) {
-            const existingRegNo = await this.prisma.student.findUnique({
-                where: { registrationNo: regNo },
-            });
-            if (!existingRegNo) {
-                isUnique = true;
-            }
-            else {
-                serial++;
-                regNo = `${yyyy}${mm}${dd}${serial.toString().padStart(4, '0')}`;
-            }
-        }
-        return regNo;
-    }
-    async create(data) {
-        const existingEmail = await this.prisma.student.findUnique({
-            where: { email: data.email },
-        });
-        if (existingEmail) {
-            throw new common_1.ConflictException('Email already registered');
-        }
-        let regNo = data.registrationNo;
-        if (!regNo) {
-            regNo = await this.generateRegistrationNumber();
-        }
-        else {
-            const existingReg = await this.prisma.student.findUnique({
-                where: { registrationNo: regNo },
-            });
-            if (existingReg) {
-                throw new common_1.ConflictException('Registration number already exists');
-            }
-        }
-        const plainTextPassword = this.generateRandomPassword();
-        const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
-        const newStudent = await this.prisma.student.create({
-            data: {
-                candidateName: data.candidateName,
-                fatherName: data.fatherName,
-                email: data.email,
-                mobileNo: data.mobileNo,
-                registrationNo: regNo,
-                password: hashedPassword,
-                loginPasswordPlain: plainTextPassword,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-        return {
-            ...this.sanitizeStudent(newStudent),
-            plainTextPassword,
-        };
-    }
-    async login(registrationNo, passwordString) {
-        const student = await this.prisma.student.findUnique({
-            where: { registrationNo },
-        });
-        if (!student || student.IsDeleted || !student.IsActive) {
-            throw new common_1.UnauthorizedException('Invalid credentials or account is disabled');
-        }
-        const isPasswordValid = await bcrypt.compare(passwordString, student.password);
-        if (!isPasswordValid) {
-            throw new common_1.UnauthorizedException('Invalid credentials or account is disabled');
-        }
-        const payload = { sub: student.StudentRegistrationId, registrationNo: student.registrationNo };
-        const token = this.jwtService.sign(payload);
-        const sanitized = this.sanitizeStudent(student);
-        delete sanitized.loginPasswordPlain;
-        return {
-            status: 'success',
-            token,
-            student: sanitized,
-        };
-    }
-    async findAll() {
-        const rows = await this.prisma.student.findMany({
-            where: {
-                IsDeleted: false,
-            },
-            orderBy: {
-                CreatedOn: 'desc',
-            },
-        });
-        return rows.map((s) => this.sanitizeStudent(s));
-    }
-    async findOne(StudentRegistrationId) {
-        const student = await this.prisma.student.findFirst({
-            where: {
-                StudentRegistrationId,
-                IsDeleted: false,
-            },
-            include: {
-                program: {
-                    include: { programCategory: true },
-                },
-                admissionSession: true,
-            },
-        });
-        if (!student) {
-            throw new common_1.NotFoundException(`Student with Registration ID ${StudentRegistrationId} not found`);
-        }
-        return this.sanitizeStudent(student);
-    }
-    async update(StudentRegistrationId, data) {
-        await this.findOne(StudentRegistrationId);
-        if (data.email) {
-            const existingEmail = await this.prisma.student.findFirst({
-                where: {
-                    email: data.email,
-                    NOT: { StudentRegistrationId },
-                },
-            });
-            if (existingEmail) {
-                throw new common_1.ConflictException('Email already in use by another student');
-            }
-        }
-        if (data.registrationNo) {
-            const existingReg = await this.prisma.student.findFirst({
-                where: {
-                    registrationNo: data.registrationNo,
-                    NOT: { StudentRegistrationId },
-                },
-            });
-            if (existingReg) {
-                throw new common_1.ConflictException('Registration number already in use by another student');
-            }
-        }
-        const updated = await this.prisma.student.update({
-            where: { StudentRegistrationId },
-            data: {
-                candidateName: data.candidateName,
-                fatherName: data.fatherName,
-                email: data.email,
-                mobileNo: data.mobileNo,
-                registrationNo: data.registrationNo,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-        return this.sanitizeStudent(updated);
-    }
-    async softDelete(StudentRegistrationId, DeletedBy, DeletedRemarks) {
-        await this.findOne(StudentRegistrationId);
-        const deleted = await this.prisma.student.update({
-            where: { StudentRegistrationId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return this.sanitizeStudent(deleted);
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.student.updateMany({
-            where: {
-                StudentRegistrationId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} student(s)`,
-            count: result.count,
-        };
-    }
-    async changePassword(registrationNo, currentPasswordString, newPasswordString) {
-        const student = await this.prisma.student.findUnique({
-            where: { registrationNo },
-        });
-        if (!student || student.IsDeleted) {
-            return { status: 'error', message: 'Student account not found' };
-        }
-        const isPasswordValid = await bcrypt.compare(currentPasswordString, student.password);
-        if (!isPasswordValid) {
-            return { status: 'error', message: 'Current password is incorrect' };
-        }
-        const hashedNewPassword = await bcrypt.hash(newPasswordString, 10);
-        await this.prisma.student.update({
-            where: { StudentRegistrationId: student.StudentRegistrationId },
-            data: {
-                password: hashedNewPassword,
-                loginPasswordPlain: newPasswordString,
-            },
-        });
-        return { status: 'success', message: 'Password changed successfully' };
-    }
-    async adminResetPassword(StudentRegistrationId, UpdatedBy = 'Admin User') {
-        const student = await this.prisma.student.findFirst({
-            where: { StudentRegistrationId, IsDeleted: false },
-        });
-        if (!student) {
-            throw new common_1.NotFoundException(`Student with ID ${StudentRegistrationId} not found`);
-        }
-        const plainTextPassword = this.generateRandomPassword();
-        const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
-        await this.prisma.student.update({
-            where: { StudentRegistrationId },
-            data: {
-                password: hashedPassword,
-                loginPasswordPlain: plainTextPassword,
-                UpdatedBy,
-                UpdatedOn: new Date(),
-            },
-        });
-        return {
-            status: 'success',
-            message: 'Password reset successfully',
-            StudentRegistrationId,
-            registrationNo: student.registrationNo,
-            plainTextPassword,
-        };
-    }
-};
-exports.StudentsService = StudentsService;
-exports.StudentsService = StudentsService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
-], StudentsService);
-
-
-/***/ }),
-/* 15 */
-/***/ ((module) => {
-
-module.exports = require("bcryptjs");
-
-/***/ }),
-/* 16 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentProfileModule = void 0;
-const common_1 = __webpack_require__(5);
-const student_profile_service_1 = __webpack_require__(17);
-const student_profile_controller_1 = __webpack_require__(18);
-const prisma_1 = __webpack_require__(6);
-let StudentProfileModule = class StudentProfileModule {
-};
-exports.StudentProfileModule = StudentProfileModule;
-exports.StudentProfileModule = StudentProfileModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [student_profile_controller_1.StudentProfileController],
-        providers: [student_profile_service_1.StudentProfileService],
-        exports: [student_profile_service_1.StudentProfileService],
-    })
-], StudentProfileModule);
-
-
-/***/ }),
-/* 17 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentProfileService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let StudentProfileService = class StudentProfileService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        const existing = await this.prisma.studentProfile.findUnique({
-            where: { studentId: data.studentId },
-        });
-        if (existing) {
-            throw new common_1.ConflictException('Profile already exists for this student');
-        }
-        const student = await this.prisma.student.findUnique({
-            where: { StudentRegistrationId: data.studentId },
-        });
-        if (!student || student.IsDeleted) {
-            throw new common_1.NotFoundException('Student account not found');
-        }
-        return this.prisma.studentProfile.create({
-            data: {
-                studentId: data.studentId,
-                studentNameHindi: data.studentNameHindi || null,
-                fatherNameHindi: data.fatherNameHindi || null,
-                motherName: data.motherName || null,
-                motherNameHindi: data.motherNameHindi || null,
-                fatherMobileNumber: data.fatherMobileNumber || null,
-                dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
-                gender: data.gender || null,
-                maritalStatus: data.maritalStatus || null,
-                religion: data.religion || null,
-                nationality: data.nationality || null,
-                category: data.category || null,
-                subCategory: data.subCategory || null,
-                physicalHandicap: data.physicalHandicap || null,
-                certificateNo: data.certificateNo || null,
-                certificateAttachment: data.certificateAttachment || null,
-                aadharIdNo: data.aadharIdNo || null,
-                apaarIdNo: data.apaarIdNo || null,
-                nameAsPerAdhar: data.nameAsPerAdhar || null,
-                dobAsPerAdhar: data.dobAsPerAdhar ? new Date(data.dobAsPerAdhar) : null,
-                CaddressLine1: data.CaddressLine1 || null,
-                CaddressLine2: data.CaddressLine2 || null,
-                CaddressLine3: data.CaddressLine3 || null,
-                Cstate: data.Cstate || null,
-                Ccity: data.Ccity || null,
-                Cpincode: data.Cpincode || null,
-                PaddressLine1: data.PaddressLine1 || null,
-                PaddressLine2: data.PaddressLine2 || null,
-                PaddressLine3: data.PaddressLine3 || null,
-                Pstate: data.Pstate || null,
-                Pcity: data.Pcity || null,
-                Ppincode: data.Ppincode || null,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findOne(studentId) {
-        const profile = await this.prisma.studentProfile.findFirst({
-            where: { studentId, IsDeleted: false },
-            include: {
-                student: true,
-            },
-        });
-        if (!profile) {
-            throw new common_1.NotFoundException(`Student profile with student ID ${studentId} not found`);
-        }
-        const { student, ...profileData } = profile;
-        return {
-            ...profileData,
-            studentName: student.candidateName,
-            studentPhoneNo: student.mobileNo,
-            email: student.email,
-            fatherName: student.fatherName,
-            registrationNo: student.registrationNo,
-        };
-    }
-    async update(studentId, data) {
-        await this.findOne(studentId);
-        return this.prisma.studentProfile.update({
-            where: { studentId },
-            data: {
-                studentNameHindi: data.studentNameHindi,
-                fatherNameHindi: data.fatherNameHindi,
-                motherName: data.motherName,
-                motherNameHindi: data.motherNameHindi,
-                fatherMobileNumber: data.fatherMobileNumber,
-                dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
-                gender: data.gender,
-                maritalStatus: data.maritalStatus,
-                religion: data.religion,
-                nationality: data.nationality,
-                category: data.category,
-                subCategory: data.subCategory,
-                physicalHandicap: data.physicalHandicap,
-                certificateNo: data.certificateNo,
-                certificateAttachment: data.certificateAttachment,
-                aadharIdNo: data.aadharIdNo,
-                apaarIdNo: data.apaarIdNo,
-                nameAsPerAdhar: data.nameAsPerAdhar,
-                dobAsPerAdhar: data.dobAsPerAdhar
-                    ? new Date(data.dobAsPerAdhar)
-                    : data.dobAsPerAdhar === null
-                        ? null
-                        : undefined,
-                CaddressLine1: data.CaddressLine1,
-                CaddressLine2: data.CaddressLine2,
-                CaddressLine3: data.CaddressLine3,
-                Cstate: data.Cstate,
-                Ccity: data.Ccity,
-                Cpincode: data.Cpincode,
-                PaddressLine1: data.PaddressLine1,
-                PaddressLine2: data.PaddressLine2,
-                PaddressLine3: data.PaddressLine3,
-                Pstate: data.Pstate,
-                Pcity: data.Pcity,
-                Ppincode: data.Ppincode,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(studentId, DeletedBy, DeletedRemarks) {
-        await this.findOne(studentId);
-        return this.prisma.studentProfile.update({
-            where: { studentId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.studentProfile.updateMany({
-            where: {
-                studentProfileId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} student profile(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.StudentProfileService = StudentProfileService;
-exports.StudentProfileService = StudentProfileService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], StudentProfileService);
-
-
-/***/ }),
-/* 18 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentProfileController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const student_profile_service_1 = __webpack_require__(17);
-let StudentProfileController = class StudentProfileController {
-    constructor(studentProfileService) {
-        this.studentProfileService = studentProfileService;
-    }
-    async create(data) {
-        try {
-            return await this.studentProfileService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.studentProfileService.findOne(data.studentId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { studentId, ...updateData } = data;
-            return await this.studentProfileService.update(studentId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.studentProfileService.softDelete(data.studentId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.studentProfileService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.StudentProfileController = StudentProfileController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_student_profile' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentProfileController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_student_profile' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentProfileController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_student_profile' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentProfileController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_student_profile' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentProfileController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_student_profiles' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentProfileController.prototype, "bulkSoftDelete", null);
-exports.StudentProfileController = StudentProfileController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof student_profile_service_1.StudentProfileService !== "undefined" && student_profile_service_1.StudentProfileService) === "function" ? _a : Object])
-], StudentProfileController);
-
-
-/***/ }),
-/* 19 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAcademicModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const student_academic_controller_1 = __webpack_require__(20);
-const student_academic_service_1 = __webpack_require__(21);
-let StudentAcademicModule = class StudentAcademicModule {
-};
-exports.StudentAcademicModule = StudentAcademicModule;
-exports.StudentAcademicModule = StudentAcademicModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [student_academic_controller_1.StudentAcademicController],
-        providers: [student_academic_service_1.StudentAcademicService],
-        exports: [student_academic_service_1.StudentAcademicService],
-    })
-], StudentAcademicModule);
-
-
-/***/ }),
-/* 20 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAcademicController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const student_academic_service_1 = __webpack_require__(21);
-let StudentAcademicController = class StudentAcademicController {
-    constructor(academicService) {
-        this.academicService = academicService;
-    }
-    async save(data) {
-        try {
-            return await this.academicService.save(data.studentId, data.qualifications, data.CreatedBy, data.programId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.academicService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.academicService.findOne(data.academicDetailId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findByStudent(data) {
-        try {
-            return await this.academicService.findByStudent(data.studentId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { academicDetailId, ...updateData } = data;
-            return await this.academicService.update(academicDetailId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.academicService.softDelete(data.academicDetailId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.academicService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.StudentAcademicController = StudentAcademicController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'save_student_academic_details' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicController.prototype, "save", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_academic_details' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StudentAcademicController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_academic_detail' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_academic_details_by_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicController.prototype, "findByStudent", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_academic_detail' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_academic_detail' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_academic_details' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicController.prototype, "bulkSoftDelete", null);
-exports.StudentAcademicController = StudentAcademicController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof student_academic_service_1.StudentAcademicService !== "undefined" && student_academic_service_1.StudentAcademicService) === "function" ? _a : Object])
-], StudentAcademicController);
-
-
-/***/ }),
-/* 21 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAcademicService = void 0;
-exports.computeAcademicResult = computeAcademicResult;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-function computeAcademicResult(input) {
-    const marksType = String(input.marksType || 'Percentage').toUpperCase();
-    const max = Number(input.maxMarks);
-    const obtained = Number(input.obtainedMarks);
-    let percentage = input.percentage !== undefined && input.percentage !== null
-        ? Number(input.percentage)
-        : NaN;
-    if (!Number.isFinite(percentage)) {
-        if (marksType.includes('CGPA')) {
-            percentage =
-                Number.isFinite(obtained) && Number.isFinite(max) && max > 0
-                    ? (obtained / max) * 100
-                    : Number.isFinite(obtained)
-                        ? obtained * 10
-                        : 0;
-        }
-        else if (Number.isFinite(obtained) && Number.isFinite(max) && max > 0) {
-            percentage = (obtained / max) * 100;
-        }
-        else {
-            percentage = 0;
-        }
-    }
-    percentage = Math.round(percentage * 100) / 100;
-    let grade = 'F';
-    if (percentage >= 90)
-        grade = 'A+';
-    else if (percentage >= 80)
-        grade = 'A';
-    else if (percentage >= 70)
-        grade = 'B+';
-    else if (percentage >= 60)
-        grade = 'B';
-    else if (percentage >= 50)
-        grade = 'C';
-    else if (percentage >= 40)
-        grade = 'D';
-    else if (percentage >= 33)
-        grade = 'E';
-    let division = 'Fail';
-    if (percentage >= 60)
-        division = 'First';
-    else if (percentage >= 45)
-        division = 'Second';
-    else if (percentage >= 33)
-        division = 'Third';
-    return { percentage, grade, division };
-}
-let StudentAcademicService = class StudentAcademicService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async save(studentId, qualifications, CreatedBy, programId) {
-        return this.prisma.$transaction(async (tx) => {
-            const student = await tx.student.findFirst({
-                where: { StudentRegistrationId: Number(studentId), IsDeleted: false },
-            });
-            if (!student) {
-                throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
-            }
-            if (programId === undefined || programId === null) {
-                throw new common_1.BadRequestException('programId is required');
-            }
-            const program = await tx.program.findFirst({
-                where: { programId: Number(programId), IsDeleted: false },
-            });
-            if (!program) {
-                throw new common_1.NotFoundException(`Program with ID ${programId} not found`);
-            }
-            const activeSession = await tx.admissionSession.findFirst({
-                where: { IsActive: true, IsDeleted: false },
-                orderBy: { CreatedOn: 'desc' },
-            });
-            if (!activeSession) {
-                throw new common_1.NotFoundException('No active admission session found. Please activate a session in masters.');
-            }
-            const assignedProgramId = program.programId;
-            const assignedAdmissionSessionId = activeSession.admissionSessionId;
-            const assignedAdmissionSessionName = activeSession.admissionSessionName;
-            await tx.student.update({
-                where: { StudentRegistrationId: Number(studentId) },
-                data: {
-                    programId: assignedProgramId,
-                    admissionSessionId: assignedAdmissionSessionId,
-                    UpdatedBy: CreatedBy || 'System',
-                },
-            });
-            await tx.studentAcademicDetail.deleteMany({
-                where: { studentId: Number(studentId) },
-            });
-            const createdDetails = [];
-            for (const qual of qualifications) {
-                const computed = computeAcademicResult({
-                    marksType: qual.marksType,
-                    maxMarks: qual.maxMarks,
-                    obtainedMarks: qual.obtainedMarks,
-                    percentage: qual.percentage,
-                });
-                const detail = await tx.studentAcademicDetail.create({
-                    data: {
-                        studentId: Number(studentId),
-                        qualificationId: Number(qual.qualificationId),
-                        boardId: Number(qual.boardId),
-                        schoolName: qual.schoolName,
-                        passingYear: Number(qual.passingYear),
-                        rollNo: qual.rollNo,
-                        resultStatus: qual.resultStatus,
-                        marksType: qual.marksType,
-                        maxMarks: Number(qual.maxMarks),
-                        obtainedMarks: Number(qual.obtainedMarks),
-                        percentage: computed.percentage,
-                        division: qual.division || computed.division,
-                        grade: qual.grade || computed.grade,
-                        stream: qual.stream || null,
-                        CreatedBy: CreatedBy || 'System',
-                        IsActive: true,
-                        IsDeleted: false,
-                        subjects: {
-                            create: (qual.subjects || []).map((sub) => {
-                                const subComputed = computeAcademicResult({
-                                    marksType: 'Percentage',
-                                    maxMarks: sub.maxMarks,
-                                    obtainedMarks: sub.obtainedMarks,
-                                });
-                                return {
-                                    subjectId: Number(sub.subjectId),
-                                    maxMarks: Number(sub.maxMarks),
-                                    minMarks: Number(sub.minMarks || 33),
-                                    obtainedMarks: Number(sub.obtainedMarks),
-                                    grade: sub.grade || subComputed.grade,
-                                    practicalMarks: sub.practicalMarks ? Number(sub.practicalMarks) : null,
-                                    theoryMarks: sub.theoryMarks ? Number(sub.theoryMarks) : null,
-                                    isOptional: !!sub.isOptional,
-                                    CreatedBy: CreatedBy || 'System',
-                                    IsActive: true,
-                                    IsDeleted: false,
-                                };
-                            }),
-                        },
-                    },
-                    include: {
-                        subjects: {
-                            include: {
-                                subject: true,
-                            },
-                        },
-                        qualification: true,
-                        board: true,
-                    },
-                });
-                createdDetails.push(detail);
-            }
-            return {
-                status: 'success',
-                message: 'Academic qualifications and subjects saved successfully',
-                data: createdDetails,
-                programId: assignedProgramId,
-                admissionSessionId: assignedAdmissionSessionId,
-                admissionSessionName: assignedAdmissionSessionName,
-            };
-        });
-    }
-    async findAll() {
-        return this.prisma.studentAcademicDetail.findMany({
-            where: { IsDeleted: false },
-            include: {
-                subjects: {
-                    include: {
-                        subject: true,
-                    },
-                },
-                qualification: true,
-                board: true,
-                student: true,
-            },
-            orderBy: { CreatedOn: 'desc' },
-        });
-    }
-    async findOne(academicDetailId) {
-        const detail = await this.prisma.studentAcademicDetail.findFirst({
-            where: { academicDetailId, IsDeleted: false },
-            include: {
-                subjects: {
-                    include: {
-                        subject: true,
-                    },
-                },
-                qualification: true,
-                board: true,
-                student: true,
-            },
-        });
-        if (!detail) {
-            throw new common_1.NotFoundException(`Student Academic Detail with ID ${academicDetailId} not found`);
-        }
-        return detail;
-    }
-    async findByStudent(studentId) {
-        return this.prisma.studentAcademicDetail.findMany({
-            where: { studentId, IsDeleted: false },
-            include: {
-                subjects: {
-                    include: {
-                        subject: true,
-                    },
-                },
-                qualification: true,
-                board: true,
-            },
-            orderBy: { qualificationId: 'asc' },
-        });
-    }
-    async update(academicDetailId, data) {
-        const existing = await this.findOne(academicDetailId);
-        const marksType = data.marksType !== undefined ? data.marksType : existing.marksType;
-        const maxMarks = data.maxMarks !== undefined ? Number(data.maxMarks) : Number(existing.maxMarks);
-        const obtainedMarks = data.obtainedMarks !== undefined
-            ? Number(data.obtainedMarks)
-            : Number(existing.obtainedMarks);
-        const percentageInput = data.percentage !== undefined ? Number(data.percentage) : Number(existing.percentage);
-        const computed = computeAcademicResult({
-            marksType,
-            maxMarks,
-            obtainedMarks,
-            percentage: percentageInput,
-        });
-        return this.prisma.studentAcademicDetail.update({
-            where: { academicDetailId },
-            data: {
-                qualificationId: data.qualificationId !== undefined ? Number(data.qualificationId) : undefined,
-                boardId: data.boardId !== undefined ? Number(data.boardId) : undefined,
-                schoolName: data.schoolName,
-                passingYear: data.passingYear !== undefined ? Number(data.passingYear) : undefined,
-                rollNo: data.rollNo,
-                resultStatus: data.resultStatus,
-                marksType: data.marksType,
-                maxMarks: data.maxMarks !== undefined ? Number(data.maxMarks) : undefined,
-                obtainedMarks: data.obtainedMarks !== undefined ? Number(data.obtainedMarks) : undefined,
-                percentage: computed.percentage,
-                division: data.division !== undefined && data.division !== null && data.division !== ''
-                    ? data.division
-                    : computed.division,
-                grade: data.grade !== undefined && data.grade !== null && data.grade !== ''
-                    ? data.grade
-                    : computed.grade,
-                stream: data.stream,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(academicDetailId, DeletedBy, DeletedRemarks) {
-        await this.findOne(academicDetailId);
-        return this.prisma.studentAcademicDetail.update({
-            where: { academicDetailId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.studentAcademicDetail.updateMany({
-            where: {
-                academicDetailId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} academic detail record(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.StudentAcademicService = StudentAcademicService;
-exports.StudentAcademicService = StudentAcademicService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], StudentAcademicService);
-
-
-/***/ }),
-/* 22 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAcademicSubjectModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const student_academic_subject_controller_1 = __webpack_require__(23);
-const student_academic_subject_service_1 = __webpack_require__(24);
-let StudentAcademicSubjectModule = class StudentAcademicSubjectModule {
-};
-exports.StudentAcademicSubjectModule = StudentAcademicSubjectModule;
-exports.StudentAcademicSubjectModule = StudentAcademicSubjectModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [student_academic_subject_controller_1.StudentAcademicSubjectController],
-        providers: [student_academic_subject_service_1.StudentAcademicSubjectService],
-        exports: [student_academic_subject_service_1.StudentAcademicSubjectService],
-    })
-], StudentAcademicSubjectModule);
-
-
-/***/ }),
-/* 23 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAcademicSubjectController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const student_academic_subject_service_1 = __webpack_require__(24);
-let StudentAcademicSubjectController = class StudentAcademicSubjectController {
-    constructor(subjectService) {
-        this.subjectService = subjectService;
-    }
-    async create(data) {
-        try {
-            return await this.subjectService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.subjectService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.subjectService.findOne(data.studentAcademicSubjectId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findByAcademicDetail(data) {
-        try {
-            return await this.subjectService.findByAcademicDetail(data.academicDetailId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { studentAcademicSubjectId, ...updateData } = data;
-            return await this.subjectService.update(studentAcademicSubjectId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.subjectService.softDelete(data.studentAcademicSubjectId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.subjectService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.StudentAcademicSubjectController = StudentAcademicSubjectController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_academic_subject' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicSubjectController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_academic_subjects' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StudentAcademicSubjectController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_academic_subject' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicSubjectController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_academic_subjects_by_detail' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicSubjectController.prototype, "findByAcademicDetail", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_academic_subject' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicSubjectController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_academic_subject' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicSubjectController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_academic_subjects' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAcademicSubjectController.prototype, "bulkSoftDelete", null);
-exports.StudentAcademicSubjectController = StudentAcademicSubjectController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof student_academic_subject_service_1.StudentAcademicSubjectService !== "undefined" && student_academic_subject_service_1.StudentAcademicSubjectService) === "function" ? _a : Object])
-], StudentAcademicSubjectController);
-
-
-/***/ }),
-/* 24 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAcademicSubjectService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const student_academic_service_1 = __webpack_require__(21);
-let StudentAcademicSubjectService = class StudentAcademicSubjectService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        const maxMarks = Number(data.maxMarks);
-        const obtainedMarks = Number(data.obtainedMarks);
-        const computed = (0, student_academic_service_1.computeAcademicResult)({ maxMarks, obtainedMarks });
-        return this.prisma.studentAcademicSubject.create({
-            data: {
-                academicDetailId: Number(data.academicDetailId),
-                subjectId: Number(data.subjectId),
-                maxMarks,
-                minMarks: Number(data.minMarks ?? 33),
-                obtainedMarks,
-                grade: data.grade || computed.grade,
-                practicalMarks: data.practicalMarks ? Number(data.practicalMarks) : null,
-                theoryMarks: data.theoryMarks ? Number(data.theoryMarks) : null,
-                isOptional: !!data.isOptional,
-                CreatedBy: data.CreatedBy,
-                IsActive: true,
-                IsDeleted: false,
-            },
-            include: {
-                subject: true,
-                academicDetail: true,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.studentAcademicSubject.findMany({
-            where: { IsDeleted: false },
-            include: {
-                subject: true,
-                academicDetail: true,
-            },
-            orderBy: { CreatedOn: 'desc' },
-        });
-    }
-    async findOne(studentAcademicSubjectId) {
-        const subjectMark = await this.prisma.studentAcademicSubject.findFirst({
-            where: { studentAcademicSubjectId, IsDeleted: false },
-            include: {
-                subject: true,
-                academicDetail: true,
-            },
-        });
-        if (!subjectMark) {
-            throw new common_1.NotFoundException(`Student Academic Subject Mark with ID ${studentAcademicSubjectId} not found`);
-        }
-        return subjectMark;
-    }
-    async findByAcademicDetail(academicDetailId) {
-        return this.prisma.studentAcademicSubject.findMany({
-            where: { academicDetailId, IsDeleted: false },
-            include: {
-                subject: true,
-            },
-            orderBy: { subjectId: 'asc' },
-        });
-    }
-    async update(studentAcademicSubjectId, data) {
-        const existing = await this.findOne(studentAcademicSubjectId);
-        const maxMarks = data.maxMarks !== undefined ? Number(data.maxMarks) : Number(existing.maxMarks);
-        const obtainedMarks = data.obtainedMarks !== undefined
-            ? Number(data.obtainedMarks)
-            : Number(existing.obtainedMarks);
-        const computed = (0, student_academic_service_1.computeAcademicResult)({ maxMarks, obtainedMarks });
-        return this.prisma.studentAcademicSubject.update({
-            where: { studentAcademicSubjectId },
-            data: {
-                academicDetailId: data.academicDetailId ? Number(data.academicDetailId) : undefined,
-                subjectId: data.subjectId ? Number(data.subjectId) : undefined,
-                maxMarks: data.maxMarks !== undefined ? maxMarks : undefined,
-                minMarks: data.minMarks !== undefined ? Number(data.minMarks) : undefined,
-                obtainedMarks: data.obtainedMarks !== undefined ? obtainedMarks : undefined,
-                grade: data.grade !== undefined && data.grade !== null && data.grade !== ''
-                    ? data.grade
-                    : computed.grade,
-                practicalMarks: data.practicalMarks ? Number(data.practicalMarks) : null,
-                theoryMarks: data.theoryMarks ? Number(data.theoryMarks) : null,
-                isOptional: data.isOptional !== undefined ? !!data.isOptional : undefined,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-            },
-            include: {
-                subject: true,
-            },
-        });
-    }
-    async softDelete(studentAcademicSubjectId, DeletedBy, DeletedRemarks) {
-        await this.findOne(studentAcademicSubjectId);
-        return this.prisma.studentAcademicSubject.update({
-            where: { studentAcademicSubjectId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.studentAcademicSubject.updateMany({
-            where: {
-                studentAcademicSubjectId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} subject mark record(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.StudentAcademicSubjectService = StudentAcademicSubjectService;
-exports.StudentAcademicSubjectService = StudentAcademicSubjectService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], StudentAcademicSubjectService);
-
-
-/***/ }),
-/* 25 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentPaymentModule = void 0;
-const common_1 = __webpack_require__(5);
-const student_payment_controller_1 = __webpack_require__(26);
-const student_payment_service_1 = __webpack_require__(27);
-let StudentPaymentModule = class StudentPaymentModule {
-};
-exports.StudentPaymentModule = StudentPaymentModule;
-exports.StudentPaymentModule = StudentPaymentModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [student_payment_controller_1.StudentPaymentController],
-        providers: [student_payment_service_1.StudentPaymentService],
-    })
-], StudentPaymentModule);
-
-
-/***/ }),
-/* 26 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentPaymentController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const student_payment_service_1 = __webpack_require__(27);
-let StudentPaymentController = class StudentPaymentController {
-    constructor(paymentService) {
-        this.paymentService = paymentService;
-    }
-    async create(data) {
-        try {
-            return await this.paymentService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async createRazorpayOrder(data) {
-        try {
-            return await this.paymentService.createRazorpayOrder(data);
-        }
-        catch (error) {
-            console.error('[create_razorpay_order]', error);
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async verifyRazorpayPayment(data) {
-        try {
-            return await this.paymentService.verifyRazorpayPayment(data);
-        }
-        catch (error) {
-            console.error('[verify_razorpay_payment]', error);
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.paymentService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.paymentService.findOne(data.paymentId);
-        }
-        catch (error) {
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async findByStudent(data) {
-        try {
-            return await this.paymentService.findByStudent(data.studentId);
-        }
-        catch (error) {
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async findByOrderId(data) {
-        try {
-            return await this.paymentService.findByOrderId(data.razorpayOrderId);
-        }
-        catch (error) {
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async update(data) {
-        try {
-            const { paymentId, ...updateData } = data;
-            return await this.paymentService.update(paymentId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.paymentService.softDelete(data.paymentId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.paymentService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
-        }
-    }
-};
-exports.StudentPaymentController = StudentPaymentController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_student_payment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_razorpay_order' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "createRazorpayOrder", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'verify_razorpay_payment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "verifyRazorpayPayment", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_student_payments' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_student_payment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_student_payments_by_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "findByStudent", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_student_payment_by_order_id' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "findByOrderId", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_student_payment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_student_payment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_student_payments' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentPaymentController.prototype, "bulkSoftDelete", null);
-exports.StudentPaymentController = StudentPaymentController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof student_payment_service_1.StudentPaymentService !== "undefined" && student_payment_service_1.StudentPaymentService) === "function" ? _a : Object])
-], StudentPaymentController);
-
-
-/***/ }),
-/* 27 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentPaymentService = void 0;
-exports.extractErrorMessage = extractErrorMessage;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const crypto = __importStar(__webpack_require__(28));
-const Razorpay = __webpack_require__(29);
-function cleanEnv(value) {
-    return String(value || '')
-        .trim()
-        .replace(/^['"]|['"]$/g, '');
-}
-function extractErrorMessage(error) {
-    if (!error)
-        return 'Unknown error';
-    if (typeof error === 'string')
-        return error;
-    const err = error;
-    if (typeof err.error?.description === 'string' && err.error.description) {
-        return err.error.description;
-    }
-    if (typeof err.message === 'string' && err.message.trim()) {
-        return err.message;
-    }
-    if (typeof err.getResponse === 'function') {
-        const response = err.getResponse();
-        if (typeof response === 'string' && response.trim())
-            return response;
-        if (response && typeof response === 'object') {
-            const msg = response.message;
-            if (typeof msg === 'string' && msg.trim())
-                return msg;
-            if (Array.isArray(msg))
-                return msg.join(', ');
-        }
-    }
-    if (typeof err.response?.message === 'string' && err.response.message.trim()) {
-        return err.response.message;
-    }
-    if (Array.isArray(err.response?.message)) {
-        return err.response.message.join(', ');
-    }
-    try {
-        return JSON.stringify(error);
-    }
-    catch {
-        return 'Unknown error';
-    }
-}
-let StudentPaymentService = class StudentPaymentService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    getRazorpayClient() {
-        const keyId = cleanEnv(process.env.RAZORPAY_KEY_ID);
-        const keySecret = cleanEnv(process.env.RAZORPAY_KEY_SECRET);
-        if (!keyId || !keySecret) {
-            throw new common_1.BadRequestException('Razorpay keys are not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env and restart the API.');
-        }
-        if (keyId.includes('replace_me') || keySecret.includes('replace_me')) {
-            throw new common_1.BadRequestException('Replace placeholder Razorpay keys in BACELAR_ApiNode/.env with your test keys, then restart npm run start:dev:all');
-        }
-        return {
-            keyId,
-            client: new Razorpay({ key_id: keyId, key_secret: keySecret }),
-        };
-    }
-    async create(data) {
-        return this.prisma.studentPayment.create({
-            data: {
-                studentId: Number(data.studentId),
-                feeType: data.feeType,
-                amountPaid: Number(data.amountPaid),
-                paymentStatus: data.paymentStatus || 'PENDING',
-                razorpayOrderId: data.razorpayOrderId || null,
-                razorpayPaymentId: data.razorpayPaymentId || null,
-                razorpaySignature: data.razorpaySignature || null,
-                gatewayResponse: data.gatewayResponse || null,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-            include: {
-                student: true,
-            },
-        });
-    }
-    async createRazorpayOrder(data) {
-        const studentId = Number(data.studentId);
-        const feeType = (data.feeType || 'REGISTRATION').toUpperCase();
-        const student = await this.prisma.student.findFirst({
-            where: { StudentRegistrationId: studentId, IsDeleted: false },
-            include: { program: true, admissionSession: true },
-        });
-        if (!student) {
-            throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
-        }
-        if (!student.programId || !student.admissionSessionId) {
-            throw new common_1.BadRequestException('Student program and admission session must be saved before payment');
-        }
-        const feeConfig = await this.prisma.programFeeConfig.findFirst({
-            where: {
-                programId: student.programId,
-                admissionSessionId: student.admissionSessionId,
-                IsDeleted: false,
-                IsActive: true,
-            },
-        });
-        if (!feeConfig) {
-            throw new common_1.NotFoundException(`Fee configuration not found for program ${student.programId} and session ${student.admissionSessionId}`);
-        }
-        const amount = feeType === 'EXAMINATION'
-            ? Number(feeConfig.examinationFinal)
-            : Number(feeConfig.registrationFinal);
-        if (!amount || amount <= 0) {
-            throw new common_1.BadRequestException('Payable fee amount is zero. Use exemption flow instead of Razorpay.');
-        }
-        const existingSuccess = await this.prisma.studentPayment.findFirst({
-            where: {
-                studentId,
-                feeType,
-                paymentStatus: 'SUCCESS',
-                IsDeleted: false,
-            },
-        });
-        if (existingSuccess) {
-            throw new common_1.BadRequestException(`A successful ${feeType} payment already exists for this student`);
-        }
-        const { keyId, client } = this.getRazorpayClient();
-        const amountInPaise = Math.round(amount * 100);
-        let order;
-        try {
-            order = await client.orders.create({
-                amount: amountInPaise,
-                currency: 'INR',
-                receipt: `stu_${studentId}_${Date.now()}`.slice(0, 40),
-                notes: {
-                    studentId: String(studentId),
-                    feeType,
-                    registrationNo: student.registrationNo || '',
-                },
-            });
-        }
-        catch (err) {
-            throw new common_1.BadRequestException(`Razorpay order failed: ${extractErrorMessage(err)}. If you just added keys, restart the API (npm run start:dev:all).`);
-        }
-        if (!order?.id) {
-            throw new common_1.BadRequestException('Razorpay did not return an order id');
-        }
-        const payment = await this.prisma.studentPayment.create({
-            data: {
-                studentId,
-                feeType,
-                amountPaid: amount,
-                paymentStatus: 'PENDING',
-                razorpayOrderId: order.id,
-                CreatedBy: data.CreatedBy,
-                Remarks: `${feeType} fee order created`,
-                IsActive: true,
-                IsDeleted: false,
-            },
-            include: {
-                student: {
-                    include: {
-                        program: { include: { programCategory: true } },
-                        admissionSession: true,
-                    },
-                },
-            },
-        });
-        return {
-            paymentId: payment.paymentId,
-            razorpayOrderId: order.id,
-            amount,
-            amountInPaise,
-            currency: 'INR',
-            keyId,
-            feeType,
-            student: payment.student,
-        };
-    }
-    async verifyRazorpayPayment(data) {
-        const keySecret = process.env.RAZORPAY_KEY_SECRET;
-        if (!keySecret) {
-            throw new common_1.BadRequestException('Razorpay keys are not configured. Set RAZORPAY_KEY_SECRET in .env');
-        }
-        const payment = await this.findOne(Number(data.paymentId));
-        if (payment.razorpayOrderId !== data.razorpayOrderId) {
-            throw new common_1.BadRequestException('Order ID does not match payment record');
-        }
-        const expectedSignature = crypto
-            .createHmac('sha256', keySecret)
-            .update(`${data.razorpayOrderId}|${data.razorpayPaymentId}`)
-            .digest('hex');
-        if (expectedSignature !== data.razorpaySignature) {
-            await this.prisma.studentPayment.update({
-                where: { paymentId: payment.paymentId },
-                data: {
-                    paymentStatus: 'FAILED',
-                    razorpayPaymentId: data.razorpayPaymentId,
-                    razorpaySignature: data.razorpaySignature,
-                    gatewayResponse: data.gatewayResponse || null,
-                    UpdatedBy: data.UpdatedBy,
-                    Remarks: 'Razorpay signature verification failed',
-                },
-            });
-            throw new common_1.BadRequestException('Payment signature verification failed');
-        }
-        return this.prisma.studentPayment.update({
-            where: { paymentId: payment.paymentId },
-            data: {
-                paymentStatus: 'SUCCESS',
-                razorpayPaymentId: data.razorpayPaymentId,
-                razorpaySignature: data.razorpaySignature,
-                gatewayResponse: data.gatewayResponse || null,
-                UpdatedBy: data.UpdatedBy,
-                Remarks: 'Payment verified successfully via Razorpay',
-            },
-            include: {
-                student: true,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.studentPayment.findMany({
-            where: { IsDeleted: false },
-            include: {
-                student: true,
-            },
-            orderBy: { CreatedOn: 'desc' },
-        });
-    }
-    async findOne(paymentId) {
-        const payment = await this.prisma.studentPayment.findFirst({
-            where: { paymentId, IsDeleted: false },
-            include: {
-                student: true,
-            },
-        });
-        if (!payment) {
-            throw new common_1.NotFoundException(`Payment record with ID ${paymentId} not found`);
-        }
-        return payment;
-    }
-    async findByStudent(studentId) {
-        return this.prisma.studentPayment.findMany({
-            where: { studentId, IsDeleted: false },
-            include: {
-                student: true,
-            },
-            orderBy: { CreatedOn: 'desc' },
-        });
-    }
-    async findByOrderId(razorpayOrderId) {
-        const payment = await this.prisma.studentPayment.findFirst({
-            where: { razorpayOrderId, IsDeleted: false },
-            include: {
-                student: true,
-            },
-        });
-        if (!payment) {
-            throw new common_1.NotFoundException(`Payment with Razorpay Order ID ${razorpayOrderId} not found`);
-        }
-        return payment;
-    }
-    async update(paymentId, data) {
-        await this.findOne(paymentId);
-        return this.prisma.studentPayment.update({
-            where: { paymentId },
-            data: {
-                paymentStatus: data.paymentStatus,
-                razorpayPaymentId: data.razorpayPaymentId,
-                razorpaySignature: data.razorpaySignature,
-                gatewayResponse: data.gatewayResponse,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-            include: {
-                student: true,
-            },
-        });
-    }
-    async softDelete(paymentId, DeletedBy, DeletedRemarks) {
-        await this.findOne(paymentId);
-        return this.prisma.studentPayment.update({
-            where: { paymentId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.studentPayment.updateMany({
-            where: {
-                paymentId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} payment record(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.StudentPaymentService = StudentPaymentService;
-exports.StudentPaymentService = StudentPaymentService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], StudentPaymentService);
-
-
-/***/ }),
-/* 28 */
-/***/ ((module) => {
-
-module.exports = require("crypto");
-
-/***/ }),
-/* 29 */
-/***/ ((module) => {
-
-module.exports = require("razorpay");
-
-/***/ }),
-/* 30 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAttachmentModule = void 0;
-const common_1 = __webpack_require__(5);
-const student_attachment_controller_1 = __webpack_require__(31);
-const student_attachment_service_1 = __webpack_require__(32);
-let StudentAttachmentModule = class StudentAttachmentModule {
-};
-exports.StudentAttachmentModule = StudentAttachmentModule;
-exports.StudentAttachmentModule = StudentAttachmentModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [student_attachment_controller_1.StudentAttachmentController],
-        providers: [student_attachment_service_1.StudentAttachmentService],
-    })
-], StudentAttachmentModule);
-
-
-/***/ }),
-/* 31 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAttachmentController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const student_attachment_service_1 = __webpack_require__(32);
-let StudentAttachmentController = class StudentAttachmentController {
-    constructor(attachmentService) {
-        this.attachmentService = attachmentService;
-    }
-    async create(data) {
-        try {
-            return await this.attachmentService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.attachmentService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.attachmentService.findOne(data.attachmentId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findByStudent(data) {
-        try {
-            return await this.attachmentService.findByStudent(data.studentId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { attachmentId, ...updateData } = data;
-            return await this.attachmentService.update(attachmentId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.attachmentService.softDelete(data.attachmentId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.attachmentService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.StudentAttachmentController = StudentAttachmentController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_student_attachment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAttachmentController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_student_attachments' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StudentAttachmentController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_student_attachment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAttachmentController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_student_attachments_by_student' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAttachmentController.prototype, "findByStudent", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_student_attachment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAttachmentController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_student_attachment' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAttachmentController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_student_attachments' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StudentAttachmentController.prototype, "bulkSoftDelete", null);
-exports.StudentAttachmentController = StudentAttachmentController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof student_attachment_service_1.StudentAttachmentService !== "undefined" && student_attachment_service_1.StudentAttachmentService) === "function" ? _a : Object])
-], StudentAttachmentController);
-
-
-/***/ }),
-/* 32 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAttachmentService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let StudentAttachmentService = class StudentAttachmentService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.studentAttachment.create({
-            data: {
-                studentId: Number(data.studentId),
-                documentType: data.documentType,
-                fileUrl: data.fileUrl,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-            include: {
-                student: true,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.studentAttachment.findMany({
-            where: { IsDeleted: false },
-            include: {
-                student: true,
-            },
-            orderBy: { CreatedOn: 'desc' },
-        });
-    }
-    async findOne(attachmentId) {
-        const attachment = await this.prisma.studentAttachment.findFirst({
-            where: { attachmentId, IsDeleted: false },
-            include: {
-                student: true,
-            },
-        });
-        if (!attachment) {
-            throw new common_1.NotFoundException(`Attachment record with ID ${attachmentId} not found`);
-        }
-        return attachment;
-    }
-    async findByStudent(studentId) {
-        return this.prisma.studentAttachment.findMany({
-            where: { studentId, IsDeleted: false },
-            include: {
-                student: true,
-            },
-            orderBy: { CreatedOn: 'desc' },
-        });
-    }
-    async update(attachmentId, data) {
-        await this.findOne(attachmentId);
-        return this.prisma.studentAttachment.update({
-            where: { attachmentId },
-            data: {
-                documentType: data.documentType,
-                fileUrl: data.fileUrl,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-            include: {
-                student: true,
-            },
-        });
-    }
-    async softDelete(attachmentId, DeletedBy, DeletedRemarks) {
-        await this.findOne(attachmentId);
-        return this.prisma.studentAttachment.update({
-            where: { attachmentId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.studentAttachment.updateMany({
-            where: {
-                attachmentId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} attachment record(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.StudentAttachmentService = StudentAttachmentService;
-exports.StudentAttachmentService = StudentAttachmentService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], StudentAttachmentService);
-
-
-/***/ }),
-/* 33 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MasterModule = void 0;
-const common_1 = __webpack_require__(5);
-const state_module_1 = __webpack_require__(34);
-const city_module_1 = __webpack_require__(37);
-const program_category_module_1 = __webpack_require__(40);
-const subject_module_1 = __webpack_require__(43);
-const program_module_1 = __webpack_require__(46);
-const board_module_1 = __webpack_require__(49);
-const qualification_module_1 = __webpack_require__(52);
-const admission_session_module_1 = __webpack_require__(55);
-const academic_session_module_1 = __webpack_require__(58);
-const program_fee_config_module_1 = __webpack_require__(61);
-const college_module_1 = __webpack_require__(64);
-const zipcode_module_1 = __webpack_require__(67);
-const program_eligibility_module_1 = __webpack_require__(70);
-const stream_module_1 = __webpack_require__(73);
-const program_subject_module_1 = __webpack_require__(76);
-const examination_details_module_1 = __webpack_require__(79);
-let MasterModule = class MasterModule {
-};
-exports.MasterModule = MasterModule;
-exports.MasterModule = MasterModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            state_module_1.StateModule,
-            city_module_1.CityModule,
-            zipcode_module_1.ZipcodeModule,
-            program_category_module_1.ProgramCategoryModule,
-            subject_module_1.SubjectModule,
-            program_module_1.ProgramModule,
-            stream_module_1.StreamModule,
-            program_subject_module_1.ProgramSubjectModule,
-            program_eligibility_module_1.ProgramEligibilityModule,
-            board_module_1.BoardModule,
-            qualification_module_1.QualificationModule,
-            admission_session_module_1.AdmissionSessionModule,
-            academic_session_module_1.AcademicSessionModule,
-            examination_details_module_1.ExaminationDetailsModule,
-            program_fee_config_module_1.ProgramFeeConfigModule,
-            college_module_1.CollegeModule,
-        ],
-        exports: [
-            state_module_1.StateModule,
-            city_module_1.CityModule,
-            zipcode_module_1.ZipcodeModule,
-            program_category_module_1.ProgramCategoryModule,
-            subject_module_1.SubjectModule,
-            program_module_1.ProgramModule,
-            stream_module_1.StreamModule,
-            program_subject_module_1.ProgramSubjectModule,
-            program_eligibility_module_1.ProgramEligibilityModule,
-            board_module_1.BoardModule,
-            qualification_module_1.QualificationModule,
-            admission_session_module_1.AdmissionSessionModule,
-            academic_session_module_1.AcademicSessionModule,
-            examination_details_module_1.ExaminationDetailsModule,
-            program_fee_config_module_1.ProgramFeeConfigModule,
-            college_module_1.CollegeModule,
-        ],
-    })
-], MasterModule);
-
-
-/***/ }),
-/* 34 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StateModule = void 0;
-const common_1 = __webpack_require__(5);
-const state_service_1 = __webpack_require__(35);
-const state_controller_1 = __webpack_require__(36);
-const prisma_1 = __webpack_require__(6);
-let StateModule = class StateModule {
-};
-exports.StateModule = StateModule;
-exports.StateModule = StateModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [state_controller_1.StateController],
-        providers: [state_service_1.StateService],
-        exports: [state_service_1.StateService],
-    })
-], StateModule);
-
-
-/***/ }),
-/* 35 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StateService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let StateService = class StateService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        const existingName = await this.prisma.stateMaster.findUnique({
-            where: { stateName: data.stateName },
-        });
-        if (existingName) {
-            throw new common_1.ConflictException('State name already exists');
-        }
-        const existingCode = await this.prisma.stateMaster.findUnique({
-            where: { stateShortCode: data.stateShortCode },
-        });
-        if (existingCode) {
-            throw new common_1.ConflictException('State short code already exists');
-        }
-        return this.prisma.stateMaster.create({
-            data: {
-                stateName: data.stateName,
-                stateShortCode: data.stateShortCode,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.stateMaster.findMany({
-            where: { IsDeleted: false },
-            orderBy: { stateName: 'asc' },
-        });
-    }
-    async findOne(stateId) {
-        const state = await this.prisma.stateMaster.findFirst({
-            where: { stateId, IsDeleted: false },
-        });
-        if (!state) {
-            throw new common_1.NotFoundException(`State with ID ${stateId} not found`);
-        }
-        return state;
-    }
-    async update(stateId, data) {
-        await this.findOne(stateId);
-        if (data.stateName) {
-            const existingName = await this.prisma.stateMaster.findFirst({
-                where: {
-                    stateName: data.stateName,
-                    NOT: { stateId },
-                },
-            });
-            if (existingName) {
-                throw new common_1.ConflictException('State name already exists');
-            }
-        }
-        if (data.stateShortCode) {
-            const existingCode = await this.prisma.stateMaster.findFirst({
-                where: {
-                    stateShortCode: data.stateShortCode,
-                    NOT: { stateId },
-                },
-            });
-            if (existingCode) {
-                throw new common_1.ConflictException('State short code already exists');
-            }
-        }
-        return this.prisma.stateMaster.update({
-            where: { stateId },
-            data: {
-                stateName: data.stateName,
-                stateShortCode: data.stateShortCode,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(stateId, DeletedBy, DeletedRemarks) {
-        await this.findOne(stateId);
-        return this.prisma.stateMaster.update({
-            where: { stateId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.StateService = StateService;
-exports.StateService = StateService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], StateService);
-
-
-/***/ }),
-/* 36 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StateController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const state_service_1 = __webpack_require__(35);
-let StateController = class StateController {
-    constructor(stateService) {
-        this.stateService = stateService;
-    }
-    async create(data) {
-        try {
-            return await this.stateService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.stateService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.stateService.findOne(data.stateId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { stateId, ...updateData } = data;
-            return await this.stateService.update(stateId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.stateService.softDelete(data.stateId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.StateController = StateController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_state' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StateController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_states' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StateController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_state' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StateController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_state' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StateController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_state' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StateController.prototype, "softDelete", null);
-exports.StateController = StateController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof state_service_1.StateService !== "undefined" && state_service_1.StateService) === "function" ? _a : Object])
-], StateController);
-
-
-/***/ }),
-/* 37 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CityModule = void 0;
-const common_1 = __webpack_require__(5);
-const city_service_1 = __webpack_require__(38);
-const city_controller_1 = __webpack_require__(39);
-const prisma_1 = __webpack_require__(6);
-let CityModule = class CityModule {
-};
-exports.CityModule = CityModule;
-exports.CityModule = CityModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [city_controller_1.CityController],
-        providers: [city_service_1.CityService],
-        exports: [city_service_1.CityService],
-    })
-], CityModule);
-
-
-/***/ }),
-/* 38 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CityService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let CityService = class CityService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        const existingName = await this.prisma.cityMaster.findFirst({
-            where: { cityName: data.cityName, stateId: data.stateId },
-        });
-        if (existingName) {
-            throw new common_1.ConflictException('City name already exists in this state');
-        }
-        const existingCode = await this.prisma.cityMaster.findUnique({
-            where: { cityShortCode: data.cityShortCode },
-        });
-        if (existingCode) {
-            throw new common_1.ConflictException('City short code already exists');
-        }
-        return this.prisma.cityMaster.create({
-            data: {
-                stateId: data.stateId,
-                cityName: data.cityName,
-                cityShortCode: data.cityShortCode,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll(stateId) {
-        return this.prisma.cityMaster.findMany({
-            where: {
-                IsDeleted: false,
-                ...(stateId ? { stateId: Number(stateId) } : {}),
-            },
-            orderBy: { cityName: 'asc' },
-        });
-    }
-    async findOne(cityId) {
-        const city = await this.prisma.cityMaster.findFirst({
-            where: { cityId, IsDeleted: false },
-        });
-        if (!city) {
-            throw new common_1.NotFoundException(`City with ID ${cityId} not found`);
-        }
-        return city;
-    }
-    async update(cityId, data) {
-        await this.findOne(cityId);
-        if (data.cityName && data.stateId) {
-            const existingName = await this.prisma.cityMaster.findFirst({
-                where: {
-                    cityName: data.cityName,
-                    stateId: data.stateId,
-                    NOT: { cityId },
-                },
-            });
-            if (existingName) {
-                throw new common_1.ConflictException('City name already exists in this state');
-            }
-        }
-        if (data.cityShortCode) {
-            const existingCode = await this.prisma.cityMaster.findFirst({
-                where: {
-                    cityShortCode: data.cityShortCode,
-                    NOT: { cityId },
-                },
-            });
-            if (existingCode) {
-                throw new common_1.ConflictException('City short code already exists');
-            }
-        }
-        return this.prisma.cityMaster.update({
-            where: { cityId },
-            data: {
-                stateId: data.stateId,
-                cityName: data.cityName,
-                cityShortCode: data.cityShortCode,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(cityId, DeletedBy, DeletedRemarks) {
-        await this.findOne(cityId);
-        return this.prisma.cityMaster.update({
-            where: { cityId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.CityService = CityService;
-exports.CityService = CityService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], CityService);
-
-
-/***/ }),
-/* 39 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CityController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const city_service_1 = __webpack_require__(38);
-let CityController = class CityController {
-    constructor(cityService) {
-        this.cityService = cityService;
-    }
-    async create(data) {
-        try {
-            return await this.cityService.create(data);
+            return await this.academicSessionService.create(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -3274,7 +41,7 @@ let CityController = class CityController {
     }
     async findAll(data) {
         try {
-            return await this.cityService.findAll(data?.stateId);
+            return await this.academicSessionService.findAll(data?.collegeId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -3282,7 +49,7 @@ let CityController = class CityController {
     }
     async findOne(data) {
         try {
-            return await this.cityService.findOne(data.cityId);
+            return await this.academicSessionService.findOne(data.academicSessionId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -3290,8 +57,8 @@ let CityController = class CityController {
     }
     async update(data) {
         try {
-            const { cityId, ...updateData } = data;
-            return await this.cityService.update(cityId, updateData);
+            const { academicSessionId, ...updateData } = data;
+            return await this.academicSessionService.update(academicSessionId, updateData);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -3299,1559 +66,61 @@ let CityController = class CityController {
     }
     async softDelete(data) {
         try {
-            return await this.cityService.softDelete(data.cityId, data.DeletedBy, data.DeletedRemarks);
+            return await this.academicSessionService.softDelete(data.academicSessionId, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
 };
-exports.CityController = CityController;
+exports.AcademicSessionController = AcademicSessionController;
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_city' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_academic_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], CityController.prototype, "create", null);
+], AcademicSessionController.prototype, "create", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_cities' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_academic_sessions' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], CityController.prototype, "findAll", null);
+], AcademicSessionController.prototype, "findAll", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_city' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_academic_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], CityController.prototype, "findOne", null);
+], AcademicSessionController.prototype, "findOne", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_city' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_academic_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], CityController.prototype, "update", null);
+], AcademicSessionController.prototype, "update", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_city' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_academic_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], CityController.prototype, "softDelete", null);
-exports.CityController = CityController = __decorate([
+], AcademicSessionController.prototype, "softDelete", null);
+exports.AcademicSessionController = AcademicSessionController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof city_service_1.CityService !== "undefined" && city_service_1.CityService) === "function" ? _a : Object])
-], CityController);
+    __metadata("design:paramtypes", [typeof (_a = typeof academic_session_service_1.AcademicSessionService !== "undefined" && academic_session_service_1.AcademicSessionService) === "function" ? _a : Object])
+], AcademicSessionController);
 
 
 /***/ }),
-/* 40 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramCategoryModule = void 0;
-const common_1 = __webpack_require__(5);
-const program_category_service_1 = __webpack_require__(41);
-const program_category_controller_1 = __webpack_require__(42);
-const prisma_1 = __webpack_require__(6);
-let ProgramCategoryModule = class ProgramCategoryModule {
-};
-exports.ProgramCategoryModule = ProgramCategoryModule;
-exports.ProgramCategoryModule = ProgramCategoryModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [program_category_controller_1.ProgramCategoryController],
-        providers: [program_category_service_1.ProgramCategoryService],
-        exports: [program_category_service_1.ProgramCategoryService],
-    })
-], ProgramCategoryModule);
-
-
-/***/ }),
-/* 41 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramCategoryService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let ProgramCategoryService = class ProgramCategoryService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.programCategory.create({
-            data: {
-                programCategoryName: data.programCategoryName,
-                pcShortName: data.pcShortName,
-                sequenceNo: data.sequenceNo,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.programCategory.findMany({
-            where: { IsDeleted: false },
-            orderBy: { sequenceNo: 'asc' },
-        });
-    }
-    async findOne(programCategoryId) {
-        const pc = await this.prisma.programCategory.findFirst({
-            where: { programCategoryId, IsDeleted: false },
-        });
-        if (!pc) {
-            throw new common_1.NotFoundException(`Program Category with ID ${programCategoryId} not found`);
-        }
-        return pc;
-    }
-    async update(programCategoryId, data) {
-        await this.findOne(programCategoryId);
-        return this.prisma.programCategory.update({
-            where: { programCategoryId },
-            data: {
-                programCategoryName: data.programCategoryName,
-                pcShortName: data.pcShortName,
-                sequenceNo: data.sequenceNo,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(programCategoryId, DeletedBy, DeletedRemarks) {
-        await this.findOne(programCategoryId);
-        return this.prisma.programCategory.update({
-            where: { programCategoryId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.ProgramCategoryService = ProgramCategoryService;
-exports.ProgramCategoryService = ProgramCategoryService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], ProgramCategoryService);
-
-
-/***/ }),
-/* 42 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramCategoryController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const program_category_service_1 = __webpack_require__(41);
-let ProgramCategoryController = class ProgramCategoryController {
-    constructor(programCategoryService) {
-        this.programCategoryService = programCategoryService;
-    }
-    async create(data) {
-        try {
-            return await this.programCategoryService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.programCategoryService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.programCategoryService.findOne(data.programCategoryId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { programCategoryId, ...updateData } = data;
-            return await this.programCategoryService.update(programCategoryId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.programCategoryService.softDelete(data.programCategoryId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.ProgramCategoryController = ProgramCategoryController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_program_category' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramCategoryController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_program_categories' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ProgramCategoryController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program_category' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramCategoryController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_program_category' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramCategoryController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_program_category' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramCategoryController.prototype, "softDelete", null);
-exports.ProgramCategoryController = ProgramCategoryController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof program_category_service_1.ProgramCategoryService !== "undefined" && program_category_service_1.ProgramCategoryService) === "function" ? _a : Object])
-], ProgramCategoryController);
-
-
-/***/ }),
-/* 43 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubjectModule = void 0;
-const common_1 = __webpack_require__(5);
-const subject_service_1 = __webpack_require__(44);
-const subject_controller_1 = __webpack_require__(45);
-const prisma_1 = __webpack_require__(6);
-let SubjectModule = class SubjectModule {
-};
-exports.SubjectModule = SubjectModule;
-exports.SubjectModule = SubjectModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [subject_controller_1.SubjectController],
-        providers: [subject_service_1.SubjectService],
-        exports: [subject_service_1.SubjectService],
-    })
-], SubjectModule);
-
-
-/***/ }),
-/* 44 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubjectService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let SubjectService = class SubjectService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.subjectMaster.create({
-            data: {
-                subjectName: data.subjectName,
-                subjectCode: data.subjectCode,
-                classType: data.classType,
-                stream: data.stream || null,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll(filters) {
-        const whereClause = { IsDeleted: false };
-        if (filters?.classType) {
-            whereClause.classType = filters.classType;
-        }
-        if (filters?.stream) {
-            whereClause.OR = [
-                { stream: filters.stream },
-                { stream: null },
-            ];
-        }
-        return this.prisma.subjectMaster.findMany({
-            where: whereClause,
-            orderBy: { subjectName: 'asc' },
-        });
-    }
-    async findOne(subjectId) {
-        const subject = await this.prisma.subjectMaster.findFirst({
-            where: { subjectId, IsDeleted: false },
-        });
-        if (!subject) {
-            throw new common_1.NotFoundException(`Subject with ID ${subjectId} not found`);
-        }
-        return subject;
-    }
-    async update(subjectId, data) {
-        await this.findOne(subjectId);
-        return this.prisma.subjectMaster.update({
-            where: { subjectId },
-            data: {
-                subjectName: data.subjectName,
-                subjectCode: data.subjectCode,
-                classType: data.classType,
-                stream: data.stream,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(subjectId, DeletedBy, DeletedRemarks) {
-        await this.findOne(subjectId);
-        return this.prisma.subjectMaster.update({
-            where: { subjectId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.SubjectService = SubjectService;
-exports.SubjectService = SubjectService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], SubjectService);
-
-
-/***/ }),
-/* 45 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubjectController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const subject_service_1 = __webpack_require__(44);
-let SubjectController = class SubjectController {
-    constructor(subjectService) {
-        this.subjectService = subjectService;
-    }
-    async create(data) {
-        try {
-            return await this.subjectService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll(data) {
-        try {
-            return await this.subjectService.findAll(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.subjectService.findOne(data.subjectId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { subjectId, ...updateData } = data;
-            return await this.subjectService.update(subjectId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.subjectService.softDelete(data.subjectId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.SubjectController = SubjectController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_subject' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], SubjectController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_subjects' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], SubjectController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_subject' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], SubjectController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_subject' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], SubjectController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_subject' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], SubjectController.prototype, "softDelete", null);
-exports.SubjectController = SubjectController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof subject_service_1.SubjectService !== "undefined" && subject_service_1.SubjectService) === "function" ? _a : Object])
-], SubjectController);
-
-
-/***/ }),
-/* 46 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramModule = void 0;
-const common_1 = __webpack_require__(5);
-const program_controller_1 = __webpack_require__(47);
-const program_service_1 = __webpack_require__(48);
-let ProgramModule = class ProgramModule {
-};
-exports.ProgramModule = ProgramModule;
-exports.ProgramModule = ProgramModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [program_controller_1.ProgramController],
-        providers: [program_service_1.ProgramService],
-    })
-], ProgramModule);
-
-
-/***/ }),
-/* 47 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const program_service_1 = __webpack_require__(48);
-let ProgramController = class ProgramController {
-    constructor(programService) {
-        this.programService = programService;
-    }
-    async create(data) {
-        try {
-            return await this.programService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll(data) {
-        try {
-            return await this.programService.findAll(data?.categoryId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.programService.findOne(data.programId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { programId, ...updateData } = data;
-            return await this.programService.update(programId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.programService.softDelete(data.programId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.programService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.ProgramController = ProgramController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_program' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_programs' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_program' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_program' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_programs' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramController.prototype, "bulkSoftDelete", null);
-exports.ProgramController = ProgramController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof program_service_1.ProgramService !== "undefined" && program_service_1.ProgramService) === "function" ? _a : Object])
-], ProgramController);
-
-
-/***/ }),
-/* 48 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let ProgramService = class ProgramService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.program.create({
-            data: {
-                programCategoryId: Number(data.programCategoryId),
-                programName: data.programName,
-                programShortName: data.programShortName,
-                programCode: data.programCode,
-                durationYears: Number(data.durationYears),
-                termType: data.termType,
-                totalTerms: Number(data.totalTerms),
-                sequenceNo: Number(data.sequenceNo),
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll(categoryId) {
-        const whereClause = { IsDeleted: false };
-        if (categoryId) {
-            whereClause.programCategoryId = categoryId;
-        }
-        return this.prisma.program.findMany({
-            where: whereClause,
-            include: {
-                programCategory: true,
-            },
-            orderBy: { sequenceNo: 'asc' },
-        });
-    }
-    async findOne(programId) {
-        const program = await this.prisma.program.findFirst({
-            where: { programId, IsDeleted: false },
-            include: {
-                programCategory: true,
-            },
-        });
-        if (!program) {
-            throw new common_1.NotFoundException(`Program with ID ${programId} not found`);
-        }
-        return program;
-    }
-    async update(programId, data) {
-        await this.findOne(programId);
-        return this.prisma.program.update({
-            where: { programId },
-            data: {
-                programCategoryId: data.programCategoryId !== undefined ? Number(data.programCategoryId) : undefined,
-                programName: data.programName,
-                programShortName: data.programShortName,
-                programCode: data.programCode,
-                durationYears: data.durationYears !== undefined ? Number(data.durationYears) : undefined,
-                termType: data.termType,
-                totalTerms: data.totalTerms !== undefined ? Number(data.totalTerms) : undefined,
-                sequenceNo: data.sequenceNo !== undefined ? Number(data.sequenceNo) : undefined,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(programId, DeletedBy, DeletedRemarks) {
-        await this.findOne(programId);
-        return this.prisma.program.update({
-            where: { programId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.program.updateMany({
-            where: {
-                programId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} program(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.ProgramService = ProgramService;
-exports.ProgramService = ProgramService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], ProgramService);
-
-
-/***/ }),
-/* 49 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BoardModule = void 0;
-const common_1 = __webpack_require__(5);
-const board_controller_1 = __webpack_require__(50);
-const board_service_1 = __webpack_require__(51);
-let BoardModule = class BoardModule {
-};
-exports.BoardModule = BoardModule;
-exports.BoardModule = BoardModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [board_controller_1.BoardController],
-        providers: [board_service_1.BoardService],
-    })
-], BoardModule);
-
-
-/***/ }),
-/* 50 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BoardController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const board_service_1 = __webpack_require__(51);
-let BoardController = class BoardController {
-    constructor(boardService) {
-        this.boardService = boardService;
-    }
-    async create(data) {
-        try {
-            return await this.boardService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.boardService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.boardService.findOne(data.boardId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { boardId, ...updateData } = data;
-            return await this.boardService.update(boardId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.boardService.softDelete(data.boardId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.boardService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.BoardController = BoardController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_board' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], BoardController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_boards' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], BoardController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_board' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], BoardController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_board' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], BoardController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_board' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], BoardController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_boards' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], BoardController.prototype, "bulkSoftDelete", null);
-exports.BoardController = BoardController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof board_service_1.BoardService !== "undefined" && board_service_1.BoardService) === "function" ? _a : Object])
-], BoardController);
-
-
-/***/ }),
-/* 51 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BoardService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let BoardService = class BoardService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.boardMaster.create({
-            data: {
-                boardName: data.boardName,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.boardMaster.findMany({
-            where: { IsDeleted: false },
-            orderBy: { boardName: 'asc' },
-        });
-    }
-    async findOne(boardId) {
-        const board = await this.prisma.boardMaster.findFirst({
-            where: { boardId, IsDeleted: false },
-        });
-        if (!board) {
-            throw new common_1.NotFoundException(`Board with ID ${boardId} not found`);
-        }
-        return board;
-    }
-    async update(boardId, data) {
-        await this.findOne(boardId);
-        return this.prisma.boardMaster.update({
-            where: { boardId },
-            data: {
-                boardName: data.boardName,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(boardId, DeletedBy, DeletedRemarks) {
-        await this.findOne(boardId);
-        return this.prisma.boardMaster.update({
-            where: { boardId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.boardMaster.updateMany({
-            where: {
-                boardId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} board(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.BoardService = BoardService;
-exports.BoardService = BoardService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], BoardService);
-
-
-/***/ }),
-/* 52 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.QualificationModule = void 0;
-const common_1 = __webpack_require__(5);
-const qualification_controller_1 = __webpack_require__(53);
-const qualification_service_1 = __webpack_require__(54);
-let QualificationModule = class QualificationModule {
-};
-exports.QualificationModule = QualificationModule;
-exports.QualificationModule = QualificationModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [qualification_controller_1.QualificationController],
-        providers: [qualification_service_1.QualificationService],
-    })
-], QualificationModule);
-
-
-/***/ }),
-/* 53 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.QualificationController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const qualification_service_1 = __webpack_require__(54);
-let QualificationController = class QualificationController {
-    constructor(qualificationService) {
-        this.qualificationService = qualificationService;
-    }
-    async create(data) {
-        try {
-            return await this.qualificationService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.qualificationService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.qualificationService.findOne(data.qualificationId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { qualificationId, ...updateData } = data;
-            return await this.qualificationService.update(qualificationId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.qualificationService.softDelete(data.qualificationId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.qualificationService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.QualificationController = QualificationController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_qualification' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QualificationController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_qualifications' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], QualificationController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_qualification' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QualificationController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_qualification' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QualificationController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_qualification' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QualificationController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_qualifications' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QualificationController.prototype, "bulkSoftDelete", null);
-exports.QualificationController = QualificationController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof qualification_service_1.QualificationService !== "undefined" && qualification_service_1.QualificationService) === "function" ? _a : Object])
-], QualificationController);
-
-
-/***/ }),
-/* 54 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.QualificationService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let QualificationService = class QualificationService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.qualificationMaster.create({
-            data: {
-                qualificationName: data.qualificationName,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.qualificationMaster.findMany({
-            where: { IsDeleted: false },
-            orderBy: { qualificationName: 'asc' },
-        });
-    }
-    async findOne(qualificationId) {
-        const qual = await this.prisma.qualificationMaster.findFirst({
-            where: { qualificationId, IsDeleted: false },
-        });
-        if (!qual) {
-            throw new common_1.NotFoundException(`Qualification with ID ${qualificationId} not found`);
-        }
-        return qual;
-    }
-    async update(qualificationId, data) {
-        await this.findOne(qualificationId);
-        return this.prisma.qualificationMaster.update({
-            where: { qualificationId },
-            data: {
-                qualificationName: data.qualificationName,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(qualificationId, DeletedBy, DeletedRemarks) {
-        await this.findOne(qualificationId);
-        return this.prisma.qualificationMaster.update({
-            where: { qualificationId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.qualificationMaster.updateMany({
-            where: {
-                qualificationId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} qualification(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.QualificationService = QualificationService;
-exports.QualificationService = QualificationService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], QualificationService);
-
-
-/***/ }),
-/* 55 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdmissionSessionModule = void 0;
-const common_1 = __webpack_require__(5);
-const admission_session_controller_1 = __webpack_require__(56);
-const admission_session_service_1 = __webpack_require__(57);
-let AdmissionSessionModule = class AdmissionSessionModule {
-};
-exports.AdmissionSessionModule = AdmissionSessionModule;
-exports.AdmissionSessionModule = AdmissionSessionModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [admission_session_controller_1.AdmissionSessionController],
-        providers: [admission_session_service_1.AdmissionSessionService],
-    })
-], AdmissionSessionModule);
-
-
-/***/ }),
-/* 56 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdmissionSessionController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const admission_session_service_1 = __webpack_require__(57);
-let AdmissionSessionController = class AdmissionSessionController {
-    constructor(sessionService) {
-        this.sessionService = sessionService;
-    }
-    async create(data) {
-        try {
-            return await this.sessionService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.sessionService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.sessionService.findOne(data.admissionSessionId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { admissionSessionId, ...updateData } = data;
-            return await this.sessionService.update(admissionSessionId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.sessionService.softDelete(data.admissionSessionId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async bulkSoftDelete(data) {
-        try {
-            return await this.sessionService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.AdmissionSessionController = AdmissionSessionController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_admission_session' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AdmissionSessionController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_admission_sessions' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdmissionSessionController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_admission_session' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AdmissionSessionController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_admission_session' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AdmissionSessionController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_admission_session' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AdmissionSessionController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_admission_sessions' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AdmissionSessionController.prototype, "bulkSoftDelete", null);
-exports.AdmissionSessionController = AdmissionSessionController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof admission_session_service_1.AdmissionSessionService !== "undefined" && admission_session_service_1.AdmissionSessionService) === "function" ? _a : Object])
-], AdmissionSessionController);
-
-
-/***/ }),
-/* 57 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdmissionSessionService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let AdmissionSessionService = class AdmissionSessionService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.admissionSession.create({
-            data: {
-                admissionSessionName: data.admissionSessionName,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.admissionSession.findMany({
-            where: { IsDeleted: false },
-            orderBy: { admissionSessionName: 'asc' },
-        });
-    }
-    async findOne(admissionSessionId) {
-        const session = await this.prisma.admissionSession.findFirst({
-            where: { admissionSessionId, IsDeleted: false },
-        });
-        if (!session) {
-            throw new common_1.NotFoundException(`Admission Session with ID ${admissionSessionId} not found`);
-        }
-        return session;
-    }
-    async update(admissionSessionId, data) {
-        await this.findOne(admissionSessionId);
-        return this.prisma.admissionSession.update({
-            where: { admissionSessionId },
-            data: {
-                admissionSessionName: data.admissionSessionName,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(admissionSessionId, DeletedBy, DeletedRemarks) {
-        await this.findOne(admissionSessionId);
-        return this.prisma.admissionSession.update({
-            where: { admissionSessionId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.admissionSession.updateMany({
-            where: {
-                admissionSessionId: { in: ids },
-                IsDeleted: false,
-            },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-        return {
-            message: `Successfully soft-deleted ${result.count} admission session(s)`,
-            count: result.count,
-        };
-    }
-};
-exports.AdmissionSessionService = AdmissionSessionService;
-exports.AdmissionSessionService = AdmissionSessionService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], AdmissionSessionService);
-
-
-/***/ }),
-/* 58 */
+/***/ "./apps/student-service/src/master/academic-session/academic-session.module.ts":
+/*!*************************************************************************************!*\
+  !*** ./apps/student-service/src/master/academic-session/academic-session.module.ts ***!
+  \*************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4863,10 +132,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionModule = void 0;
-const common_1 = __webpack_require__(5);
-const academic_session_service_1 = __webpack_require__(59);
-const academic_session_controller_1 = __webpack_require__(60);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const academic_session_service_1 = __webpack_require__(/*! ./academic-session.service */ "./apps/student-service/src/master/academic-session/academic-session.service.ts");
+const academic_session_controller_1 = __webpack_require__(/*! ./academic-session.controller */ "./apps/student-service/src/master/academic-session/academic-session.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let AcademicSessionModule = class AcademicSessionModule {
 };
 exports.AcademicSessionModule = AcademicSessionModule;
@@ -4881,7 +150,11 @@ exports.AcademicSessionModule = AcademicSessionModule = __decorate([
 
 
 /***/ }),
-/* 59 */
+
+/***/ "./apps/student-service/src/master/academic-session/academic-session.service.ts":
+/*!**************************************************************************************!*\
+  !*** ./apps/student-service/src/master/academic-session/academic-session.service.ts ***!
+  \**************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4897,8 +170,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let AcademicSessionService = class AcademicSessionService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -5035,7 +308,11 @@ exports.AcademicSessionService = AcademicSessionService = __decorate([
 
 
 /***/ }),
-/* 60 */
+
+/***/ "./apps/student-service/src/master/admission-session/admission-session.controller.ts":
+/*!*******************************************************************************************!*\
+  !*** ./apps/student-service/src/master/admission-session/admission-session.controller.ts ***!
+  \*******************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5053,155 +330,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AcademicSessionController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const academic_session_service_1 = __webpack_require__(59);
-let AcademicSessionController = class AcademicSessionController {
-    constructor(academicSessionService) {
-        this.academicSessionService = academicSessionService;
+exports.AdmissionSessionController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const admission_session_service_1 = __webpack_require__(/*! ./admission-session.service */ "./apps/student-service/src/master/admission-session/admission-session.service.ts");
+let AdmissionSessionController = class AdmissionSessionController {
+    constructor(sessionService) {
+        this.sessionService = sessionService;
     }
     async create(data) {
         try {
-            return await this.academicSessionService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll(data) {
-        try {
-            return await this.academicSessionService.findAll(data?.collegeId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.academicSessionService.findOne(data.academicSessionId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { academicSessionId, ...updateData } = data;
-            return await this.academicSessionService.update(academicSessionId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.academicSessionService.softDelete(data.academicSessionId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.AcademicSessionController = AcademicSessionController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_academic_session' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AcademicSessionController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_academic_sessions' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AcademicSessionController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_academic_session' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AcademicSessionController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_academic_session' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AcademicSessionController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_academic_session' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AcademicSessionController.prototype, "softDelete", null);
-exports.AcademicSessionController = AcademicSessionController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof academic_session_service_1.AcademicSessionService !== "undefined" && academic_session_service_1.AcademicSessionService) === "function" ? _a : Object])
-], AcademicSessionController);
-
-
-/***/ }),
-/* 61 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramFeeConfigModule = void 0;
-const common_1 = __webpack_require__(5);
-const program_fee_config_controller_1 = __webpack_require__(62);
-const program_fee_config_service_1 = __webpack_require__(63);
-let ProgramFeeConfigModule = class ProgramFeeConfigModule {
-};
-exports.ProgramFeeConfigModule = ProgramFeeConfigModule;
-exports.ProgramFeeConfigModule = ProgramFeeConfigModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [program_fee_config_controller_1.ProgramFeeConfigController],
-        providers: [program_fee_config_service_1.ProgramFeeConfigService],
-    })
-], ProgramFeeConfigModule);
-
-
-/***/ }),
-/* 62 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramFeeConfigController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const program_fee_config_service_1 = __webpack_require__(63);
-let ProgramFeeConfigController = class ProgramFeeConfigController {
-    constructor(feeConfigService) {
-        this.feeConfigService = feeConfigService;
-    }
-    async create(data) {
-        try {
-            return await this.feeConfigService.create(data);
+            return await this.sessionService.create(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5209,7 +348,7 @@ let ProgramFeeConfigController = class ProgramFeeConfigController {
     }
     async findAll() {
         try {
-            return await this.feeConfigService.findAll();
+            return await this.sessionService.findAll();
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5217,15 +356,7 @@ let ProgramFeeConfigController = class ProgramFeeConfigController {
     }
     async findOne(data) {
         try {
-            return await this.feeConfigService.findOne(data.feeConfigId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findByProgramAndSession(data) {
-        try {
-            return await this.feeConfigService.findByProgramAndSession(data.programId, data.admissionSessionId);
+            return await this.sessionService.findOne(data.admissionSessionId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5233,8 +364,8 @@ let ProgramFeeConfigController = class ProgramFeeConfigController {
     }
     async update(data) {
         try {
-            const { feeConfigId, ...updateData } = data;
-            return await this.feeConfigService.update(feeConfigId, updateData);
+            const { admissionSessionId, ...updateData } = data;
+            return await this.sessionService.update(admissionSessionId, updateData);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5242,7 +373,7 @@ let ProgramFeeConfigController = class ProgramFeeConfigController {
     }
     async softDelete(data) {
         try {
-            return await this.feeConfigService.softDelete(data.feeConfigId, data.DeletedBy, data.DeletedRemarks);
+            return await this.sessionService.softDelete(data.admissionSessionId, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5250,70 +381,98 @@ let ProgramFeeConfigController = class ProgramFeeConfigController {
     }
     async bulkSoftDelete(data) {
         try {
-            return await this.feeConfigService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+            return await this.sessionService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
 };
-exports.ProgramFeeConfigController = ProgramFeeConfigController;
+exports.AdmissionSessionController = AdmissionSessionController;
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_program_fee_config' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_admission_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramFeeConfigController.prototype, "create", null);
+], AdmissionSessionController.prototype, "create", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_program_fee_configs' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_admission_sessions' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], ProgramFeeConfigController.prototype, "findAll", null);
+], AdmissionSessionController.prototype, "findAll", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program_fee_config' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_admission_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramFeeConfigController.prototype, "findOne", null);
+], AdmissionSessionController.prototype, "findOne", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_program_fee_config_by_program_and_session' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_admission_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramFeeConfigController.prototype, "findByProgramAndSession", null);
+], AdmissionSessionController.prototype, "update", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_program_fee_config' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_admission_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramFeeConfigController.prototype, "update", null);
+], AdmissionSessionController.prototype, "softDelete", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_program_fee_config' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_admission_sessions' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramFeeConfigController.prototype, "softDelete", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_program_fee_configs' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ProgramFeeConfigController.prototype, "bulkSoftDelete", null);
-exports.ProgramFeeConfigController = ProgramFeeConfigController = __decorate([
+], AdmissionSessionController.prototype, "bulkSoftDelete", null);
+exports.AdmissionSessionController = AdmissionSessionController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof program_fee_config_service_1.ProgramFeeConfigService !== "undefined" && program_fee_config_service_1.ProgramFeeConfigService) === "function" ? _a : Object])
-], ProgramFeeConfigController);
+    __metadata("design:paramtypes", [typeof (_a = typeof admission_session_service_1.AdmissionSessionService !== "undefined" && admission_session_service_1.AdmissionSessionService) === "function" ? _a : Object])
+], AdmissionSessionController);
 
 
 /***/ }),
-/* 63 */
+
+/***/ "./apps/student-service/src/master/admission-session/admission-session.module.ts":
+/*!***************************************************************************************!*\
+  !*** ./apps/student-service/src/master/admission-session/admission-session.module.ts ***!
+  \***************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdmissionSessionModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const admission_session_controller_1 = __webpack_require__(/*! ./admission-session.controller */ "./apps/student-service/src/master/admission-session/admission-session.controller.ts");
+const admission_session_service_1 = __webpack_require__(/*! ./admission-session.service */ "./apps/student-service/src/master/admission-session/admission-session.service.ts");
+let AdmissionSessionModule = class AdmissionSessionModule {
+};
+exports.AdmissionSessionModule = AdmissionSessionModule;
+exports.AdmissionSessionModule = AdmissionSessionModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [admission_session_controller_1.AdmissionSessionController],
+        providers: [admission_session_service_1.AdmissionSessionService],
+    })
+], AdmissionSessionModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/admission-session/admission-session.service.ts":
+/*!****************************************************************************************!*\
+  !*** ./apps/student-service/src/master/admission-session/admission-session.service.ts ***!
+  \****************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5328,120 +487,55 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramFeeConfigService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-function calculateFinalFee(base, pgRate = 2.0, gstRate = 18.0) {
-    const baseNum = Number(base);
-    if (!baseNum || baseNum <= 0)
-        return 0;
-    const pgCharge = baseNum * (pgRate / 100);
-    const gstOnPg = pgCharge * (gstRate / 100);
-    return Number((baseNum + pgCharge + gstOnPg).toFixed(3));
-}
-let ProgramFeeConfigService = class ProgramFeeConfigService {
+exports.AdmissionSessionService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let AdmissionSessionService = class AdmissionSessionService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async create(data) {
-        const regFinal = calculateFinalFee(Number(data.registrationBaseFee ?? 0.0), Number(data.registrationPgRate ?? 2.0), Number(data.registrationGstRate ?? 18.0));
-        const examFinal = calculateFinalFee(Number(data.examinationBaseFee ?? 0.0), Number(data.examinationPgRate ?? 2.0), Number(data.examinationGstRate ?? 18.0));
-        return this.prisma.programFeeConfig.create({
+        return this.prisma.admissionSession.create({
             data: {
-                programId: Number(data.programId),
-                admissionSessionId: Number(data.admissionSessionId),
-                registrationBaseFee: Number(data.registrationBaseFee ?? 0.0),
-                registrationPgRate: Number(data.registrationPgRate ?? 2.0),
-                registrationGstRate: Number(data.registrationGstRate ?? 18.0),
-                registrationFinal: regFinal,
-                examinationBaseFee: Number(data.examinationBaseFee ?? 0.0),
-                examinationPgRate: Number(data.examinationPgRate ?? 2.0),
-                examinationGstRate: Number(data.examinationGstRate ?? 18.0),
-                examinationFinal: examFinal,
+                admissionSessionName: data.admissionSessionName,
                 CreatedBy: data.CreatedBy,
                 Remarks: data.Remarks || null,
                 IsActive: true,
                 IsDeleted: false,
             },
-            include: {
-                program: true,
-                admissionSession: true,
-            },
         });
     }
     async findAll() {
-        return this.prisma.programFeeConfig.findMany({
+        return this.prisma.admissionSession.findMany({
             where: { IsDeleted: false },
-            include: {
-                program: true,
-                admissionSession: true,
-            },
-            orderBy: { CreatedOn: 'desc' },
+            orderBy: { admissionSessionName: 'asc' },
         });
     }
-    async findOne(feeConfigId) {
-        const config = await this.prisma.programFeeConfig.findFirst({
-            where: { feeConfigId, IsDeleted: false },
-            include: {
-                program: true,
-                admissionSession: true,
-            },
+    async findOne(admissionSessionId) {
+        const session = await this.prisma.admissionSession.findFirst({
+            where: { admissionSessionId, IsDeleted: false },
         });
-        if (!config) {
-            throw new common_1.NotFoundException(`Program Fee Configuration with ID ${feeConfigId} not found`);
+        if (!session) {
+            throw new common_1.NotFoundException(`Admission Session with ID ${admissionSessionId} not found`);
         }
-        return config;
+        return session;
     }
-    async findByProgramAndSession(programId, admissionSessionId) {
-        const config = await this.prisma.programFeeConfig.findFirst({
-            where: { programId, admissionSessionId, IsDeleted: false },
-            include: {
-                program: true,
-                admissionSession: true,
-            },
-        });
-        if (!config) {
-            throw new common_1.NotFoundException(`Fee Configuration for Program ID ${programId} and Session ID ${admissionSessionId} not found`);
-        }
-        return config;
-    }
-    async update(feeConfigId, data) {
-        const current = await this.findOne(feeConfigId);
-        const regBase = data.registrationBaseFee !== undefined ? Number(data.registrationBaseFee) : current.registrationBaseFee;
-        const regPg = data.registrationPgRate !== undefined ? Number(data.registrationPgRate) : current.registrationPgRate;
-        const regGst = data.registrationGstRate !== undefined ? Number(data.registrationGstRate) : current.registrationGstRate;
-        const regFinal = calculateFinalFee(regBase, regPg, regGst);
-        const examBase = data.examinationBaseFee !== undefined ? Number(data.examinationBaseFee) : current.examinationBaseFee;
-        const examPg = data.examinationPgRate !== undefined ? Number(data.examinationPgRate) : current.examinationPgRate;
-        const examGst = data.examinationGstRate !== undefined ? Number(data.examinationGstRate) : current.examinationGstRate;
-        const examFinal = calculateFinalFee(examBase, examPg, examGst);
-        return this.prisma.programFeeConfig.update({
-            where: { feeConfigId },
+    async update(admissionSessionId, data) {
+        await this.findOne(admissionSessionId);
+        return this.prisma.admissionSession.update({
+            where: { admissionSessionId },
             data: {
-                programId: data.programId !== undefined ? Number(data.programId) : undefined,
-                admissionSessionId: data.admissionSessionId !== undefined ? Number(data.admissionSessionId) : undefined,
-                registrationBaseFee: regBase,
-                registrationPgRate: regPg,
-                registrationGstRate: regGst,
-                registrationFinal: regFinal,
-                examinationBaseFee: examBase,
-                examinationPgRate: examPg,
-                examinationGstRate: examGst,
-                examinationFinal: examFinal,
+                admissionSessionName: data.admissionSessionName,
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
                 Remarks: data.Remarks,
             },
-            include: {
-                program: true,
-                admissionSession: true,
-            },
         });
     }
-    async softDelete(feeConfigId, DeletedBy, DeletedRemarks) {
-        await this.findOne(feeConfigId);
-        return this.prisma.programFeeConfig.update({
-            where: { feeConfigId },
+    async softDelete(admissionSessionId, DeletedBy, DeletedRemarks) {
+        await this.findOne(admissionSessionId);
+        return this.prisma.admissionSession.update({
+            where: { admissionSessionId },
             data: {
                 IsDeleted: true,
                 IsActive: false,
@@ -5452,9 +546,9 @@ let ProgramFeeConfigService = class ProgramFeeConfigService {
         });
     }
     async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
-        const result = await this.prisma.programFeeConfig.updateMany({
+        const result = await this.prisma.admissionSession.updateMany({
             where: {
-                feeConfigId: { in: ids },
+                admissionSessionId: { in: ids },
                 IsDeleted: false,
             },
             data: {
@@ -5466,20 +560,153 @@ let ProgramFeeConfigService = class ProgramFeeConfigService {
             },
         });
         return {
-            message: `Successfully soft-deleted ${result.count} fee configuration(s)`,
+            message: `Successfully soft-deleted ${result.count} admission session(s)`,
             count: result.count,
         };
     }
 };
-exports.ProgramFeeConfigService = ProgramFeeConfigService;
-exports.ProgramFeeConfigService = ProgramFeeConfigService = __decorate([
+exports.AdmissionSessionService = AdmissionSessionService;
+exports.AdmissionSessionService = AdmissionSessionService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], ProgramFeeConfigService);
+], AdmissionSessionService);
 
 
 /***/ }),
-/* 64 */
+
+/***/ "./apps/student-service/src/master/board/board.controller.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/student-service/src/master/board/board.controller.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BoardController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const board_service_1 = __webpack_require__(/*! ./board.service */ "./apps/student-service/src/master/board/board.service.ts");
+let BoardController = class BoardController {
+    constructor(boardService) {
+        this.boardService = boardService;
+    }
+    async create(data) {
+        try {
+            return await this.boardService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.boardService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.boardService.findOne(data.boardId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { boardId, ...updateData } = data;
+            return await this.boardService.update(boardId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.boardService.softDelete(data.boardId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.boardService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.BoardController = BoardController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_board' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BoardController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_boards' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BoardController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_board' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BoardController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_board' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BoardController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_board' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BoardController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_boards' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BoardController.prototype, "bulkSoftDelete", null);
+exports.BoardController = BoardController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof board_service_1.BoardService !== "undefined" && board_service_1.BoardService) === "function" ? _a : Object])
+], BoardController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/board/board.module.ts":
+/*!***************************************************************!*\
+  !*** ./apps/student-service/src/master/board/board.module.ts ***!
+  \***************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5490,26 +717,409 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CollegeModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const college_controller_1 = __webpack_require__(65);
-const college_service_1 = __webpack_require__(66);
-let CollegeModule = class CollegeModule {
+exports.BoardModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const board_controller_1 = __webpack_require__(/*! ./board.controller */ "./apps/student-service/src/master/board/board.controller.ts");
+const board_service_1 = __webpack_require__(/*! ./board.service */ "./apps/student-service/src/master/board/board.service.ts");
+let BoardModule = class BoardModule {
 };
-exports.CollegeModule = CollegeModule;
-exports.CollegeModule = CollegeModule = __decorate([
+exports.BoardModule = BoardModule;
+exports.BoardModule = BoardModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [college_controller_1.CollegeController],
-        providers: [college_service_1.CollegeService],
-        exports: [college_service_1.CollegeService],
+        controllers: [board_controller_1.BoardController],
+        providers: [board_service_1.BoardService],
     })
-], CollegeModule);
+], BoardModule);
 
 
 /***/ }),
-/* 65 */
+
+/***/ "./apps/student-service/src/master/board/board.service.ts":
+/*!****************************************************************!*\
+  !*** ./apps/student-service/src/master/board/board.service.ts ***!
+  \****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BoardService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let BoardService = class BoardService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.boardMaster.create({
+            data: {
+                boardName: data.boardName,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.boardMaster.findMany({
+            where: { IsDeleted: false },
+            orderBy: { boardName: 'asc' },
+        });
+    }
+    async findOne(boardId) {
+        const board = await this.prisma.boardMaster.findFirst({
+            where: { boardId, IsDeleted: false },
+        });
+        if (!board) {
+            throw new common_1.NotFoundException(`Board with ID ${boardId} not found`);
+        }
+        return board;
+    }
+    async update(boardId, data) {
+        await this.findOne(boardId);
+        return this.prisma.boardMaster.update({
+            where: { boardId },
+            data: {
+                boardName: data.boardName,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(boardId, DeletedBy, DeletedRemarks) {
+        await this.findOne(boardId);
+        return this.prisma.boardMaster.update({
+            where: { boardId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.boardMaster.updateMany({
+            where: {
+                boardId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} board(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.BoardService = BoardService;
+exports.BoardService = BoardService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], BoardService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/city/city.controller.ts":
+/*!*****************************************************************!*\
+  !*** ./apps/student-service/src/master/city/city.controller.ts ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CityController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const city_service_1 = __webpack_require__(/*! ./city.service */ "./apps/student-service/src/master/city/city.service.ts");
+let CityController = class CityController {
+    constructor(cityService) {
+        this.cityService = cityService;
+    }
+    async create(data) {
+        try {
+            return await this.cityService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.cityService.findAll(data?.stateId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.cityService.findOne(data.cityId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { cityId, ...updateData } = data;
+            return await this.cityService.update(cityId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.cityService.softDelete(data.cityId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.CityController = CityController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_city' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CityController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_cities' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CityController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_city' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CityController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_city' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CityController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_city' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CityController.prototype, "softDelete", null);
+exports.CityController = CityController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof city_service_1.CityService !== "undefined" && city_service_1.CityService) === "function" ? _a : Object])
+], CityController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/city/city.module.ts":
+/*!*************************************************************!*\
+  !*** ./apps/student-service/src/master/city/city.module.ts ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CityModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const city_service_1 = __webpack_require__(/*! ./city.service */ "./apps/student-service/src/master/city/city.service.ts");
+const city_controller_1 = __webpack_require__(/*! ./city.controller */ "./apps/student-service/src/master/city/city.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let CityModule = class CityModule {
+};
+exports.CityModule = CityModule;
+exports.CityModule = CityModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [city_controller_1.CityController],
+        providers: [city_service_1.CityService],
+        exports: [city_service_1.CityService],
+    })
+], CityModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/city/city.service.ts":
+/*!**************************************************************!*\
+  !*** ./apps/student-service/src/master/city/city.service.ts ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CityService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let CityService = class CityService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        const existingName = await this.prisma.cityMaster.findFirst({
+            where: { cityName: data.cityName, stateId: data.stateId },
+        });
+        if (existingName) {
+            throw new common_1.ConflictException('City name already exists in this state');
+        }
+        const existingCode = await this.prisma.cityMaster.findUnique({
+            where: { cityShortCode: data.cityShortCode },
+        });
+        if (existingCode) {
+            throw new common_1.ConflictException('City short code already exists');
+        }
+        return this.prisma.cityMaster.create({
+            data: {
+                stateId: data.stateId,
+                cityName: data.cityName,
+                cityShortCode: data.cityShortCode,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll(stateId) {
+        return this.prisma.cityMaster.findMany({
+            where: {
+                IsDeleted: false,
+                ...(stateId ? { stateId: Number(stateId) } : {}),
+            },
+            orderBy: { cityName: 'asc' },
+        });
+    }
+    async findOne(cityId) {
+        const city = await this.prisma.cityMaster.findFirst({
+            where: { cityId, IsDeleted: false },
+        });
+        if (!city) {
+            throw new common_1.NotFoundException(`City with ID ${cityId} not found`);
+        }
+        return city;
+    }
+    async update(cityId, data) {
+        await this.findOne(cityId);
+        if (data.cityName && data.stateId) {
+            const existingName = await this.prisma.cityMaster.findFirst({
+                where: {
+                    cityName: data.cityName,
+                    stateId: data.stateId,
+                    NOT: { cityId },
+                },
+            });
+            if (existingName) {
+                throw new common_1.ConflictException('City name already exists in this state');
+            }
+        }
+        if (data.cityShortCode) {
+            const existingCode = await this.prisma.cityMaster.findFirst({
+                where: {
+                    cityShortCode: data.cityShortCode,
+                    NOT: { cityId },
+                },
+            });
+            if (existingCode) {
+                throw new common_1.ConflictException('City short code already exists');
+            }
+        }
+        return this.prisma.cityMaster.update({
+            where: { cityId },
+            data: {
+                stateId: data.stateId,
+                cityName: data.cityName,
+                cityShortCode: data.cityShortCode,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(cityId, DeletedBy, DeletedRemarks) {
+        await this.findOne(cityId);
+        return this.prisma.cityMaster.update({
+            where: { cityId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.CityService = CityService;
+exports.CityService = CityService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], CityService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/college/college.controller.ts":
+/*!***********************************************************************!*\
+  !*** ./apps/student-service/src/master/college/college.controller.ts ***!
+  \***********************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5528,9 +1138,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CollegeController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const college_service_1 = __webpack_require__(66);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const college_service_1 = __webpack_require__(/*! ./college.service */ "./apps/student-service/src/master/college/college.service.ts");
 let CollegeController = class CollegeController {
     constructor(collegeService) {
         this.collegeService = collegeService;
@@ -5619,7 +1229,45 @@ exports.CollegeController = CollegeController = __decorate([
 
 
 /***/ }),
-/* 66 */
+
+/***/ "./apps/student-service/src/master/college/college.module.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/student-service/src/master/college/college.module.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CollegeModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const college_controller_1 = __webpack_require__(/*! ./college.controller */ "./apps/student-service/src/master/college/college.controller.ts");
+const college_service_1 = __webpack_require__(/*! ./college.service */ "./apps/student-service/src/master/college/college.service.ts");
+let CollegeModule = class CollegeModule {
+};
+exports.CollegeModule = CollegeModule;
+exports.CollegeModule = CollegeModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [college_controller_1.CollegeController],
+        providers: [college_service_1.CollegeService],
+        exports: [college_service_1.CollegeService],
+    })
+], CollegeModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/college/college.service.ts":
+/*!********************************************************************!*\
+  !*** ./apps/student-service/src/master/college/college.service.ts ***!
+  \********************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5635,8 +1283,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CollegeService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let CollegeService = class CollegeService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -5720,157 +1368,11 @@ exports.CollegeService = CollegeService = __decorate([
 
 
 /***/ }),
-/* 67 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ZipcodeModule = void 0;
-const common_1 = __webpack_require__(5);
-const zipcode_service_1 = __webpack_require__(68);
-const zipcode_controller_1 = __webpack_require__(69);
-const prisma_1 = __webpack_require__(6);
-let ZipcodeModule = class ZipcodeModule {
-};
-exports.ZipcodeModule = ZipcodeModule;
-exports.ZipcodeModule = ZipcodeModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [zipcode_controller_1.ZipcodeController],
-        providers: [zipcode_service_1.ZipcodeService],
-        exports: [zipcode_service_1.ZipcodeService],
-    })
-], ZipcodeModule);
-
-
-/***/ }),
-/* 68 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ZipcodeService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let ZipcodeService = class ZipcodeService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        const existingLocality = await this.prisma.zipcodeMaster.findFirst({
-            where: {
-                cityId: data.cityId,
-                locality: data.locality,
-                IsDeleted: false,
-            },
-        });
-        if (existingLocality) {
-            throw new common_1.ConflictException('This locality already has a zipcode in this city');
-        }
-        return this.prisma.zipcodeMaster.create({
-            data: {
-                zipCode: data.zipCode,
-                stateId: data.stateId,
-                cityId: data.cityId,
-                locality: data.locality,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll(filters) {
-        return this.prisma.zipcodeMaster.findMany({
-            where: {
-                IsDeleted: false,
-                ...(filters?.stateId ? { stateId: Number(filters.stateId) } : {}),
-                ...(filters?.cityId ? { cityId: Number(filters.cityId) } : {}),
-                ...(filters?.zipCode
-                    ? { zipCode: String(filters.zipCode).trim() }
-                    : {}),
-            },
-            orderBy: { zipCode: 'asc' },
-        });
-    }
-    async findOne(zipcodeId) {
-        const zipcode = await this.prisma.zipcodeMaster.findFirst({
-            where: { zipcodeId, IsDeleted: false },
-        });
-        if (!zipcode) {
-            throw new common_1.NotFoundException(`Zipcode with ID ${zipcodeId} not found`);
-        }
-        return zipcode;
-    }
-    async update(zipcodeId, data) {
-        const current = await this.findOne(zipcodeId);
-        const cityId = data.cityId ?? current.cityId;
-        const locality = data.locality ?? current.locality;
-        if (locality !== undefined && cityId !== undefined) {
-            const existingLocality = await this.prisma.zipcodeMaster.findFirst({
-                where: {
-                    cityId,
-                    locality,
-                    IsDeleted: false,
-                    NOT: { zipcodeId },
-                },
-            });
-            if (existingLocality) {
-                throw new common_1.ConflictException('This locality already has a zipcode in this city');
-            }
-        }
-        return this.prisma.zipcodeMaster.update({
-            where: { zipcodeId },
-            data: {
-                zipCode: data.zipCode,
-                stateId: data.stateId,
-                cityId: data.cityId,
-                locality: data.locality,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(zipcodeId, DeletedBy, DeletedRemarks) {
-        await this.findOne(zipcodeId);
-        return this.prisma.zipcodeMaster.update({
-            where: { zipcodeId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.ZipcodeService = ZipcodeService;
-exports.ZipcodeService = ZipcodeService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], ZipcodeService);
-
-
-/***/ }),
-/* 69 */
+/***/ "./apps/student-service/src/master/examination-details/examination-details.controller.ts":
+/*!***********************************************************************************************!*\
+  !*** ./apps/student-service/src/master/examination-details/examination-details.controller.ts ***!
+  \***********************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5888,17 +1390,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ZipcodeController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const zipcode_service_1 = __webpack_require__(68);
-let ZipcodeController = class ZipcodeController {
-    constructor(zipcodeService) {
-        this.zipcodeService = zipcodeService;
+exports.ExaminationDetailsController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const examination_details_service_1 = __webpack_require__(/*! ./examination-details.service */ "./apps/student-service/src/master/examination-details/examination-details.service.ts");
+let ExaminationDetailsController = class ExaminationDetailsController {
+    constructor(examinationDetailsService) {
+        this.examinationDetailsService = examinationDetailsService;
     }
     async create(data) {
         try {
-            return await this.zipcodeService.create(data);
+            return await this.examinationDetailsService.create(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5906,7 +1408,7 @@ let ZipcodeController = class ZipcodeController {
     }
     async findAll(data) {
         try {
-            return await this.zipcodeService.findAll(data);
+            return await this.examinationDetailsService.findAll(data?.academicId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5914,7 +1416,7 @@ let ZipcodeController = class ZipcodeController {
     }
     async findOne(data) {
         try {
-            return await this.zipcodeService.findOne(data.zipcodeId);
+            return await this.examinationDetailsService.findOne(data.examinationId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5922,8 +1424,8 @@ let ZipcodeController = class ZipcodeController {
     }
     async update(data) {
         try {
-            const { zipcodeId, ...updateData } = data;
-            return await this.zipcodeService.update(zipcodeId, updateData);
+            const { examinationId, ...updateData } = data;
+            return await this.examinationDetailsService.update(examinationId, updateData);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -5931,57 +1433,690 @@ let ZipcodeController = class ZipcodeController {
     }
     async softDelete(data) {
         try {
-            return await this.zipcodeService.softDelete(data.zipcodeId, data.DeletedBy, data.DeletedRemarks);
+            return await this.examinationDetailsService.softDelete(data.examinationId, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
 };
-exports.ZipcodeController = ZipcodeController;
+exports.ExaminationDetailsController = ExaminationDetailsController;
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_zipcode' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_examination_details' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ZipcodeController.prototype, "create", null);
+], ExaminationDetailsController.prototype, "create", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_zipcodes' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_examination_details' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ZipcodeController.prototype, "findAll", null);
+], ExaminationDetailsController.prototype, "findAll", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_zipcode' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_examination_details' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ZipcodeController.prototype, "findOne", null);
+], ExaminationDetailsController.prototype, "findOne", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_zipcode' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_examination_details' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ZipcodeController.prototype, "update", null);
+], ExaminationDetailsController.prototype, "update", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_zipcode' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_examination_details' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ZipcodeController.prototype, "softDelete", null);
-exports.ZipcodeController = ZipcodeController = __decorate([
+], ExaminationDetailsController.prototype, "softDelete", null);
+exports.ExaminationDetailsController = ExaminationDetailsController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof zipcode_service_1.ZipcodeService !== "undefined" && zipcode_service_1.ZipcodeService) === "function" ? _a : Object])
-], ZipcodeController);
+    __metadata("design:paramtypes", [typeof (_a = typeof examination_details_service_1.ExaminationDetailsService !== "undefined" && examination_details_service_1.ExaminationDetailsService) === "function" ? _a : Object])
+], ExaminationDetailsController);
 
 
 /***/ }),
-/* 70 */
+
+/***/ "./apps/student-service/src/master/examination-details/examination-details.module.ts":
+/*!*******************************************************************************************!*\
+  !*** ./apps/student-service/src/master/examination-details/examination-details.module.ts ***!
+  \*******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExaminationDetailsModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const examination_details_service_1 = __webpack_require__(/*! ./examination-details.service */ "./apps/student-service/src/master/examination-details/examination-details.service.ts");
+const examination_details_controller_1 = __webpack_require__(/*! ./examination-details.controller */ "./apps/student-service/src/master/examination-details/examination-details.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ExaminationDetailsModule = class ExaminationDetailsModule {
+};
+exports.ExaminationDetailsModule = ExaminationDetailsModule;
+exports.ExaminationDetailsModule = ExaminationDetailsModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [examination_details_controller_1.ExaminationDetailsController],
+        providers: [examination_details_service_1.ExaminationDetailsService],
+        exports: [examination_details_service_1.ExaminationDetailsService],
+    })
+], ExaminationDetailsModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/examination-details/examination-details.service.ts":
+/*!********************************************************************************************!*\
+  !*** ./apps/student-service/src/master/examination-details/examination-details.service.ts ***!
+  \********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExaminationDetailsService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ExaminationDetailsService = class ExaminationDetailsService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async assertAcademicSession(academicId) {
+        const academicSession = await this.prisma.academicSession.findFirst({
+            where: { academicSessionId: academicId, IsDeleted: false },
+        });
+        if (!academicSession) {
+            throw new common_1.NotFoundException(`Academic session with ID ${academicId} not found`);
+        }
+        return academicSession;
+    }
+    async create(data) {
+        await this.assertAcademicSession(Number(data.academicId));
+        const examinationName = String(data.examinationName || '').trim();
+        const existing = await this.prisma.examinationDetails.findFirst({
+            where: {
+                academicId: Number(data.academicId),
+                examinationName,
+                IsDeleted: false,
+            },
+        });
+        if (existing) {
+            throw new common_1.ConflictException('Examination name already exists for this academic session');
+        }
+        return this.prisma.examinationDetails.create({
+            data: {
+                academicId: Number(data.academicId),
+                examinationName,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll(academicId) {
+        return this.prisma.examinationDetails.findMany({
+            where: {
+                IsDeleted: false,
+                ...(academicId ? { academicId: Number(academicId) } : {}),
+            },
+            include: {
+                academicSession: {
+                    select: {
+                        academicSessionId: true,
+                        academicSessionName: true,
+                        collegeId: true,
+                    },
+                },
+            },
+            orderBy: [{ academicId: 'asc' }, { examinationName: 'asc' }],
+        });
+    }
+    async findOne(examinationId) {
+        const examination = await this.prisma.examinationDetails.findFirst({
+            where: { examinationId, IsDeleted: false },
+            include: {
+                academicSession: {
+                    select: {
+                        academicSessionId: true,
+                        academicSessionName: true,
+                        collegeId: true,
+                    },
+                },
+            },
+        });
+        if (!examination) {
+            throw new common_1.NotFoundException(`Examination details with ID ${examinationId} not found`);
+        }
+        return examination;
+    }
+    async update(examinationId, data) {
+        const current = await this.findOne(examinationId);
+        const academicId = data.academicId !== undefined ? Number(data.academicId) : current.academicId;
+        const examinationName = data.examinationName !== undefined
+            ? String(data.examinationName).trim()
+            : current.examinationName;
+        if (data.academicId !== undefined) {
+            await this.assertAcademicSession(academicId);
+        }
+        const existing = await this.prisma.examinationDetails.findFirst({
+            where: {
+                academicId,
+                examinationName,
+                IsDeleted: false,
+                NOT: { examinationId },
+            },
+        });
+        if (existing) {
+            throw new common_1.ConflictException('Examination name already exists for this academic session');
+        }
+        return this.prisma.examinationDetails.update({
+            where: { examinationId },
+            data: {
+                academicId: data.academicId !== undefined ? academicId : undefined,
+                examinationName: data.examinationName !== undefined ? examinationName : undefined,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(examinationId, DeletedBy, DeletedRemarks) {
+        await this.findOne(examinationId);
+        return this.prisma.examinationDetails.update({
+            where: { examinationId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.ExaminationDetailsService = ExaminationDetailsService;
+exports.ExaminationDetailsService = ExaminationDetailsService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], ExaminationDetailsService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/master.module.ts":
+/*!**********************************************************!*\
+  !*** ./apps/student-service/src/master/master.module.ts ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MasterModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const state_module_1 = __webpack_require__(/*! ./state/state.module */ "./apps/student-service/src/master/state/state.module.ts");
+const city_module_1 = __webpack_require__(/*! ./city/city.module */ "./apps/student-service/src/master/city/city.module.ts");
+const program_category_module_1 = __webpack_require__(/*! ./program-category/program-category.module */ "./apps/student-service/src/master/program-category/program-category.module.ts");
+const subject_module_1 = __webpack_require__(/*! ./subject/subject.module */ "./apps/student-service/src/master/subject/subject.module.ts");
+const program_module_1 = __webpack_require__(/*! ./program/program.module */ "./apps/student-service/src/master/program/program.module.ts");
+const board_module_1 = __webpack_require__(/*! ./board/board.module */ "./apps/student-service/src/master/board/board.module.ts");
+const qualification_module_1 = __webpack_require__(/*! ./qualification/qualification.module */ "./apps/student-service/src/master/qualification/qualification.module.ts");
+const admission_session_module_1 = __webpack_require__(/*! ./admission-session/admission-session.module */ "./apps/student-service/src/master/admission-session/admission-session.module.ts");
+const academic_session_module_1 = __webpack_require__(/*! ./academic-session/academic-session.module */ "./apps/student-service/src/master/academic-session/academic-session.module.ts");
+const program_fee_config_module_1 = __webpack_require__(/*! ./program-fee-config/program-fee-config.module */ "./apps/student-service/src/master/program-fee-config/program-fee-config.module.ts");
+const college_module_1 = __webpack_require__(/*! ./college/college.module */ "./apps/student-service/src/master/college/college.module.ts");
+const zipcode_module_1 = __webpack_require__(/*! ./zipcode/zipcode.module */ "./apps/student-service/src/master/zipcode/zipcode.module.ts");
+const program_eligibility_module_1 = __webpack_require__(/*! ./program-eligibility/program-eligibility.module */ "./apps/student-service/src/master/program-eligibility/program-eligibility.module.ts");
+const stream_module_1 = __webpack_require__(/*! ./stream/stream.module */ "./apps/student-service/src/master/stream/stream.module.ts");
+const program_subject_module_1 = __webpack_require__(/*! ./program-subject/program-subject.module */ "./apps/student-service/src/master/program-subject/program-subject.module.ts");
+const examination_details_module_1 = __webpack_require__(/*! ./examination-details/examination-details.module */ "./apps/student-service/src/master/examination-details/examination-details.module.ts");
+let MasterModule = class MasterModule {
+};
+exports.MasterModule = MasterModule;
+exports.MasterModule = MasterModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            state_module_1.StateModule,
+            city_module_1.CityModule,
+            zipcode_module_1.ZipcodeModule,
+            program_category_module_1.ProgramCategoryModule,
+            subject_module_1.SubjectModule,
+            program_module_1.ProgramModule,
+            stream_module_1.StreamModule,
+            program_subject_module_1.ProgramSubjectModule,
+            program_eligibility_module_1.ProgramEligibilityModule,
+            board_module_1.BoardModule,
+            qualification_module_1.QualificationModule,
+            admission_session_module_1.AdmissionSessionModule,
+            academic_session_module_1.AcademicSessionModule,
+            examination_details_module_1.ExaminationDetailsModule,
+            program_fee_config_module_1.ProgramFeeConfigModule,
+            college_module_1.CollegeModule,
+        ],
+        exports: [
+            state_module_1.StateModule,
+            city_module_1.CityModule,
+            zipcode_module_1.ZipcodeModule,
+            program_category_module_1.ProgramCategoryModule,
+            subject_module_1.SubjectModule,
+            program_module_1.ProgramModule,
+            stream_module_1.StreamModule,
+            program_subject_module_1.ProgramSubjectModule,
+            program_eligibility_module_1.ProgramEligibilityModule,
+            board_module_1.BoardModule,
+            qualification_module_1.QualificationModule,
+            admission_session_module_1.AdmissionSessionModule,
+            academic_session_module_1.AcademicSessionModule,
+            examination_details_module_1.ExaminationDetailsModule,
+            program_fee_config_module_1.ProgramFeeConfigModule,
+            college_module_1.CollegeModule,
+        ],
+    })
+], MasterModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/program-category/program-category.controller.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-category/program-category.controller.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProgramCategoryController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const program_category_service_1 = __webpack_require__(/*! ./program-category.service */ "./apps/student-service/src/master/program-category/program-category.service.ts");
+let ProgramCategoryController = class ProgramCategoryController {
+    constructor(programCategoryService) {
+        this.programCategoryService = programCategoryService;
+    }
+    async create(data) {
+        try {
+            return await this.programCategoryService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.programCategoryService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.programCategoryService.findOne(data.programCategoryId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { programCategoryId, ...updateData } = data;
+            return await this.programCategoryService.update(programCategoryId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.programCategoryService.softDelete(data.programCategoryId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.ProgramCategoryController = ProgramCategoryController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_program_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramCategoryController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_program_categories' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProgramCategoryController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramCategoryController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_program_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramCategoryController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_program_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramCategoryController.prototype, "softDelete", null);
+exports.ProgramCategoryController = ProgramCategoryController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof program_category_service_1.ProgramCategoryService !== "undefined" && program_category_service_1.ProgramCategoryService) === "function" ? _a : Object])
+], ProgramCategoryController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/program-category/program-category.module.ts":
+/*!*************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-category/program-category.module.ts ***!
+  \*************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProgramCategoryModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const program_category_service_1 = __webpack_require__(/*! ./program-category.service */ "./apps/student-service/src/master/program-category/program-category.service.ts");
+const program_category_controller_1 = __webpack_require__(/*! ./program-category.controller */ "./apps/student-service/src/master/program-category/program-category.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ProgramCategoryModule = class ProgramCategoryModule {
+};
+exports.ProgramCategoryModule = ProgramCategoryModule;
+exports.ProgramCategoryModule = ProgramCategoryModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [program_category_controller_1.ProgramCategoryController],
+        providers: [program_category_service_1.ProgramCategoryService],
+        exports: [program_category_service_1.ProgramCategoryService],
+    })
+], ProgramCategoryModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/program-category/program-category.service.ts":
+/*!**************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-category/program-category.service.ts ***!
+  \**************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProgramCategoryService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ProgramCategoryService = class ProgramCategoryService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.programCategory.create({
+            data: {
+                programCategoryName: data.programCategoryName,
+                pcShortName: data.pcShortName,
+                sequenceNo: data.sequenceNo,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.programCategory.findMany({
+            where: { IsDeleted: false },
+            orderBy: { sequenceNo: 'asc' },
+        });
+    }
+    async findOne(programCategoryId) {
+        const pc = await this.prisma.programCategory.findFirst({
+            where: { programCategoryId, IsDeleted: false },
+        });
+        if (!pc) {
+            throw new common_1.NotFoundException(`Program Category with ID ${programCategoryId} not found`);
+        }
+        return pc;
+    }
+    async update(programCategoryId, data) {
+        await this.findOne(programCategoryId);
+        return this.prisma.programCategory.update({
+            where: { programCategoryId },
+            data: {
+                programCategoryName: data.programCategoryName,
+                pcShortName: data.pcShortName,
+                sequenceNo: data.sequenceNo,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(programCategoryId, DeletedBy, DeletedRemarks) {
+        await this.findOne(programCategoryId);
+        return this.prisma.programCategory.update({
+            where: { programCategoryId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.ProgramCategoryService = ProgramCategoryService;
+exports.ProgramCategoryService = ProgramCategoryService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], ProgramCategoryService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/program-eligibility/program-eligibility.controller.ts":
+/*!***********************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-eligibility/program-eligibility.controller.ts ***!
+  \***********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProgramEligibilityController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const program_eligibility_service_1 = __webpack_require__(/*! ./program-eligibility.service */ "./apps/student-service/src/master/program-eligibility/program-eligibility.service.ts");
+let ProgramEligibilityController = class ProgramEligibilityController {
+    constructor(eligibilityService) {
+        this.eligibilityService = eligibilityService;
+    }
+    async create(data) {
+        try {
+            return await this.eligibilityService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.eligibilityService.findAll(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.eligibilityService.findOne(data.eligibilityId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { eligibilityId, ...updateData } = data;
+            return await this.eligibilityService.update(eligibilityId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.eligibilityService.softDelete(data.eligibilityId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async validate(data) {
+        try {
+            return await this.eligibilityService.validate(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.ProgramEligibilityController = ProgramEligibilityController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_program_eligibility' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramEligibilityController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_program_eligibilities' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramEligibilityController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program_eligibility' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramEligibilityController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_program_eligibility' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramEligibilityController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_program_eligibility' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramEligibilityController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'validate_program_eligibility' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramEligibilityController.prototype, "validate", null);
+exports.ProgramEligibilityController = ProgramEligibilityController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof program_eligibility_service_1.ProgramEligibilityService !== "undefined" && program_eligibility_service_1.ProgramEligibilityService) === "function" ? _a : Object])
+], ProgramEligibilityController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/program-eligibility/program-eligibility.module.ts":
+/*!*******************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-eligibility/program-eligibility.module.ts ***!
+  \*******************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5993,10 +2128,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramEligibilityModule = void 0;
-const common_1 = __webpack_require__(5);
-const program_eligibility_service_1 = __webpack_require__(71);
-const program_eligibility_controller_1 = __webpack_require__(72);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const program_eligibility_service_1 = __webpack_require__(/*! ./program-eligibility.service */ "./apps/student-service/src/master/program-eligibility/program-eligibility.service.ts");
+const program_eligibility_controller_1 = __webpack_require__(/*! ./program-eligibility.controller */ "./apps/student-service/src/master/program-eligibility/program-eligibility.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let ProgramEligibilityModule = class ProgramEligibilityModule {
 };
 exports.ProgramEligibilityModule = ProgramEligibilityModule;
@@ -6011,7 +2146,11 @@ exports.ProgramEligibilityModule = ProgramEligibilityModule = __decorate([
 
 
 /***/ }),
-/* 71 */
+
+/***/ "./apps/student-service/src/master/program-eligibility/program-eligibility.service.ts":
+/*!********************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-eligibility/program-eligibility.service.ts ***!
+  \********************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6028,9 +2167,9 @@ var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramEligibilityService = void 0;
 exports.categoryMatches = categoryMatches;
-const common_1 = __webpack_require__(5);
-const client_1 = __webpack_require__(10);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const client_1 = __webpack_require__(/*! @prisma/client */ "@prisma/client");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 const RULE_TYPES = new Set(['SUBJECT', 'MIN_PERCENT', 'STREAM', 'QUALIFICATION']);
 const LEVELS = new Set(['10TH', '12TH', 'GRAD', 'PG', 'ALL']);
 const SEVERITIES = new Set(['Compulsory', 'Recommended']);
@@ -6364,7 +2503,11 @@ exports.ProgramEligibilityService = ProgramEligibilityService = __decorate([
 
 
 /***/ }),
-/* 72 */
+
+/***/ "./apps/student-service/src/master/program-fee-config/program-fee-config.controller.ts":
+/*!*********************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-fee-config/program-fee-config.controller.ts ***!
+  \*********************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6382,25 +2525,25 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramEligibilityController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const program_eligibility_service_1 = __webpack_require__(71);
-let ProgramEligibilityController = class ProgramEligibilityController {
-    constructor(eligibilityService) {
-        this.eligibilityService = eligibilityService;
+exports.ProgramFeeConfigController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const program_fee_config_service_1 = __webpack_require__(/*! ./program-fee-config.service */ "./apps/student-service/src/master/program-fee-config/program-fee-config.service.ts");
+let ProgramFeeConfigController = class ProgramFeeConfigController {
+    constructor(feeConfigService) {
+        this.feeConfigService = feeConfigService;
     }
     async create(data) {
         try {
-            return await this.eligibilityService.create(data);
+            return await this.feeConfigService.create(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
-    async findAll(data) {
+    async findAll() {
         try {
-            return await this.eligibilityService.findAll(data);
+            return await this.feeConfigService.findAll();
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6408,7 +2551,15 @@ let ProgramEligibilityController = class ProgramEligibilityController {
     }
     async findOne(data) {
         try {
-            return await this.eligibilityService.findOne(data.eligibilityId);
+            return await this.feeConfigService.findOne(data.feeConfigId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findByProgramAndSession(data) {
+        try {
+            return await this.feeConfigService.findByProgramAndSession(data.programId, data.admissionSessionId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6416,8 +2567,8 @@ let ProgramEligibilityController = class ProgramEligibilityController {
     }
     async update(data) {
         try {
-            const { eligibilityId, ...updateData } = data;
-            return await this.eligibilityService.update(eligibilityId, updateData);
+            const { feeConfigId, ...updateData } = data;
+            return await this.feeConfigService.update(feeConfigId, updateData);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6425,72 +2576,82 @@ let ProgramEligibilityController = class ProgramEligibilityController {
     }
     async softDelete(data) {
         try {
-            return await this.eligibilityService.softDelete(data.eligibilityId, data.DeletedBy, data.DeletedRemarks);
+            return await this.feeConfigService.softDelete(data.feeConfigId, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
-    async validate(data) {
+    async bulkSoftDelete(data) {
         try {
-            return await this.eligibilityService.validate(data);
+            return await this.feeConfigService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
 };
-exports.ProgramEligibilityController = ProgramEligibilityController;
+exports.ProgramFeeConfigController = ProgramFeeConfigController;
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_program_eligibility' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_program_fee_config' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramEligibilityController.prototype, "create", null);
+], ProgramFeeConfigController.prototype, "create", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_program_eligibilities' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_program_fee_configs' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProgramFeeConfigController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program_fee_config' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramEligibilityController.prototype, "findAll", null);
+], ProgramFeeConfigController.prototype, "findOne", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program_eligibility' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_program_fee_config_by_program_and_session' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramEligibilityController.prototype, "findOne", null);
+], ProgramFeeConfigController.prototype, "findByProgramAndSession", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_program_eligibility' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_program_fee_config' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramEligibilityController.prototype, "update", null);
+], ProgramFeeConfigController.prototype, "update", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_program_eligibility' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_program_fee_config' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramEligibilityController.prototype, "softDelete", null);
+], ProgramFeeConfigController.prototype, "softDelete", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'validate_program_eligibility' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_program_fee_configs' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramEligibilityController.prototype, "validate", null);
-exports.ProgramEligibilityController = ProgramEligibilityController = __decorate([
+], ProgramFeeConfigController.prototype, "bulkSoftDelete", null);
+exports.ProgramFeeConfigController = ProgramFeeConfigController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof program_eligibility_service_1.ProgramEligibilityService !== "undefined" && program_eligibility_service_1.ProgramEligibilityService) === "function" ? _a : Object])
-], ProgramEligibilityController);
+    __metadata("design:paramtypes", [typeof (_a = typeof program_fee_config_service_1.ProgramFeeConfigService !== "undefined" && program_fee_config_service_1.ProgramFeeConfigService) === "function" ? _a : Object])
+], ProgramFeeConfigController);
 
 
 /***/ }),
-/* 73 */
+
+/***/ "./apps/student-service/src/master/program-fee-config/program-fee-config.module.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-fee-config/program-fee-config.module.ts ***!
+  \*****************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6501,26 +2662,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StreamModule = void 0;
-const common_1 = __webpack_require__(5);
-const stream_service_1 = __webpack_require__(74);
-const stream_controller_1 = __webpack_require__(75);
-const prisma_1 = __webpack_require__(6);
-let StreamModule = class StreamModule {
+exports.ProgramFeeConfigModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const program_fee_config_controller_1 = __webpack_require__(/*! ./program-fee-config.controller */ "./apps/student-service/src/master/program-fee-config/program-fee-config.controller.ts");
+const program_fee_config_service_1 = __webpack_require__(/*! ./program-fee-config.service */ "./apps/student-service/src/master/program-fee-config/program-fee-config.service.ts");
+let ProgramFeeConfigModule = class ProgramFeeConfigModule {
 };
-exports.StreamModule = StreamModule;
-exports.StreamModule = StreamModule = __decorate([
+exports.ProgramFeeConfigModule = ProgramFeeConfigModule;
+exports.ProgramFeeConfigModule = ProgramFeeConfigModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [stream_controller_1.StreamController],
-        providers: [stream_service_1.StreamService],
-        exports: [stream_service_1.StreamService],
+        controllers: [program_fee_config_controller_1.ProgramFeeConfigController],
+        providers: [program_fee_config_service_1.ProgramFeeConfigService],
     })
-], StreamModule);
+], ProgramFeeConfigModule);
 
 
 /***/ }),
-/* 74 */
+
+/***/ "./apps/student-service/src/master/program-fee-config/program-fee-config.service.ts":
+/*!******************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-fee-config/program-fee-config.service.ts ***!
+  \******************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6535,138 +2697,162 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StreamService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let StreamService = class StreamService {
+exports.ProgramFeeConfigService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+function calculateFinalFee(base, pgRate = 2.0, gstRate = 18.0) {
+    const baseNum = Number(base);
+    if (!baseNum || baseNum <= 0)
+        return 0;
+    const pgCharge = baseNum * (pgRate / 100);
+    const gstOnPg = pgCharge * (gstRate / 100);
+    return Number((baseNum + pgCharge + gstOnPg).toFixed(3));
+}
+let ProgramFeeConfigService = class ProgramFeeConfigService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async assertProgram(programId) {
-        const program = await this.prisma.program.findFirst({
-            where: { programId, IsDeleted: false },
-        });
-        if (!program) {
-            throw new common_1.NotFoundException(`Program with ID ${programId} not found`);
-        }
-        return program;
-    }
     async create(data) {
-        await this.assertProgram(Number(data.programId));
-        const streamName = String(data.streamName || '').trim();
-        const existing = await this.prisma.streamMaster.findFirst({
-            where: {
-                programId: Number(data.programId),
-                streamName,
-                IsDeleted: false,
-            },
-        });
-        if (existing) {
-            throw new common_1.ConflictException('Stream name already exists for this program');
-        }
-        return this.prisma.streamMaster.create({
+        const regFinal = calculateFinalFee(Number(data.registrationBaseFee ?? 0.0), Number(data.registrationPgRate ?? 2.0), Number(data.registrationGstRate ?? 18.0));
+        const examFinal = calculateFinalFee(Number(data.examinationBaseFee ?? 0.0), Number(data.examinationPgRate ?? 2.0), Number(data.examinationGstRate ?? 18.0));
+        return this.prisma.programFeeConfig.create({
             data: {
                 programId: Number(data.programId),
-                streamName,
+                admissionSessionId: Number(data.admissionSessionId),
+                registrationBaseFee: Number(data.registrationBaseFee ?? 0.0),
+                registrationPgRate: Number(data.registrationPgRate ?? 2.0),
+                registrationGstRate: Number(data.registrationGstRate ?? 18.0),
+                registrationFinal: regFinal,
+                examinationBaseFee: Number(data.examinationBaseFee ?? 0.0),
+                examinationPgRate: Number(data.examinationPgRate ?? 2.0),
+                examinationGstRate: Number(data.examinationGstRate ?? 18.0),
+                examinationFinal: examFinal,
                 CreatedBy: data.CreatedBy,
                 Remarks: data.Remarks || null,
                 IsActive: true,
                 IsDeleted: false,
             },
-        });
-    }
-    async findAll(programId) {
-        return this.prisma.streamMaster.findMany({
-            where: {
-                IsDeleted: false,
-                ...(programId ? { programId: Number(programId) } : {}),
-            },
             include: {
-                program: {
-                    select: {
-                        programId: true,
-                        programName: true,
-                        programShortName: true,
-                        programCode: true,
-                    },
-                },
+                program: true,
+                admissionSession: true,
             },
-            orderBy: [{ programId: 'asc' }, { streamName: 'asc' }],
         });
     }
-    async findOne(streamId) {
-        const stream = await this.prisma.streamMaster.findFirst({
-            where: { streamId, IsDeleted: false },
+    async findAll() {
+        return this.prisma.programFeeConfig.findMany({
+            where: { IsDeleted: false },
             include: {
-                program: {
-                    select: {
-                        programId: true,
-                        programName: true,
-                        programShortName: true,
-                        programCode: true,
-                    },
-                },
+                program: true,
+                admissionSession: true,
             },
+            orderBy: { CreatedOn: 'desc' },
         });
-        if (!stream) {
-            throw new common_1.NotFoundException(`Stream with ID ${streamId} not found`);
-        }
-        return stream;
     }
-    async update(streamId, data) {
-        const current = await this.findOne(streamId);
-        const programId = data.programId !== undefined ? Number(data.programId) : current.programId;
-        const streamName = data.streamName !== undefined
-            ? String(data.streamName).trim()
-            : current.streamName;
-        if (data.programId !== undefined) {
-            await this.assertProgram(programId);
-        }
-        const existing = await this.prisma.streamMaster.findFirst({
-            where: {
-                programId,
-                streamName,
-                IsDeleted: false,
-                NOT: { streamId },
+    async findOne(feeConfigId) {
+        const config = await this.prisma.programFeeConfig.findFirst({
+            where: { feeConfigId, IsDeleted: false },
+            include: {
+                program: true,
+                admissionSession: true,
             },
         });
-        if (existing) {
-            throw new common_1.ConflictException('Stream name already exists for this program');
+        if (!config) {
+            throw new common_1.NotFoundException(`Program Fee Configuration with ID ${feeConfigId} not found`);
         }
-        return this.prisma.streamMaster.update({
-            where: { streamId },
+        return config;
+    }
+    async findByProgramAndSession(programId, admissionSessionId) {
+        const config = await this.prisma.programFeeConfig.findFirst({
+            where: { programId, admissionSessionId, IsDeleted: false },
+            include: {
+                program: true,
+                admissionSession: true,
+            },
+        });
+        if (!config) {
+            throw new common_1.NotFoundException(`Fee Configuration for Program ID ${programId} and Session ID ${admissionSessionId} not found`);
+        }
+        return config;
+    }
+    async update(feeConfigId, data) {
+        const current = await this.findOne(feeConfigId);
+        const regBase = data.registrationBaseFee !== undefined ? Number(data.registrationBaseFee) : current.registrationBaseFee;
+        const regPg = data.registrationPgRate !== undefined ? Number(data.registrationPgRate) : current.registrationPgRate;
+        const regGst = data.registrationGstRate !== undefined ? Number(data.registrationGstRate) : current.registrationGstRate;
+        const regFinal = calculateFinalFee(regBase, regPg, regGst);
+        const examBase = data.examinationBaseFee !== undefined ? Number(data.examinationBaseFee) : current.examinationBaseFee;
+        const examPg = data.examinationPgRate !== undefined ? Number(data.examinationPgRate) : current.examinationPgRate;
+        const examGst = data.examinationGstRate !== undefined ? Number(data.examinationGstRate) : current.examinationGstRate;
+        const examFinal = calculateFinalFee(examBase, examPg, examGst);
+        return this.prisma.programFeeConfig.update({
+            where: { feeConfigId },
             data: {
-                programId: data.programId !== undefined ? programId : undefined,
-                streamName: data.streamName !== undefined ? streamName : undefined,
+                programId: data.programId !== undefined ? Number(data.programId) : undefined,
+                admissionSessionId: data.admissionSessionId !== undefined ? Number(data.admissionSessionId) : undefined,
+                registrationBaseFee: regBase,
+                registrationPgRate: regPg,
+                registrationGstRate: regGst,
+                registrationFinal: regFinal,
+                examinationBaseFee: examBase,
+                examinationPgRate: examPg,
+                examinationGstRate: examGst,
+                examinationFinal: examFinal,
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
                 Remarks: data.Remarks,
             },
+            include: {
+                program: true,
+                admissionSession: true,
+            },
         });
     }
-    async softDelete(streamId, DeletedBy, DeletedRemarks) {
-        await this.findOne(streamId);
-        return this.prisma.streamMaster.update({
-            where: { streamId },
+    async softDelete(feeConfigId, DeletedBy, DeletedRemarks) {
+        await this.findOne(feeConfigId);
+        return this.prisma.programFeeConfig.update({
+            where: { feeConfigId },
             data: {
                 IsDeleted: true,
                 IsActive: false,
                 DeletedOn: new Date(),
-                DeletedBy,
+                DeletedBy: DeletedBy,
                 DeletedRemarks: DeletedRemarks || null,
             },
         });
     }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.programFeeConfig.updateMany({
+            where: {
+                feeConfigId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} fee configuration(s)`,
+            count: result.count,
+        };
+    }
 };
-exports.StreamService = StreamService;
-exports.StreamService = StreamService = __decorate([
+exports.ProgramFeeConfigService = ProgramFeeConfigService;
+exports.ProgramFeeConfigService = ProgramFeeConfigService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], StreamService);
+], ProgramFeeConfigService);
 
 
 /***/ }),
-/* 75 */
+
+/***/ "./apps/student-service/src/master/program-subject/program-subject.controller.ts":
+/*!***************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-subject/program-subject.controller.ts ***!
+  \***************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6684,17 +2870,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StreamController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const stream_service_1 = __webpack_require__(74);
-let StreamController = class StreamController {
-    constructor(streamService) {
-        this.streamService = streamService;
+exports.ProgramSubjectController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const program_subject_service_1 = __webpack_require__(/*! ./program-subject.service */ "./apps/student-service/src/master/program-subject/program-subject.service.ts");
+let ProgramSubjectController = class ProgramSubjectController {
+    constructor(programSubjectService) {
+        this.programSubjectService = programSubjectService;
     }
     async create(data) {
         try {
-            return await this.streamService.create(data);
+            return await this.programSubjectService.create(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6702,7 +2888,7 @@ let StreamController = class StreamController {
     }
     async findAll(data) {
         try {
-            return await this.streamService.findAll(data?.programId);
+            return await this.programSubjectService.findAll(data?.programId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6710,7 +2896,7 @@ let StreamController = class StreamController {
     }
     async findOne(data) {
         try {
-            return await this.streamService.findOne(data.streamId);
+            return await this.programSubjectService.findOne(data.programSubjectId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6718,8 +2904,8 @@ let StreamController = class StreamController {
     }
     async update(data) {
         try {
-            const { streamId, ...updateData } = data;
-            return await this.streamService.update(streamId, updateData);
+            const { programSubjectId, ...updateData } = data;
+            return await this.programSubjectService.update(programSubjectId, updateData);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6727,57 +2913,61 @@ let StreamController = class StreamController {
     }
     async softDelete(data) {
         try {
-            return await this.streamService.softDelete(data.streamId, data.DeletedBy, data.DeletedRemarks);
+            return await this.programSubjectService.softDelete(data.programSubjectId, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
 };
-exports.StreamController = StreamController;
+exports.ProgramSubjectController = ProgramSubjectController;
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_stream' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_program_subject' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], StreamController.prototype, "create", null);
+], ProgramSubjectController.prototype, "create", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_streams' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_program_subjects' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], StreamController.prototype, "findAll", null);
+], ProgramSubjectController.prototype, "findAll", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_stream' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program_subject' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], StreamController.prototype, "findOne", null);
+], ProgramSubjectController.prototype, "findOne", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_stream' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_program_subject' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], StreamController.prototype, "update", null);
+], ProgramSubjectController.prototype, "update", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_stream' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_program_subject' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], StreamController.prototype, "softDelete", null);
-exports.StreamController = StreamController = __decorate([
+], ProgramSubjectController.prototype, "softDelete", null);
+exports.ProgramSubjectController = ProgramSubjectController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof stream_service_1.StreamService !== "undefined" && stream_service_1.StreamService) === "function" ? _a : Object])
-], StreamController);
+    __metadata("design:paramtypes", [typeof (_a = typeof program_subject_service_1.ProgramSubjectService !== "undefined" && program_subject_service_1.ProgramSubjectService) === "function" ? _a : Object])
+], ProgramSubjectController);
 
 
 /***/ }),
-/* 76 */
+
+/***/ "./apps/student-service/src/master/program-subject/program-subject.module.ts":
+/*!***********************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-subject/program-subject.module.ts ***!
+  \***********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6789,10 +2979,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramSubjectModule = void 0;
-const common_1 = __webpack_require__(5);
-const program_subject_service_1 = __webpack_require__(77);
-const program_subject_controller_1 = __webpack_require__(78);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const program_subject_service_1 = __webpack_require__(/*! ./program-subject.service */ "./apps/student-service/src/master/program-subject/program-subject.service.ts");
+const program_subject_controller_1 = __webpack_require__(/*! ./program-subject.controller */ "./apps/student-service/src/master/program-subject/program-subject.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let ProgramSubjectModule = class ProgramSubjectModule {
 };
 exports.ProgramSubjectModule = ProgramSubjectModule;
@@ -6807,7 +2997,11 @@ exports.ProgramSubjectModule = ProgramSubjectModule = __decorate([
 
 
 /***/ }),
-/* 77 */
+
+/***/ "./apps/student-service/src/master/program-subject/program-subject.service.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/master/program-subject/program-subject.service.ts ***!
+  \************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6823,8 +3017,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramSubjectService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let ProgramSubjectService = class ProgramSubjectService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -6953,7 +3147,11 @@ exports.ProgramSubjectService = ProgramSubjectService = __decorate([
 
 
 /***/ }),
-/* 78 */
+
+/***/ "./apps/student-service/src/master/program/program.controller.ts":
+/*!***********************************************************************!*\
+  !*** ./apps/student-service/src/master/program/program.controller.ts ***!
+  \***********************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6971,17 +3169,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProgramSubjectController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const program_subject_service_1 = __webpack_require__(77);
-let ProgramSubjectController = class ProgramSubjectController {
-    constructor(programSubjectService) {
-        this.programSubjectService = programSubjectService;
+exports.ProgramController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const program_service_1 = __webpack_require__(/*! ./program.service */ "./apps/student-service/src/master/program/program.service.ts");
+let ProgramController = class ProgramController {
+    constructor(programService) {
+        this.programService = programService;
     }
     async create(data) {
         try {
-            return await this.programSubjectService.create(data);
+            return await this.programService.create(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6989,7 +3187,7 @@ let ProgramSubjectController = class ProgramSubjectController {
     }
     async findAll(data) {
         try {
-            return await this.programSubjectService.findAll(data?.programId);
+            return await this.programService.findAll(data?.categoryId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -6997,7 +3195,7 @@ let ProgramSubjectController = class ProgramSubjectController {
     }
     async findOne(data) {
         try {
-            return await this.programSubjectService.findOne(data.programSubjectId);
+            return await this.programService.findOne(data.programId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -7005,8 +3203,8 @@ let ProgramSubjectController = class ProgramSubjectController {
     }
     async update(data) {
         try {
-            const { programSubjectId, ...updateData } = data;
-            return await this.programSubjectService.update(programSubjectId, updateData);
+            const { programId, ...updateData } = data;
+            return await this.programService.update(programId, updateData);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -7014,57 +3212,76 @@ let ProgramSubjectController = class ProgramSubjectController {
     }
     async softDelete(data) {
         try {
-            return await this.programSubjectService.softDelete(data.programSubjectId, data.DeletedBy, data.DeletedRemarks);
+            return await this.programService.softDelete(data.programId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.programService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
 };
-exports.ProgramSubjectController = ProgramSubjectController;
+exports.ProgramController = ProgramController;
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_program_subject' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_program' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramSubjectController.prototype, "create", null);
+], ProgramController.prototype, "create", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_program_subjects' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_programs' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramSubjectController.prototype, "findAll", null);
+], ProgramController.prototype, "findAll", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program_subject' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_program' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramSubjectController.prototype, "findOne", null);
+], ProgramController.prototype, "findOne", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_program_subject' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_program' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramSubjectController.prototype, "update", null);
+], ProgramController.prototype, "update", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_program_subject' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_program' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ProgramSubjectController.prototype, "softDelete", null);
-exports.ProgramSubjectController = ProgramSubjectController = __decorate([
+], ProgramController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_programs' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProgramController.prototype, "bulkSoftDelete", null);
+exports.ProgramController = ProgramController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof program_subject_service_1.ProgramSubjectService !== "undefined" && program_subject_service_1.ProgramSubjectService) === "function" ? _a : Object])
-], ProgramSubjectController);
+    __metadata("design:paramtypes", [typeof (_a = typeof program_service_1.ProgramService !== "undefined" && program_service_1.ProgramService) === "function" ? _a : Object])
+], ProgramController);
 
 
 /***/ }),
-/* 79 */
+
+/***/ "./apps/student-service/src/master/program/program.module.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/student-service/src/master/program/program.module.ts ***!
+  \*******************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7075,26 +3292,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExaminationDetailsModule = void 0;
-const common_1 = __webpack_require__(5);
-const examination_details_service_1 = __webpack_require__(80);
-const examination_details_controller_1 = __webpack_require__(81);
-const prisma_1 = __webpack_require__(6);
-let ExaminationDetailsModule = class ExaminationDetailsModule {
+exports.ProgramModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const program_controller_1 = __webpack_require__(/*! ./program.controller */ "./apps/student-service/src/master/program/program.controller.ts");
+const program_service_1 = __webpack_require__(/*! ./program.service */ "./apps/student-service/src/master/program/program.service.ts");
+let ProgramModule = class ProgramModule {
 };
-exports.ExaminationDetailsModule = ExaminationDetailsModule;
-exports.ExaminationDetailsModule = ExaminationDetailsModule = __decorate([
+exports.ProgramModule = ProgramModule;
+exports.ProgramModule = ProgramModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [examination_details_controller_1.ExaminationDetailsController],
-        providers: [examination_details_service_1.ExaminationDetailsService],
-        exports: [examination_details_service_1.ExaminationDetailsService],
+        controllers: [program_controller_1.ProgramController],
+        providers: [program_service_1.ProgramService],
     })
-], ExaminationDetailsModule);
+], ProgramModule);
 
 
 /***/ }),
-/* 80 */
+
+/***/ "./apps/student-service/src/master/program/program.service.ts":
+/*!********************************************************************!*\
+  !*** ./apps/student-service/src/master/program/program.service.ts ***!
+  \********************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7109,39 +3327,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExaminationDetailsService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let ExaminationDetailsService = class ExaminationDetailsService {
+exports.ProgramService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ProgramService = class ProgramService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async assertAcademicSession(academicId) {
-        const academicSession = await this.prisma.academicSession.findFirst({
-            where: { academicSessionId: academicId, IsDeleted: false },
-        });
-        if (!academicSession) {
-            throw new common_1.NotFoundException(`Academic session with ID ${academicId} not found`);
-        }
-        return academicSession;
-    }
     async create(data) {
-        await this.assertAcademicSession(Number(data.academicId));
-        const examinationName = String(data.examinationName || '').trim();
-        const existing = await this.prisma.examinationDetails.findFirst({
-            where: {
-                academicId: Number(data.academicId),
-                examinationName,
-                IsDeleted: false,
-            },
-        });
-        if (existing) {
-            throw new common_1.ConflictException('Examination name already exists for this academic session');
-        }
-        return this.prisma.examinationDetails.create({
+        return this.prisma.program.create({
             data: {
-                academicId: Number(data.academicId),
-                examinationName,
+                programCategoryId: Number(data.programCategoryId),
+                programName: data.programName,
+                programShortName: data.programShortName,
+                programCode: data.programCode,
+                durationYears: Number(data.durationYears),
+                termType: data.termType,
+                totalTerms: Number(data.totalTerms),
+                sequenceNo: Number(data.sequenceNo),
                 CreatedBy: data.CreatedBy,
                 Remarks: data.Remarks || null,
                 IsActive: true,
@@ -7149,77 +3352,907 @@ let ExaminationDetailsService = class ExaminationDetailsService {
             },
         });
     }
-    async findAll(academicId) {
-        return this.prisma.examinationDetails.findMany({
-            where: {
-                IsDeleted: false,
-                ...(academicId ? { academicId: Number(academicId) } : {}),
-            },
+    async findAll(categoryId) {
+        const whereClause = { IsDeleted: false };
+        if (categoryId) {
+            whereClause.programCategoryId = categoryId;
+        }
+        return this.prisma.program.findMany({
+            where: whereClause,
             include: {
-                academicSession: {
-                    select: {
-                        academicSessionId: true,
-                        academicSessionName: true,
-                        collegeId: true,
-                    },
-                },
+                programCategory: true,
             },
-            orderBy: [{ academicId: 'asc' }, { examinationName: 'asc' }],
+            orderBy: { sequenceNo: 'asc' },
         });
     }
-    async findOne(examinationId) {
-        const examination = await this.prisma.examinationDetails.findFirst({
-            where: { examinationId, IsDeleted: false },
+    async findOne(programId) {
+        const program = await this.prisma.program.findFirst({
+            where: { programId, IsDeleted: false },
             include: {
-                academicSession: {
-                    select: {
-                        academicSessionId: true,
-                        academicSessionName: true,
-                        collegeId: true,
-                    },
-                },
+                programCategory: true,
             },
         });
-        if (!examination) {
-            throw new common_1.NotFoundException(`Examination details with ID ${examinationId} not found`);
+        if (!program) {
+            throw new common_1.NotFoundException(`Program with ID ${programId} not found`);
         }
-        return examination;
+        return program;
     }
-    async update(examinationId, data) {
-        const current = await this.findOne(examinationId);
-        const academicId = data.academicId !== undefined ? Number(data.academicId) : current.academicId;
-        const examinationName = data.examinationName !== undefined
-            ? String(data.examinationName).trim()
-            : current.examinationName;
-        if (data.academicId !== undefined) {
-            await this.assertAcademicSession(academicId);
-        }
-        const existing = await this.prisma.examinationDetails.findFirst({
-            where: {
-                academicId,
-                examinationName,
-                IsDeleted: false,
-                NOT: { examinationId },
-            },
-        });
-        if (existing) {
-            throw new common_1.ConflictException('Examination name already exists for this academic session');
-        }
-        return this.prisma.examinationDetails.update({
-            where: { examinationId },
+    async update(programId, data) {
+        await this.findOne(programId);
+        return this.prisma.program.update({
+            where: { programId },
             data: {
-                academicId: data.academicId !== undefined ? academicId : undefined,
-                examinationName: data.examinationName !== undefined ? examinationName : undefined,
+                programCategoryId: data.programCategoryId !== undefined ? Number(data.programCategoryId) : undefined,
+                programName: data.programName,
+                programShortName: data.programShortName,
+                programCode: data.programCode,
+                durationYears: data.durationYears !== undefined ? Number(data.durationYears) : undefined,
+                termType: data.termType,
+                totalTerms: data.totalTerms !== undefined ? Number(data.totalTerms) : undefined,
+                sequenceNo: data.sequenceNo !== undefined ? Number(data.sequenceNo) : undefined,
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
                 Remarks: data.Remarks,
             },
         });
     }
-    async softDelete(examinationId, DeletedBy, DeletedRemarks) {
-        await this.findOne(examinationId);
-        return this.prisma.examinationDetails.update({
-            where: { examinationId },
+    async softDelete(programId, DeletedBy, DeletedRemarks) {
+        await this.findOne(programId);
+        return this.prisma.program.update({
+            where: { programId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.program.updateMany({
+            where: {
+                programId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} program(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.ProgramService = ProgramService;
+exports.ProgramService = ProgramService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], ProgramService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/qualification/qualification.controller.ts":
+/*!***********************************************************************************!*\
+  !*** ./apps/student-service/src/master/qualification/qualification.controller.ts ***!
+  \***********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.QualificationController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const qualification_service_1 = __webpack_require__(/*! ./qualification.service */ "./apps/student-service/src/master/qualification/qualification.service.ts");
+let QualificationController = class QualificationController {
+    constructor(qualificationService) {
+        this.qualificationService = qualificationService;
+    }
+    async create(data) {
+        try {
+            return await this.qualificationService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.qualificationService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.qualificationService.findOne(data.qualificationId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { qualificationId, ...updateData } = data;
+            return await this.qualificationService.update(qualificationId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.qualificationService.softDelete(data.qualificationId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.qualificationService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.QualificationController = QualificationController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_qualification' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QualificationController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_qualifications' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QualificationController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_qualification' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QualificationController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_qualification' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QualificationController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_qualification' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QualificationController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_qualifications' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QualificationController.prototype, "bulkSoftDelete", null);
+exports.QualificationController = QualificationController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof qualification_service_1.QualificationService !== "undefined" && qualification_service_1.QualificationService) === "function" ? _a : Object])
+], QualificationController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/qualification/qualification.module.ts":
+/*!*******************************************************************************!*\
+  !*** ./apps/student-service/src/master/qualification/qualification.module.ts ***!
+  \*******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.QualificationModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const qualification_controller_1 = __webpack_require__(/*! ./qualification.controller */ "./apps/student-service/src/master/qualification/qualification.controller.ts");
+const qualification_service_1 = __webpack_require__(/*! ./qualification.service */ "./apps/student-service/src/master/qualification/qualification.service.ts");
+let QualificationModule = class QualificationModule {
+};
+exports.QualificationModule = QualificationModule;
+exports.QualificationModule = QualificationModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [qualification_controller_1.QualificationController],
+        providers: [qualification_service_1.QualificationService],
+    })
+], QualificationModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/qualification/qualification.service.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/master/qualification/qualification.service.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.QualificationService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let QualificationService = class QualificationService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.qualificationMaster.create({
+            data: {
+                qualificationName: data.qualificationName,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.qualificationMaster.findMany({
+            where: { IsDeleted: false },
+            orderBy: { qualificationName: 'asc' },
+        });
+    }
+    async findOne(qualificationId) {
+        const qual = await this.prisma.qualificationMaster.findFirst({
+            where: { qualificationId, IsDeleted: false },
+        });
+        if (!qual) {
+            throw new common_1.NotFoundException(`Qualification with ID ${qualificationId} not found`);
+        }
+        return qual;
+    }
+    async update(qualificationId, data) {
+        await this.findOne(qualificationId);
+        return this.prisma.qualificationMaster.update({
+            where: { qualificationId },
+            data: {
+                qualificationName: data.qualificationName,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(qualificationId, DeletedBy, DeletedRemarks) {
+        await this.findOne(qualificationId);
+        return this.prisma.qualificationMaster.update({
+            where: { qualificationId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.qualificationMaster.updateMany({
+            where: {
+                qualificationId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} qualification(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.QualificationService = QualificationService;
+exports.QualificationService = QualificationService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], QualificationService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/state/state.controller.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/student-service/src/master/state/state.controller.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StateController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const state_service_1 = __webpack_require__(/*! ./state.service */ "./apps/student-service/src/master/state/state.service.ts");
+let StateController = class StateController {
+    constructor(stateService) {
+        this.stateService = stateService;
+    }
+    async create(data) {
+        try {
+            return await this.stateService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.stateService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.stateService.findOne(data.stateId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { stateId, ...updateData } = data;
+            return await this.stateService.update(stateId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.stateService.softDelete(data.stateId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StateController = StateController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_state' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StateController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_states' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StateController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_state' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StateController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_state' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StateController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_state' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StateController.prototype, "softDelete", null);
+exports.StateController = StateController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof state_service_1.StateService !== "undefined" && state_service_1.StateService) === "function" ? _a : Object])
+], StateController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/state/state.module.ts":
+/*!***************************************************************!*\
+  !*** ./apps/student-service/src/master/state/state.module.ts ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StateModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const state_service_1 = __webpack_require__(/*! ./state.service */ "./apps/student-service/src/master/state/state.service.ts");
+const state_controller_1 = __webpack_require__(/*! ./state.controller */ "./apps/student-service/src/master/state/state.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StateModule = class StateModule {
+};
+exports.StateModule = StateModule;
+exports.StateModule = StateModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [state_controller_1.StateController],
+        providers: [state_service_1.StateService],
+        exports: [state_service_1.StateService],
+    })
+], StateModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/state/state.service.ts":
+/*!****************************************************************!*\
+  !*** ./apps/student-service/src/master/state/state.service.ts ***!
+  \****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StateService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StateService = class StateService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        const existingName = await this.prisma.stateMaster.findUnique({
+            where: { stateName: data.stateName },
+        });
+        if (existingName) {
+            throw new common_1.ConflictException('State name already exists');
+        }
+        const existingCode = await this.prisma.stateMaster.findUnique({
+            where: { stateShortCode: data.stateShortCode },
+        });
+        if (existingCode) {
+            throw new common_1.ConflictException('State short code already exists');
+        }
+        return this.prisma.stateMaster.create({
+            data: {
+                stateName: data.stateName,
+                stateShortCode: data.stateShortCode,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.stateMaster.findMany({
+            where: { IsDeleted: false },
+            orderBy: { stateName: 'asc' },
+        });
+    }
+    async findOne(stateId) {
+        const state = await this.prisma.stateMaster.findFirst({
+            where: { stateId, IsDeleted: false },
+        });
+        if (!state) {
+            throw new common_1.NotFoundException(`State with ID ${stateId} not found`);
+        }
+        return state;
+    }
+    async update(stateId, data) {
+        await this.findOne(stateId);
+        if (data.stateName) {
+            const existingName = await this.prisma.stateMaster.findFirst({
+                where: {
+                    stateName: data.stateName,
+                    NOT: { stateId },
+                },
+            });
+            if (existingName) {
+                throw new common_1.ConflictException('State name already exists');
+            }
+        }
+        if (data.stateShortCode) {
+            const existingCode = await this.prisma.stateMaster.findFirst({
+                where: {
+                    stateShortCode: data.stateShortCode,
+                    NOT: { stateId },
+                },
+            });
+            if (existingCode) {
+                throw new common_1.ConflictException('State short code already exists');
+            }
+        }
+        return this.prisma.stateMaster.update({
+            where: { stateId },
+            data: {
+                stateName: data.stateName,
+                stateShortCode: data.stateShortCode,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(stateId, DeletedBy, DeletedRemarks) {
+        await this.findOne(stateId);
+        return this.prisma.stateMaster.update({
+            where: { stateId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.StateService = StateService;
+exports.StateService = StateService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], StateService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/stream/stream.controller.ts":
+/*!*********************************************************************!*\
+  !*** ./apps/student-service/src/master/stream/stream.controller.ts ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StreamController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const stream_service_1 = __webpack_require__(/*! ./stream.service */ "./apps/student-service/src/master/stream/stream.service.ts");
+let StreamController = class StreamController {
+    constructor(streamService) {
+        this.streamService = streamService;
+    }
+    async create(data) {
+        try {
+            return await this.streamService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.streamService.findAll(data?.programId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.streamService.findOne(data.streamId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { streamId, ...updateData } = data;
+            return await this.streamService.update(streamId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.streamService.softDelete(data.streamId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StreamController = StreamController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_stream' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StreamController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_streams' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StreamController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_stream' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StreamController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_stream' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StreamController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_stream' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StreamController.prototype, "softDelete", null);
+exports.StreamController = StreamController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof stream_service_1.StreamService !== "undefined" && stream_service_1.StreamService) === "function" ? _a : Object])
+], StreamController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/stream/stream.module.ts":
+/*!*****************************************************************!*\
+  !*** ./apps/student-service/src/master/stream/stream.module.ts ***!
+  \*****************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StreamModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const stream_service_1 = __webpack_require__(/*! ./stream.service */ "./apps/student-service/src/master/stream/stream.service.ts");
+const stream_controller_1 = __webpack_require__(/*! ./stream.controller */ "./apps/student-service/src/master/stream/stream.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StreamModule = class StreamModule {
+};
+exports.StreamModule = StreamModule;
+exports.StreamModule = StreamModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [stream_controller_1.StreamController],
+        providers: [stream_service_1.StreamService],
+        exports: [stream_service_1.StreamService],
+    })
+], StreamModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/stream/stream.service.ts":
+/*!******************************************************************!*\
+  !*** ./apps/student-service/src/master/stream/stream.service.ts ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StreamService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StreamService = class StreamService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async assertProgram(programId) {
+        const program = await this.prisma.program.findFirst({
+            where: { programId, IsDeleted: false },
+        });
+        if (!program) {
+            throw new common_1.NotFoundException(`Program with ID ${programId} not found`);
+        }
+        return program;
+    }
+    async create(data) {
+        await this.assertProgram(Number(data.programId));
+        const streamName = String(data.streamName || '').trim();
+        const existing = await this.prisma.streamMaster.findFirst({
+            where: {
+                programId: Number(data.programId),
+                streamName,
+                IsDeleted: false,
+            },
+        });
+        if (existing) {
+            throw new common_1.ConflictException('Stream name already exists for this program');
+        }
+        return this.prisma.streamMaster.create({
+            data: {
+                programId: Number(data.programId),
+                streamName,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll(programId) {
+        return this.prisma.streamMaster.findMany({
+            where: {
+                IsDeleted: false,
+                ...(programId ? { programId: Number(programId) } : {}),
+            },
+            include: {
+                program: {
+                    select: {
+                        programId: true,
+                        programName: true,
+                        programShortName: true,
+                        programCode: true,
+                    },
+                },
+            },
+            orderBy: [{ programId: 'asc' }, { streamName: 'asc' }],
+        });
+    }
+    async findOne(streamId) {
+        const stream = await this.prisma.streamMaster.findFirst({
+            where: { streamId, IsDeleted: false },
+            include: {
+                program: {
+                    select: {
+                        programId: true,
+                        programName: true,
+                        programShortName: true,
+                        programCode: true,
+                    },
+                },
+            },
+        });
+        if (!stream) {
+            throw new common_1.NotFoundException(`Stream with ID ${streamId} not found`);
+        }
+        return stream;
+    }
+    async update(streamId, data) {
+        const current = await this.findOne(streamId);
+        const programId = data.programId !== undefined ? Number(data.programId) : current.programId;
+        const streamName = data.streamName !== undefined
+            ? String(data.streamName).trim()
+            : current.streamName;
+        if (data.programId !== undefined) {
+            await this.assertProgram(programId);
+        }
+        const existing = await this.prisma.streamMaster.findFirst({
+            where: {
+                programId,
+                streamName,
+                IsDeleted: false,
+                NOT: { streamId },
+            },
+        });
+        if (existing) {
+            throw new common_1.ConflictException('Stream name already exists for this program');
+        }
+        return this.prisma.streamMaster.update({
+            where: { streamId },
+            data: {
+                programId: data.programId !== undefined ? programId : undefined,
+                streamName: data.streamName !== undefined ? streamName : undefined,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(streamId, DeletedBy, DeletedRemarks) {
+        await this.findOne(streamId);
+        return this.prisma.streamMaster.update({
+            where: { streamId },
             data: {
                 IsDeleted: true,
                 IsActive: false,
@@ -7230,15 +4263,19 @@ let ExaminationDetailsService = class ExaminationDetailsService {
         });
     }
 };
-exports.ExaminationDetailsService = ExaminationDetailsService;
-exports.ExaminationDetailsService = ExaminationDetailsService = __decorate([
+exports.StreamService = StreamService;
+exports.StreamService = StreamService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], ExaminationDetailsService);
+], StreamService);
 
 
 /***/ }),
-/* 81 */
+
+/***/ "./apps/student-service/src/master/subject/subject.controller.ts":
+/*!***********************************************************************!*\
+  !*** ./apps/student-service/src/master/subject/subject.controller.ts ***!
+  \***********************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7256,17 +4293,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExaminationDetailsController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const examination_details_service_1 = __webpack_require__(80);
-let ExaminationDetailsController = class ExaminationDetailsController {
-    constructor(examinationDetailsService) {
-        this.examinationDetailsService = examinationDetailsService;
+exports.SubjectController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const subject_service_1 = __webpack_require__(/*! ./subject.service */ "./apps/student-service/src/master/subject/subject.service.ts");
+let SubjectController = class SubjectController {
+    constructor(subjectService) {
+        this.subjectService = subjectService;
     }
     async create(data) {
         try {
-            return await this.examinationDetailsService.create(data);
+            return await this.subjectService.create(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -7274,7 +4311,7 @@ let ExaminationDetailsController = class ExaminationDetailsController {
     }
     async findAll(data) {
         try {
-            return await this.examinationDetailsService.findAll(data?.academicId);
+            return await this.subjectService.findAll(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -7282,7 +4319,7 @@ let ExaminationDetailsController = class ExaminationDetailsController {
     }
     async findOne(data) {
         try {
-            return await this.examinationDetailsService.findOne(data.examinationId);
+            return await this.subjectService.findOne(data.subjectId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -7290,8 +4327,8 @@ let ExaminationDetailsController = class ExaminationDetailsController {
     }
     async update(data) {
         try {
-            const { examinationId, ...updateData } = data;
-            return await this.examinationDetailsService.update(examinationId, updateData);
+            const { subjectId, ...updateData } = data;
+            return await this.subjectService.update(subjectId, updateData);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -7299,57 +4336,61 @@ let ExaminationDetailsController = class ExaminationDetailsController {
     }
     async softDelete(data) {
         try {
-            return await this.examinationDetailsService.softDelete(data.examinationId, data.DeletedBy, data.DeletedRemarks);
+            return await this.subjectService.softDelete(data.subjectId, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
 };
-exports.ExaminationDetailsController = ExaminationDetailsController;
+exports.SubjectController = SubjectController;
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_examination_details' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_subject' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ExaminationDetailsController.prototype, "create", null);
+], SubjectController.prototype, "create", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_examination_details' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_subjects' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ExaminationDetailsController.prototype, "findAll", null);
+], SubjectController.prototype, "findAll", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_examination_details' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_subject' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ExaminationDetailsController.prototype, "findOne", null);
+], SubjectController.prototype, "findOne", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_examination_details' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_subject' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ExaminationDetailsController.prototype, "update", null);
+], SubjectController.prototype, "update", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_examination_details' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_subject' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ExaminationDetailsController.prototype, "softDelete", null);
-exports.ExaminationDetailsController = ExaminationDetailsController = __decorate([
+], SubjectController.prototype, "softDelete", null);
+exports.SubjectController = SubjectController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof examination_details_service_1.ExaminationDetailsService !== "undefined" && examination_details_service_1.ExaminationDetailsService) === "function" ? _a : Object])
-], ExaminationDetailsController);
+    __metadata("design:paramtypes", [typeof (_a = typeof subject_service_1.SubjectService !== "undefined" && subject_service_1.SubjectService) === "function" ? _a : Object])
+], SubjectController);
 
 
 /***/ }),
-/* 82 */
+
+/***/ "./apps/student-service/src/master/subject/subject.module.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/student-service/src/master/subject/subject.module.ts ***!
+  \*******************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7360,174 +4401,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WebsiteModule = void 0;
-const common_1 = __webpack_require__(5);
-const campus_quick_link_module_1 = __webpack_require__(83);
-const latest_update_module_1 = __webpack_require__(86);
-const admission_enquiry_module_1 = __webpack_require__(89);
-const hero_section_module_1 = __webpack_require__(92);
-const notice_board_module_1 = __webpack_require__(95);
-const accreditation_slider_module_1 = __webpack_require__(98);
-const top_achiever_module_1 = __webpack_require__(101);
-const image_gallery_module_1 = __webpack_require__(104);
-const video_gallery_module_1 = __webpack_require__(107);
-const contact_enquiry_module_1 = __webpack_require__(110);
-const stats_counter_module_1 = __webpack_require__(113);
-const testimonial_module_1 = __webpack_require__(116);
-const header_button_module_1 = __webpack_require__(119);
-let WebsiteModule = class WebsiteModule {
+exports.SubjectModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const subject_service_1 = __webpack_require__(/*! ./subject.service */ "./apps/student-service/src/master/subject/subject.service.ts");
+const subject_controller_1 = __webpack_require__(/*! ./subject.controller */ "./apps/student-service/src/master/subject/subject.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let SubjectModule = class SubjectModule {
 };
-exports.WebsiteModule = WebsiteModule;
-exports.WebsiteModule = WebsiteModule = __decorate([
-    (0, common_1.Module)({
-        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule],
-        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule],
-    })
-], WebsiteModule);
-
-
-/***/ }),
-/* 83 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CampusQuickLinkModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const campus_quick_link_controller_1 = __webpack_require__(84);
-const campus_quick_link_service_1 = __webpack_require__(85);
-let CampusQuickLinkModule = class CampusQuickLinkModule {
-};
-exports.CampusQuickLinkModule = CampusQuickLinkModule;
-exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
+exports.SubjectModule = SubjectModule;
+exports.SubjectModule = SubjectModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_1.PrismaModule],
-        controllers: [campus_quick_link_controller_1.CampusQuickLinkController],
-        providers: [campus_quick_link_service_1.CampusQuickLinkService],
-        exports: [campus_quick_link_service_1.CampusQuickLinkService],
+        controllers: [subject_controller_1.SubjectController],
+        providers: [subject_service_1.SubjectService],
+        exports: [subject_service_1.SubjectService],
     })
-], CampusQuickLinkModule);
+], SubjectModule);
 
 
 /***/ }),
-/* 84 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CampusQuickLinkController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const campus_quick_link_service_1 = __webpack_require__(85);
-let CampusQuickLinkController = class CampusQuickLinkController {
-    constructor(campusQuickLinkService) {
-        this.campusQuickLinkService = campusQuickLinkService;
-    }
-    async create(data) {
-        try {
-            return await this.campusQuickLinkService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.campusQuickLinkService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.campusQuickLinkService.findOne(data.quickLinkId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { quickLinkId, ...updateData } = data;
-            return await this.campusQuickLinkService.update(quickLinkId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.campusQuickLinkService.softDelete(data.quickLinkId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.CampusQuickLinkController = CampusQuickLinkController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_campus_quick_link' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], CampusQuickLinkController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_campus_quick_links' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CampusQuickLinkController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_campus_quick_link' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], CampusQuickLinkController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_campus_quick_link' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], CampusQuickLinkController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_campus_quick_link' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], CampusQuickLinkController.prototype, "softDelete", null);
-exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof campus_quick_link_service_1.CampusQuickLinkService !== "undefined" && campus_quick_link_service_1.CampusQuickLinkService) === "function" ? _a : Object])
-], CampusQuickLinkController);
-
-
-/***/ }),
-/* 85 */
+/***/ "./apps/student-service/src/master/subject/subject.service.ts":
+/*!********************************************************************!*\
+  !*** ./apps/student-service/src/master/subject/subject.service.ts ***!
+  \********************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7542,251 +4439,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CampusQuickLinkService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let CampusQuickLinkService = class CampusQuickLinkService {
+exports.SubjectService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let SubjectService = class SubjectService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async create(data) {
-        return this.prisma.campusQuickLink.create({
+        return this.prisma.subjectMaster.create({
             data: {
-                quickLinkName: data.quickLinkName,
-                icon: data.icon || null,
-                pageUrl: data.pageUrl,
-                CreatedBy: data.CreatedBy,
-                Remarks: data.Remarks || null,
-                IsActive: data.IsActive !== undefined ? data.IsActive : true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.campusQuickLink.findMany({
-            where: { IsDeleted: false },
-            orderBy: { quickLinkId: 'desc' },
-        });
-    }
-    async findOne(quickLinkId) {
-        const item = await this.prisma.campusQuickLink.findFirst({
-            where: { quickLinkId, IsDeleted: false },
-        });
-        if (!item) {
-            throw new common_1.NotFoundException(`Campus quick link with ID ${quickLinkId} not found`);
-        }
-        return item;
-    }
-    async update(quickLinkId, data) {
-        await this.findOne(quickLinkId);
-        return this.prisma.campusQuickLink.update({
-            where: { quickLinkId },
-            data: {
-                quickLinkName: data.quickLinkName,
-                icon: data.icon,
-                pageUrl: data.pageUrl,
-                UpdatedBy: data.UpdatedBy,
-                IsActive: data.IsActive,
-                Remarks: data.Remarks,
-            },
-        });
-    }
-    async softDelete(quickLinkId, DeletedBy, DeletedRemarks) {
-        await this.findOne(quickLinkId);
-        return this.prisma.campusQuickLink.update({
-            where: { quickLinkId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.CampusQuickLinkService = CampusQuickLinkService;
-exports.CampusQuickLinkService = CampusQuickLinkService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], CampusQuickLinkService);
-
-
-/***/ }),
-/* 86 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LatestUpdateModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const latest_update_controller_1 = __webpack_require__(87);
-const latest_update_service_1 = __webpack_require__(88);
-let LatestUpdateModule = class LatestUpdateModule {
-};
-exports.LatestUpdateModule = LatestUpdateModule;
-exports.LatestUpdateModule = LatestUpdateModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [latest_update_controller_1.LatestUpdateController],
-        providers: [latest_update_service_1.LatestUpdateService],
-        exports: [latest_update_service_1.LatestUpdateService],
-    })
-], LatestUpdateModule);
-
-
-/***/ }),
-/* 87 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LatestUpdateController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const latest_update_service_1 = __webpack_require__(88);
-let LatestUpdateController = class LatestUpdateController {
-    constructor(latestUpdateService) {
-        this.latestUpdateService = latestUpdateService;
-    }
-    async create(data) {
-        try {
-            return await this.latestUpdateService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.latestUpdateService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.latestUpdateService.findOne(data.latestUpdateId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { latestUpdateId, ...updateData } = data;
-            return await this.latestUpdateService.update(latestUpdateId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.latestUpdateService.softDelete(data.latestUpdateId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.LatestUpdateController = LatestUpdateController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_latest_update' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], LatestUpdateController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_latest_updates' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], LatestUpdateController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_latest_update' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], LatestUpdateController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_latest_update' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], LatestUpdateController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_latest_update' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], LatestUpdateController.prototype, "softDelete", null);
-exports.LatestUpdateController = LatestUpdateController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof latest_update_service_1.LatestUpdateService !== "undefined" && latest_update_service_1.LatestUpdateService) === "function" ? _a : Object])
-], LatestUpdateController);
-
-
-/***/ }),
-/* 88 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LatestUpdateService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let LatestUpdateService = class LatestUpdateService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.latestUpdate.create({
-            data: {
-                title: data.title,
-                shortName: data.shortName || null,
-                grade: data.grade || null,
-                logo: data.logo || null,
-                description: data.description || null,
-                validFrom: data.validFrom ? new Date(data.validFrom) : null,
-                validUntil: data.validUntil ? new Date(data.validUntil) : null,
-                linkUrl: data.linkUrl || null,
-                displayOrder: data.displayOrder ?? 0,
+                subjectName: data.subjectName,
+                subjectCode: data.subjectCode,
+                classType: data.classType,
+                stream: data.stream || null,
                 CreatedBy: data.CreatedBy,
                 Remarks: data.Remarks || null,
                 IsActive: true,
@@ -7794,57 +4460,50 @@ let LatestUpdateService = class LatestUpdateService {
             },
         });
     }
-    async findAll() {
-        return this.prisma.latestUpdate.findMany({
-            where: { IsDeleted: false },
-            orderBy: [{ displayOrder: 'asc' }, { latestUpdateId: 'desc' }],
-        });
-    }
-    async findOne(latestUpdateId) {
-        const item = await this.prisma.latestUpdate.findFirst({
-            where: { latestUpdateId, IsDeleted: false },
-        });
-        if (!item) {
-            throw new common_1.NotFoundException(`Latest update entry with ID ${latestUpdateId} not found`);
+    async findAll(filters) {
+        const whereClause = { IsDeleted: false };
+        if (filters?.classType) {
+            whereClause.classType = filters.classType;
         }
-        return item;
-    }
-    async update(latestUpdateId, data) {
-        await this.findOne(latestUpdateId);
-        const updatePayload = {
-            UpdatedBy: data.UpdatedBy,
-        };
-        if (data.title !== undefined)
-            updatePayload.title = data.title;
-        if (data.shortName !== undefined)
-            updatePayload.shortName = data.shortName;
-        if (data.grade !== undefined)
-            updatePayload.grade = data.grade;
-        if (data.logo !== undefined)
-            updatePayload.logo = data.logo;
-        if (data.description !== undefined)
-            updatePayload.description = data.description;
-        if (data.validFrom !== undefined)
-            updatePayload.validFrom = data.validFrom ? new Date(data.validFrom) : null;
-        if (data.validUntil !== undefined)
-            updatePayload.validUntil = data.validUntil ? new Date(data.validUntil) : null;
-        if (data.linkUrl !== undefined)
-            updatePayload.linkUrl = data.linkUrl;
-        if (data.displayOrder !== undefined)
-            updatePayload.displayOrder = data.displayOrder;
-        if (data.IsActive !== undefined)
-            updatePayload.IsActive = data.IsActive;
-        if (data.Remarks !== undefined)
-            updatePayload.Remarks = data.Remarks;
-        return this.prisma.latestUpdate.update({
-            where: { latestUpdateId },
-            data: updatePayload,
+        if (filters?.stream) {
+            whereClause.OR = [
+                { stream: filters.stream },
+                { stream: null },
+            ];
+        }
+        return this.prisma.subjectMaster.findMany({
+            where: whereClause,
+            orderBy: { subjectName: 'asc' },
         });
     }
-    async softDelete(latestUpdateId, DeletedBy, DeletedRemarks) {
-        await this.findOne(latestUpdateId);
-        return this.prisma.latestUpdate.update({
-            where: { latestUpdateId },
+    async findOne(subjectId) {
+        const subject = await this.prisma.subjectMaster.findFirst({
+            where: { subjectId, IsDeleted: false },
+        });
+        if (!subject) {
+            throw new common_1.NotFoundException(`Subject with ID ${subjectId} not found`);
+        }
+        return subject;
+    }
+    async update(subjectId, data) {
+        await this.findOne(subjectId);
+        return this.prisma.subjectMaster.update({
+            where: { subjectId },
+            data: {
+                subjectName: data.subjectName,
+                subjectCode: data.subjectCode,
+                classType: data.classType,
+                stream: data.stream,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(subjectId, DeletedBy, DeletedRemarks) {
+        await this.findOne(subjectId);
+        return this.prisma.subjectMaster.update({
+            where: { subjectId },
             data: {
                 IsDeleted: true,
                 IsActive: false,
@@ -7855,15 +4514,134 @@ let LatestUpdateService = class LatestUpdateService {
         });
     }
 };
-exports.LatestUpdateService = LatestUpdateService;
-exports.LatestUpdateService = LatestUpdateService = __decorate([
+exports.SubjectService = SubjectService;
+exports.SubjectService = SubjectService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], LatestUpdateService);
+], SubjectService);
 
 
 /***/ }),
-/* 89 */
+
+/***/ "./apps/student-service/src/master/zipcode/zipcode.controller.ts":
+/*!***********************************************************************!*\
+  !*** ./apps/student-service/src/master/zipcode/zipcode.controller.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ZipcodeController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const zipcode_service_1 = __webpack_require__(/*! ./zipcode.service */ "./apps/student-service/src/master/zipcode/zipcode.service.ts");
+let ZipcodeController = class ZipcodeController {
+    constructor(zipcodeService) {
+        this.zipcodeService = zipcodeService;
+    }
+    async create(data) {
+        try {
+            return await this.zipcodeService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.zipcodeService.findAll(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.zipcodeService.findOne(data.zipcodeId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { zipcodeId, ...updateData } = data;
+            return await this.zipcodeService.update(zipcodeId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.zipcodeService.softDelete(data.zipcodeId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.ZipcodeController = ZipcodeController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_zipcode' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZipcodeController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_zipcodes' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZipcodeController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_zipcode' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZipcodeController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_zipcode' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZipcodeController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_zipcode' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZipcodeController.prototype, "softDelete", null);
+exports.ZipcodeController = ZipcodeController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof zipcode_service_1.ZipcodeService !== "undefined" && zipcode_service_1.ZipcodeService) === "function" ? _a : Object])
+], ZipcodeController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/master/zipcode/zipcode.module.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/student-service/src/master/zipcode/zipcode.module.ts ***!
+  \*******************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7874,26 +4652,3417 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdmissionEnquiryModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const admission_enquiry_controller_1 = __webpack_require__(90);
-const admission_enquiry_service_1 = __webpack_require__(91);
-let AdmissionEnquiryModule = class AdmissionEnquiryModule {
+exports.ZipcodeModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const zipcode_service_1 = __webpack_require__(/*! ./zipcode.service */ "./apps/student-service/src/master/zipcode/zipcode.service.ts");
+const zipcode_controller_1 = __webpack_require__(/*! ./zipcode.controller */ "./apps/student-service/src/master/zipcode/zipcode.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ZipcodeModule = class ZipcodeModule {
 };
-exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
-exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
+exports.ZipcodeModule = ZipcodeModule;
+exports.ZipcodeModule = ZipcodeModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_1.PrismaModule],
-        controllers: [admission_enquiry_controller_1.AdmissionEnquiryController],
-        providers: [admission_enquiry_service_1.AdmissionEnquiryService],
-        exports: [admission_enquiry_service_1.AdmissionEnquiryService],
+        controllers: [zipcode_controller_1.ZipcodeController],
+        providers: [zipcode_service_1.ZipcodeService],
+        exports: [zipcode_service_1.ZipcodeService],
     })
-], AdmissionEnquiryModule);
+], ZipcodeModule);
 
 
 /***/ }),
-/* 90 */
+
+/***/ "./apps/student-service/src/master/zipcode/zipcode.service.ts":
+/*!********************************************************************!*\
+  !*** ./apps/student-service/src/master/zipcode/zipcode.service.ts ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ZipcodeService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ZipcodeService = class ZipcodeService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        const existingLocality = await this.prisma.zipcodeMaster.findFirst({
+            where: {
+                cityId: data.cityId,
+                locality: data.locality,
+                IsDeleted: false,
+            },
+        });
+        if (existingLocality) {
+            throw new common_1.ConflictException('This locality already has a zipcode in this city');
+        }
+        return this.prisma.zipcodeMaster.create({
+            data: {
+                zipCode: data.zipCode,
+                stateId: data.stateId,
+                cityId: data.cityId,
+                locality: data.locality,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll(filters) {
+        return this.prisma.zipcodeMaster.findMany({
+            where: {
+                IsDeleted: false,
+                ...(filters?.stateId ? { stateId: Number(filters.stateId) } : {}),
+                ...(filters?.cityId ? { cityId: Number(filters.cityId) } : {}),
+                ...(filters?.zipCode
+                    ? { zipCode: String(filters.zipCode).trim() }
+                    : {}),
+            },
+            orderBy: { zipCode: 'asc' },
+        });
+    }
+    async findOne(zipcodeId) {
+        const zipcode = await this.prisma.zipcodeMaster.findFirst({
+            where: { zipcodeId, IsDeleted: false },
+        });
+        if (!zipcode) {
+            throw new common_1.NotFoundException(`Zipcode with ID ${zipcodeId} not found`);
+        }
+        return zipcode;
+    }
+    async update(zipcodeId, data) {
+        const current = await this.findOne(zipcodeId);
+        const cityId = data.cityId ?? current.cityId;
+        const locality = data.locality ?? current.locality;
+        if (locality !== undefined && cityId !== undefined) {
+            const existingLocality = await this.prisma.zipcodeMaster.findFirst({
+                where: {
+                    cityId,
+                    locality,
+                    IsDeleted: false,
+                    NOT: { zipcodeId },
+                },
+            });
+            if (existingLocality) {
+                throw new common_1.ConflictException('This locality already has a zipcode in this city');
+            }
+        }
+        return this.prisma.zipcodeMaster.update({
+            where: { zipcodeId },
+            data: {
+                zipCode: data.zipCode,
+                stateId: data.stateId,
+                cityId: data.cityId,
+                locality: data.locality,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(zipcodeId, DeletedBy, DeletedRemarks) {
+        await this.findOne(zipcodeId);
+        return this.prisma.zipcodeMaster.update({
+            where: { zipcodeId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.ZipcodeService = ZipcodeService;
+exports.ZipcodeService = ZipcodeService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], ZipcodeService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/student-service.module.ts":
+/*!************************************************************!*\
+  !*** ./apps/student-service/src/student-service.module.ts ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentServiceModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const students_module_1 = __webpack_require__(/*! ./students/students.module */ "./apps/student-service/src/students/students.module.ts");
+const master_module_1 = __webpack_require__(/*! ./master/master.module */ "./apps/student-service/src/master/master.module.ts");
+const website_module_1 = __webpack_require__(/*! ./website/website.module */ "./apps/student-service/src/website/website.module.ts");
+let StudentServiceModule = class StudentServiceModule {
+};
+exports.StudentServiceModule = StudentServiceModule;
+exports.StudentServiceModule = StudentServiceModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule, students_module_1.StudentsModule, master_module_1.MasterModule, website_module_1.WebsiteModule],
+        controllers: [],
+        providers: [],
+    })
+], StudentServiceModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-academic-subject/student-academic-subject.controller.ts":
+/*!***********************************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-academic-subject/student-academic-subject.controller.ts ***!
+  \***********************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAcademicSubjectController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const student_academic_subject_service_1 = __webpack_require__(/*! ./student-academic-subject.service */ "./apps/student-service/src/students/student-academic-subject/student-academic-subject.service.ts");
+let StudentAcademicSubjectController = class StudentAcademicSubjectController {
+    constructor(subjectService) {
+        this.subjectService = subjectService;
+    }
+    async create(data) {
+        try {
+            return await this.subjectService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.subjectService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.subjectService.findOne(data.studentAcademicSubjectId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findByAcademicDetail(data) {
+        try {
+            return await this.subjectService.findByAcademicDetail(data.academicDetailId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { studentAcademicSubjectId, ...updateData } = data;
+            return await this.subjectService.update(studentAcademicSubjectId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.subjectService.softDelete(data.studentAcademicSubjectId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.subjectService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StudentAcademicSubjectController = StudentAcademicSubjectController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_academic_subject' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicSubjectController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_academic_subjects' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StudentAcademicSubjectController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_academic_subject' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicSubjectController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_academic_subjects_by_detail' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicSubjectController.prototype, "findByAcademicDetail", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_academic_subject' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicSubjectController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_academic_subject' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicSubjectController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_academic_subjects' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicSubjectController.prototype, "bulkSoftDelete", null);
+exports.StudentAcademicSubjectController = StudentAcademicSubjectController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof student_academic_subject_service_1.StudentAcademicSubjectService !== "undefined" && student_academic_subject_service_1.StudentAcademicSubjectService) === "function" ? _a : Object])
+], StudentAcademicSubjectController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-academic-subject/student-academic-subject.module.ts":
+/*!*******************************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-academic-subject/student-academic-subject.module.ts ***!
+  \*******************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAcademicSubjectModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const student_academic_subject_controller_1 = __webpack_require__(/*! ./student-academic-subject.controller */ "./apps/student-service/src/students/student-academic-subject/student-academic-subject.controller.ts");
+const student_academic_subject_service_1 = __webpack_require__(/*! ./student-academic-subject.service */ "./apps/student-service/src/students/student-academic-subject/student-academic-subject.service.ts");
+let StudentAcademicSubjectModule = class StudentAcademicSubjectModule {
+};
+exports.StudentAcademicSubjectModule = StudentAcademicSubjectModule;
+exports.StudentAcademicSubjectModule = StudentAcademicSubjectModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [student_academic_subject_controller_1.StudentAcademicSubjectController],
+        providers: [student_academic_subject_service_1.StudentAcademicSubjectService],
+        exports: [student_academic_subject_service_1.StudentAcademicSubjectService],
+    })
+], StudentAcademicSubjectModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-academic-subject/student-academic-subject.service.ts":
+/*!********************************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-academic-subject/student-academic-subject.service.ts ***!
+  \********************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAcademicSubjectService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const student_academic_service_1 = __webpack_require__(/*! ../student-academic/student-academic.service */ "./apps/student-service/src/students/student-academic/student-academic.service.ts");
+let StudentAcademicSubjectService = class StudentAcademicSubjectService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        const maxMarks = Number(data.maxMarks);
+        const obtainedMarks = Number(data.obtainedMarks);
+        const computed = (0, student_academic_service_1.computeAcademicResult)({ maxMarks, obtainedMarks });
+        return this.prisma.studentAcademicSubject.create({
+            data: {
+                academicDetailId: Number(data.academicDetailId),
+                subjectId: Number(data.subjectId),
+                maxMarks,
+                minMarks: Number(data.minMarks ?? 33),
+                obtainedMarks,
+                grade: data.grade || computed.grade,
+                practicalMarks: data.practicalMarks ? Number(data.practicalMarks) : null,
+                theoryMarks: data.theoryMarks ? Number(data.theoryMarks) : null,
+                isOptional: !!data.isOptional,
+                CreatedBy: data.CreatedBy,
+                IsActive: true,
+                IsDeleted: false,
+            },
+            include: {
+                subject: true,
+                academicDetail: true,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.studentAcademicSubject.findMany({
+            where: { IsDeleted: false },
+            include: {
+                subject: true,
+                academicDetail: true,
+            },
+            orderBy: { CreatedOn: 'desc' },
+        });
+    }
+    async findOne(studentAcademicSubjectId) {
+        const subjectMark = await this.prisma.studentAcademicSubject.findFirst({
+            where: { studentAcademicSubjectId, IsDeleted: false },
+            include: {
+                subject: true,
+                academicDetail: true,
+            },
+        });
+        if (!subjectMark) {
+            throw new common_1.NotFoundException(`Student Academic Subject Mark with ID ${studentAcademicSubjectId} not found`);
+        }
+        return subjectMark;
+    }
+    async findByAcademicDetail(academicDetailId) {
+        return this.prisma.studentAcademicSubject.findMany({
+            where: { academicDetailId, IsDeleted: false },
+            include: {
+                subject: true,
+            },
+            orderBy: { subjectId: 'asc' },
+        });
+    }
+    async update(studentAcademicSubjectId, data) {
+        const existing = await this.findOne(studentAcademicSubjectId);
+        const maxMarks = data.maxMarks !== undefined ? Number(data.maxMarks) : Number(existing.maxMarks);
+        const obtainedMarks = data.obtainedMarks !== undefined
+            ? Number(data.obtainedMarks)
+            : Number(existing.obtainedMarks);
+        const computed = (0, student_academic_service_1.computeAcademicResult)({ maxMarks, obtainedMarks });
+        return this.prisma.studentAcademicSubject.update({
+            where: { studentAcademicSubjectId },
+            data: {
+                academicDetailId: data.academicDetailId ? Number(data.academicDetailId) : undefined,
+                subjectId: data.subjectId ? Number(data.subjectId) : undefined,
+                maxMarks: data.maxMarks !== undefined ? maxMarks : undefined,
+                minMarks: data.minMarks !== undefined ? Number(data.minMarks) : undefined,
+                obtainedMarks: data.obtainedMarks !== undefined ? obtainedMarks : undefined,
+                grade: data.grade !== undefined && data.grade !== null && data.grade !== ''
+                    ? data.grade
+                    : computed.grade,
+                practicalMarks: data.practicalMarks ? Number(data.practicalMarks) : null,
+                theoryMarks: data.theoryMarks ? Number(data.theoryMarks) : null,
+                isOptional: data.isOptional !== undefined ? !!data.isOptional : undefined,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+            },
+            include: {
+                subject: true,
+            },
+        });
+    }
+    async softDelete(studentAcademicSubjectId, DeletedBy, DeletedRemarks) {
+        await this.findOne(studentAcademicSubjectId);
+        return this.prisma.studentAcademicSubject.update({
+            where: { studentAcademicSubjectId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.studentAcademicSubject.updateMany({
+            where: {
+                studentAcademicSubjectId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} subject mark record(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.StudentAcademicSubjectService = StudentAcademicSubjectService;
+exports.StudentAcademicSubjectService = StudentAcademicSubjectService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], StudentAcademicSubjectService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-academic/student-academic.controller.ts":
+/*!*******************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-academic/student-academic.controller.ts ***!
+  \*******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAcademicController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const student_academic_service_1 = __webpack_require__(/*! ./student-academic.service */ "./apps/student-service/src/students/student-academic/student-academic.service.ts");
+let StudentAcademicController = class StudentAcademicController {
+    constructor(academicService) {
+        this.academicService = academicService;
+    }
+    async save(data) {
+        try {
+            return await this.academicService.save(data.studentId, data.qualifications, data.CreatedBy, data.programId, data.programSubjectIds);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.academicService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.academicService.findOne(data.academicDetailId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findByStudent(data) {
+        try {
+            return await this.academicService.findByStudent(data.studentId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { academicDetailId, ...updateData } = data;
+            return await this.academicService.update(academicDetailId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.academicService.softDelete(data.academicDetailId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.academicService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StudentAcademicController = StudentAcademicController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'save_student_academic_details' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicController.prototype, "save", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_academic_details' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StudentAcademicController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_academic_detail' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_academic_details_by_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicController.prototype, "findByStudent", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_academic_detail' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_academic_detail' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_academic_details' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAcademicController.prototype, "bulkSoftDelete", null);
+exports.StudentAcademicController = StudentAcademicController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof student_academic_service_1.StudentAcademicService !== "undefined" && student_academic_service_1.StudentAcademicService) === "function" ? _a : Object])
+], StudentAcademicController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-academic/student-academic.module.ts":
+/*!***************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-academic/student-academic.module.ts ***!
+  \***************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAcademicModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const student_academic_controller_1 = __webpack_require__(/*! ./student-academic.controller */ "./apps/student-service/src/students/student-academic/student-academic.controller.ts");
+const student_academic_service_1 = __webpack_require__(/*! ./student-academic.service */ "./apps/student-service/src/students/student-academic/student-academic.service.ts");
+let StudentAcademicModule = class StudentAcademicModule {
+};
+exports.StudentAcademicModule = StudentAcademicModule;
+exports.StudentAcademicModule = StudentAcademicModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [student_academic_controller_1.StudentAcademicController],
+        providers: [student_academic_service_1.StudentAcademicService],
+        exports: [student_academic_service_1.StudentAcademicService],
+    })
+], StudentAcademicModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-academic/student-academic.service.ts":
+/*!****************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-academic/student-academic.service.ts ***!
+  \****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAcademicService = void 0;
+exports.computeAcademicResult = computeAcademicResult;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+function computeAcademicResult(input) {
+    const marksType = String(input.marksType || 'Percentage').toUpperCase();
+    const max = Number(input.maxMarks);
+    const obtained = Number(input.obtainedMarks);
+    let percentage = input.percentage !== undefined && input.percentage !== null
+        ? Number(input.percentage)
+        : NaN;
+    if (!Number.isFinite(percentage)) {
+        if (marksType.includes('CGPA')) {
+            percentage =
+                Number.isFinite(obtained) && Number.isFinite(max) && max > 0
+                    ? (obtained / max) * 100
+                    : Number.isFinite(obtained)
+                        ? obtained * 10
+                        : 0;
+        }
+        else if (Number.isFinite(obtained) && Number.isFinite(max) && max > 0) {
+            percentage = (obtained / max) * 100;
+        }
+        else {
+            percentage = 0;
+        }
+    }
+    percentage = Math.round(percentage * 100) / 100;
+    let grade = 'F';
+    if (percentage >= 90)
+        grade = 'A+';
+    else if (percentage >= 80)
+        grade = 'A';
+    else if (percentage >= 70)
+        grade = 'B+';
+    else if (percentage >= 60)
+        grade = 'B';
+    else if (percentage >= 50)
+        grade = 'C';
+    else if (percentage >= 40)
+        grade = 'D';
+    else if (percentage >= 33)
+        grade = 'E';
+    let division = 'Fail';
+    if (percentage >= 60)
+        division = 'First';
+    else if (percentage >= 45)
+        division = 'Second';
+    else if (percentage >= 33)
+        division = 'Third';
+    return { percentage, grade, division };
+}
+let StudentAcademicService = class StudentAcademicService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async save(studentId, qualifications, CreatedBy, programId, programSubjectIds) {
+        return this.prisma.$transaction(async (tx) => {
+            const student = await tx.student.findFirst({
+                where: { StudentRegistrationId: Number(studentId), IsDeleted: false },
+            });
+            if (!student) {
+                throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
+            }
+            if (programId === undefined || programId === null) {
+                throw new common_1.BadRequestException('programId is required');
+            }
+            const program = await tx.program.findFirst({
+                where: { programId: Number(programId), IsDeleted: false },
+            });
+            if (!program) {
+                throw new common_1.NotFoundException(`Program with ID ${programId} not found`);
+            }
+            const activeSession = await tx.admissionSession.findFirst({
+                where: { IsActive: true, IsDeleted: false },
+                orderBy: { CreatedOn: 'desc' },
+            });
+            if (!activeSession) {
+                throw new common_1.NotFoundException('No active admission session found. Please activate a session in masters.');
+            }
+            const assignedProgramId = program.programId;
+            const assignedAdmissionSessionId = activeSession.admissionSessionId;
+            const assignedAdmissionSessionName = activeSession.admissionSessionName;
+            await tx.student.update({
+                where: { StudentRegistrationId: Number(studentId) },
+                data: {
+                    programId: assignedProgramId,
+                    admissionSessionId: assignedAdmissionSessionId,
+                    UpdatedBy: CreatedBy || 'System',
+                },
+            });
+            await tx.studentAcademicDetail.deleteMany({
+                where: { studentId: Number(studentId) },
+            });
+            const createdDetails = [];
+            for (const qual of qualifications) {
+                const computed = computeAcademicResult({
+                    marksType: qual.marksType,
+                    maxMarks: qual.maxMarks,
+                    obtainedMarks: qual.obtainedMarks,
+                    percentage: qual.percentage,
+                });
+                const detail = await tx.studentAcademicDetail.create({
+                    data: {
+                        studentId: Number(studentId),
+                        qualificationId: Number(qual.qualificationId),
+                        boardId: Number(qual.boardId),
+                        schoolName: qual.schoolName,
+                        passingYear: Number(qual.passingYear),
+                        rollNo: qual.rollNo,
+                        resultStatus: qual.resultStatus,
+                        marksType: qual.marksType,
+                        maxMarks: Number(qual.maxMarks),
+                        obtainedMarks: Number(qual.obtainedMarks),
+                        percentage: computed.percentage,
+                        division: qual.division || computed.division,
+                        grade: qual.grade || computed.grade,
+                        stream: qual.stream || null,
+                        CreatedBy: CreatedBy || 'System',
+                        IsActive: true,
+                        IsDeleted: false,
+                        subjects: {
+                            create: (qual.subjects || []).map((sub) => {
+                                const subComputed = computeAcademicResult({
+                                    marksType: 'Percentage',
+                                    maxMarks: sub.maxMarks,
+                                    obtainedMarks: sub.obtainedMarks,
+                                });
+                                return {
+                                    subjectId: Number(sub.subjectId),
+                                    maxMarks: Number(sub.maxMarks),
+                                    minMarks: Number(sub.minMarks || 33),
+                                    obtainedMarks: Number(sub.obtainedMarks),
+                                    grade: sub.grade || subComputed.grade,
+                                    practicalMarks: sub.practicalMarks ? Number(sub.practicalMarks) : null,
+                                    theoryMarks: sub.theoryMarks ? Number(sub.theoryMarks) : null,
+                                    isOptional: !!sub.isOptional,
+                                    CreatedBy: CreatedBy || 'System',
+                                    IsActive: true,
+                                    IsDeleted: false,
+                                };
+                            }),
+                        },
+                    },
+                    include: {
+                        subjects: {
+                            include: {
+                                subject: true,
+                            },
+                        },
+                        qualification: true,
+                        board: true,
+                    },
+                });
+                createdDetails.push(detail);
+            }
+            if (Array.isArray(programSubjectIds)) {
+                const ids = [
+                    ...new Set(programSubjectIds
+                        .map((id) => Number(id))
+                        .filter((id) => Number.isFinite(id) && id > 0)),
+                ];
+                await tx.studentProgramSubject.deleteMany({
+                    where: { studentId: Number(studentId) },
+                });
+                if (ids.length > 0) {
+                    const masters = await tx.programSubjectMaster.findMany({
+                        where: {
+                            programSubjectId: { in: ids },
+                            programId: assignedProgramId,
+                            IsDeleted: false,
+                        },
+                    });
+                    const allowed = new Set(masters.map((m) => m.programSubjectId));
+                    if (ids.some((id) => !allowed.has(id))) {
+                        throw new common_1.BadRequestException('One or more program subjects are invalid for this program');
+                    }
+                    await tx.studentProgramSubject.createMany({
+                        data: ids.map((id, idx) => ({
+                            studentId: Number(studentId),
+                            programSubjectId: id,
+                            sequenceNo: idx + 1,
+                            CreatedBy: CreatedBy || 'System',
+                            IsActive: true,
+                            IsDeleted: false,
+                        })),
+                    });
+                }
+            }
+            return {
+                status: 'success',
+                message: 'Academic qualifications and subjects saved successfully',
+                data: createdDetails,
+                programId: assignedProgramId,
+                admissionSessionId: assignedAdmissionSessionId,
+                admissionSessionName: assignedAdmissionSessionName,
+            };
+        });
+    }
+    async findAll() {
+        return this.prisma.studentAcademicDetail.findMany({
+            where: { IsDeleted: false },
+            include: {
+                subjects: {
+                    include: {
+                        subject: true,
+                    },
+                },
+                qualification: true,
+                board: true,
+                student: true,
+            },
+            orderBy: { CreatedOn: 'desc' },
+        });
+    }
+    async findOne(academicDetailId) {
+        const detail = await this.prisma.studentAcademicDetail.findFirst({
+            where: { academicDetailId, IsDeleted: false },
+            include: {
+                subjects: {
+                    include: {
+                        subject: true,
+                    },
+                },
+                qualification: true,
+                board: true,
+                student: true,
+            },
+        });
+        if (!detail) {
+            throw new common_1.NotFoundException(`Student Academic Detail with ID ${academicDetailId} not found`);
+        }
+        return detail;
+    }
+    async findByStudent(studentId) {
+        return this.prisma.studentAcademicDetail.findMany({
+            where: { studentId, IsDeleted: false },
+            include: {
+                subjects: {
+                    include: {
+                        subject: true,
+                    },
+                },
+                qualification: true,
+                board: true,
+            },
+            orderBy: { qualificationId: 'asc' },
+        });
+    }
+    async update(academicDetailId, data) {
+        const existing = await this.findOne(academicDetailId);
+        const marksType = data.marksType !== undefined ? data.marksType : existing.marksType;
+        const maxMarks = data.maxMarks !== undefined ? Number(data.maxMarks) : Number(existing.maxMarks);
+        const obtainedMarks = data.obtainedMarks !== undefined
+            ? Number(data.obtainedMarks)
+            : Number(existing.obtainedMarks);
+        const percentageInput = data.percentage !== undefined ? Number(data.percentage) : Number(existing.percentage);
+        const computed = computeAcademicResult({
+            marksType,
+            maxMarks,
+            obtainedMarks,
+            percentage: percentageInput,
+        });
+        return this.prisma.studentAcademicDetail.update({
+            where: { academicDetailId },
+            data: {
+                qualificationId: data.qualificationId !== undefined ? Number(data.qualificationId) : undefined,
+                boardId: data.boardId !== undefined ? Number(data.boardId) : undefined,
+                schoolName: data.schoolName,
+                passingYear: data.passingYear !== undefined ? Number(data.passingYear) : undefined,
+                rollNo: data.rollNo,
+                resultStatus: data.resultStatus,
+                marksType: data.marksType,
+                maxMarks: data.maxMarks !== undefined ? Number(data.maxMarks) : undefined,
+                obtainedMarks: data.obtainedMarks !== undefined ? Number(data.obtainedMarks) : undefined,
+                percentage: computed.percentage,
+                division: data.division !== undefined && data.division !== null && data.division !== ''
+                    ? data.division
+                    : computed.division,
+                grade: data.grade !== undefined && data.grade !== null && data.grade !== ''
+                    ? data.grade
+                    : computed.grade,
+                stream: data.stream,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(academicDetailId, DeletedBy, DeletedRemarks) {
+        await this.findOne(academicDetailId);
+        return this.prisma.studentAcademicDetail.update({
+            where: { academicDetailId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.studentAcademicDetail.updateMany({
+            where: {
+                academicDetailId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} academic detail record(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.StudentAcademicService = StudentAcademicService;
+exports.StudentAcademicService = StudentAcademicService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], StudentAcademicService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-attachment/student-attachment.controller.ts":
+/*!***********************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-attachment/student-attachment.controller.ts ***!
+  \***********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAttachmentController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const student_attachment_service_1 = __webpack_require__(/*! ./student-attachment.service */ "./apps/student-service/src/students/student-attachment/student-attachment.service.ts");
+let StudentAttachmentController = class StudentAttachmentController {
+    constructor(attachmentService) {
+        this.attachmentService = attachmentService;
+    }
+    async create(data) {
+        try {
+            return await this.attachmentService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.attachmentService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.attachmentService.findOne(data.attachmentId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findByStudent(data) {
+        try {
+            return await this.attachmentService.findByStudent(data.studentId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { attachmentId, ...updateData } = data;
+            return await this.attachmentService.update(attachmentId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.attachmentService.softDelete(data.attachmentId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.attachmentService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StudentAttachmentController = StudentAttachmentController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_student_attachment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAttachmentController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_student_attachments' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StudentAttachmentController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_student_attachment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAttachmentController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_student_attachments_by_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAttachmentController.prototype, "findByStudent", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_student_attachment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAttachmentController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_student_attachment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAttachmentController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_student_attachments' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentAttachmentController.prototype, "bulkSoftDelete", null);
+exports.StudentAttachmentController = StudentAttachmentController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof student_attachment_service_1.StudentAttachmentService !== "undefined" && student_attachment_service_1.StudentAttachmentService) === "function" ? _a : Object])
+], StudentAttachmentController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-attachment/student-attachment.module.ts":
+/*!*******************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-attachment/student-attachment.module.ts ***!
+  \*******************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAttachmentModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const student_attachment_controller_1 = __webpack_require__(/*! ./student-attachment.controller */ "./apps/student-service/src/students/student-attachment/student-attachment.controller.ts");
+const student_attachment_service_1 = __webpack_require__(/*! ./student-attachment.service */ "./apps/student-service/src/students/student-attachment/student-attachment.service.ts");
+let StudentAttachmentModule = class StudentAttachmentModule {
+};
+exports.StudentAttachmentModule = StudentAttachmentModule;
+exports.StudentAttachmentModule = StudentAttachmentModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [student_attachment_controller_1.StudentAttachmentController],
+        providers: [student_attachment_service_1.StudentAttachmentService],
+    })
+], StudentAttachmentModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-attachment/student-attachment.service.ts":
+/*!********************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-attachment/student-attachment.service.ts ***!
+  \********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAttachmentService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StudentAttachmentService = class StudentAttachmentService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.studentAttachment.create({
+            data: {
+                studentId: Number(data.studentId),
+                documentType: data.documentType,
+                fileUrl: data.fileUrl,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+            include: {
+                student: true,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.studentAttachment.findMany({
+            where: { IsDeleted: false },
+            include: {
+                student: true,
+            },
+            orderBy: { CreatedOn: 'desc' },
+        });
+    }
+    async findOne(attachmentId) {
+        const attachment = await this.prisma.studentAttachment.findFirst({
+            where: { attachmentId, IsDeleted: false },
+            include: {
+                student: true,
+            },
+        });
+        if (!attachment) {
+            throw new common_1.NotFoundException(`Attachment record with ID ${attachmentId} not found`);
+        }
+        return attachment;
+    }
+    async findByStudent(studentId) {
+        return this.prisma.studentAttachment.findMany({
+            where: { studentId, IsDeleted: false },
+            include: {
+                student: true,
+            },
+            orderBy: { CreatedOn: 'desc' },
+        });
+    }
+    async update(attachmentId, data) {
+        await this.findOne(attachmentId);
+        return this.prisma.studentAttachment.update({
+            where: { attachmentId },
+            data: {
+                documentType: data.documentType,
+                fileUrl: data.fileUrl,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+            include: {
+                student: true,
+            },
+        });
+    }
+    async softDelete(attachmentId, DeletedBy, DeletedRemarks) {
+        await this.findOne(attachmentId);
+        return this.prisma.studentAttachment.update({
+            where: { attachmentId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.studentAttachment.updateMany({
+            where: {
+                attachmentId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} attachment record(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.StudentAttachmentService = StudentAttachmentService;
+exports.StudentAttachmentService = StudentAttachmentService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], StudentAttachmentService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-payment/student-payment.controller.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-payment/student-payment.controller.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentPaymentController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const student_payment_service_1 = __webpack_require__(/*! ./student-payment.service */ "./apps/student-service/src/students/student-payment/student-payment.service.ts");
+let StudentPaymentController = class StudentPaymentController {
+    constructor(paymentService) {
+        this.paymentService = paymentService;
+    }
+    async create(data) {
+        try {
+            return await this.paymentService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async createRazorpayOrder(data) {
+        try {
+            return await this.paymentService.createRazorpayOrder(data);
+        }
+        catch (error) {
+            console.error('[create_razorpay_order]', error);
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async verifyRazorpayPayment(data) {
+        try {
+            return await this.paymentService.verifyRazorpayPayment(data);
+        }
+        catch (error) {
+            console.error('[verify_razorpay_payment]', error);
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.paymentService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.paymentService.findOne(data.paymentId);
+        }
+        catch (error) {
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async findByStudent(data) {
+        try {
+            return await this.paymentService.findByStudent(data.studentId);
+        }
+        catch (error) {
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async findByOrderId(data) {
+        try {
+            return await this.paymentService.findByOrderId(data.razorpayOrderId);
+        }
+        catch (error) {
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async update(data) {
+        try {
+            const { paymentId, ...updateData } = data;
+            return await this.paymentService.update(paymentId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.paymentService.softDelete(data.paymentId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.paymentService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+};
+exports.StudentPaymentController = StudentPaymentController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_student_payment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_razorpay_order' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "createRazorpayOrder", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'verify_razorpay_payment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "verifyRazorpayPayment", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_student_payments' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_student_payment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_student_payments_by_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "findByStudent", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_student_payment_by_order_id' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "findByOrderId", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_student_payment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_student_payment' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_student_payments' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "bulkSoftDelete", null);
+exports.StudentPaymentController = StudentPaymentController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof student_payment_service_1.StudentPaymentService !== "undefined" && student_payment_service_1.StudentPaymentService) === "function" ? _a : Object])
+], StudentPaymentController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-payment/student-payment.module.ts":
+/*!*************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-payment/student-payment.module.ts ***!
+  \*************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentPaymentModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const student_payment_controller_1 = __webpack_require__(/*! ./student-payment.controller */ "./apps/student-service/src/students/student-payment/student-payment.controller.ts");
+const student_payment_service_1 = __webpack_require__(/*! ./student-payment.service */ "./apps/student-service/src/students/student-payment/student-payment.service.ts");
+let StudentPaymentModule = class StudentPaymentModule {
+};
+exports.StudentPaymentModule = StudentPaymentModule;
+exports.StudentPaymentModule = StudentPaymentModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [student_payment_controller_1.StudentPaymentController],
+        providers: [student_payment_service_1.StudentPaymentService],
+    })
+], StudentPaymentModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-payment/student-payment.service.ts":
+/*!**************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-payment/student-payment.service.ts ***!
+  \**************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentPaymentService = void 0;
+exports.extractErrorMessage = extractErrorMessage;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const crypto = __importStar(__webpack_require__(/*! crypto */ "crypto"));
+const Razorpay = __webpack_require__(/*! razorpay */ "razorpay");
+function cleanEnv(value) {
+    return String(value || '')
+        .trim()
+        .replace(/^['"]|['"]$/g, '');
+}
+function extractErrorMessage(error) {
+    if (!error)
+        return 'Unknown error';
+    if (typeof error === 'string')
+        return error;
+    const err = error;
+    if (typeof err.error?.description === 'string' && err.error.description) {
+        return err.error.description;
+    }
+    if (typeof err.message === 'string' && err.message.trim()) {
+        return err.message;
+    }
+    if (typeof err.getResponse === 'function') {
+        const response = err.getResponse();
+        if (typeof response === 'string' && response.trim())
+            return response;
+        if (response && typeof response === 'object') {
+            const msg = response.message;
+            if (typeof msg === 'string' && msg.trim())
+                return msg;
+            if (Array.isArray(msg))
+                return msg.join(', ');
+        }
+    }
+    if (typeof err.response?.message === 'string' && err.response.message.trim()) {
+        return err.response.message;
+    }
+    if (Array.isArray(err.response?.message)) {
+        return err.response.message.join(', ');
+    }
+    try {
+        return JSON.stringify(error);
+    }
+    catch {
+        return 'Unknown error';
+    }
+}
+let StudentPaymentService = class StudentPaymentService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    getRazorpayClient() {
+        const keyId = cleanEnv(process.env.RAZORPAY_KEY_ID);
+        const keySecret = cleanEnv(process.env.RAZORPAY_KEY_SECRET);
+        if (!keyId || !keySecret) {
+            throw new common_1.BadRequestException('Razorpay keys are not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env and restart the API.');
+        }
+        if (keyId.includes('replace_me') || keySecret.includes('replace_me')) {
+            throw new common_1.BadRequestException('Replace placeholder Razorpay keys in BACELAR_ApiNode/.env with your test keys, then restart npm run start:dev:all');
+        }
+        return {
+            keyId,
+            client: new Razorpay({ key_id: keyId, key_secret: keySecret }),
+        };
+    }
+    async create(data) {
+        return this.prisma.studentPayment.create({
+            data: {
+                studentId: Number(data.studentId),
+                feeType: data.feeType,
+                amountPaid: Number(data.amountPaid),
+                paymentStatus: data.paymentStatus || 'PENDING',
+                razorpayOrderId: data.razorpayOrderId || null,
+                razorpayPaymentId: data.razorpayPaymentId || null,
+                razorpaySignature: data.razorpaySignature || null,
+                gatewayResponse: data.gatewayResponse || null,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+            include: {
+                student: true,
+            },
+        });
+    }
+    async createRazorpayOrder(data) {
+        const studentId = Number(data.studentId);
+        const feeType = (data.feeType || 'REGISTRATION').toUpperCase();
+        const student = await this.prisma.student.findFirst({
+            where: { StudentRegistrationId: studentId, IsDeleted: false },
+            include: { program: true, admissionSession: true },
+        });
+        if (!student) {
+            throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
+        }
+        if (!student.programId || !student.admissionSessionId) {
+            throw new common_1.BadRequestException('Student program and admission session must be saved before payment');
+        }
+        const feeConfig = await this.prisma.programFeeConfig.findFirst({
+            where: {
+                programId: student.programId,
+                admissionSessionId: student.admissionSessionId,
+                IsDeleted: false,
+                IsActive: true,
+            },
+        });
+        if (!feeConfig) {
+            throw new common_1.NotFoundException(`Fee configuration not found for program ${student.programId} and session ${student.admissionSessionId}`);
+        }
+        const amount = feeType === 'EXAMINATION'
+            ? Number(feeConfig.examinationFinal)
+            : Number(feeConfig.registrationFinal);
+        if (!amount || amount <= 0) {
+            throw new common_1.BadRequestException('Payable fee amount is zero. Use exemption flow instead of Razorpay.');
+        }
+        const existingSuccess = await this.prisma.studentPayment.findFirst({
+            where: {
+                studentId,
+                feeType,
+                paymentStatus: 'SUCCESS',
+                IsDeleted: false,
+            },
+        });
+        if (existingSuccess) {
+            throw new common_1.BadRequestException(`A successful ${feeType} payment already exists for this student`);
+        }
+        const { keyId, client } = this.getRazorpayClient();
+        const amountInPaise = Math.round(amount * 100);
+        let order;
+        try {
+            order = await client.orders.create({
+                amount: amountInPaise,
+                currency: 'INR',
+                receipt: `stu_${studentId}_${Date.now()}`.slice(0, 40),
+                notes: {
+                    studentId: String(studentId),
+                    feeType,
+                    registrationNo: student.registrationNo || '',
+                },
+            });
+        }
+        catch (err) {
+            throw new common_1.BadRequestException(`Razorpay order failed: ${extractErrorMessage(err)}. If you just added keys, restart the API (npm run start:dev:all).`);
+        }
+        if (!order?.id) {
+            throw new common_1.BadRequestException('Razorpay did not return an order id');
+        }
+        const payment = await this.prisma.studentPayment.create({
+            data: {
+                studentId,
+                feeType,
+                amountPaid: amount,
+                paymentStatus: 'PENDING',
+                razorpayOrderId: order.id,
+                CreatedBy: data.CreatedBy,
+                Remarks: `${feeType} fee order created`,
+                IsActive: true,
+                IsDeleted: false,
+            },
+            include: {
+                student: {
+                    include: {
+                        program: { include: { programCategory: true } },
+                        admissionSession: true,
+                    },
+                },
+            },
+        });
+        return {
+            paymentId: payment.paymentId,
+            razorpayOrderId: order.id,
+            amount,
+            amountInPaise,
+            currency: 'INR',
+            keyId,
+            feeType,
+            student: payment.student,
+        };
+    }
+    async verifyRazorpayPayment(data) {
+        const keySecret = process.env.RAZORPAY_KEY_SECRET;
+        if (!keySecret) {
+            throw new common_1.BadRequestException('Razorpay keys are not configured. Set RAZORPAY_KEY_SECRET in .env');
+        }
+        const payment = await this.findOne(Number(data.paymentId));
+        if (payment.razorpayOrderId !== data.razorpayOrderId) {
+            throw new common_1.BadRequestException('Order ID does not match payment record');
+        }
+        const expectedSignature = crypto
+            .createHmac('sha256', keySecret)
+            .update(`${data.razorpayOrderId}|${data.razorpayPaymentId}`)
+            .digest('hex');
+        if (expectedSignature !== data.razorpaySignature) {
+            await this.prisma.studentPayment.update({
+                where: { paymentId: payment.paymentId },
+                data: {
+                    paymentStatus: 'FAILED',
+                    razorpayPaymentId: data.razorpayPaymentId,
+                    razorpaySignature: data.razorpaySignature,
+                    gatewayResponse: data.gatewayResponse || null,
+                    UpdatedBy: data.UpdatedBy,
+                    Remarks: 'Razorpay signature verification failed',
+                },
+            });
+            throw new common_1.BadRequestException('Payment signature verification failed');
+        }
+        return this.prisma.studentPayment.update({
+            where: { paymentId: payment.paymentId },
+            data: {
+                paymentStatus: 'SUCCESS',
+                razorpayPaymentId: data.razorpayPaymentId,
+                razorpaySignature: data.razorpaySignature,
+                gatewayResponse: data.gatewayResponse || null,
+                UpdatedBy: data.UpdatedBy,
+                Remarks: 'Payment verified successfully via Razorpay',
+            },
+            include: {
+                student: true,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.studentPayment.findMany({
+            where: { IsDeleted: false },
+            include: {
+                student: true,
+            },
+            orderBy: { CreatedOn: 'desc' },
+        });
+    }
+    async findOne(paymentId) {
+        const payment = await this.prisma.studentPayment.findFirst({
+            where: { paymentId, IsDeleted: false },
+            include: {
+                student: true,
+            },
+        });
+        if (!payment) {
+            throw new common_1.NotFoundException(`Payment record with ID ${paymentId} not found`);
+        }
+        return payment;
+    }
+    async findByStudent(studentId) {
+        return this.prisma.studentPayment.findMany({
+            where: { studentId, IsDeleted: false },
+            include: {
+                student: true,
+            },
+            orderBy: { CreatedOn: 'desc' },
+        });
+    }
+    async findByOrderId(razorpayOrderId) {
+        const payment = await this.prisma.studentPayment.findFirst({
+            where: { razorpayOrderId, IsDeleted: false },
+            include: {
+                student: true,
+            },
+        });
+        if (!payment) {
+            throw new common_1.NotFoundException(`Payment with Razorpay Order ID ${razorpayOrderId} not found`);
+        }
+        return payment;
+    }
+    async update(paymentId, data) {
+        await this.findOne(paymentId);
+        return this.prisma.studentPayment.update({
+            where: { paymentId },
+            data: {
+                paymentStatus: data.paymentStatus,
+                razorpayPaymentId: data.razorpayPaymentId,
+                razorpaySignature: data.razorpaySignature,
+                gatewayResponse: data.gatewayResponse,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+            include: {
+                student: true,
+            },
+        });
+    }
+    async softDelete(paymentId, DeletedBy, DeletedRemarks) {
+        await this.findOne(paymentId);
+        return this.prisma.studentPayment.update({
+            where: { paymentId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.studentPayment.updateMany({
+            where: {
+                paymentId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} payment record(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.StudentPaymentService = StudentPaymentService;
+exports.StudentPaymentService = StudentPaymentService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], StudentPaymentService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-profile/student-profile.controller.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-profile/student-profile.controller.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentProfileController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const student_profile_service_1 = __webpack_require__(/*! ./student-profile.service */ "./apps/student-service/src/students/student-profile/student-profile.service.ts");
+let StudentProfileController = class StudentProfileController {
+    constructor(studentProfileService) {
+        this.studentProfileService = studentProfileService;
+    }
+    async create(data) {
+        try {
+            return await this.studentProfileService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.studentProfileService.findOne(data.studentId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { studentId, ...updateData } = data;
+            return await this.studentProfileService.update(studentId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.studentProfileService.softDelete(data.studentId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.studentProfileService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StudentProfileController = StudentProfileController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_student_profile' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentProfileController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_student_profile' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentProfileController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_student_profile' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentProfileController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_student_profile' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentProfileController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_student_profiles' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentProfileController.prototype, "bulkSoftDelete", null);
+exports.StudentProfileController = StudentProfileController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof student_profile_service_1.StudentProfileService !== "undefined" && student_profile_service_1.StudentProfileService) === "function" ? _a : Object])
+], StudentProfileController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-profile/student-profile.module.ts":
+/*!*************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-profile/student-profile.module.ts ***!
+  \*************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentProfileModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const student_profile_service_1 = __webpack_require__(/*! ./student-profile.service */ "./apps/student-service/src/students/student-profile/student-profile.service.ts");
+const student_profile_controller_1 = __webpack_require__(/*! ./student-profile.controller */ "./apps/student-service/src/students/student-profile/student-profile.controller.ts");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StudentProfileModule = class StudentProfileModule {
+};
+exports.StudentProfileModule = StudentProfileModule;
+exports.StudentProfileModule = StudentProfileModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [student_profile_controller_1.StudentProfileController],
+        providers: [student_profile_service_1.StudentProfileService],
+        exports: [student_profile_service_1.StudentProfileService],
+    })
+], StudentProfileModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-profile/student-profile.service.ts":
+/*!**************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-profile/student-profile.service.ts ***!
+  \**************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentProfileService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StudentProfileService = class StudentProfileService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        const existing = await this.prisma.studentProfile.findUnique({
+            where: { studentId: data.studentId },
+        });
+        if (existing) {
+            throw new common_1.ConflictException('Profile already exists for this student');
+        }
+        const student = await this.prisma.student.findUnique({
+            where: { StudentRegistrationId: data.studentId },
+        });
+        if (!student || student.IsDeleted) {
+            throw new common_1.NotFoundException('Student account not found');
+        }
+        return this.prisma.studentProfile.create({
+            data: {
+                studentId: data.studentId,
+                studentNameHindi: data.studentNameHindi || null,
+                fatherNameHindi: data.fatherNameHindi || null,
+                motherName: data.motherName || null,
+                motherNameHindi: data.motherNameHindi || null,
+                fatherMobileNumber: data.fatherMobileNumber || null,
+                dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+                gender: data.gender || null,
+                maritalStatus: data.maritalStatus || null,
+                religion: data.religion || null,
+                nationality: data.nationality || null,
+                category: data.category || null,
+                subCategory: data.subCategory || null,
+                physicalHandicap: data.physicalHandicap || null,
+                certificateNo: data.certificateNo || null,
+                certificateAttachment: data.certificateAttachment || null,
+                aadharIdNo: data.aadharIdNo || null,
+                apaarIdNo: data.apaarIdNo || null,
+                nameAsPerAdhar: data.nameAsPerAdhar || null,
+                dobAsPerAdhar: data.dobAsPerAdhar ? new Date(data.dobAsPerAdhar) : null,
+                CaddressLine1: data.CaddressLine1 || null,
+                CaddressLine2: data.CaddressLine2 || null,
+                CaddressLine3: data.CaddressLine3 || null,
+                Cstate: data.Cstate || null,
+                Ccity: data.Ccity || null,
+                Cpincode: data.Cpincode || null,
+                PaddressLine1: data.PaddressLine1 || null,
+                PaddressLine2: data.PaddressLine2 || null,
+                PaddressLine3: data.PaddressLine3 || null,
+                Pstate: data.Pstate || null,
+                Pcity: data.Pcity || null,
+                Ppincode: data.Ppincode || null,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findOne(studentId) {
+        const profile = await this.prisma.studentProfile.findFirst({
+            where: { studentId, IsDeleted: false },
+            include: {
+                student: true,
+            },
+        });
+        if (!profile) {
+            throw new common_1.NotFoundException(`Student profile with student ID ${studentId} not found`);
+        }
+        const { student, ...profileData } = profile;
+        return {
+            ...profileData,
+            studentName: student.candidateName,
+            studentPhoneNo: student.mobileNo,
+            email: student.email,
+            fatherName: student.fatherName,
+            registrationNo: student.registrationNo,
+        };
+    }
+    async update(studentId, data) {
+        await this.findOne(studentId);
+        return this.prisma.studentProfile.update({
+            where: { studentId },
+            data: {
+                studentNameHindi: data.studentNameHindi,
+                fatherNameHindi: data.fatherNameHindi,
+                motherName: data.motherName,
+                motherNameHindi: data.motherNameHindi,
+                fatherMobileNumber: data.fatherMobileNumber,
+                dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+                gender: data.gender,
+                maritalStatus: data.maritalStatus,
+                religion: data.religion,
+                nationality: data.nationality,
+                category: data.category,
+                subCategory: data.subCategory,
+                physicalHandicap: data.physicalHandicap,
+                certificateNo: data.certificateNo,
+                certificateAttachment: data.certificateAttachment,
+                aadharIdNo: data.aadharIdNo,
+                apaarIdNo: data.apaarIdNo,
+                nameAsPerAdhar: data.nameAsPerAdhar,
+                dobAsPerAdhar: data.dobAsPerAdhar
+                    ? new Date(data.dobAsPerAdhar)
+                    : data.dobAsPerAdhar === null
+                        ? null
+                        : undefined,
+                CaddressLine1: data.CaddressLine1,
+                CaddressLine2: data.CaddressLine2,
+                CaddressLine3: data.CaddressLine3,
+                Cstate: data.Cstate,
+                Ccity: data.Ccity,
+                Cpincode: data.Cpincode,
+                PaddressLine1: data.PaddressLine1,
+                PaddressLine2: data.PaddressLine2,
+                PaddressLine3: data.PaddressLine3,
+                Pstate: data.Pstate,
+                Pcity: data.Pcity,
+                Ppincode: data.Ppincode,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(studentId, DeletedBy, DeletedRemarks) {
+        await this.findOne(studentId);
+        return this.prisma.studentProfile.update({
+            where: { studentId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.studentProfile.updateMany({
+            where: {
+                studentProfileId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} student profile(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.StudentProfileService = StudentProfileService;
+exports.StudentProfileService = StudentProfileService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], StudentProfileService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-program-subject/student-program-subject.controller.ts":
+/*!*********************************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-program-subject/student-program-subject.controller.ts ***!
+  \*********************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentProgramSubjectController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const student_program_subject_service_1 = __webpack_require__(/*! ./student-program-subject.service */ "./apps/student-service/src/students/student-program-subject/student-program-subject.service.ts");
+let StudentProgramSubjectController = class StudentProgramSubjectController {
+    constructor(programSubjectService) {
+        this.programSubjectService = programSubjectService;
+    }
+    async save(data) {
+        try {
+            return await this.programSubjectService.saveForStudent(data.studentId, data.programSubjectIds, data.CreatedBy);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findByStudent(data) {
+        try {
+            return await this.programSubjectService.findByStudent(data.studentId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StudentProgramSubjectController = StudentProgramSubjectController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'save_student_program_subjects' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentProgramSubjectController.prototype, "save", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_student_program_subjects_by_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentProgramSubjectController.prototype, "findByStudent", null);
+exports.StudentProgramSubjectController = StudentProgramSubjectController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof student_program_subject_service_1.StudentProgramSubjectService !== "undefined" && student_program_subject_service_1.StudentProgramSubjectService) === "function" ? _a : Object])
+], StudentProgramSubjectController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-program-subject/student-program-subject.module.ts":
+/*!*****************************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-program-subject/student-program-subject.module.ts ***!
+  \*****************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentProgramSubjectModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const student_program_subject_controller_1 = __webpack_require__(/*! ./student-program-subject.controller */ "./apps/student-service/src/students/student-program-subject/student-program-subject.controller.ts");
+const student_program_subject_service_1 = __webpack_require__(/*! ./student-program-subject.service */ "./apps/student-service/src/students/student-program-subject/student-program-subject.service.ts");
+let StudentProgramSubjectModule = class StudentProgramSubjectModule {
+};
+exports.StudentProgramSubjectModule = StudentProgramSubjectModule;
+exports.StudentProgramSubjectModule = StudentProgramSubjectModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [student_program_subject_controller_1.StudentProgramSubjectController],
+        providers: [student_program_subject_service_1.StudentProgramSubjectService],
+        exports: [student_program_subject_service_1.StudentProgramSubjectService],
+    })
+], StudentProgramSubjectModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/student-program-subject/student-program-subject.service.ts":
+/*!******************************************************************************************************!*\
+  !*** ./apps/student-service/src/students/student-program-subject/student-program-subject.service.ts ***!
+  \******************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentProgramSubjectService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StudentProgramSubjectService = class StudentProgramSubjectService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async saveForStudent(studentId, programSubjectIds, CreatedBy) {
+        const student = await this.prisma.student.findFirst({
+            where: { StudentRegistrationId: Number(studentId), IsDeleted: false },
+        });
+        if (!student) {
+            throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
+        }
+        if (!student.programId) {
+            throw new common_1.BadRequestException('Student has no program assigned');
+        }
+        const ids = [
+            ...new Set((programSubjectIds || [])
+                .map((id) => Number(id))
+                .filter((id) => Number.isFinite(id) && id > 0)),
+        ];
+        if (ids.length > 0) {
+            const masters = await this.prisma.programSubjectMaster.findMany({
+                where: {
+                    programSubjectId: { in: ids },
+                    programId: student.programId,
+                    IsDeleted: false,
+                },
+            });
+            const allowed = new Set(masters.map((m) => m.programSubjectId));
+            if (ids.some((id) => !allowed.has(id))) {
+                throw new common_1.BadRequestException('One or more program subjects are invalid for this program');
+            }
+        }
+        await this.prisma.$transaction(async (tx) => {
+            await tx.studentProgramSubject.deleteMany({
+                where: { studentId: Number(studentId) },
+            });
+            if (ids.length > 0) {
+                await tx.studentProgramSubject.createMany({
+                    data: ids.map((id, idx) => ({
+                        studentId: Number(studentId),
+                        programSubjectId: id,
+                        sequenceNo: idx + 1,
+                        CreatedBy: CreatedBy || 'System',
+                        IsActive: true,
+                        IsDeleted: false,
+                    })),
+                });
+            }
+        });
+        return this.findByStudent(studentId);
+    }
+    async findByStudent(studentId) {
+        return this.prisma.studentProgramSubject.findMany({
+            where: { studentId: Number(studentId), IsDeleted: false },
+            include: {
+                programSubject: {
+                    select: {
+                        programSubjectId: true,
+                        programSubjectName: true,
+                        programId: true,
+                    },
+                },
+            },
+            orderBy: { sequenceNo: 'asc' },
+        });
+    }
+};
+exports.StudentProgramSubjectService = StudentProgramSubjectService;
+exports.StudentProgramSubjectService = StudentProgramSubjectService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], StudentProgramSubjectService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/students.controller.ts":
+/*!******************************************************************!*\
+  !*** ./apps/student-service/src/students/students.controller.ts ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentsController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const students_service_1 = __webpack_require__(/*! ./students.service */ "./apps/student-service/src/students/students.service.ts");
+let StudentsController = class StudentsController {
+    constructor(studentsService) {
+        this.studentsService = studentsService;
+    }
+    async login(data) {
+        try {
+            return await this.studentsService.login(data.registrationNo, data.password);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async changePassword(data) {
+        try {
+            return await this.studentsService.changePassword(data.registrationNo, data.currentPassword, data.newPassword);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async adminResetPassword(data) {
+        try {
+            return await this.studentsService.adminResetPassword(data.StudentRegistrationId, data.UpdatedBy || 'Admin User');
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async create(data) {
+        try {
+            return await this.studentsService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.studentsService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.studentsService.findOne(data.StudentRegistrationId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { StudentRegistrationId, ...updateData } = data;
+            return await this.studentsService.update(StudentRegistrationId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.studentsService.softDelete(data.StudentRegistrationId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.studentsService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.StudentsController = StudentsController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'login_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "login", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'change_password_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "changePassword", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_reset_password_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "adminResetPassword", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_students' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'soft_delete_student' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_soft_delete_students' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentsController.prototype, "bulkSoftDelete", null);
+exports.StudentsController = StudentsController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof students_service_1.StudentsService !== "undefined" && students_service_1.StudentsService) === "function" ? _a : Object])
+], StudentsController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/students.module.ts":
+/*!**************************************************************!*\
+  !*** ./apps/student-service/src/students/students.module.ts ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentsModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const students_controller_1 = __webpack_require__(/*! ./students.controller */ "./apps/student-service/src/students/students.controller.ts");
+const students_service_1 = __webpack_require__(/*! ./students.service */ "./apps/student-service/src/students/students.service.ts");
+const student_profile_module_1 = __webpack_require__(/*! ./student-profile/student-profile.module */ "./apps/student-service/src/students/student-profile/student-profile.module.ts");
+const student_academic_module_1 = __webpack_require__(/*! ./student-academic/student-academic.module */ "./apps/student-service/src/students/student-academic/student-academic.module.ts");
+const student_academic_subject_module_1 = __webpack_require__(/*! ./student-academic-subject/student-academic-subject.module */ "./apps/student-service/src/students/student-academic-subject/student-academic-subject.module.ts");
+const student_program_subject_module_1 = __webpack_require__(/*! ./student-program-subject/student-program-subject.module */ "./apps/student-service/src/students/student-program-subject/student-program-subject.module.ts");
+const student_payment_module_1 = __webpack_require__(/*! ./student-payment/student-payment.module */ "./apps/student-service/src/students/student-payment/student-payment.module.ts");
+const student_attachment_module_1 = __webpack_require__(/*! ./student-attachment/student-attachment.module */ "./apps/student-service/src/students/student-attachment/student-attachment.module.ts");
+let StudentsModule = class StudentsModule {
+};
+exports.StudentsModule = StudentsModule;
+exports.StudentsModule = StudentsModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            prisma_1.PrismaModule,
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET || 'super-secret-jwt-key',
+                signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
+            }),
+            student_profile_module_1.StudentProfileModule,
+            student_academic_module_1.StudentAcademicModule,
+            student_academic_subject_module_1.StudentAcademicSubjectModule,
+            student_program_subject_module_1.StudentProgramSubjectModule,
+            student_payment_module_1.StudentPaymentModule,
+            student_attachment_module_1.StudentAttachmentModule,
+        ],
+        controllers: [students_controller_1.StudentsController],
+        providers: [students_service_1.StudentsService],
+    })
+], StudentsModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/students/students.service.ts":
+/*!***************************************************************!*\
+  !*** ./apps/student-service/src/students/students.service.ts ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentsService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
+const bcrypt = __importStar(__webpack_require__(/*! bcryptjs */ "bcryptjs"));
+const STUDENT_ROLE_ID = 1;
+let StudentsService = class StudentsService {
+    constructor(prisma, jwtService) {
+        this.prisma = prisma;
+        this.jwtService = jwtService;
+    }
+    sanitizeStudent(student) {
+        const { loginMaster, ...rest } = student;
+        return {
+            ...rest,
+            loginPasswordPlain: loginMaster?.PlainPassword ?? null,
+            IsPasswordUpdated: loginMaster?.IsPasswordUpdated ?? false,
+            LastLogin: loginMaster?.LastLogin ?? null,
+        };
+    }
+    generateRandomPassword() {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const digits = '0123456789';
+        let pwd = '';
+        for (let i = 0; i < 4; i++) {
+            pwd += letters.charAt(Math.floor(Math.random() * letters.length));
+        }
+        for (let i = 0; i < 4; i++) {
+            pwd += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+        return pwd;
+    }
+    async generateRegistrationNumber() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const cycleStartYear = month >= 3 ? year : year - 1;
+        const cycleStartDate = new Date(cycleStartYear, 3, 1, 0, 0, 0, 0);
+        const count = await this.prisma.student.count({
+            where: {
+                CreatedOn: {
+                    gte: cycleStartDate,
+                },
+            },
+        });
+        const yyyy = year.toString();
+        const mm = (month + 1).toString().padStart(2, '0');
+        const dd = now.getDate().toString().padStart(2, '0');
+        let serial = count + 1;
+        let regNo = `${yyyy}${mm}${dd}${serial.toString().padStart(4, '0')}`;
+        let isUnique = false;
+        while (!isUnique) {
+            const existingRegNo = await this.prisma.student.findUnique({
+                where: { registrationNo: regNo },
+            });
+            if (!existingRegNo) {
+                isUnique = true;
+            }
+            else {
+                serial++;
+                regNo = `${yyyy}${mm}${dd}${serial.toString().padStart(4, '0')}`;
+            }
+        }
+        return regNo;
+    }
+    async create(data) {
+        const existingEmail = await this.prisma.student.findUnique({
+            where: { email: data.email },
+        });
+        if (existingEmail) {
+            throw new common_1.ConflictException('Email already registered');
+        }
+        let regNo = data.registrationNo;
+        if (!regNo) {
+            regNo = await this.generateRegistrationNumber();
+        }
+        else {
+            const existingReg = await this.prisma.student.findUnique({
+                where: { registrationNo: regNo },
+            });
+            if (existingReg) {
+                throw new common_1.ConflictException('Registration number already exists');
+            }
+        }
+        const plainTextPassword = this.generateRandomPassword();
+        const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
+        const createdBy = data.CreatedBy || 'System';
+        const newStudent = await this.prisma.$transaction(async (tx) => {
+            const student = await tx.student.create({
+                data: {
+                    candidateName: data.candidateName,
+                    fatherName: data.fatherName,
+                    email: data.email,
+                    mobileNo: data.mobileNo,
+                    registrationNo: regNo,
+                    CreatedBy: createdBy,
+                    Remarks: data.Remarks,
+                    IsActive: true,
+                    IsDeleted: false,
+                },
+            });
+            await tx.loginMaster.create({
+                data: {
+                    StudentId: student.StudentRegistrationId,
+                    RegistrationNo: regNo,
+                    LoginName: data.candidateName || regNo,
+                    Mobile: data.mobileNo,
+                    EmailId: data.email,
+                    Password: hashedPassword,
+                    PlainPassword: plainTextPassword,
+                    OldPassword: null,
+                    IsPasswordUpdated: false,
+                    RoleId: STUDENT_ROLE_ID,
+                    ClientId: data.ClientId != null ? Number(data.ClientId) : null,
+                    IsActive: true,
+                    CreatedBy: createdBy,
+                    Remarks: data.Remarks || null,
+                },
+            });
+            return tx.student.findUnique({
+                where: { StudentRegistrationId: student.StudentRegistrationId },
+                include: { loginMaster: true },
+            });
+        });
+        return {
+            ...this.sanitizeStudent(newStudent),
+            plainTextPassword,
+        };
+    }
+    async login(registrationNo, passwordString, meta) {
+        const login = await this.prisma.loginMaster.findUnique({
+            where: { RegistrationNo: registrationNo },
+            include: {
+                student: true,
+            },
+        });
+        if (!login ||
+            !login.IsActive ||
+            !login.student ||
+            login.student.IsDeleted ||
+            !login.student.IsActive) {
+            throw new common_1.UnauthorizedException('Invalid credentials or account is disabled');
+        }
+        const isPasswordValid = await bcrypt.compare(passwordString, login.Password);
+        if (!isPasswordValid) {
+            throw new common_1.UnauthorizedException('Invalid credentials or account is disabled');
+        }
+        await this.prisma.loginMaster.update({
+            where: { LoginId: login.LoginId },
+            data: {
+                LastLogin: new Date(),
+                IpAddress: meta?.IpAddress || login.IpAddress,
+                MACAddress: meta?.MACAddress || login.MACAddress,
+                ModifyBy: 'System-Login',
+            },
+        });
+        const payload = {
+            sub: login.student.StudentRegistrationId,
+            registrationNo: login.student.registrationNo,
+            loginId: login.LoginId,
+            roleId: login.RoleId,
+        };
+        const token = this.jwtService.sign(payload);
+        const sanitized = this.sanitizeStudent({
+            ...login.student,
+            loginMaster: login,
+        });
+        delete sanitized.loginPasswordPlain;
+        return {
+            status: 'success',
+            token,
+            student: sanitized,
+        };
+    }
+    async findAll() {
+        const rows = await this.prisma.student.findMany({
+            where: {
+                IsDeleted: false,
+            },
+            include: {
+                loginMaster: true,
+            },
+            orderBy: {
+                CreatedOn: 'desc',
+            },
+        });
+        return rows.map((s) => this.sanitizeStudent(s));
+    }
+    async findOne(StudentRegistrationId) {
+        const student = await this.prisma.student.findFirst({
+            where: {
+                StudentRegistrationId,
+                IsDeleted: false,
+            },
+            include: {
+                program: {
+                    include: { programCategory: true },
+                },
+                admissionSession: true,
+                loginMaster: true,
+            },
+        });
+        if (!student) {
+            throw new common_1.NotFoundException(`Student with Registration ID ${StudentRegistrationId} not found`);
+        }
+        return this.sanitizeStudent(student);
+    }
+    async update(StudentRegistrationId, data) {
+        await this.findOne(StudentRegistrationId);
+        if (data.email) {
+            const existingEmail = await this.prisma.student.findFirst({
+                where: {
+                    email: data.email,
+                    NOT: { StudentRegistrationId },
+                },
+            });
+            if (existingEmail) {
+                throw new common_1.ConflictException('Email already in use by another student');
+            }
+        }
+        if (data.registrationNo) {
+            const existingReg = await this.prisma.student.findFirst({
+                where: {
+                    registrationNo: data.registrationNo,
+                    NOT: { StudentRegistrationId },
+                },
+            });
+            if (existingReg) {
+                throw new common_1.ConflictException('Registration number already in use by another student');
+            }
+        }
+        const updated = await this.prisma.$transaction(async (tx) => {
+            const student = await tx.student.update({
+                where: { StudentRegistrationId },
+                data: {
+                    candidateName: data.candidateName,
+                    fatherName: data.fatherName,
+                    email: data.email,
+                    mobileNo: data.mobileNo,
+                    registrationNo: data.registrationNo,
+                    UpdatedBy: data.UpdatedBy,
+                    IsActive: data.IsActive,
+                    Remarks: data.Remarks,
+                },
+            });
+            const login = await tx.loginMaster.findUnique({
+                where: { StudentId: StudentRegistrationId },
+            });
+            if (login) {
+                await tx.loginMaster.update({
+                    where: { LoginId: login.LoginId },
+                    data: {
+                        RegistrationNo: student.registrationNo,
+                        LoginName: student.candidateName,
+                        Mobile: student.mobileNo,
+                        EmailId: student.email,
+                        IsActive: student.IsActive,
+                        ModifyBy: data.UpdatedBy || null,
+                        Remarks: data.Remarks !== undefined ? data.Remarks : undefined,
+                    },
+                });
+            }
+            return tx.student.findUnique({
+                where: { StudentRegistrationId },
+                include: { loginMaster: true },
+            });
+        });
+        return this.sanitizeStudent(updated);
+    }
+    async softDelete(StudentRegistrationId, DeletedBy, DeletedRemarks) {
+        await this.findOne(StudentRegistrationId);
+        const deleted = await this.prisma.$transaction(async (tx) => {
+            const student = await tx.student.update({
+                where: { StudentRegistrationId },
+                data: {
+                    IsDeleted: true,
+                    IsActive: false,
+                    DeletedOn: new Date(),
+                    DeletedBy: DeletedBy,
+                    DeletedRemarks: DeletedRemarks || null,
+                },
+            });
+            await tx.loginMaster.updateMany({
+                where: { StudentId: StudentRegistrationId },
+                data: {
+                    IsActive: false,
+                    ModifyBy: DeletedBy,
+                },
+            });
+            return student;
+        });
+        return this.sanitizeStudent(deleted);
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.prisma.$transaction(async (tx) => {
+            const studentResult = await tx.student.updateMany({
+                where: {
+                    StudentRegistrationId: { in: ids },
+                    IsDeleted: false,
+                },
+                data: {
+                    IsDeleted: true,
+                    IsActive: false,
+                    DeletedOn: new Date(),
+                    DeletedBy: DeletedBy,
+                    DeletedRemarks: DeletedRemarks || null,
+                },
+            });
+            await tx.loginMaster.updateMany({
+                where: { StudentId: { in: ids } },
+                data: {
+                    IsActive: false,
+                    ModifyBy: DeletedBy,
+                },
+            });
+            return studentResult;
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} student(s)`,
+            count: result.count,
+        };
+    }
+    async changePassword(registrationNo, currentPasswordString, newPasswordString) {
+        const login = await this.prisma.loginMaster.findUnique({
+            where: { RegistrationNo: registrationNo },
+            include: { student: true },
+        });
+        if (!login || !login.student || login.student.IsDeleted) {
+            return { status: 'error', message: 'Student account not found' };
+        }
+        const isPasswordValid = await bcrypt.compare(currentPasswordString, login.Password);
+        if (!isPasswordValid) {
+            return { status: 'error', message: 'Current password is incorrect' };
+        }
+        const hashedNewPassword = await bcrypt.hash(newPasswordString, 10);
+        await this.prisma.loginMaster.update({
+            where: { LoginId: login.LoginId },
+            data: {
+                OldPassword: login.PlainPassword || login.Password,
+                Password: hashedNewPassword,
+                PlainPassword: newPasswordString,
+                IsPasswordUpdated: true,
+                PasswordChangeOn: new Date(),
+                ModifyBy: registrationNo,
+            },
+        });
+        return { status: 'success', message: 'Password changed successfully' };
+    }
+    async adminResetPassword(StudentRegistrationId, UpdatedBy = 'Admin User') {
+        const student = await this.prisma.student.findFirst({
+            where: { StudentRegistrationId, IsDeleted: false },
+            include: { loginMaster: true },
+        });
+        if (!student) {
+            throw new common_1.NotFoundException(`Student with ID ${StudentRegistrationId} not found`);
+        }
+        const plainTextPassword = this.generateRandomPassword();
+        const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
+        if (student.loginMaster) {
+            await this.prisma.loginMaster.update({
+                where: { LoginId: student.loginMaster.LoginId },
+                data: {
+                    OldPassword: student.loginMaster.PlainPassword || student.loginMaster.Password,
+                    Password: hashedPassword,
+                    PlainPassword: plainTextPassword,
+                    IsPasswordUpdated: false,
+                    PasswordChangeOn: new Date(),
+                    ModifyBy: UpdatedBy,
+                },
+            });
+        }
+        else {
+            await this.prisma.loginMaster.create({
+                data: {
+                    StudentId: StudentRegistrationId,
+                    RegistrationNo: student.registrationNo,
+                    LoginName: student.candidateName,
+                    Mobile: student.mobileNo,
+                    EmailId: student.email,
+                    Password: hashedPassword,
+                    PlainPassword: plainTextPassword,
+                    IsPasswordUpdated: false,
+                    PasswordChangeOn: new Date(),
+                    RoleId: STUDENT_ROLE_ID,
+                    IsActive: true,
+                    CreatedBy: UpdatedBy,
+                    ModifyBy: UpdatedBy,
+                },
+            });
+        }
+        return {
+            status: 'success',
+            message: 'Password reset successfully',
+            StudentRegistrationId,
+            registrationNo: student.registrationNo,
+            plainTextPassword,
+        };
+    }
+};
+exports.StudentsService = StudentsService;
+exports.StudentsService = StudentsService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
+], StudentsService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/accreditation-slider/accreditation-slider.controller.ts":
+/*!**************************************************************************************************!*\
+  !*** ./apps/student-service/src/website/accreditation-slider/accreditation-slider.controller.ts ***!
+  \**************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AccreditationSliderController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const accreditation_slider_service_1 = __webpack_require__(/*! ./accreditation-slider.service */ "./apps/student-service/src/website/accreditation-slider/accreditation-slider.service.ts");
+let AccreditationSliderController = class AccreditationSliderController {
+    constructor(accreditationSliderService) {
+        this.accreditationSliderService = accreditationSliderService;
+    }
+    async create(data) {
+        try {
+            return await this.accreditationSliderService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.accreditationSliderService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.accreditationSliderService.findOne(data.accreditationSliderId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { accreditationSliderId, ...updateData } = data;
+            return await this.accreditationSliderService.update(accreditationSliderId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.accreditationSliderService.softDelete(data.accreditationSliderId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.AccreditationSliderController = AccreditationSliderController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_accreditation_slider' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AccreditationSliderController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_accreditation_sliders' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AccreditationSliderController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_accreditation_slider' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AccreditationSliderController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_accreditation_slider' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AccreditationSliderController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_accreditation_slider' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AccreditationSliderController.prototype, "softDelete", null);
+exports.AccreditationSliderController = AccreditationSliderController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof accreditation_slider_service_1.AccreditationSliderService !== "undefined" && accreditation_slider_service_1.AccreditationSliderService) === "function" ? _a : Object])
+], AccreditationSliderController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/accreditation-slider/accreditation-slider.module.ts":
+/*!**********************************************************************************************!*\
+  !*** ./apps/student-service/src/website/accreditation-slider/accreditation-slider.module.ts ***!
+  \**********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AccreditationSliderModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const accreditation_slider_controller_1 = __webpack_require__(/*! ./accreditation-slider.controller */ "./apps/student-service/src/website/accreditation-slider/accreditation-slider.controller.ts");
+const accreditation_slider_service_1 = __webpack_require__(/*! ./accreditation-slider.service */ "./apps/student-service/src/website/accreditation-slider/accreditation-slider.service.ts");
+let AccreditationSliderModule = class AccreditationSliderModule {
+};
+exports.AccreditationSliderModule = AccreditationSliderModule;
+exports.AccreditationSliderModule = AccreditationSliderModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [accreditation_slider_controller_1.AccreditationSliderController],
+        providers: [accreditation_slider_service_1.AccreditationSliderService],
+        exports: [accreditation_slider_service_1.AccreditationSliderService],
+    })
+], AccreditationSliderModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/accreditation-slider/accreditation-slider.service.ts":
+/*!***********************************************************************************************!*\
+  !*** ./apps/student-service/src/website/accreditation-slider/accreditation-slider.service.ts ***!
+  \***********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AccreditationSliderService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let AccreditationSliderService = class AccreditationSliderService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.accreditationSlider.create({
+            data: {
+                title: data.title,
+                image: data.image || null,
+                link: data.link || null,
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy || 'Admin',
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.accreditationSlider.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { accreditationSliderId: 'desc' }],
+        });
+    }
+    async findOne(accreditationSliderId) {
+        const item = await this.prisma.accreditationSlider.findFirst({
+            where: { accreditationSliderId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Accreditation slider entry with ID ${accreditationSliderId} not found`);
+        }
+        return item;
+    }
+    async update(accreditationSliderId, data) {
+        await this.findOne(accreditationSliderId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.title !== undefined)
+            updatePayload.title = data.title;
+        if (data.image !== undefined)
+            updatePayload.image = data.image;
+        if (data.link !== undefined)
+            updatePayload.link = data.link;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.prisma.accreditationSlider.update({
+            where: { accreditationSliderId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(accreditationSliderId, DeletedBy, DeletedRemarks) {
+        await this.findOne(accreditationSliderId);
+        return this.prisma.accreditationSlider.update({
+            where: { accreditationSliderId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.AccreditationSliderService = AccreditationSliderService;
+exports.AccreditationSliderService = AccreditationSliderService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], AccreditationSliderService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.controller.ts":
+/*!********************************************************************************************!*\
+  !*** ./apps/student-service/src/website/admission-enquiry/admission-enquiry.controller.ts ***!
+  \********************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7912,9 +8081,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const admission_enquiry_service_1 = __webpack_require__(91);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const admission_enquiry_service_1 = __webpack_require__(/*! ./admission-enquiry.service */ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.service.ts");
 let AdmissionEnquiryController = class AdmissionEnquiryController {
     constructor(admissionEnquiryService) {
         this.admissionEnquiryService = admissionEnquiryService;
@@ -8003,7 +8172,45 @@ exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
 
 
 /***/ }),
-/* 91 */
+
+/***/ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.module.ts":
+/*!****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/admission-enquiry/admission-enquiry.module.ts ***!
+  \****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdmissionEnquiryModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const admission_enquiry_controller_1 = __webpack_require__(/*! ./admission-enquiry.controller */ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.controller.ts");
+const admission_enquiry_service_1 = __webpack_require__(/*! ./admission-enquiry.service */ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.service.ts");
+let AdmissionEnquiryModule = class AdmissionEnquiryModule {
+};
+exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
+exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [admission_enquiry_controller_1.AdmissionEnquiryController],
+        providers: [admission_enquiry_service_1.AdmissionEnquiryService],
+        exports: [admission_enquiry_service_1.AdmissionEnquiryService],
+    })
+], AdmissionEnquiryModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.service.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/admission-enquiry/admission-enquiry.service.ts ***!
+  \*****************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8019,8 +8226,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let AdmissionEnquiryService = class AdmissionEnquiryService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -8141,7 +8348,125 @@ exports.AdmissionEnquiryService = AdmissionEnquiryService = __decorate([
 
 
 /***/ }),
-/* 92 */
+
+/***/ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.controller.ts":
+/*!********************************************************************************************!*\
+  !*** ./apps/student-service/src/website/campus-quick-link/campus-quick-link.controller.ts ***!
+  \********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CampusQuickLinkController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const campus_quick_link_service_1 = __webpack_require__(/*! ./campus-quick-link.service */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.service.ts");
+let CampusQuickLinkController = class CampusQuickLinkController {
+    constructor(campusQuickLinkService) {
+        this.campusQuickLinkService = campusQuickLinkService;
+    }
+    async create(data) {
+        try {
+            return await this.campusQuickLinkService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.campusQuickLinkService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.campusQuickLinkService.findOne(data.quickLinkId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { quickLinkId, ...updateData } = data;
+            return await this.campusQuickLinkService.update(quickLinkId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.campusQuickLinkService.softDelete(data.quickLinkId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.CampusQuickLinkController = CampusQuickLinkController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_campus_quick_link' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_campus_quick_links' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_campus_quick_link' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_campus_quick_link' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_campus_quick_link' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CampusQuickLinkController.prototype, "softDelete", null);
+exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof campus_quick_link_service_1.CampusQuickLinkService !== "undefined" && campus_quick_link_service_1.CampusQuickLinkService) === "function" ? _a : Object])
+], CampusQuickLinkController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.module.ts":
+/*!****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/campus-quick-link/campus-quick-link.module.ts ***!
+  \****************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8152,26 +8477,627 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HeroSectionModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const hero_section_controller_1 = __webpack_require__(93);
-const hero_section_service_1 = __webpack_require__(94);
-let HeroSectionModule = class HeroSectionModule {
+exports.CampusQuickLinkModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const campus_quick_link_controller_1 = __webpack_require__(/*! ./campus-quick-link.controller */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.controller.ts");
+const campus_quick_link_service_1 = __webpack_require__(/*! ./campus-quick-link.service */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.service.ts");
+let CampusQuickLinkModule = class CampusQuickLinkModule {
 };
-exports.HeroSectionModule = HeroSectionModule;
-exports.HeroSectionModule = HeroSectionModule = __decorate([
+exports.CampusQuickLinkModule = CampusQuickLinkModule;
+exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_1.PrismaModule],
-        controllers: [hero_section_controller_1.HeroSectionController],
-        providers: [hero_section_service_1.HeroSectionService],
-        exports: [hero_section_service_1.HeroSectionService],
+        controllers: [campus_quick_link_controller_1.CampusQuickLinkController],
+        providers: [campus_quick_link_service_1.CampusQuickLinkService],
+        exports: [campus_quick_link_service_1.CampusQuickLinkService],
     })
-], HeroSectionModule);
+], CampusQuickLinkModule);
 
 
 /***/ }),
-/* 93 */
+
+/***/ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.service.ts":
+/*!*****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/campus-quick-link/campus-quick-link.service.ts ***!
+  \*****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CampusQuickLinkService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let CampusQuickLinkService = class CampusQuickLinkService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.campusQuickLink.create({
+            data: {
+                quickLinkName: data.quickLinkName,
+                icon: data.icon || null,
+                pageUrl: data.pageUrl,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.campusQuickLink.findMany({
+            where: { IsDeleted: false },
+            orderBy: { quickLinkId: 'desc' },
+        });
+    }
+    async findOne(quickLinkId) {
+        const item = await this.prisma.campusQuickLink.findFirst({
+            where: { quickLinkId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Campus quick link with ID ${quickLinkId} not found`);
+        }
+        return item;
+    }
+    async update(quickLinkId, data) {
+        await this.findOne(quickLinkId);
+        return this.prisma.campusQuickLink.update({
+            where: { quickLinkId },
+            data: {
+                quickLinkName: data.quickLinkName,
+                icon: data.icon,
+                pageUrl: data.pageUrl,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async softDelete(quickLinkId, DeletedBy, DeletedRemarks) {
+        await this.findOne(quickLinkId);
+        return this.prisma.campusQuickLink.update({
+            where: { quickLinkId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.CampusQuickLinkService = CampusQuickLinkService;
+exports.CampusQuickLinkService = CampusQuickLinkService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], CampusQuickLinkService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/contact-enquiry/contact-enquiry.controller.ts":
+/*!****************************************************************************************!*\
+  !*** ./apps/student-service/src/website/contact-enquiry/contact-enquiry.controller.ts ***!
+  \****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ContactEnquiryController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const contact_enquiry_service_1 = __webpack_require__(/*! ./contact-enquiry.service */ "./apps/student-service/src/website/contact-enquiry/contact-enquiry.service.ts");
+let ContactEnquiryController = class ContactEnquiryController {
+    constructor(contactEnquiryService) {
+        this.contactEnquiryService = contactEnquiryService;
+    }
+    async create(data) {
+        try {
+            return await this.contactEnquiryService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.contactEnquiryService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.contactEnquiryService.findOne(data.contactEnquiryId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { contactEnquiryId, ...updateData } = data;
+            return await this.contactEnquiryService.update(contactEnquiryId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.contactEnquiryService.softDelete(data.contactEnquiryId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.ContactEnquiryController = ContactEnquiryController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_contact_enquiry' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ContactEnquiryController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_contact_enquiries' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ContactEnquiryController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_contact_enquiry' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ContactEnquiryController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_contact_enquiry' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ContactEnquiryController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_contact_enquiry' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ContactEnquiryController.prototype, "softDelete", null);
+exports.ContactEnquiryController = ContactEnquiryController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof contact_enquiry_service_1.ContactEnquiryService !== "undefined" && contact_enquiry_service_1.ContactEnquiryService) === "function" ? _a : Object])
+], ContactEnquiryController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/contact-enquiry/contact-enquiry.module.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/website/contact-enquiry/contact-enquiry.module.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ContactEnquiryModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const contact_enquiry_controller_1 = __webpack_require__(/*! ./contact-enquiry.controller */ "./apps/student-service/src/website/contact-enquiry/contact-enquiry.controller.ts");
+const contact_enquiry_service_1 = __webpack_require__(/*! ./contact-enquiry.service */ "./apps/student-service/src/website/contact-enquiry/contact-enquiry.service.ts");
+let ContactEnquiryModule = class ContactEnquiryModule {
+};
+exports.ContactEnquiryModule = ContactEnquiryModule;
+exports.ContactEnquiryModule = ContactEnquiryModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [contact_enquiry_controller_1.ContactEnquiryController],
+        providers: [contact_enquiry_service_1.ContactEnquiryService],
+        exports: [contact_enquiry_service_1.ContactEnquiryService],
+    })
+], ContactEnquiryModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/contact-enquiry/contact-enquiry.service.ts":
+/*!*************************************************************************************!*\
+  !*** ./apps/student-service/src/website/contact-enquiry/contact-enquiry.service.ts ***!
+  \*************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ContactEnquiryService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ContactEnquiryService = class ContactEnquiryService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.contactEnquiry.create({
+            data: {
+                name: data.name,
+                phoneNumber: data.phoneNumber,
+                email: data.email || null,
+                course: data.course || null,
+                message: data.message || null,
+                status: data.status || 'PENDING',
+                isRead: data.isRead ?? false,
+                CreatedBy: data.CreatedBy || 'System',
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.contactEnquiry.findMany({
+            where: { IsDeleted: false },
+            orderBy: { contactEnquiryId: 'desc' },
+        });
+    }
+    async findOne(contactEnquiryId) {
+        const item = await this.prisma.contactEnquiry.findFirst({
+            where: { contactEnquiryId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Contact enquiry entry with ID ${contactEnquiryId} not found`);
+        }
+        return item;
+    }
+    async update(contactEnquiryId, data) {
+        await this.findOne(contactEnquiryId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.name !== undefined)
+            updatePayload.name = data.name;
+        if (data.phoneNumber !== undefined)
+            updatePayload.phoneNumber = data.phoneNumber;
+        if (data.email !== undefined)
+            updatePayload.email = data.email;
+        if (data.course !== undefined)
+            updatePayload.course = data.course;
+        if (data.message !== undefined)
+            updatePayload.message = data.message;
+        if (data.status !== undefined)
+            updatePayload.status = data.status;
+        if (data.isRead !== undefined)
+            updatePayload.isRead = data.isRead;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.prisma.contactEnquiry.update({
+            where: { contactEnquiryId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(contactEnquiryId, DeletedBy, DeletedRemarks) {
+        await this.findOne(contactEnquiryId);
+        return this.prisma.contactEnquiry.update({
+            where: { contactEnquiryId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.ContactEnquiryService = ContactEnquiryService;
+exports.ContactEnquiryService = ContactEnquiryService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], ContactEnquiryService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/header-button/header-button.controller.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/website/header-button/header-button.controller.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeaderButtonController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const header_button_service_1 = __webpack_require__(/*! ./header-button.service */ "./apps/student-service/src/website/header-button/header-button.service.ts");
+let HeaderButtonController = class HeaderButtonController {
+    constructor(headerButtonService) {
+        this.headerButtonService = headerButtonService;
+    }
+    async create(data) {
+        try {
+            return await this.headerButtonService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.headerButtonService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.headerButtonService.findOne(data.headerButtonId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { headerButtonId, ...updateData } = data;
+            return await this.headerButtonService.update(headerButtonId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.headerButtonService.softDelete(data.headerButtonId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.HeaderButtonController = HeaderButtonController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_header_button' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HeaderButtonController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_header_buttons' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HeaderButtonController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_header_button' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HeaderButtonController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_header_button' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HeaderButtonController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_header_button' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HeaderButtonController.prototype, "softDelete", null);
+exports.HeaderButtonController = HeaderButtonController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof header_button_service_1.HeaderButtonService !== "undefined" && header_button_service_1.HeaderButtonService) === "function" ? _a : Object])
+], HeaderButtonController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/header-button/header-button.module.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/header-button/header-button.module.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeaderButtonModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const header_button_controller_1 = __webpack_require__(/*! ./header-button.controller */ "./apps/student-service/src/website/header-button/header-button.controller.ts");
+const header_button_service_1 = __webpack_require__(/*! ./header-button.service */ "./apps/student-service/src/website/header-button/header-button.service.ts");
+let HeaderButtonModule = class HeaderButtonModule {
+};
+exports.HeaderButtonModule = HeaderButtonModule;
+exports.HeaderButtonModule = HeaderButtonModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [header_button_controller_1.HeaderButtonController],
+        providers: [header_button_service_1.HeaderButtonService],
+        exports: [header_button_service_1.HeaderButtonService],
+    })
+], HeaderButtonModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/header-button/header-button.service.ts":
+/*!*********************************************************************************!*\
+  !*** ./apps/student-service/src/website/header-button/header-button.service.ts ***!
+  \*********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeaderButtonService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let HeaderButtonService = class HeaderButtonService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get headerButton() {
+        return this.prisma.headerButton;
+    }
+    async create(data) {
+        return this.headerButton.create({
+            data: {
+                title: data.title,
+                icon: data.icon || null,
+                link: data.link || null,
+                linkType: data.linkType || null,
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy || 'Admin',
+                Remarks: data.Remarks || null,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.headerButton.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { headerButtonId: 'desc' }],
+        });
+    }
+    async findOne(headerButtonId) {
+        const item = await this.headerButton.findFirst({
+            where: { headerButtonId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Header button with ID ${headerButtonId} not found`);
+        }
+        return item;
+    }
+    async update(headerButtonId, data) {
+        await this.findOne(headerButtonId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.title !== undefined)
+            updatePayload.title = data.title;
+        if (data.icon !== undefined)
+            updatePayload.icon = data.icon;
+        if (data.link !== undefined)
+            updatePayload.link = data.link;
+        if (data.linkType !== undefined)
+            updatePayload.linkType = data.linkType;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.headerButton.update({
+            where: { headerButtonId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(headerButtonId, DeletedBy, DeletedRemarks) {
+        await this.findOne(headerButtonId);
+        return this.headerButton.update({
+            where: { headerButtonId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.HeaderButtonService = HeaderButtonService;
+exports.HeaderButtonService = HeaderButtonService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], HeaderButtonService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/hero-section/hero-section.controller.ts":
+/*!**********************************************************************************!*\
+  !*** ./apps/student-service/src/website/hero-section/hero-section.controller.ts ***!
+  \**********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8190,9 +9116,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const hero_section_service_1 = __webpack_require__(94);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const hero_section_service_1 = __webpack_require__(/*! ./hero-section.service */ "./apps/student-service/src/website/hero-section/hero-section.service.ts");
 let HeroSectionController = class HeroSectionController {
     constructor(heroSectionService) {
         this.heroSectionService = heroSectionService;
@@ -8281,7 +9207,45 @@ exports.HeroSectionController = HeroSectionController = __decorate([
 
 
 /***/ }),
-/* 94 */
+
+/***/ "./apps/student-service/src/website/hero-section/hero-section.module.ts":
+/*!******************************************************************************!*\
+  !*** ./apps/student-service/src/website/hero-section/hero-section.module.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HeroSectionModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const hero_section_controller_1 = __webpack_require__(/*! ./hero-section.controller */ "./apps/student-service/src/website/hero-section/hero-section.controller.ts");
+const hero_section_service_1 = __webpack_require__(/*! ./hero-section.service */ "./apps/student-service/src/website/hero-section/hero-section.service.ts");
+let HeroSectionModule = class HeroSectionModule {
+};
+exports.HeroSectionModule = HeroSectionModule;
+exports.HeroSectionModule = HeroSectionModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [hero_section_controller_1.HeroSectionController],
+        providers: [hero_section_service_1.HeroSectionService],
+        exports: [hero_section_service_1.HeroSectionService],
+    })
+], HeroSectionModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/hero-section/hero-section.service.ts":
+/*!*******************************************************************************!*\
+  !*** ./apps/student-service/src/website/hero-section/hero-section.service.ts ***!
+  \*******************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8297,8 +9261,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let HeroSectionService = class HeroSectionService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -8394,7 +9358,125 @@ exports.HeroSectionService = HeroSectionService = __decorate([
 
 
 /***/ }),
-/* 95 */
+
+/***/ "./apps/student-service/src/website/image-gallery/image-gallery.controller.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/website/image-gallery/image-gallery.controller.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ImageGalleryController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const image_gallery_service_1 = __webpack_require__(/*! ./image-gallery.service */ "./apps/student-service/src/website/image-gallery/image-gallery.service.ts");
+let ImageGalleryController = class ImageGalleryController {
+    constructor(imageGalleryService) {
+        this.imageGalleryService = imageGalleryService;
+    }
+    async create(data) {
+        try {
+            return await this.imageGalleryService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.imageGalleryService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.imageGalleryService.findOne(data.imageGalleryId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { imageGalleryId, ...updateData } = data;
+            return await this.imageGalleryService.update(imageGalleryId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.imageGalleryService.softDelete(data.imageGalleryId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.ImageGalleryController = ImageGalleryController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_image_gallery' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ImageGalleryController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_image_galleries' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ImageGalleryController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_image_gallery' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ImageGalleryController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_image_gallery' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ImageGalleryController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_image_gallery' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ImageGalleryController.prototype, "softDelete", null);
+exports.ImageGalleryController = ImageGalleryController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof image_gallery_service_1.ImageGalleryService !== "undefined" && image_gallery_service_1.ImageGalleryService) === "function" ? _a : Object])
+], ImageGalleryController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/image-gallery/image-gallery.module.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/image-gallery/image-gallery.module.ts ***!
+  \********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8405,26 +9487,404 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NoticeBoardModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const notice_board_controller_1 = __webpack_require__(96);
-const notice_board_service_1 = __webpack_require__(97);
-let NoticeBoardModule = class NoticeBoardModule {
+exports.ImageGalleryModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const image_gallery_controller_1 = __webpack_require__(/*! ./image-gallery.controller */ "./apps/student-service/src/website/image-gallery/image-gallery.controller.ts");
+const image_gallery_service_1 = __webpack_require__(/*! ./image-gallery.service */ "./apps/student-service/src/website/image-gallery/image-gallery.service.ts");
+let ImageGalleryModule = class ImageGalleryModule {
 };
-exports.NoticeBoardModule = NoticeBoardModule;
-exports.NoticeBoardModule = NoticeBoardModule = __decorate([
+exports.ImageGalleryModule = ImageGalleryModule;
+exports.ImageGalleryModule = ImageGalleryModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_1.PrismaModule],
-        controllers: [notice_board_controller_1.NoticeBoardController],
-        providers: [notice_board_service_1.NoticeBoardService],
-        exports: [notice_board_service_1.NoticeBoardService],
+        controllers: [image_gallery_controller_1.ImageGalleryController],
+        providers: [image_gallery_service_1.ImageGalleryService],
+        exports: [image_gallery_service_1.ImageGalleryService],
     })
-], NoticeBoardModule);
+], ImageGalleryModule);
 
 
 /***/ }),
-/* 96 */
+
+/***/ "./apps/student-service/src/website/image-gallery/image-gallery.service.ts":
+/*!*********************************************************************************!*\
+  !*** ./apps/student-service/src/website/image-gallery/image-gallery.service.ts ***!
+  \*********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ImageGalleryService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let ImageGalleryService = class ImageGalleryService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    formatImages(images) {
+        if (!images)
+            return null;
+        if (Array.isArray(images))
+            return JSON.stringify(images);
+        return String(images);
+    }
+    async create(data) {
+        return this.prisma.imageGallery.create({
+            data: {
+                title: data.title,
+                category: data.category || null,
+                description: data.description || null,
+                images: this.formatImages(data.images),
+                date: data.date ? new Date(data.date) : new Date(),
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy || 'Admin',
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.imageGallery.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { imageGalleryId: 'desc' }],
+        });
+    }
+    async findOne(imageGalleryId) {
+        const item = await this.prisma.imageGallery.findFirst({
+            where: { imageGalleryId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Image gallery entry with ID ${imageGalleryId} not found`);
+        }
+        return item;
+    }
+    async update(imageGalleryId, data) {
+        await this.findOne(imageGalleryId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.title !== undefined)
+            updatePayload.title = data.title;
+        if (data.category !== undefined)
+            updatePayload.category = data.category;
+        if (data.description !== undefined)
+            updatePayload.description = data.description;
+        if (data.images !== undefined)
+            updatePayload.images = this.formatImages(data.images);
+        if (data.date !== undefined)
+            updatePayload.date = data.date ? new Date(data.date) : null;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.prisma.imageGallery.update({
+            where: { imageGalleryId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(imageGalleryId, DeletedBy, DeletedRemarks) {
+        await this.findOne(imageGalleryId);
+        return this.prisma.imageGallery.update({
+            where: { imageGalleryId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.ImageGalleryService = ImageGalleryService;
+exports.ImageGalleryService = ImageGalleryService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], ImageGalleryService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/latest-update/latest-update.controller.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/website/latest-update/latest-update.controller.ts ***!
+  \************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LatestUpdateController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const latest_update_service_1 = __webpack_require__(/*! ./latest-update.service */ "./apps/student-service/src/website/latest-update/latest-update.service.ts");
+let LatestUpdateController = class LatestUpdateController {
+    constructor(latestUpdateService) {
+        this.latestUpdateService = latestUpdateService;
+    }
+    async create(data) {
+        try {
+            return await this.latestUpdateService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.latestUpdateService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.latestUpdateService.findOne(data.latestUpdateId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { latestUpdateId, ...updateData } = data;
+            return await this.latestUpdateService.update(latestUpdateId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.latestUpdateService.softDelete(data.latestUpdateId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.LatestUpdateController = LatestUpdateController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_latest_update' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_latest_updates' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_latest_update' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_latest_update' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_latest_update' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], LatestUpdateController.prototype, "softDelete", null);
+exports.LatestUpdateController = LatestUpdateController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof latest_update_service_1.LatestUpdateService !== "undefined" && latest_update_service_1.LatestUpdateService) === "function" ? _a : Object])
+], LatestUpdateController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/latest-update/latest-update.module.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/latest-update/latest-update.module.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LatestUpdateModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const latest_update_controller_1 = __webpack_require__(/*! ./latest-update.controller */ "./apps/student-service/src/website/latest-update/latest-update.controller.ts");
+const latest_update_service_1 = __webpack_require__(/*! ./latest-update.service */ "./apps/student-service/src/website/latest-update/latest-update.service.ts");
+let LatestUpdateModule = class LatestUpdateModule {
+};
+exports.LatestUpdateModule = LatestUpdateModule;
+exports.LatestUpdateModule = LatestUpdateModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [latest_update_controller_1.LatestUpdateController],
+        providers: [latest_update_service_1.LatestUpdateService],
+        exports: [latest_update_service_1.LatestUpdateService],
+    })
+], LatestUpdateModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/latest-update/latest-update.service.ts":
+/*!*********************************************************************************!*\
+  !*** ./apps/student-service/src/website/latest-update/latest-update.service.ts ***!
+  \*********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LatestUpdateService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let LatestUpdateService = class LatestUpdateService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async create(data) {
+        return this.prisma.latestUpdate.create({
+            data: {
+                title: data.title,
+                shortName: data.shortName || null,
+                grade: data.grade || null,
+                logo: data.logo || null,
+                description: data.description || null,
+                validFrom: data.validFrom ? new Date(data.validFrom) : null,
+                validUntil: data.validUntil ? new Date(data.validUntil) : null,
+                linkUrl: data.linkUrl || null,
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.prisma.latestUpdate.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { latestUpdateId: 'desc' }],
+        });
+    }
+    async findOne(latestUpdateId) {
+        const item = await this.prisma.latestUpdate.findFirst({
+            where: { latestUpdateId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Latest update entry with ID ${latestUpdateId} not found`);
+        }
+        return item;
+    }
+    async update(latestUpdateId, data) {
+        await this.findOne(latestUpdateId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy,
+        };
+        if (data.title !== undefined)
+            updatePayload.title = data.title;
+        if (data.shortName !== undefined)
+            updatePayload.shortName = data.shortName;
+        if (data.grade !== undefined)
+            updatePayload.grade = data.grade;
+        if (data.logo !== undefined)
+            updatePayload.logo = data.logo;
+        if (data.description !== undefined)
+            updatePayload.description = data.description;
+        if (data.validFrom !== undefined)
+            updatePayload.validFrom = data.validFrom ? new Date(data.validFrom) : null;
+        if (data.validUntil !== undefined)
+            updatePayload.validUntil = data.validUntil ? new Date(data.validUntil) : null;
+        if (data.linkUrl !== undefined)
+            updatePayload.linkUrl = data.linkUrl;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.prisma.latestUpdate.update({
+            where: { latestUpdateId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(latestUpdateId, DeletedBy, DeletedRemarks) {
+        await this.findOne(latestUpdateId);
+        return this.prisma.latestUpdate.update({
+            where: { latestUpdateId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.LatestUpdateService = LatestUpdateService;
+exports.LatestUpdateService = LatestUpdateService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], LatestUpdateService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/notice-board/notice-board.controller.ts":
+/*!**********************************************************************************!*\
+  !*** ./apps/student-service/src/website/notice-board/notice-board.controller.ts ***!
+  \**********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8443,9 +9903,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const notice_board_service_1 = __webpack_require__(97);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const notice_board_service_1 = __webpack_require__(/*! ./notice-board.service */ "./apps/student-service/src/website/notice-board/notice-board.service.ts");
 let NoticeBoardController = class NoticeBoardController {
     constructor(noticeBoardService) {
         this.noticeBoardService = noticeBoardService;
@@ -8534,7 +9994,45 @@ exports.NoticeBoardController = NoticeBoardController = __decorate([
 
 
 /***/ }),
-/* 97 */
+
+/***/ "./apps/student-service/src/website/notice-board/notice-board.module.ts":
+/*!******************************************************************************!*\
+  !*** ./apps/student-service/src/website/notice-board/notice-board.module.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NoticeBoardModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const notice_board_controller_1 = __webpack_require__(/*! ./notice-board.controller */ "./apps/student-service/src/website/notice-board/notice-board.controller.ts");
+const notice_board_service_1 = __webpack_require__(/*! ./notice-board.service */ "./apps/student-service/src/website/notice-board/notice-board.service.ts");
+let NoticeBoardModule = class NoticeBoardModule {
+};
+exports.NoticeBoardModule = NoticeBoardModule;
+exports.NoticeBoardModule = NoticeBoardModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [notice_board_controller_1.NoticeBoardController],
+        providers: [notice_board_service_1.NoticeBoardService],
+        exports: [notice_board_service_1.NoticeBoardService],
+    })
+], NoticeBoardModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/notice-board/notice-board.service.ts":
+/*!*******************************************************************************!*\
+  !*** ./apps/student-service/src/website/notice-board/notice-board.service.ts ***!
+  \*******************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8550,8 +10048,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let NoticeBoardService = class NoticeBoardService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -8647,37 +10145,11 @@ exports.NoticeBoardService = NoticeBoardService = __decorate([
 
 
 /***/ }),
-/* 98 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AccreditationSliderModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const accreditation_slider_controller_1 = __webpack_require__(99);
-const accreditation_slider_service_1 = __webpack_require__(100);
-let AccreditationSliderModule = class AccreditationSliderModule {
-};
-exports.AccreditationSliderModule = AccreditationSliderModule;
-exports.AccreditationSliderModule = AccreditationSliderModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [accreditation_slider_controller_1.AccreditationSliderController],
-        providers: [accreditation_slider_service_1.AccreditationSliderService],
-        exports: [accreditation_slider_service_1.AccreditationSliderService],
-    })
-], AccreditationSliderModule);
-
-
-/***/ }),
-/* 99 */
+/***/ "./apps/student-service/src/website/stats-counter/stats-counter.controller.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/website/stats-counter/stats-counter.controller.ts ***!
+  \************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8695,17 +10167,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AccreditationSliderController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const accreditation_slider_service_1 = __webpack_require__(100);
-let AccreditationSliderController = class AccreditationSliderController {
-    constructor(accreditationSliderService) {
-        this.accreditationSliderService = accreditationSliderService;
+exports.StatsCounterController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const stats_counter_service_1 = __webpack_require__(/*! ./stats-counter.service */ "./apps/student-service/src/website/stats-counter/stats-counter.service.ts");
+let StatsCounterController = class StatsCounterController {
+    constructor(statsCounterService) {
+        this.statsCounterService = statsCounterService;
     }
     async create(data) {
         try {
-            return await this.accreditationSliderService.create(data);
+            return await this.statsCounterService.create(data);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -8713,7 +10185,7 @@ let AccreditationSliderController = class AccreditationSliderController {
     }
     async findAll() {
         try {
-            return await this.accreditationSliderService.findAll();
+            return await this.statsCounterService.findAll();
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -8721,7 +10193,7 @@ let AccreditationSliderController = class AccreditationSliderController {
     }
     async findOne(data) {
         try {
-            return await this.accreditationSliderService.findOne(data.accreditationSliderId);
+            return await this.statsCounterService.findOne(data.statsCounterId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -8729,8 +10201,8 @@ let AccreditationSliderController = class AccreditationSliderController {
     }
     async update(data) {
         try {
-            const { accreditationSliderId, ...updateData } = data;
-            return await this.accreditationSliderService.update(accreditationSliderId, updateData);
+            const { statsCounterId, ...updateData } = data;
+            return await this.statsCounterService.update(statsCounterId, updateData);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -8738,56 +10210,94 @@ let AccreditationSliderController = class AccreditationSliderController {
     }
     async softDelete(data) {
         try {
-            return await this.accreditationSliderService.softDelete(data.accreditationSliderId, data.DeletedBy, data.DeletedRemarks);
+            return await this.statsCounterService.softDelete(data.statsCounterId, data.DeletedBy, data.DeletedRemarks);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
 };
-exports.AccreditationSliderController = AccreditationSliderController;
+exports.StatsCounterController = StatsCounterController;
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_accreditation_slider' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_stats_counter' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AccreditationSliderController.prototype, "create", null);
+], StatsCounterController.prototype, "create", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_accreditation_sliders' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_stats_counters' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], AccreditationSliderController.prototype, "findAll", null);
+], StatsCounterController.prototype, "findAll", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_accreditation_slider' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_stats_counter' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AccreditationSliderController.prototype, "findOne", null);
+], StatsCounterController.prototype, "findOne", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_accreditation_slider' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_stats_counter' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AccreditationSliderController.prototype, "update", null);
+], StatsCounterController.prototype, "update", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_accreditation_slider' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_stats_counter' }),
     __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AccreditationSliderController.prototype, "softDelete", null);
-exports.AccreditationSliderController = AccreditationSliderController = __decorate([
+], StatsCounterController.prototype, "softDelete", null);
+exports.StatsCounterController = StatsCounterController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof accreditation_slider_service_1.AccreditationSliderService !== "undefined" && accreditation_slider_service_1.AccreditationSliderService) === "function" ? _a : Object])
-], AccreditationSliderController);
+    __metadata("design:paramtypes", [typeof (_a = typeof stats_counter_service_1.StatsCounterService !== "undefined" && stats_counter_service_1.StatsCounterService) === "function" ? _a : Object])
+], StatsCounterController);
 
 
 /***/ }),
-/* 100 */
+
+/***/ "./apps/student-service/src/website/stats-counter/stats-counter.module.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/stats-counter/stats-counter.module.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StatsCounterModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const stats_counter_controller_1 = __webpack_require__(/*! ./stats-counter.controller */ "./apps/student-service/src/website/stats-counter/stats-counter.controller.ts");
+const stats_counter_service_1 = __webpack_require__(/*! ./stats-counter.service */ "./apps/student-service/src/website/stats-counter/stats-counter.service.ts");
+let StatsCounterModule = class StatsCounterModule {
+};
+exports.StatsCounterModule = StatsCounterModule;
+exports.StatsCounterModule = StatsCounterModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [stats_counter_controller_1.StatsCounterController],
+        providers: [stats_counter_service_1.StatsCounterService],
+        exports: [stats_counter_service_1.StatsCounterService],
+    })
+], StatsCounterModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/stats-counter/stats-counter.service.ts":
+/*!*********************************************************************************!*\
+  !*** ./apps/student-service/src/website/stats-counter/stats-counter.service.ts ***!
+  \*********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8802,68 +10312,77 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AccreditationSliderService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let AccreditationSliderService = class AccreditationSliderService {
+exports.StatsCounterService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let StatsCounterService = class StatsCounterService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    get statsCounter() {
+        return this.prisma.statsCounter;
+    }
     async create(data) {
-        return this.prisma.accreditationSlider.create({
+        return this.statsCounter.create({
             data: {
                 title: data.title,
-                image: data.image || null,
-                link: data.link || null,
+                value: data.value,
+                suffix: data.suffix || null,
+                icon: data.icon || null,
+                backgroundImage: data.backgroundImage || null,
                 displayOrder: data.displayOrder ?? 0,
                 CreatedBy: data.CreatedBy || 'Admin',
                 Remarks: data.Remarks || null,
-                IsActive: true,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
                 IsDeleted: false,
             },
         });
     }
     async findAll() {
-        return this.prisma.accreditationSlider.findMany({
+        return this.statsCounter.findMany({
             where: { IsDeleted: false },
-            orderBy: [{ displayOrder: 'asc' }, { accreditationSliderId: 'desc' }],
+            orderBy: [{ displayOrder: 'asc' }, { statsCounterId: 'desc' }],
         });
     }
-    async findOne(accreditationSliderId) {
-        const item = await this.prisma.accreditationSlider.findFirst({
-            where: { accreditationSliderId, IsDeleted: false },
+    async findOne(statsCounterId) {
+        const item = await this.statsCounter.findFirst({
+            where: { statsCounterId, IsDeleted: false },
         });
         if (!item) {
-            throw new common_1.NotFoundException(`Accreditation slider entry with ID ${accreditationSliderId} not found`);
+            throw new common_1.NotFoundException(`Stats counter entry with ID ${statsCounterId} not found`);
         }
         return item;
     }
-    async update(accreditationSliderId, data) {
-        await this.findOne(accreditationSliderId);
+    async update(statsCounterId, data) {
+        await this.findOne(statsCounterId);
         const updatePayload = {
             UpdatedBy: data.UpdatedBy || 'Admin',
         };
         if (data.title !== undefined)
             updatePayload.title = data.title;
-        if (data.image !== undefined)
-            updatePayload.image = data.image;
-        if (data.link !== undefined)
-            updatePayload.link = data.link;
+        if (data.value !== undefined)
+            updatePayload.value = data.value;
+        if (data.suffix !== undefined)
+            updatePayload.suffix = data.suffix;
+        if (data.icon !== undefined)
+            updatePayload.icon = data.icon;
+        if (data.backgroundImage !== undefined)
+            updatePayload.backgroundImage = data.backgroundImage;
         if (data.displayOrder !== undefined)
             updatePayload.displayOrder = data.displayOrder;
         if (data.IsActive !== undefined)
             updatePayload.IsActive = data.IsActive;
         if (data.Remarks !== undefined)
             updatePayload.Remarks = data.Remarks;
-        return this.prisma.accreditationSlider.update({
-            where: { accreditationSliderId },
+        return this.statsCounter.update({
+            where: { statsCounterId },
             data: updatePayload,
         });
     }
-    async softDelete(accreditationSliderId, DeletedBy, DeletedRemarks) {
-        await this.findOne(accreditationSliderId);
-        return this.prisma.accreditationSlider.update({
-            where: { accreditationSliderId },
+    async softDelete(statsCounterId, DeletedBy, DeletedRemarks) {
+        await this.findOne(statsCounterId);
+        return this.statsCounter.update({
+            where: { statsCounterId },
             data: {
                 IsDeleted: true,
                 IsActive: false,
@@ -8874,15 +10393,133 @@ let AccreditationSliderService = class AccreditationSliderService {
         });
     }
 };
-exports.AccreditationSliderService = AccreditationSliderService;
-exports.AccreditationSliderService = AccreditationSliderService = __decorate([
+exports.StatsCounterService = StatsCounterService;
+exports.StatsCounterService = StatsCounterService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], AccreditationSliderService);
+], StatsCounterService);
 
 
 /***/ }),
-/* 101 */
+
+/***/ "./apps/student-service/src/website/testimonial/testimonial.controller.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/testimonial/testimonial.controller.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestimonialController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const testimonial_service_1 = __webpack_require__(/*! ./testimonial.service */ "./apps/student-service/src/website/testimonial/testimonial.service.ts");
+let TestimonialController = class TestimonialController {
+    constructor(testimonialService) {
+        this.testimonialService = testimonialService;
+    }
+    async create(data) {
+        try {
+            return await this.testimonialService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll() {
+        try {
+            return await this.testimonialService.findAll();
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.testimonialService.findOne(data.testimonialId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { testimonialId, ...updateData } = data;
+            return await this.testimonialService.update(testimonialId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.testimonialService.softDelete(data.testimonialId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.TestimonialController = TestimonialController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_testimonial' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_testimonials' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_testimonial' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_testimonial' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_testimonial' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TestimonialController.prototype, "softDelete", null);
+exports.TestimonialController = TestimonialController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof testimonial_service_1.TestimonialService !== "undefined" && testimonial_service_1.TestimonialService) === "function" ? _a : Object])
+], TestimonialController);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/testimonial/testimonial.module.ts":
+/*!****************************************************************************!*\
+  !*** ./apps/student-service/src/website/testimonial/testimonial.module.ts ***!
+  \****************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8893,26 +10530,138 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TopAchieverModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const top_achiever_controller_1 = __webpack_require__(102);
-const top_achiever_service_1 = __webpack_require__(103);
-let TopAchieverModule = class TopAchieverModule {
+exports.TestimonialModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const testimonial_controller_1 = __webpack_require__(/*! ./testimonial.controller */ "./apps/student-service/src/website/testimonial/testimonial.controller.ts");
+const testimonial_service_1 = __webpack_require__(/*! ./testimonial.service */ "./apps/student-service/src/website/testimonial/testimonial.service.ts");
+let TestimonialModule = class TestimonialModule {
 };
-exports.TopAchieverModule = TopAchieverModule;
-exports.TopAchieverModule = TopAchieverModule = __decorate([
+exports.TestimonialModule = TestimonialModule;
+exports.TestimonialModule = TestimonialModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_1.PrismaModule],
-        controllers: [top_achiever_controller_1.TopAchieverController],
-        providers: [top_achiever_service_1.TopAchieverService],
-        exports: [top_achiever_service_1.TopAchieverService],
+        controllers: [testimonial_controller_1.TestimonialController],
+        providers: [testimonial_service_1.TestimonialService],
+        exports: [testimonial_service_1.TestimonialService],
     })
-], TopAchieverModule);
+], TestimonialModule);
 
 
 /***/ }),
-/* 102 */
+
+/***/ "./apps/student-service/src/website/testimonial/testimonial.service.ts":
+/*!*****************************************************************************!*\
+  !*** ./apps/student-service/src/website/testimonial/testimonial.service.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TestimonialService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+let TestimonialService = class TestimonialService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get testimonial() {
+        return this.prisma.testimonial;
+    }
+    async create(data) {
+        return this.testimonial.create({
+            data: {
+                name: data.name,
+                role: data.role || null,
+                message: data.message || null,
+                rating: data.rating !== undefined ? data.rating : 5.0,
+                image: data.image || null,
+                displayOrder: data.displayOrder ?? 0,
+                CreatedBy: data.CreatedBy || 'Admin',
+                Remarks: data.Remarks || null,
+                IsActive: data.IsActive !== undefined ? data.IsActive : true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll() {
+        return this.testimonial.findMany({
+            where: { IsDeleted: false },
+            orderBy: [{ displayOrder: 'asc' }, { testimonialId: 'desc' }],
+        });
+    }
+    async findOne(testimonialId) {
+        const item = await this.testimonial.findFirst({
+            where: { testimonialId, IsDeleted: false },
+        });
+        if (!item) {
+            throw new common_1.NotFoundException(`Testimonial entry with ID ${testimonialId} not found`);
+        }
+        return item;
+    }
+    async update(testimonialId, data) {
+        await this.findOne(testimonialId);
+        const updatePayload = {
+            UpdatedBy: data.UpdatedBy || 'Admin',
+        };
+        if (data.name !== undefined)
+            updatePayload.name = data.name;
+        if (data.role !== undefined)
+            updatePayload.role = data.role;
+        if (data.message !== undefined)
+            updatePayload.message = data.message;
+        if (data.rating !== undefined)
+            updatePayload.rating = data.rating;
+        if (data.image !== undefined)
+            updatePayload.image = data.image;
+        if (data.displayOrder !== undefined)
+            updatePayload.displayOrder = data.displayOrder;
+        if (data.IsActive !== undefined)
+            updatePayload.IsActive = data.IsActive;
+        if (data.Remarks !== undefined)
+            updatePayload.Remarks = data.Remarks;
+        return this.testimonial.update({
+            where: { testimonialId },
+            data: updatePayload,
+        });
+    }
+    async softDelete(testimonialId, DeletedBy, DeletedRemarks) {
+        await this.findOne(testimonialId);
+        return this.testimonial.update({
+            where: { testimonialId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+};
+exports.TestimonialService = TestimonialService;
+exports.TestimonialService = TestimonialService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], TestimonialService);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/top-achiever/top-achiever.controller.ts":
+/*!**********************************************************************************!*\
+  !*** ./apps/student-service/src/website/top-achiever/top-achiever.controller.ts ***!
+  \**********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8931,9 +10680,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const top_achiever_service_1 = __webpack_require__(103);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const top_achiever_service_1 = __webpack_require__(/*! ./top-achiever.service */ "./apps/student-service/src/website/top-achiever/top-achiever.service.ts");
 let TopAchieverController = class TopAchieverController {
     constructor(topAchieverService) {
         this.topAchieverService = topAchieverService;
@@ -9022,7 +10771,45 @@ exports.TopAchieverController = TopAchieverController = __decorate([
 
 
 /***/ }),
-/* 103 */
+
+/***/ "./apps/student-service/src/website/top-achiever/top-achiever.module.ts":
+/*!******************************************************************************!*\
+  !*** ./apps/student-service/src/website/top-achiever/top-achiever.module.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TopAchieverModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const top_achiever_controller_1 = __webpack_require__(/*! ./top-achiever.controller */ "./apps/student-service/src/website/top-achiever/top-achiever.controller.ts");
+const top_achiever_service_1 = __webpack_require__(/*! ./top-achiever.service */ "./apps/student-service/src/website/top-achiever/top-achiever.service.ts");
+let TopAchieverModule = class TopAchieverModule {
+};
+exports.TopAchieverModule = TopAchieverModule;
+exports.TopAchieverModule = TopAchieverModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [top_achiever_controller_1.TopAchieverController],
+        providers: [top_achiever_service_1.TopAchieverService],
+        exports: [top_achiever_service_1.TopAchieverService],
+    })
+], TopAchieverModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/top-achiever/top-achiever.service.ts":
+/*!*******************************************************************************!*\
+  !*** ./apps/student-service/src/website/top-achiever/top-achiever.service.ts ***!
+  \*******************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9038,8 +10825,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let TopAchieverService = class TopAchieverService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -9132,285 +10919,11 @@ exports.TopAchieverService = TopAchieverService = __decorate([
 
 
 /***/ }),
-/* 104 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ImageGalleryModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const image_gallery_controller_1 = __webpack_require__(105);
-const image_gallery_service_1 = __webpack_require__(106);
-let ImageGalleryModule = class ImageGalleryModule {
-};
-exports.ImageGalleryModule = ImageGalleryModule;
-exports.ImageGalleryModule = ImageGalleryModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [image_gallery_controller_1.ImageGalleryController],
-        providers: [image_gallery_service_1.ImageGalleryService],
-        exports: [image_gallery_service_1.ImageGalleryService],
-    })
-], ImageGalleryModule);
-
-
-/***/ }),
-/* 105 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ImageGalleryController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const image_gallery_service_1 = __webpack_require__(106);
-let ImageGalleryController = class ImageGalleryController {
-    constructor(imageGalleryService) {
-        this.imageGalleryService = imageGalleryService;
-    }
-    async create(data) {
-        try {
-            return await this.imageGalleryService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.imageGalleryService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.imageGalleryService.findOne(data.imageGalleryId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { imageGalleryId, ...updateData } = data;
-            return await this.imageGalleryService.update(imageGalleryId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.imageGalleryService.softDelete(data.imageGalleryId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.ImageGalleryController = ImageGalleryController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_image_gallery' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ImageGalleryController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_image_galleries' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ImageGalleryController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_image_gallery' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ImageGalleryController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_image_gallery' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ImageGalleryController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_image_gallery' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ImageGalleryController.prototype, "softDelete", null);
-exports.ImageGalleryController = ImageGalleryController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof image_gallery_service_1.ImageGalleryService !== "undefined" && image_gallery_service_1.ImageGalleryService) === "function" ? _a : Object])
-], ImageGalleryController);
-
-
-/***/ }),
-/* 106 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ImageGalleryService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let ImageGalleryService = class ImageGalleryService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    formatImages(images) {
-        if (!images)
-            return null;
-        if (Array.isArray(images))
-            return JSON.stringify(images);
-        return String(images);
-    }
-    async create(data) {
-        return this.prisma.imageGallery.create({
-            data: {
-                title: data.title,
-                category: data.category || null,
-                description: data.description || null,
-                images: this.formatImages(data.images),
-                date: data.date ? new Date(data.date) : new Date(),
-                displayOrder: data.displayOrder ?? 0,
-                CreatedBy: data.CreatedBy || 'Admin',
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.imageGallery.findMany({
-            where: { IsDeleted: false },
-            orderBy: [{ displayOrder: 'asc' }, { imageGalleryId: 'desc' }],
-        });
-    }
-    async findOne(imageGalleryId) {
-        const item = await this.prisma.imageGallery.findFirst({
-            where: { imageGalleryId, IsDeleted: false },
-        });
-        if (!item) {
-            throw new common_1.NotFoundException(`Image gallery entry with ID ${imageGalleryId} not found`);
-        }
-        return item;
-    }
-    async update(imageGalleryId, data) {
-        await this.findOne(imageGalleryId);
-        const updatePayload = {
-            UpdatedBy: data.UpdatedBy || 'Admin',
-        };
-        if (data.title !== undefined)
-            updatePayload.title = data.title;
-        if (data.category !== undefined)
-            updatePayload.category = data.category;
-        if (data.description !== undefined)
-            updatePayload.description = data.description;
-        if (data.images !== undefined)
-            updatePayload.images = this.formatImages(data.images);
-        if (data.date !== undefined)
-            updatePayload.date = data.date ? new Date(data.date) : null;
-        if (data.displayOrder !== undefined)
-            updatePayload.displayOrder = data.displayOrder;
-        if (data.IsActive !== undefined)
-            updatePayload.IsActive = data.IsActive;
-        if (data.Remarks !== undefined)
-            updatePayload.Remarks = data.Remarks;
-        return this.prisma.imageGallery.update({
-            where: { imageGalleryId },
-            data: updatePayload,
-        });
-    }
-    async softDelete(imageGalleryId, DeletedBy, DeletedRemarks) {
-        await this.findOne(imageGalleryId);
-        return this.prisma.imageGallery.update({
-            where: { imageGalleryId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.ImageGalleryService = ImageGalleryService;
-exports.ImageGalleryService = ImageGalleryService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], ImageGalleryService);
-
-
-/***/ }),
-/* 107 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.VideoGalleryModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const video_gallery_controller_1 = __webpack_require__(108);
-const video_gallery_service_1 = __webpack_require__(109);
-let VideoGalleryModule = class VideoGalleryModule {
-};
-exports.VideoGalleryModule = VideoGalleryModule;
-exports.VideoGalleryModule = VideoGalleryModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [video_gallery_controller_1.VideoGalleryController],
-        providers: [video_gallery_service_1.VideoGalleryService],
-        exports: [video_gallery_service_1.VideoGalleryService],
-    })
-], VideoGalleryModule);
-
-
-/***/ }),
-/* 108 */
+/***/ "./apps/student-service/src/website/video-gallery/video-gallery.controller.ts":
+/*!************************************************************************************!*\
+  !*** ./apps/student-service/src/website/video-gallery/video-gallery.controller.ts ***!
+  \************************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9429,9 +10942,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const video_gallery_service_1 = __webpack_require__(109);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const video_gallery_service_1 = __webpack_require__(/*! ./video-gallery.service */ "./apps/student-service/src/website/video-gallery/video-gallery.service.ts");
 let VideoGalleryController = class VideoGalleryController {
     constructor(videoGalleryService) {
         this.videoGalleryService = videoGalleryService;
@@ -9520,7 +11033,45 @@ exports.VideoGalleryController = VideoGalleryController = __decorate([
 
 
 /***/ }),
-/* 109 */
+
+/***/ "./apps/student-service/src/website/video-gallery/video-gallery.module.ts":
+/*!********************************************************************************!*\
+  !*** ./apps/student-service/src/website/video-gallery/video-gallery.module.ts ***!
+  \********************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.VideoGalleryModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
+const video_gallery_controller_1 = __webpack_require__(/*! ./video-gallery.controller */ "./apps/student-service/src/website/video-gallery/video-gallery.controller.ts");
+const video_gallery_service_1 = __webpack_require__(/*! ./video-gallery.service */ "./apps/student-service/src/website/video-gallery/video-gallery.service.ts");
+let VideoGalleryModule = class VideoGalleryModule {
+};
+exports.VideoGalleryModule = VideoGalleryModule;
+exports.VideoGalleryModule = VideoGalleryModule = __decorate([
+    (0, common_1.Module)({
+        imports: [prisma_1.PrismaModule],
+        controllers: [video_gallery_controller_1.VideoGalleryController],
+        providers: [video_gallery_service_1.VideoGalleryService],
+        exports: [video_gallery_service_1.VideoGalleryService],
+    })
+], VideoGalleryModule);
+
+
+/***/ }),
+
+/***/ "./apps/student-service/src/website/video-gallery/video-gallery.service.ts":
+/*!*********************************************************************************!*\
+  !*** ./apps/student-service/src/website/video-gallery/video-gallery.service.ts ***!
+  \*********************************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9536,8 +11087,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_1 = __webpack_require__(/*! @app/prisma */ "./libs/prisma/src/index.ts");
 let VideoGalleryService = class VideoGalleryService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -9627,7 +11178,11 @@ exports.VideoGalleryService = VideoGalleryService = __decorate([
 
 
 /***/ }),
-/* 110 */
+
+/***/ "./apps/student-service/src/website/website.module.ts":
+/*!************************************************************!*\
+  !*** ./apps/student-service/src/website/website.module.ts ***!
+  \************************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9638,240 +11193,66 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ContactEnquiryModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const contact_enquiry_controller_1 = __webpack_require__(111);
-const contact_enquiry_service_1 = __webpack_require__(112);
-let ContactEnquiryModule = class ContactEnquiryModule {
+exports.WebsiteModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const campus_quick_link_module_1 = __webpack_require__(/*! ./campus-quick-link/campus-quick-link.module */ "./apps/student-service/src/website/campus-quick-link/campus-quick-link.module.ts");
+const latest_update_module_1 = __webpack_require__(/*! ./latest-update/latest-update.module */ "./apps/student-service/src/website/latest-update/latest-update.module.ts");
+const admission_enquiry_module_1 = __webpack_require__(/*! ./admission-enquiry/admission-enquiry.module */ "./apps/student-service/src/website/admission-enquiry/admission-enquiry.module.ts");
+const hero_section_module_1 = __webpack_require__(/*! ./hero-section/hero-section.module */ "./apps/student-service/src/website/hero-section/hero-section.module.ts");
+const notice_board_module_1 = __webpack_require__(/*! ./notice-board/notice-board.module */ "./apps/student-service/src/website/notice-board/notice-board.module.ts");
+const accreditation_slider_module_1 = __webpack_require__(/*! ./accreditation-slider/accreditation-slider.module */ "./apps/student-service/src/website/accreditation-slider/accreditation-slider.module.ts");
+const top_achiever_module_1 = __webpack_require__(/*! ./top-achiever/top-achiever.module */ "./apps/student-service/src/website/top-achiever/top-achiever.module.ts");
+const image_gallery_module_1 = __webpack_require__(/*! ./image-gallery/image-gallery.module */ "./apps/student-service/src/website/image-gallery/image-gallery.module.ts");
+const video_gallery_module_1 = __webpack_require__(/*! ./video-gallery/video-gallery.module */ "./apps/student-service/src/website/video-gallery/video-gallery.module.ts");
+const contact_enquiry_module_1 = __webpack_require__(/*! ./contact-enquiry/contact-enquiry.module */ "./apps/student-service/src/website/contact-enquiry/contact-enquiry.module.ts");
+const stats_counter_module_1 = __webpack_require__(/*! ./stats-counter/stats-counter.module */ "./apps/student-service/src/website/stats-counter/stats-counter.module.ts");
+const testimonial_module_1 = __webpack_require__(/*! ./testimonial/testimonial.module */ "./apps/student-service/src/website/testimonial/testimonial.module.ts");
+const header_button_module_1 = __webpack_require__(/*! ./header-button/header-button.module */ "./apps/student-service/src/website/header-button/header-button.module.ts");
+let WebsiteModule = class WebsiteModule {
 };
-exports.ContactEnquiryModule = ContactEnquiryModule;
-exports.ContactEnquiryModule = ContactEnquiryModule = __decorate([
+exports.WebsiteModule = WebsiteModule;
+exports.WebsiteModule = WebsiteModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [contact_enquiry_controller_1.ContactEnquiryController],
-        providers: [contact_enquiry_service_1.ContactEnquiryService],
-        exports: [contact_enquiry_service_1.ContactEnquiryService],
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule],
     })
-], ContactEnquiryModule);
+], WebsiteModule);
 
 
 /***/ }),
-/* 111 */
+
+/***/ "./libs/prisma/src/index.ts":
+/*!**********************************!*\
+  !*** ./libs/prisma/src/index.ts ***!
+  \**********************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ContactEnquiryController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const contact_enquiry_service_1 = __webpack_require__(112);
-let ContactEnquiryController = class ContactEnquiryController {
-    constructor(contactEnquiryService) {
-        this.contactEnquiryService = contactEnquiryService;
-    }
-    async create(data) {
-        try {
-            return await this.contactEnquiryService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.contactEnquiryService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.contactEnquiryService.findOne(data.contactEnquiryId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { contactEnquiryId, ...updateData } = data;
-            return await this.contactEnquiryService.update(contactEnquiryId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.contactEnquiryService.softDelete(data.contactEnquiryId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.ContactEnquiryController = ContactEnquiryController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_contact_enquiry' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ContactEnquiryController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_contact_enquiries' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ContactEnquiryController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_contact_enquiry' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ContactEnquiryController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_contact_enquiry' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ContactEnquiryController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_contact_enquiry' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ContactEnquiryController.prototype, "softDelete", null);
-exports.ContactEnquiryController = ContactEnquiryController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof contact_enquiry_service_1.ContactEnquiryService !== "undefined" && contact_enquiry_service_1.ContactEnquiryService) === "function" ? _a : Object])
-], ContactEnquiryController);
+__exportStar(__webpack_require__(/*! ./prisma.module */ "./libs/prisma/src/prisma.module.ts"), exports);
+__exportStar(__webpack_require__(/*! ./prisma.service */ "./libs/prisma/src/prisma.service.ts"), exports);
 
 
 /***/ }),
-/* 112 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ContactEnquiryService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let ContactEnquiryService = class ContactEnquiryService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    async create(data) {
-        return this.prisma.contactEnquiry.create({
-            data: {
-                name: data.name,
-                phoneNumber: data.phoneNumber,
-                email: data.email || null,
-                course: data.course || null,
-                message: data.message || null,
-                status: data.status || 'PENDING',
-                isRead: data.isRead ?? false,
-                CreatedBy: data.CreatedBy || 'System',
-                Remarks: data.Remarks || null,
-                IsActive: true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.prisma.contactEnquiry.findMany({
-            where: { IsDeleted: false },
-            orderBy: { contactEnquiryId: 'desc' },
-        });
-    }
-    async findOne(contactEnquiryId) {
-        const item = await this.prisma.contactEnquiry.findFirst({
-            where: { contactEnquiryId, IsDeleted: false },
-        });
-        if (!item) {
-            throw new common_1.NotFoundException(`Contact enquiry entry with ID ${contactEnquiryId} not found`);
-        }
-        return item;
-    }
-    async update(contactEnquiryId, data) {
-        await this.findOne(contactEnquiryId);
-        const updatePayload = {
-            UpdatedBy: data.UpdatedBy || 'Admin',
-        };
-        if (data.name !== undefined)
-            updatePayload.name = data.name;
-        if (data.phoneNumber !== undefined)
-            updatePayload.phoneNumber = data.phoneNumber;
-        if (data.email !== undefined)
-            updatePayload.email = data.email;
-        if (data.course !== undefined)
-            updatePayload.course = data.course;
-        if (data.message !== undefined)
-            updatePayload.message = data.message;
-        if (data.status !== undefined)
-            updatePayload.status = data.status;
-        if (data.isRead !== undefined)
-            updatePayload.isRead = data.isRead;
-        if (data.IsActive !== undefined)
-            updatePayload.IsActive = data.IsActive;
-        if (data.Remarks !== undefined)
-            updatePayload.Remarks = data.Remarks;
-        return this.prisma.contactEnquiry.update({
-            where: { contactEnquiryId },
-            data: updatePayload,
-        });
-    }
-    async softDelete(contactEnquiryId, DeletedBy, DeletedRemarks) {
-        await this.findOne(contactEnquiryId);
-        return this.prisma.contactEnquiry.update({
-            where: { contactEnquiryId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.ContactEnquiryService = ContactEnquiryService;
-exports.ContactEnquiryService = ContactEnquiryService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], ContactEnquiryService);
-
-
-/***/ }),
-/* 113 */
+/***/ "./libs/prisma/src/prisma.module.ts":
+/*!******************************************!*\
+  !*** ./libs/prisma/src/prisma.module.ts ***!
+  \******************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9882,26 +11263,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StatsCounterModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const stats_counter_controller_1 = __webpack_require__(114);
-const stats_counter_service_1 = __webpack_require__(115);
-let StatsCounterModule = class StatsCounterModule {
+exports.PrismaModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const prisma_service_1 = __webpack_require__(/*! ./prisma.service */ "./libs/prisma/src/prisma.service.ts");
+let PrismaModule = class PrismaModule {
 };
-exports.StatsCounterModule = StatsCounterModule;
-exports.StatsCounterModule = StatsCounterModule = __decorate([
+exports.PrismaModule = PrismaModule;
+exports.PrismaModule = PrismaModule = __decorate([
+    (0, common_1.Global)(),
     (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [stats_counter_controller_1.StatsCounterController],
-        providers: [stats_counter_service_1.StatsCounterService],
-        exports: [stats_counter_service_1.StatsCounterService],
+        providers: [prisma_service_1.PrismaService],
+        exports: [prisma_service_1.PrismaService],
     })
-], StatsCounterModule);
+], PrismaModule);
 
 
 /***/ }),
-/* 114 */
+
+/***/ "./libs/prisma/src/prisma.service.ts":
+/*!*******************************************!*\
+  !*** ./libs/prisma/src/prisma.service.ts ***!
+  \*******************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9914,691 +11296,157 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StatsCounterController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const stats_counter_service_1 = __webpack_require__(115);
-let StatsCounterController = class StatsCounterController {
-    constructor(statsCounterService) {
-        this.statsCounterService = statsCounterService;
-    }
-    async create(data) {
-        try {
-            return await this.statsCounterService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.statsCounterService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.statsCounterService.findOne(data.statsCounterId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { statsCounterId, ...updateData } = data;
-            return await this.statsCounterService.update(statsCounterId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.statsCounterService.softDelete(data.statsCounterId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.StatsCounterController = StatsCounterController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_stats_counter' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StatsCounterController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_stats_counters' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StatsCounterController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_stats_counter' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StatsCounterController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_stats_counter' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StatsCounterController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_stats_counter' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StatsCounterController.prototype, "softDelete", null);
-exports.StatsCounterController = StatsCounterController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof stats_counter_service_1.StatsCounterService !== "undefined" && stats_counter_service_1.StatsCounterService) === "function" ? _a : Object])
-], StatsCounterController);
-
-
-/***/ }),
-/* 115 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StatsCounterService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let StatsCounterService = class StatsCounterService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    get statsCounter() {
-        return this.prisma.statsCounter;
-    }
-    async create(data) {
-        return this.statsCounter.create({
-            data: {
-                title: data.title,
-                value: data.value,
-                suffix: data.suffix || null,
-                icon: data.icon || null,
-                backgroundImage: data.backgroundImage || null,
-                displayOrder: data.displayOrder ?? 0,
-                CreatedBy: data.CreatedBy || 'Admin',
-                Remarks: data.Remarks || null,
-                IsActive: data.IsActive !== undefined ? data.IsActive : true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.statsCounter.findMany({
-            where: { IsDeleted: false },
-            orderBy: [{ displayOrder: 'asc' }, { statsCounterId: 'desc' }],
-        });
-    }
-    async findOne(statsCounterId) {
-        const item = await this.statsCounter.findFirst({
-            where: { statsCounterId, IsDeleted: false },
-        });
-        if (!item) {
-            throw new common_1.NotFoundException(`Stats counter entry with ID ${statsCounterId} not found`);
-        }
-        return item;
-    }
-    async update(statsCounterId, data) {
-        await this.findOne(statsCounterId);
-        const updatePayload = {
-            UpdatedBy: data.UpdatedBy || 'Admin',
+exports.PrismaService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const adapter_mariadb_1 = __webpack_require__(/*! @prisma/adapter-mariadb */ "@prisma/adapter-mariadb");
+const client_1 = __webpack_require__(/*! @prisma/client */ "@prisma/client");
+function getDbConfig() {
+    const databaseUrl = process.env.DATABASE_URL || '';
+    try {
+        const url = new URL(databaseUrl);
+        return {
+            host: url.hostname,
+            port: url.port ? Number(url.port) : 3306,
+            user: decodeURIComponent(url.username),
+            password: decodeURIComponent(url.password),
+            database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
+            connectionLimit: 2,
+            connectTimeout: 30000,
+            acquireTimeout: 30000,
+            ssl: false,
+            allowPublicKeyRetrieval: true,
         };
-        if (data.title !== undefined)
-            updatePayload.title = data.title;
-        if (data.value !== undefined)
-            updatePayload.value = data.value;
-        if (data.suffix !== undefined)
-            updatePayload.suffix = data.suffix;
-        if (data.icon !== undefined)
-            updatePayload.icon = data.icon;
-        if (data.backgroundImage !== undefined)
-            updatePayload.backgroundImage = data.backgroundImage;
-        if (data.displayOrder !== undefined)
-            updatePayload.displayOrder = data.displayOrder;
-        if (data.IsActive !== undefined)
-            updatePayload.IsActive = data.IsActive;
-        if (data.Remarks !== undefined)
-            updatePayload.Remarks = data.Remarks;
-        return this.statsCounter.update({
-            where: { statsCounterId },
-            data: updatePayload,
-        });
     }
-    async softDelete(statsCounterId, DeletedBy, DeletedRemarks) {
-        await this.findOne(statsCounterId);
-        return this.statsCounter.update({
-            where: { statsCounterId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.StatsCounterService = StatsCounterService;
-exports.StatsCounterService = StatsCounterService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], StatsCounterService);
-
-
-/***/ }),
-/* 116 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestimonialModule = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-const testimonial_controller_1 = __webpack_require__(117);
-const testimonial_service_1 = __webpack_require__(118);
-let TestimonialModule = class TestimonialModule {
-};
-exports.TestimonialModule = TestimonialModule;
-exports.TestimonialModule = TestimonialModule = __decorate([
-    (0, common_1.Module)({
-        imports: [prisma_1.PrismaModule],
-        controllers: [testimonial_controller_1.TestimonialController],
-        providers: [testimonial_service_1.TestimonialService],
-        exports: [testimonial_service_1.TestimonialService],
-    })
-], TestimonialModule);
-
-
-/***/ }),
-/* 117 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestimonialController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const testimonial_service_1 = __webpack_require__(118);
-let TestimonialController = class TestimonialController {
-    constructor(testimonialService) {
-        this.testimonialService = testimonialService;
-    }
-    async create(data) {
-        try {
-            return await this.testimonialService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.testimonialService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.testimonialService.findOne(data.testimonialId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { testimonialId, ...updateData } = data;
-            return await this.testimonialService.update(testimonialId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.testimonialService.softDelete(data.testimonialId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.TestimonialController = TestimonialController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_testimonial' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], TestimonialController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_testimonials' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], TestimonialController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_testimonial' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], TestimonialController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_testimonial' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], TestimonialController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_testimonial' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], TestimonialController.prototype, "softDelete", null);
-exports.TestimonialController = TestimonialController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof testimonial_service_1.TestimonialService !== "undefined" && testimonial_service_1.TestimonialService) === "function" ? _a : Object])
-], TestimonialController);
-
-
-/***/ }),
-/* 118 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TestimonialService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let TestimonialService = class TestimonialService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    get testimonial() {
-        return this.prisma.testimonial;
-    }
-    async create(data) {
-        return this.testimonial.create({
-            data: {
-                name: data.name,
-                role: data.role || null,
-                message: data.message || null,
-                rating: data.rating !== undefined ? data.rating : 5.0,
-                image: data.image || null,
-                displayOrder: data.displayOrder ?? 0,
-                CreatedBy: data.CreatedBy || 'Admin',
-                Remarks: data.Remarks || null,
-                IsActive: data.IsActive !== undefined ? data.IsActive : true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.testimonial.findMany({
-            where: { IsDeleted: false },
-            orderBy: [{ displayOrder: 'asc' }, { testimonialId: 'desc' }],
-        });
-    }
-    async findOne(testimonialId) {
-        const item = await this.testimonial.findFirst({
-            where: { testimonialId, IsDeleted: false },
-        });
-        if (!item) {
-            throw new common_1.NotFoundException(`Testimonial entry with ID ${testimonialId} not found`);
-        }
-        return item;
-    }
-    async update(testimonialId, data) {
-        await this.findOne(testimonialId);
-        const updatePayload = {
-            UpdatedBy: data.UpdatedBy || 'Admin',
+    catch {
+        return {
+            host: '127.0.0.1',
+            port: 3306,
+            user: 'root',
+            password: '',
+            database: 'backend_db',
         };
-        if (data.name !== undefined)
-            updatePayload.name = data.name;
-        if (data.role !== undefined)
-            updatePayload.role = data.role;
-        if (data.message !== undefined)
-            updatePayload.message = data.message;
-        if (data.rating !== undefined)
-            updatePayload.rating = data.rating;
-        if (data.image !== undefined)
-            updatePayload.image = data.image;
-        if (data.displayOrder !== undefined)
-            updatePayload.displayOrder = data.displayOrder;
-        if (data.IsActive !== undefined)
-            updatePayload.IsActive = data.IsActive;
-        if (data.Remarks !== undefined)
-            updatePayload.Remarks = data.Remarks;
-        return this.testimonial.update({
-            where: { testimonialId },
-            data: updatePayload,
-        });
     }
-    async softDelete(testimonialId, DeletedBy, DeletedRemarks) {
-        await this.findOne(testimonialId);
-        return this.testimonial.update({
-            where: { testimonialId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
+}
+let PrismaService = class PrismaService extends client_1.PrismaClient {
+    constructor() {
+        const adapter = new adapter_mariadb_1.PrismaMariaDb(getDbConfig());
+        super({ adapter });
+    }
+    async onModuleDestroy() {
+        await this.$disconnect();
     }
 };
-exports.TestimonialService = TestimonialService;
-exports.TestimonialService = TestimonialService = __decorate([
+exports.PrismaService = PrismaService;
+exports.PrismaService = PrismaService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], TestimonialService);
+    __metadata("design:paramtypes", [])
+], PrismaService);
 
 
 /***/ }),
-/* 119 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
+/***/ "@nestjs/common":
+/*!*********************************!*\
+  !*** external "@nestjs/common" ***!
+  \*********************************/
+/***/ ((module) => {
 
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HeaderButtonModule = void 0;
-const common_1 = __webpack_require__(5);
-const header_button_controller_1 = __webpack_require__(120);
-const header_button_service_1 = __webpack_require__(121);
-let HeaderButtonModule = class HeaderButtonModule {
-};
-exports.HeaderButtonModule = HeaderButtonModule;
-exports.HeaderButtonModule = HeaderButtonModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [header_button_controller_1.HeaderButtonController],
-        providers: [header_button_service_1.HeaderButtonService],
-        exports: [header_button_service_1.HeaderButtonService],
-    })
-], HeaderButtonModule);
-
+module.exports = require("@nestjs/common");
 
 /***/ }),
-/* 120 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
+/***/ "@nestjs/core":
+/*!*******************************!*\
+  !*** external "@nestjs/core" ***!
+  \*******************************/
+/***/ ((module) => {
 
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HeaderButtonController = void 0;
-const common_1 = __webpack_require__(5);
-const microservices_1 = __webpack_require__(3);
-const header_button_service_1 = __webpack_require__(121);
-let HeaderButtonController = class HeaderButtonController {
-    constructor(headerButtonService) {
-        this.headerButtonService = headerButtonService;
-    }
-    async create(data) {
-        try {
-            return await this.headerButtonService.create(data);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findAll() {
-        try {
-            return await this.headerButtonService.findAll();
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async findOne(data) {
-        try {
-            return await this.headerButtonService.findOne(data.headerButtonId);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async update(data) {
-        try {
-            const { headerButtonId, ...updateData } = data;
-            return await this.headerButtonService.update(headerButtonId, updateData);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-    async softDelete(data) {
-        try {
-            return await this.headerButtonService.softDelete(data.headerButtonId, data.DeletedBy, data.DeletedRemarks);
-        }
-        catch (error) {
-            return { status: 'error', message: error.message || 'Unknown error' };
-        }
-    }
-};
-exports.HeaderButtonController = HeaderButtonController;
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'create_header_button' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], HeaderButtonController.prototype, "create", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_header_buttons' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], HeaderButtonController.prototype, "findAll", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_one_header_button' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], HeaderButtonController.prototype, "findOne", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'update_header_button' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], HeaderButtonController.prototype, "update", null);
-__decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'delete_header_button' }),
-    __param(0, (0, microservices_1.Payload)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], HeaderButtonController.prototype, "softDelete", null);
-exports.HeaderButtonController = HeaderButtonController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof header_button_service_1.HeaderButtonService !== "undefined" && header_button_service_1.HeaderButtonService) === "function" ? _a : Object])
-], HeaderButtonController);
-
+module.exports = require("@nestjs/core");
 
 /***/ }),
-/* 121 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
+/***/ "@nestjs/jwt":
+/*!******************************!*\
+  !*** external "@nestjs/jwt" ***!
+  \******************************/
+/***/ ((module) => {
 
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HeaderButtonService = void 0;
-const common_1 = __webpack_require__(5);
-const prisma_1 = __webpack_require__(6);
-let HeaderButtonService = class HeaderButtonService {
-    constructor(prisma) {
-        this.prisma = prisma;
-    }
-    get headerButton() {
-        return this.prisma.headerButton;
-    }
-    async create(data) {
-        return this.headerButton.create({
-            data: {
-                title: data.title,
-                icon: data.icon || null,
-                link: data.link || null,
-                linkType: data.linkType || null,
-                displayOrder: data.displayOrder ?? 0,
-                CreatedBy: data.CreatedBy || 'Admin',
-                Remarks: data.Remarks || null,
-                IsActive: data.IsActive !== undefined ? data.IsActive : true,
-                IsDeleted: false,
-            },
-        });
-    }
-    async findAll() {
-        return this.headerButton.findMany({
-            where: { IsDeleted: false },
-            orderBy: [{ displayOrder: 'asc' }, { headerButtonId: 'desc' }],
-        });
-    }
-    async findOne(headerButtonId) {
-        const item = await this.headerButton.findFirst({
-            where: { headerButtonId, IsDeleted: false },
-        });
-        if (!item) {
-            throw new common_1.NotFoundException(`Header button with ID ${headerButtonId} not found`);
-        }
-        return item;
-    }
-    async update(headerButtonId, data) {
-        await this.findOne(headerButtonId);
-        const updatePayload = {
-            UpdatedBy: data.UpdatedBy || 'Admin',
-        };
-        if (data.title !== undefined)
-            updatePayload.title = data.title;
-        if (data.icon !== undefined)
-            updatePayload.icon = data.icon;
-        if (data.link !== undefined)
-            updatePayload.link = data.link;
-        if (data.linkType !== undefined)
-            updatePayload.linkType = data.linkType;
-        if (data.displayOrder !== undefined)
-            updatePayload.displayOrder = data.displayOrder;
-        if (data.IsActive !== undefined)
-            updatePayload.IsActive = data.IsActive;
-        if (data.Remarks !== undefined)
-            updatePayload.Remarks = data.Remarks;
-        return this.headerButton.update({
-            where: { headerButtonId },
-            data: updatePayload,
-        });
-    }
-    async softDelete(headerButtonId, DeletedBy, DeletedRemarks) {
-        await this.findOne(headerButtonId);
-        return this.headerButton.update({
-            where: { headerButtonId },
-            data: {
-                IsDeleted: true,
-                IsActive: false,
-                DeletedOn: new Date(),
-                DeletedBy: DeletedBy,
-                DeletedRemarks: DeletedRemarks || null,
-            },
-        });
-    }
-};
-exports.HeaderButtonService = HeaderButtonService;
-exports.HeaderButtonService = HeaderButtonService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
-], HeaderButtonService);
+module.exports = require("@nestjs/jwt");
 
+/***/ }),
+
+/***/ "@nestjs/microservices":
+/*!****************************************!*\
+  !*** external "@nestjs/microservices" ***!
+  \****************************************/
+/***/ ((module) => {
+
+module.exports = require("@nestjs/microservices");
+
+/***/ }),
+
+/***/ "@prisma/adapter-mariadb":
+/*!******************************************!*\
+  !*** external "@prisma/adapter-mariadb" ***!
+  \******************************************/
+/***/ ((module) => {
+
+module.exports = require("@prisma/adapter-mariadb");
+
+/***/ }),
+
+/***/ "@prisma/client":
+/*!*********************************!*\
+  !*** external "@prisma/client" ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = require("@prisma/client");
+
+/***/ }),
+
+/***/ "bcryptjs":
+/*!***************************!*\
+  !*** external "bcryptjs" ***!
+  \***************************/
+/***/ ((module) => {
+
+module.exports = require("bcryptjs");
+
+/***/ }),
+
+/***/ "dotenv/config":
+/*!********************************!*\
+  !*** external "dotenv/config" ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = require("dotenv/config");
+
+/***/ }),
+
+/***/ "razorpay":
+/*!***************************!*\
+  !*** external "razorpay" ***!
+  \***************************/
+/***/ ((module) => {
+
+module.exports = require("razorpay");
+
+/***/ }),
+
+/***/ "crypto":
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("crypto");
 
 /***/ })
-/******/ 	]);
+
+/******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
@@ -10629,12 +11477,15 @@ var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
 var exports = __webpack_exports__;
+/*!******************************************!*\
+  !*** ./apps/student-service/src/main.ts ***!
+  \******************************************/
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__webpack_require__(1);
-const core_1 = __webpack_require__(2);
-const microservices_1 = __webpack_require__(3);
-const student_service_module_1 = __webpack_require__(4);
+__webpack_require__(/*! dotenv/config */ "dotenv/config");
+const core_1 = __webpack_require__(/*! @nestjs/core */ "@nestjs/core");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const student_service_module_1 = __webpack_require__(/*! ./student-service.module */ "./apps/student-service/src/student-service.module.ts");
 async function bootstrap() {
     const port = Number(process.env.TCP_PORT ?? 3001);
     const app = await core_1.NestFactory.createMicroservice(student_service_module_1.StudentServiceModule, {

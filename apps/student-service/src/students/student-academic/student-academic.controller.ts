@@ -14,6 +14,7 @@ export class StudentAcademicController {
       qualifications: any[];
       CreatedBy: string;
       programId: number;
+      programSubjectIds?: number[];
     },
   ) {
     try {
@@ -22,6 +23,7 @@ export class StudentAcademicController {
         data.qualifications,
         data.CreatedBy,
         data.programId,
+        data.programSubjectIds,
       );
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };

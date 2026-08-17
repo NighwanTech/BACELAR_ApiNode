@@ -4,6 +4,7 @@ import { StudentsController } from './students.controller';
 import { StudentProfileController } from './student-profile.controller';
 import { StudentAcademicModule } from './student-academic/student-academic.module';
 import { StudentAcademicSubjectModule } from './student-academic-subject/student-academic-subject.module';
+import { StudentProgramSubjectModule } from './student-program-subject/student-program-subject.module';
 import { StudentPaymentModule } from './student-payment/student-payment.module';
 import { StudentAttachmentModule } from './student-attachment/student-attachment.module';
 
@@ -22,6 +23,7 @@ import { StudentAttachmentModule } from './student-attachment/student-attachment
     ]),
     StudentAcademicModule,
     StudentAcademicSubjectModule,
+    StudentProgramSubjectModule,
     StudentPaymentModule,
     StudentAttachmentModule,
   ],

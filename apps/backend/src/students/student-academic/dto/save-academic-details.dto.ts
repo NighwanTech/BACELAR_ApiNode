@@ -145,4 +145,16 @@ export class SaveAcademicDetailsDto {
   @ValidateNested({ each: true })
   @Type(() => SaveQualificationDto)
   qualifications: SaveQualificationDto[];
+
+  @ApiProperty({
+    example: [12, 15, 18],
+    description: 'Chosen program subject IDs (BA/B.Sc. 3, M.A. 1)',
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @IsArray()
+  @Type(() => Number)
+  @IsInt({ each: true })
+  programSubjectIds?: number[];
 }
