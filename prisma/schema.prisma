@@ -978,4 +978,53 @@ model HeaderButton {
   @@map("headerButtons")
 }
 
+model Committee {
+  committeeId         Int       @id @default(autoincrement())
+  name                String    @db.VarChar(255)
+  url                 String?   @db.VarChar(500)
+  priorityOrder       Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn           DateTime  @default(now())
+  CreatedBy           String?   @db.VarChar(255)
+  UpdatedOn           DateTime? @updatedAt
+  UpdatedBy           String?   @db.VarChar(255)
+  IsActive            Boolean   @default(true)
+  IsDeleted           Boolean   @default(false)
+  DeletedRemarks      String?   @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?   @db.VarChar(255)
+  Remarks             String?   @db.VarChar(255)
+
+  submenus            CommitteeSubmenu[]
+
+  @@map("committees")
+}
+
+model CommitteeSubmenu {
+  committeeSubmenuId  Int       @id @default(autoincrement())
+  committeeId         Int
+  committee           Committee @relation(fields: [committeeId], references: [committeeId], onDelete: Cascade)
+  name                String    @db.VarChar(255)
+  url                 String?   @db.VarChar(500)
+  priorityOrder       Int       @default(0)
+
+  // Common Audit Fields
+  CreatedOn           DateTime  @default(now())
+  CreatedBy           String?   @db.VarChar(255)
+  UpdatedOn           DateTime? @updatedAt
+  UpdatedBy           String?   @db.VarChar(255)
+  IsActive            Boolean   @default(true)
+  IsDeleted           Boolean   @default(false)
+  DeletedRemarks      String?   @db.VarChar(255)
+  DeletedOn           DateTime?
+  DeletedBy           String?   @db.VarChar(255)
+  Remarks             String?   @db.VarChar(255)
+
+  @@index([committeeId])
+  @@map("committeeSubmenus")
+}
+
+
+
 

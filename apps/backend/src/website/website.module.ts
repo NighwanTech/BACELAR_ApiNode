@@ -13,10 +13,12 @@ import { ContactEnquiryModule } from './contact-enquiry/contact-enquiry.module';
 import { StatsCounterModule } from './stats-counter/stats-counter.module';
 import { TestimonialModule } from './testimonial/testimonial.module';
 import { HeaderButtonModule } from './header-button/header-button.module';
+import { CommitteeModule } from './committee/committee.module';
+import { CommitteeSubmenuModule } from './committee-submenu/committee-submenu.module';
 
 @Module({
-  imports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, UploadModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule],
-  exports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, UploadModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule],
+  imports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, UploadModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule],
+  exports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, UploadModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule],
 })
 export class WebsiteModule {}
 
