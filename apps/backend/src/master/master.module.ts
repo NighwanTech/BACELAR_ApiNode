@@ -15,6 +15,11 @@ import { ProgramEligibilityModule } from './program-eligibility/program-eligibil
 import { StreamModule } from './stream/stream.module';
 import { ProgramSubjectModule } from './program-subject/program-subject.module';
 import { ExaminationDetailsModule } from './examination-details/examination-details.module';
+import { PaperTypeModule } from './paper-type/paper-type.module';
+import { ExamTypeModule } from './exam-type/exam-type.module';
+import { YearModule } from './year/year.module';
+import { SemesterModule } from './semester/semester.module';
+import { PaperDetailModule } from './paper-detail/paper-detail.module';
 
 @Module({
   imports: [
@@ -34,6 +39,11 @@ import { ExaminationDetailsModule } from './examination-details/examination-deta
     ExaminationDetailsModule,
     ProgramFeeConfigModule,
     CollegeModule,
+    PaperTypeModule,
+    ExamTypeModule,
+    YearModule,
+    SemesterModule,
+    PaperDetailModule,
   ],
   exports: [
     StateModule,
@@ -52,8 +62,18 @@ import { ExaminationDetailsModule } from './examination-details/examination-deta
     ExaminationDetailsModule,
     ProgramFeeConfigModule,
     CollegeModule,
+    PaperTypeModule,
+    ExamTypeModule,
+    YearModule,
+    SemesterModule,
+    PaperDetailModule,
   ],
 })
 export class MasterModule {}
+
+
+
+
+
 
 
