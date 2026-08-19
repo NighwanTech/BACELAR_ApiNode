@@ -63,6 +63,11 @@ export class ContactEnquiryService {
     });
   }
 
+  
+  async updateStatus(contactEnquiryId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(contactEnquiryId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(contactEnquiryId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(contactEnquiryId);
 

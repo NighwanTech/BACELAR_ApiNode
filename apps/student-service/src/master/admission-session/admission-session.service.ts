@@ -50,6 +50,18 @@ export class AdmissionSessionService {
     });
   }
 
+  
+  async updateStatus(admissionSessionId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(admissionSessionId);
+    return this.prisma.admissionSession.update({
+      where: { admissionSessionId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(
     admissionSessionId: number,
     DeletedBy: string,

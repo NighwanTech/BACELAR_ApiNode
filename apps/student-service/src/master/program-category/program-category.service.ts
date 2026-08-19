@@ -52,6 +52,18 @@ export class ProgramCategoryService {
     });
   }
 
+  
+  async updateStatus(programCategoryId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(programCategoryId);
+    return this.prisma.programCategory.update({
+      where: { programCategoryId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(programCategoryId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(programCategoryId);
 

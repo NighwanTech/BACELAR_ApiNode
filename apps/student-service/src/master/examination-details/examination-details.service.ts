@@ -126,6 +126,18 @@ export class ExaminationDetailsService {
     });
   }
 
+  
+  async updateStatus(examinationId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(examinationId);
+    return this.prisma.examinationDetails.update({
+      where: { examinationId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(
     examinationId: number,
     DeletedBy: string,

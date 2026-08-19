@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateProgramFeeConfigDto } from './dto/create-program-fee-config.dto';
 import { UpdateProgramFeeConfigDto } from './dto/update-program-fee-config.dto';
 import { BulkDeleteProgramFeeConfigsDto } from './dto/bulk-delete-program-fee-configs.dto';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 
 @ApiTags('Master - Program Fee Configurations')
 @Controller('master/program-fee-configs')
@@ -55,6 +56,20 @@ export class ProgramFeeConfigController {
     @Body() updateDto: UpdateProgramFeeConfigDto,
   ): Observable<any> {
     return this.studentClient.send({ cmd: 'update_program_fee_config' }, { feeConfigId: id, ...updateDto });
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_program_fee_config' },
+      { feeConfigId: id, ...statusDto },
+    );
   }
 
   @Delete(':id')

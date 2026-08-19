@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BulkDeleteBoardsDto } from './dto/bulk-delete-boards.dto';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 
 @ApiTags('Master - Boards')
 @Controller('master/boards')
@@ -42,6 +43,20 @@ export class BoardController {
     @Body() updateDto: UpdateBoardDto,
   ): Observable<any> {
     return this.studentClient.send({ cmd: 'update_board' }, { boardId: id, ...updateDto });
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_board' },
+      { boardId: id, ...statusDto },
+    );
   }
 
   @Delete(':id')

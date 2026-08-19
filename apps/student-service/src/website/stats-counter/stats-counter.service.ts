@@ -65,6 +65,11 @@ export class StatsCounterService {
     });
   }
 
+  
+  async updateStatus(statsCounterId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(statsCounterId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(statsCounterId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(statsCounterId);
 

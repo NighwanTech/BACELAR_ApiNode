@@ -43,6 +43,20 @@ export class AdmissionEnquiryController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_admission_enquiry' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.admissionEnquiryService.updateStatus(
+        data.admissionEnquiryId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_admission_enquiry' })
   async softDelete(
     @Payload() data: { admissionEnquiryId: number; DeletedBy: string; DeletedRemarks?: string },

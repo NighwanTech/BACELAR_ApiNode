@@ -11,8 +11,8 @@ export class UploadController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload file to backend public/uploads storage' })
-  @ApiQuery({ name: 'folder', required: false, example: 'hero', description: 'Subfolder inside public/uploads' })
+  @ApiOperation({ summary: 'Upload file to storage (S3 or local via StorageService)' })
+  @ApiQuery({ name: 'folder', required: false, example: 'hero', description: 'Subfolder / S3 key prefix' })
   @ApiBody({
     schema: {
       type: 'object',

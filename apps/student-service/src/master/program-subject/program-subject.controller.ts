@@ -46,6 +46,20 @@ export class ProgramSubjectController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_program_subject' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.programSubjectService.updateStatus(
+        data.programSubjectId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_program_subject' })
   async softDelete(
     @Payload()

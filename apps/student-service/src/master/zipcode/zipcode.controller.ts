@@ -45,6 +45,20 @@ export class ZipcodeController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_zipcode' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.zipcodeService.updateStatus(
+        data.zipcodeId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_zipcode' })
   async softDelete(
     @Payload() data: { zipcodeId: number; DeletedBy: string; DeletedRemarks?: string },

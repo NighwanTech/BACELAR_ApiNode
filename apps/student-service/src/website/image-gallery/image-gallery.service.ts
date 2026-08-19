@@ -67,6 +67,11 @@ export class ImageGalleryService {
     });
   }
 
+  
+  async updateStatus(imageGalleryId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(imageGalleryId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(imageGalleryId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(imageGalleryId);
 

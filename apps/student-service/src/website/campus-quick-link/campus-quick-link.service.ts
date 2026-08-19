@@ -52,6 +52,11 @@ export class CampusQuickLinkService {
     });
   }
 
+  
+  async updateStatus(quickLinkId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(quickLinkId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(quickLinkId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(quickLinkId);
 

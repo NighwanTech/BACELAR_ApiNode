@@ -48,6 +48,18 @@ export class BoardService {
     });
   }
 
+  
+  async updateStatus(boardId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(boardId);
+    return this.prisma.boardMaster.update({
+      where: { boardId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(boardId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(boardId);
 

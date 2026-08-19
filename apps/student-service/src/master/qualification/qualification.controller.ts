@@ -43,6 +43,20 @@ export class QualificationController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_qualification' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.qualificationService.updateStatus(
+        data.qualificationId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_qualification' })
   async softDelete(@Payload() data: { qualificationId: number; DeletedBy: string; DeletedRemarks?: string }) {
     try {

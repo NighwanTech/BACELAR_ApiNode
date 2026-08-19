@@ -43,6 +43,20 @@ export class ImageGalleryController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_image_gallery' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.imageGalleryService.updateStatus(
+        data.imageGalleryId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_image_gallery' })
   async softDelete(
     @Payload() data: { imageGalleryId: number; DeletedBy: string; DeletedRemarks?: string },

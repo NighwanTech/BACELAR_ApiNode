@@ -68,6 +68,18 @@ export class CollegeService {
     });
   }
 
+  
+  async updateStatus(collegeId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(collegeId);
+    return this.collegeMaster.update({
+      where: { collegeId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(collegeId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(collegeId);
 

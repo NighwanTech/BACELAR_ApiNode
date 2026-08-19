@@ -43,6 +43,20 @@ export class ContactEnquiryController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_contact_enquiry' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.contactEnquiryService.updateStatus(
+        data.contactEnquiryId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_contact_enquiry' })
   async softDelete(
     @Payload() data: { contactEnquiryId: number; DeletedBy: string; DeletedRemarks?: string },

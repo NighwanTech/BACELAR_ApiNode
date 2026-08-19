@@ -43,6 +43,20 @@ export class CityController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_city' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.cityService.updateStatus(
+        data.cityId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_city' })
   async softDelete(@Payload() data: { cityId: number; DeletedBy: string; DeletedRemarks?: string }) {
     try {

@@ -46,6 +46,20 @@ export class AcademicSessionController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_academic_session' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.academicSessionService.updateStatus(
+        data.academicSessionId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_academic_session' })
   async softDelete(
     @Payload()

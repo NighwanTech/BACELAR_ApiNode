@@ -69,6 +69,11 @@ export class HeroSectionService {
     });
   }
 
+  
+  async updateStatus(heroSectionId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(heroSectionId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(heroSectionId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(heroSectionId);
 

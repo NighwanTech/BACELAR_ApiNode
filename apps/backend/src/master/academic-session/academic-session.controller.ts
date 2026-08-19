@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateAcademicSessionDto } from './dto/create-academic-session.dto';
 import { UpdateAcademicSessionDto } from './dto/update-academic-session.dto';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 
 @ApiTags('Master - Academic Sessions')
 @Controller('master/academic-sessions')
@@ -51,6 +52,20 @@ export class AcademicSessionController {
     return this.studentClient.send(
       { cmd: 'update_academic_session' },
       { academicSessionId: id, ...updateDto },
+    );
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_academic_session' },
+      { academicSessionId: id, ...statusDto },
     );
   }
 

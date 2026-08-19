@@ -126,6 +126,18 @@ export class ProgramSubjectService {
     });
   }
 
+  
+  async updateStatus(programSubjectId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(programSubjectId);
+    return this.prisma.programSubjectMaster.update({
+      where: { programSubjectId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(
     programSubjectId: number,
     DeletedBy: string,

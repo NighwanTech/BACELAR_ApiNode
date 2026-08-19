@@ -43,6 +43,20 @@ export class StreamController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_stream' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.streamService.updateStatus(
+        data.streamId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_stream' })
   async softDelete(
     @Payload() data: { streamId: number; DeletedBy: string; DeletedRemarks?: string },

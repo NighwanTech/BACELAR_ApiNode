@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 import { Observable } from 'rxjs';
 import { CreateImageGalleryDto } from './dto/create-image-gallery.dto';
 import { UpdateImageGalleryDto } from './dto/update-image-gallery.dto';
@@ -43,6 +44,20 @@ export class ImageGalleryController {
     return this.studentClient.send(
       { cmd: 'update_image_gallery' },
       { imageGalleryId: id, ...updateDto },
+    );
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_image_gallery' },
+      { imageGalleryId: id, ...statusDto },
     );
   }
 

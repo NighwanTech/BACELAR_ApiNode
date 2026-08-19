@@ -94,6 +94,18 @@ export class ZipcodeService {
     });
   }
 
+  
+  async updateStatus(zipcodeId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(zipcodeId);
+    return this.prisma.zipcodeMaster.update({
+      where: { zipcodeId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(zipcodeId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(zipcodeId);
 

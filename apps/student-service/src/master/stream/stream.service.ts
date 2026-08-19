@@ -123,6 +123,18 @@ export class StreamService {
     });
   }
 
+  
+  async updateStatus(streamId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(streamId);
+    return this.prisma.streamMaster.update({
+      where: { streamId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(streamId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(streamId);
 

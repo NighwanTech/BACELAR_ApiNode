@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 
 @ApiTags('Master - States')
 @Controller('master/states')
@@ -41,6 +42,20 @@ export class StateController {
     @Body() updateStateDto: UpdateStateDto,
   ): Observable<any> {
     return this.studentClient.send({ cmd: 'update_state' }, { stateId: id, ...updateStateDto });
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_state' },
+      { stateId: id, ...statusDto },
+    );
   }
 
   @Delete(':id')

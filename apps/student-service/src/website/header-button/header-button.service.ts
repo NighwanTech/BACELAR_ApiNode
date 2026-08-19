@@ -63,6 +63,11 @@ export class HeaderButtonService {
     });
   }
 
+  
+  async updateStatus(headerButtonId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(headerButtonId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(headerButtonId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(headerButtonId);
 

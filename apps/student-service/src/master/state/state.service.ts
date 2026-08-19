@@ -88,6 +88,18 @@ export class StateService {
     });
   }
 
+  
+  async updateStatus(stateId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(stateId);
+    return this.prisma.stateMaster.update({
+      where: { stateId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(stateId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(stateId);
 

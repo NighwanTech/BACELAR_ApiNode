@@ -65,6 +65,11 @@ export class VideoGalleryService {
     });
   }
 
+  
+  async updateStatus(videoGalleryId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(videoGalleryId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(videoGalleryId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(videoGalleryId);
 

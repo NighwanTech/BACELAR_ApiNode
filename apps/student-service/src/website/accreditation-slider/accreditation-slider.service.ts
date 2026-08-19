@@ -57,6 +57,11 @@ export class AccreditationSliderService {
     });
   }
 
+  
+  async updateStatus(accreditationSliderId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(accreditationSliderId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(accreditationSliderId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(accreditationSliderId);
 

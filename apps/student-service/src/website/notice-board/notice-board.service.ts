@@ -69,6 +69,11 @@ export class NoticeBoardService {
     });
   }
 
+  
+  async updateStatus(noticeBoardId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(noticeBoardId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(noticeBoardId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(noticeBoardId);
 

@@ -43,6 +43,20 @@ export class CollegeController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_college' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.collegeService.updateStatus(
+        data.collegeId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_college' })
   async softDelete(@Payload() data: { collegeId: number; DeletedBy: string; DeletedRemarks?: string }) {
     try {

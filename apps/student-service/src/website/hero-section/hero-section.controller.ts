@@ -43,6 +43,20 @@ export class HeroSectionController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_hero_section' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.heroSectionService.updateStatus(
+        data.heroSectionId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_hero_section' })
   async softDelete(
     @Payload() data: { heroSectionId: number; DeletedBy: string; DeletedRemarks?: string },

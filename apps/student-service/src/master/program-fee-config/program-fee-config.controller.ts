@@ -52,6 +52,20 @@ export class ProgramFeeConfigController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_program_fee_config' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.feeConfigService.updateStatus(
+        data.feeConfigId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_program_fee_config' })
   async softDelete(@Payload() data: { feeConfigId: number; DeletedBy: string; DeletedRemarks?: string }) {
     try {

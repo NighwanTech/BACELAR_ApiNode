@@ -90,6 +90,11 @@ export class AdmissionEnquiryService {
     });
   }
 
+  
+  async updateStatus(admissionEnquiryId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(admissionEnquiryId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(admissionEnquiryId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(admissionEnquiryId);
 

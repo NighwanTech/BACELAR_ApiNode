@@ -136,6 +136,18 @@ export class AcademicSessionService {
     });
   }
 
+  
+  async updateStatus(academicSessionId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(academicSessionId);
+    return this.prisma.academicSession.update({
+      where: { academicSessionId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(
     academicSessionId: number,
     DeletedBy: string,

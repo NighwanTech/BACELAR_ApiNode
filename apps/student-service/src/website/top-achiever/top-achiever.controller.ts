@@ -43,6 +43,20 @@ export class TopAchieverController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_top_achiever' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.topAchieverService.updateStatus(
+        data.topAchieverId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_top_achiever' })
   async softDelete(
     @Payload() data: { topAchieverId: number; DeletedBy: string; DeletedRemarks?: string },

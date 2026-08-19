@@ -43,6 +43,20 @@ export class LatestUpdateController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_latest_update' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.latestUpdateService.updateStatus(
+        data.latestUpdateId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_latest_update' })
   async softDelete(
     @Payload() data: { latestUpdateId: number; DeletedBy: string; DeletedRemarks?: string },

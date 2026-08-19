@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 import { Observable } from 'rxjs';
 import { CreateCampusQuickLinkDto } from './dto/create-campus-quick-link.dto';
 import { UpdateCampusQuickLinkDto } from './dto/update-campus-quick-link.dto';
@@ -43,6 +44,20 @@ export class CampusQuickLinkController {
     return this.studentClient.send(
       { cmd: 'update_campus_quick_link' },
       { quickLinkId: id, ...updateDto },
+    );
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_campus_quick_link' },
+      { quickLinkId: id, ...statusDto },
     );
   }
 

@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateQualificationDto } from './dto/create-qualification.dto';
 import { UpdateQualificationDto } from './dto/update-qualification.dto';
 import { BulkDeleteQualificationsDto } from './dto/bulk-delete-qualifications.dto';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 
 @ApiTags('Master - Qualifications')
 @Controller('master/qualifications')
@@ -42,6 +43,20 @@ export class QualificationController {
     @Body() updateDto: UpdateQualificationDto,
   ): Observable<any> {
     return this.studentClient.send({ cmd: 'update_qualification' }, { qualificationId: id, ...updateDto });
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_qualification' },
+      { qualificationId: id, ...statusDto },
+    );
   }
 
   @Delete(':id')

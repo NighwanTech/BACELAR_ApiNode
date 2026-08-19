@@ -43,6 +43,20 @@ export class StatsCounterController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_stats_counter' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.statsCounterService.updateStatus(
+        data.statsCounterId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_stats_counter' })
   async softDelete(@Payload() data: { statsCounterId: number; DeletedBy: string; DeletedRemarks?: string }) {
     try {

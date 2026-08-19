@@ -43,6 +43,20 @@ export class AccreditationSliderController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_accreditation_slider' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.accreditationSliderService.updateStatus(
+        data.accreditationSliderId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_accreditation_slider' })
   async softDelete(
     @Payload() data: { accreditationSliderId: number; DeletedBy: string; DeletedRemarks?: string },

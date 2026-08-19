@@ -67,6 +67,11 @@ export class LatestUpdateService {
     });
   }
 
+  
+  async updateStatus(latestUpdateId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(latestUpdateId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(latestUpdateId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(latestUpdateId);
 

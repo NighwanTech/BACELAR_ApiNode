@@ -1,11 +1,23 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  PutObjectCommandInput,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Readable } from 'stream';
 
 @Injectable()
 export class StorageService {
   private readonly uploadDir = process.env.UPLOAD_DIR || 'public/uploads';
   private readonly storageProvider = process.env.STORAGE_PROVIDER || 'local';
+  private s3Client: S3Client | null = null;
 
   constructor() {
     // Ensure upload directory exists for local storage
@@ -27,6 +39,81 @@ export class StorageService {
       return this.uploadToS3(file, folder);
     }
     return this.uploadToLocal(file, folder);
+  }
+
+  /**
+   * Stream/read an object by storage key (e.g. gallery/file.jpg).
+   * Used by StorageController so private S3 buckets still display in Admin.
+   */
+  async getObject(key: string): Promise<{
+    body: Buffer | Readable;
+    contentType?: string;
+    contentLength?: number;
+  }> {
+    const safeKey = key.replace(/^\/+/, '');
+    if (!safeKey || safeKey.includes('..')) {
+      throw new NotFoundException('Invalid object key');
+    }
+
+    if (this.storageProvider === 's3') {
+      return this.getObjectFromS3(safeKey);
+    }
+
+    const localPath = path.resolve(this.uploadDir, safeKey);
+    const root = path.resolve(this.uploadDir);
+    if (!localPath.startsWith(root) || !fs.existsSync(localPath)) {
+      throw new NotFoundException(`File not found: ${safeKey}`);
+    }
+
+    const body = await fs.promises.readFile(localPath);
+    return {
+      body,
+      contentType: undefined,
+      contentLength: body.length,
+    };
+  }
+
+  /**
+   * Convert a stored public/S3 URL into an API-proxied object path when possible.
+   */
+  toProxyPathFromUrl(url: string): string | null {
+    const key = this.extractS3KeyFromUrl(url);
+    return key ? `/api/v1/storage/object/${key}` : null;
+  }
+
+  extractS3KeyFromUrl(url: string): string | null {
+    try {
+      const { bucketName, publicBaseUrl, endpoint } = this.getS3Config();
+      if (!bucketName) return null;
+
+      const u = new URL(url);
+      const pathname = decodeURIComponent(u.pathname).replace(/^\/+/, '');
+
+      // path-style: /{bucket}/{key}
+      if (pathname.startsWith(`${bucketName}/`)) {
+        return pathname.slice(bucketName.length + 1);
+      }
+
+      // public base prefix match
+      if (publicBaseUrl) {
+        const basePath = new URL(publicBaseUrl).pathname.replace(/^\/+|\/+$/g, '');
+        if (basePath && pathname.startsWith(`${basePath}/`)) {
+          return pathname.slice(basePath.length + 1);
+        }
+      }
+
+      // endpoint host + /{bucket}/{key}
+      if (endpoint) {
+        const epHost = new URL(endpoint).host;
+        if (u.host === epHost && pathname.startsWith(`${bucketName}/`)) {
+          return pathname.slice(bucketName.length + 1);
+        }
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -59,39 +146,143 @@ export class StorageService {
     }
   }
 
+  private getS3Config() {
+    const bucketName =
+      process.env.S3_BUCKET || process.env.AWS_BUCKET_NAME;
+    const region =
+      process.env.S3_REGION || process.env.AWS_REGION || 'us-east-1';
+    const accessKeyId =
+      process.env.S3_ACCESS_KEY || process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey =
+      process.env.S3_SECRET_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+    const endpoint =
+      process.env.S3_ENDPOINT || process.env.AWS_ENDPOINT;
+    const publicBaseUrl =
+      process.env.S3_PUBLIC_URL ||
+      (endpoint && bucketName
+        ? `${endpoint.replace(/\/$/, '')}/${bucketName}`
+        : undefined);
+
+    return { bucketName, region, accessKeyId, secretAccessKey, endpoint, publicBaseUrl };
+  }
+
+  private getS3Client(): S3Client {
+    if (this.s3Client) {
+      return this.s3Client;
+    }
+
+    const { region, accessKeyId, secretAccessKey, endpoint } = this.getS3Config();
+
+    if (!accessKeyId || !secretAccessKey) {
+      throw new InternalServerErrorException(
+        'S3 credentials are not configured (S3_ACCESS_KEY / S3_SECRET_KEY)',
+      );
+    }
+
+    this.s3Client = new S3Client({
+      region,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      ...(endpoint
+        ? {
+            endpoint,
+            forcePathStyle: true,
+          }
+        : {}),
+    });
+
+    return this.s3Client;
+  }
+
+  private async getObjectFromS3(key: string): Promise<{
+    body: Buffer | Readable;
+    contentType?: string;
+    contentLength?: number;
+  }> {
+    const { bucketName } = this.getS3Config();
+    if (!bucketName) {
+      throw new InternalServerErrorException('S3 bucket is not configured (S3_BUCKET)');
+    }
+
+    const result = await this.getS3Client().send(
+      new GetObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      }),
+    );
+
+    if (!result.Body) {
+      throw new NotFoundException(`Object not found: ${key}`);
+    }
+
+    return {
+      body: result.Body as Readable,
+      contentType: result.ContentType,
+      contentLength: result.ContentLength,
+    };
+  }
+
   /**
-   * AWS S3 / Hostinger Object Storage upload stub.
-   * Can be configured by adding `@aws-sdk/client-s3` later without changing controllers.
+   * AWS S3 / custom S3-compatible object storage upload.
+   * Returns an API proxy path so private buckets still render in Admin/website.
    */
   private async uploadToS3(file: any, folder: string): Promise<string> {
-    // Reading credentials from env
-    const bucketName = process.env.AWS_BUCKET_NAME;
-    const region = process.env.AWS_REGION;
-    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-    const s3Endpoint = process.env.AWS_ENDPOINT; // For custom providers like Hostinger Object Storage
+    const { bucketName } = this.getS3Config();
 
     if (!bucketName) {
-      throw new InternalServerErrorException('AWS S3 bucket name is not configured in .env');
+      throw new InternalServerErrorException(
+        'S3 bucket is not configured (S3_BUCKET)',
+      );
+    }
+
+    if (!file?.buffer) {
+      throw new InternalServerErrorException(
+        'Uploaded file buffer is missing — ensure Multer memory storage is used',
+      );
     }
 
     try {
-      console.log(`[S3 Storage] Simulating file upload to bucket "${bucketName}"...`);
-      // Here you would initialize S3 client:
-      // const s3 = new S3Client({ credentials: { accessKeyId, secretAccessKey }, region, endpoint: s3Endpoint });
-      // await s3.send(new PutObjectCommand({ Bucket: bucketName, Key: `${folder}/${file.originalname}`, Body: file.buffer }));
-
-      // Placeholder return simulating cloud URL
-      const host = s3Endpoint || `https://${bucketName}.s3.${region}.amazonaws.com`;
-      const cleanHost = host.replace(/\/$/, '');
+      const ext = path.extname(file.originalname || '');
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const ext = path.extname(file.originalname);
-      
-      return folder 
-        ? `${cleanHost}/${folder}/${uniqueSuffix}${ext}`
-        : `${cleanHost}/${uniqueSuffix}${ext}`;
+      const uniqueFilename = `${uniqueSuffix}${ext}`;
+      const key = folder
+        ? `${folder.replace(/^\/+|\/+$/g, '')}/${uniqueFilename}`
+        : uniqueFilename;
+
+      const client = this.getS3Client();
+      const putInput: PutObjectCommandInput = {
+        Bucket: bucketName,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype || 'application/octet-stream',
+      };
+
+      // Optional: some S3-compatible providers reject ACL / don't support it
+      if (process.env.S3_ACL !== 'none') {
+        putInput.ACL =
+          (process.env.S3_ACL as PutObjectCommandInput['ACL']) || 'public-read';
+      }
+
+      try {
+        await client.send(new PutObjectCommand(putInput));
+      } catch (aclError: any) {
+        // Retry without ACL when provider rejects canned ACLs
+        if (putInput.ACL) {
+          delete putInput.ACL;
+          await client.send(new PutObjectCommand(putInput));
+        } else {
+          throw aclError;
+        }
+      }
+
+      // Private buckets: serve via authenticated API proxy (not direct S3 URL)
+      return `/api/v1/storage/object/${key}`;
     } catch (error: any) {
-      throw new InternalServerErrorException(`S3 upload failed: ${error.message}`);
+      throw new InternalServerErrorException(
+        `S3 upload failed: ${error.message}`,
+      );
     }
   }
 }

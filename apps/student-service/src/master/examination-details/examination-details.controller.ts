@@ -48,6 +48,20 @@ export class ExaminationDetailsController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_examination_details' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.examinationDetailsService.updateStatus(
+        data.examinationId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_examination_details' })
   async softDelete(
     @Payload()

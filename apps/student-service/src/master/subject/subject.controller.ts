@@ -43,6 +43,20 @@ export class SubjectController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_subject' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.subjectService.updateStatus(
+        data.subjectId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_subject' })
   async softDelete(@Payload() data: { subjectId: number; DeletedBy: string; DeletedRemarks?: string }) {
     try {

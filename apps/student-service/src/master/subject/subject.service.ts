@@ -67,6 +67,18 @@ export class SubjectService {
     });
   }
 
+  
+  async updateStatus(subjectId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(subjectId);
+    return this.prisma.subjectMaster.update({
+      where: { subjectId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(subjectId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(subjectId);
 

@@ -94,6 +94,18 @@ export class CityService {
     });
   }
 
+  
+  async updateStatus(cityId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(cityId);
+    return this.prisma.cityMaster.update({
+      where: { cityId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(cityId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(cityId);
 

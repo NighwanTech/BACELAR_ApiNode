@@ -43,6 +43,20 @@ export class NoticeBoardController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_notice_board' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.noticeBoardService.updateStatus(
+        data.noticeBoardId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_notice_board' })
   async softDelete(
     @Payload() data: { noticeBoardId: number; DeletedBy: string; DeletedRemarks?: string },

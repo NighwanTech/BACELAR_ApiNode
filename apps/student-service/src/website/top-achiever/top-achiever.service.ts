@@ -67,6 +67,11 @@ export class TopAchieverService {
     });
   }
 
+  
+  async updateStatus(topAchieverId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(topAchieverId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(topAchieverId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(topAchieverId);
 

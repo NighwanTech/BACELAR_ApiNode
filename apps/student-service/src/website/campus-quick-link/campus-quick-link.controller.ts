@@ -43,6 +43,20 @@ export class CampusQuickLinkController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_campus_quick_link' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.campusQuickLinkService.updateStatus(
+        data.quickLinkId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_campus_quick_link' })
   async softDelete(
     @Payload() data: { quickLinkId: number; DeletedBy: string; DeletedRemarks?: string },

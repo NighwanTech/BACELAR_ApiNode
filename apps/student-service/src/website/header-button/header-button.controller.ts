@@ -43,6 +43,20 @@ export class HeaderButtonController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_header_button' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.headerButtonService.updateStatus(
+        data.headerButtonId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_header_button' })
   async softDelete(
     @Payload() data: { headerButtonId: number; DeletedBy: string; DeletedRemarks?: string },

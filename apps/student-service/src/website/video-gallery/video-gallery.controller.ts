@@ -43,6 +43,20 @@ export class VideoGalleryController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_video_gallery' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.videoGalleryService.updateStatus(
+        data.videoGalleryId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_video_gallery' })
   async softDelete(
     @Payload() data: { videoGalleryId: number; DeletedBy: string; DeletedRemarks?: string },

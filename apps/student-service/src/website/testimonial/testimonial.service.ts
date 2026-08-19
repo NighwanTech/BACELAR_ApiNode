@@ -65,6 +65,11 @@ export class TestimonialService {
     });
   }
 
+  
+  async updateStatus(testimonialId: number, IsActive: boolean, UpdatedBy: string) {
+    return this.update(testimonialId, { IsActive, UpdatedBy });
+  }
+
   async softDelete(testimonialId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(testimonialId);
 

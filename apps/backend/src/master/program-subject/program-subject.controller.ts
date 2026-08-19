@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateProgramSubjectDto } from './dto/create-program-subject.dto';
 import { UpdateProgramSubjectDto } from './dto/update-program-subject.dto';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 
 @ApiTags('Master - Program Subjects')
 @Controller('master/program-subjects')
@@ -54,6 +55,20 @@ export class ProgramSubjectController {
     return this.studentClient.send(
       { cmd: 'update_program_subject' },
       { programSubjectId: id, ...updateProgramSubjectDto },
+    );
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_program_subject' },
+      { programSubjectId: id, ...statusDto },
     );
   }
 

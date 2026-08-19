@@ -43,6 +43,20 @@ export class ProgramCategoryController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_program_category' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.programCategoryService.updateStatus(
+        data.programCategoryId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_program_category' })
   async softDelete(@Payload() data: { programCategoryId: number; DeletedBy: string; DeletedRemarks?: string }) {
     try {

@@ -270,6 +270,18 @@ export class ProgramEligibilityService {
     });
   }
 
+  
+  async updateStatus(eligibilityId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(eligibilityId);
+    return this.prisma.programEligibility.update({
+      where: { eligibilityId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(
     eligibilityId: number,
     DeletedBy: string,

@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, Patch } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 import { Observable } from 'rxjs';
 import { CreateAccreditationSliderDto } from './dto/create-accreditation-slider.dto';
 import { UpdateAccreditationSliderDto } from './dto/update-accreditation-slider.dto';
@@ -43,6 +44,20 @@ export class AccreditationSliderController {
     return this.studentClient.send(
       { cmd: 'update_accreditation_slider' },
       { accreditationSliderId: id, ...updateDto },
+    );
+  }
+
+  
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Update active/inactive status' })
+  @ApiResponse({ status: 200, description: 'Status updated successfully' })
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() statusDto: UpdateStatusDto,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'update_status_accreditation_slider' },
+      { accreditationSliderId: id, ...statusDto },
     );
   }
 

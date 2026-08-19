@@ -43,6 +43,20 @@ export class BoardController {
     }
   }
 
+  
+  @MessagePattern({ cmd: 'update_status_board' })
+  async updateStatus(@Payload() data: any) {
+    try {
+      return await this.boardService.updateStatus(
+        data.boardId,
+        data.IsActive,
+        data.UpdatedBy,
+      );
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'delete_board' })
   async softDelete(@Payload() data: { boardId: number; DeletedBy: string; DeletedRemarks?: string }) {
     try {

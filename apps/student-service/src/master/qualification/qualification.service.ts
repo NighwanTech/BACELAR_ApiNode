@@ -48,6 +48,18 @@ export class QualificationService {
     });
   }
 
+  
+  async updateStatus(qualificationId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(qualificationId);
+    return this.prisma.qualificationMaster.update({
+      where: { qualificationId },
+      data: {
+        IsActive,
+        UpdatedBy,
+      },
+    });
+  }
+
   async softDelete(qualificationId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(qualificationId);
 

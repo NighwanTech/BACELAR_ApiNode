@@ -332,6 +332,35 @@ export class StudentsService {
     return this.sanitizeStudent(updated as any);
   }
 
+  async updateStatus(StudentRegistrationId: number, IsActive: boolean, UpdatedBy: string) {
+    await this.findOne(StudentRegistrationId);
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const student = await tx.student.update({
+        where: { StudentRegistrationId },
+        data: {
+          IsActive,
+          UpdatedBy,
+        },
+      });
+
+      await tx.loginMaster.updateMany({
+        where: { StudentId: StudentRegistrationId },
+        data: {
+          IsActive,
+          ModifyBy: UpdatedBy,
+        },
+      });
+
+      return tx.student.findUnique({
+        where: { StudentRegistrationId },
+        include: { loginMaster: true },
+      });
+    });
+
+    return this.sanitizeStudent(updated as any);
+  }
+
   async softDelete(
     StudentRegistrationId: number,
     DeletedBy: string,
