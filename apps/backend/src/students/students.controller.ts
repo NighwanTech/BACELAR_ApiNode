@@ -7,6 +7,7 @@ import { UpdateStudentDto } from './dto/update-student.dto';
 import { LoginStudentDto } from './dto/login-student.dto';
 import { BulkDeleteDto } from './dto/bulk-delete.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { AdminSetPasswordDto } from './dto/admin-set-password.dto';
 import { UpdateStatusDto } from '../common/dto/update-status.dto';
 
 @ApiTags('Students')
@@ -28,6 +29,13 @@ export class StudentsController {
   @ApiResponse({ status: 200, description: 'Password changed successfully' })
   changePassword(@Body() changePasswordDto: ChangePasswordDto): Observable<any> {
     return this.studentClient.send({ cmd: 'change_password_student' }, changePasswordDto);
+  }
+
+  @Post('admin-set-password')
+  @ApiOperation({ summary: 'Admin set student login password by registration number (no current password)' })
+  @ApiResponse({ status: 200, description: 'Password updated' })
+  adminSetPassword(@Body() dto: AdminSetPasswordDto): Observable<any> {
+    return this.studentClient.send({ cmd: 'admin_set_password_student' }, dto);
   }
 
   @Post(':id/reset-password')

@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { resolveFirstYearAndSemester } from '../resolve-first-year-semester';
 
 /** Compute percentage / grade / division for DB columns (best done on backend). */
 export function computeAcademicResult(input: {
@@ -99,11 +100,38 @@ export class StudentAcademicService {
       const assignedAdmissionSessionId = activeSession.admissionSessionId;
       const assignedAdmissionSessionName = activeSession.admissionSessionName;
 
+      // First academic save → Year 1 + Sem 1. Later promote keeps existing values.
+      let assignedYearId = student.yearId ?? null;
+      let assignedSemId = student.semId ?? null;
+      let assignedYearName: string | null = null;
+      let assignedSemesterName: string | null = null;
+
+      if (!assignedYearId || !assignedSemId) {
+        const first = await resolveFirstYearAndSemester(tx);
+        assignedYearId = assignedYearId || first.yearId;
+        assignedSemId = assignedSemId || first.semId;
+        assignedYearName = first.yearName;
+        assignedSemesterName = first.semesterName;
+      } else {
+        const [y, s] = await Promise.all([
+          tx.yearMaster.findFirst({
+            where: { yearId: assignedYearId, IsDeleted: false },
+          }),
+          tx.semesterMaster.findFirst({
+            where: { semId: assignedSemId, IsDeleted: false },
+          }),
+        ]);
+        assignedYearName = y?.yearName ?? null;
+        assignedSemesterName = s?.semesterName ?? null;
+      }
+
       await tx.student.update({
         where: { StudentRegistrationId: Number(studentId) },
         data: {
           programId: assignedProgramId,
           admissionSessionId: assignedAdmissionSessionId,
+          yearId: assignedYearId,
+          semId: assignedSemId,
           UpdatedBy: CreatedBy || 'System',
         },
       });
@@ -222,6 +250,10 @@ export class StudentAcademicService {
         programId: assignedProgramId,
         admissionSessionId: assignedAdmissionSessionId,
         admissionSessionName: assignedAdmissionSessionName,
+        yearId: assignedYearId,
+        semId: assignedSemId,
+        yearName: assignedYearName,
+        semesterName: assignedSemesterName,
       };
     });
   }

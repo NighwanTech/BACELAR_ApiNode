@@ -9,6 +9,22 @@ export class UpdateProgramSubjectDto {
   @IsOptional()
   programId?: number;
 
+  @ApiProperty({ example: 'Bachelor of Arts', required: false })
+  @IsString()
+  @IsOptional()
+  programName?: string;
+
+  @ApiProperty({ example: 2, required: false })
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  programCategoryId?: number;
+
+  @ApiProperty({ example: 'Undergraduate', required: false })
+  @IsString()
+  @IsOptional()
+  programCategoryName?: string;
+
   @ApiProperty({ example: 'Mathematics', required: false })
   @IsString()
   @IsOptional()

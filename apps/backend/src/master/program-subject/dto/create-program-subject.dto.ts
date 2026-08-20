@@ -9,6 +9,22 @@ export class CreateProgramSubjectDto {
   @IsNotEmpty()
   programId: number;
 
+  @ApiProperty({ example: 'Bachelor of Arts', description: 'Program name', required: false })
+  @IsString()
+  @IsOptional()
+  programName?: string;
+
+  @ApiProperty({ example: 2, description: 'Program category ID', required: false })
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  programCategoryId?: number;
+
+  @ApiProperty({ example: 'Undergraduate', description: 'Program category name', required: false })
+  @IsString()
+  @IsOptional()
+  programCategoryName?: string;
+
   @ApiProperty({ example: 'Mathematics', description: 'Program subject name' })
   @IsString()
   @IsNotEmpty()

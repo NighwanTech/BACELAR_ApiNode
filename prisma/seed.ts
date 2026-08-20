@@ -862,6 +862,64 @@ async function main() {
     }
   }
   console.log('Seeded Program Eligibility rules successfully!');
+
+  const roleDb = (prisma as any).roleMaster;
+  const roles = [
+    { roleCode: 'SUPER_ADMIN', roleName: 'Super Admin' },
+    { roleCode: 'ADMIN', roleName: 'Admin' },
+  ];
+  for (const role of roles) {
+    const existing = await roleDb.findFirst({
+      where: { roleCode: role.roleCode },
+    });
+    if (!existing) {
+      await roleDb.create({
+        data: {
+          roleCode: role.roleCode,
+          roleName: role.roleName,
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    }
+  }
+  console.log('Seeded Role Master successfully!');
+
+  const bcrypt = await import('bcryptjs');
+  const adminDb = (prisma as any).adminLoginMaster;
+  const superAdminRole = await roleDb.findFirst({
+    where: { roleCode: 'SUPER_ADMIN', IsDeleted: false },
+  });
+  if (superAdminRole) {
+    const loginName = 'superadmin';
+    const existingAdmin = await adminDb.findFirst({
+      where: {
+        OR: [{ LoginName: loginName }, { EmailId: 'superadmin@bacelar.edu.in' }],
+      },
+    });
+    if (!existingAdmin) {
+      const plainPassword = 'SuperAdmin@123';
+      const hashed = await bcrypt.hash(plainPassword, 10);
+      await adminDb.create({
+        data: {
+          LoginName: loginName,
+          EmailId: 'superadmin@bacelar.edu.in',
+          Mobile: '9999999999',
+          Password: hashed,
+          PlainPassword: plainPassword,
+          RoleId: superAdminRole.roleId,
+          CreatedBy: 'System Seed',
+          Remarks: 'Default Super Admin (seed)',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+      console.log('Seeded default Super Admin login: superadmin / SuperAdmin@123');
+    } else {
+      console.log('Super Admin login already exists, skipped.');
+    }
+  }
 }
 
 main()

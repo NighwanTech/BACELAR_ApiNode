@@ -15,6 +15,85 @@ function cleanEnv(value?: string | null): string {
     .replace(/^['"]|['"]$/g, '');
 }
 
+function joinAddressParts(parts: Array<string | null | undefined>): string {
+  return parts
+    .map((p) => String(p || '').trim())
+    .filter(Boolean)
+    .join(', ');
+}
+
+/** Merge correspondence + permanent address lines into one snapshot string. */
+export function mergeStudentAddresses(profile: {
+  CaddressLine1?: string | null;
+  CaddressLine2?: string | null;
+  CaddressLine3?: string | null;
+  Ccity?: string | null;
+  Cstate?: string | null;
+  Cpincode?: string | null;
+  PaddressLine1?: string | null;
+  PaddressLine2?: string | null;
+  PaddressLine3?: string | null;
+  Pcity?: string | null;
+  Pstate?: string | null;
+  Ppincode?: string | null;
+} | null | undefined): string | null {
+  if (!profile) return null;
+
+  const correspondence = joinAddressParts([
+    profile.CaddressLine1,
+    profile.CaddressLine2,
+    profile.CaddressLine3,
+    profile.Ccity,
+    profile.Cstate,
+    profile.Cpincode,
+  ]);
+  const permanent = joinAddressParts([
+    profile.PaddressLine1,
+    profile.PaddressLine2,
+    profile.PaddressLine3,
+    profile.Pcity,
+    profile.Pstate,
+    profile.Ppincode,
+  ]);
+
+  const blocks: string[] = [];
+  if (correspondence) blocks.push(`Correspondence: ${correspondence}`);
+  if (permanent) blocks.push(`Permanent: ${permanent}`);
+  return blocks.length ? blocks.join(' | ') : null;
+}
+
+export function extractBankRrnNo(
+  gatewayResponse?: string | null,
+  razorpayPayment?: any,
+): string | null {
+  const candidates: unknown[] = [
+    razorpayPayment?.acquirer_data?.rrn,
+    razorpayPayment?.acquirer_data?.bank_transaction_id,
+    razorpayPayment?.acquirer_data?.auth_code,
+  ];
+
+  if (gatewayResponse) {
+    try {
+      const parsed = JSON.parse(gatewayResponse);
+      candidates.push(
+        parsed?.acquirer_data?.rrn,
+        parsed?.acquirer_data?.bank_transaction_id,
+        parsed?.rrn,
+        parsed?.bankRrnNo,
+        parsed?.bank_rrn,
+      );
+    } catch {
+      // ignore non-JSON gateway payload
+    }
+  }
+
+  for (const value of candidates) {
+    const s = String(value || '').trim();
+    if (s) return s.slice(0, 100);
+  }
+  return null;
+}
+
 export function extractErrorMessage(error: unknown): string {
   if (!error) return 'Unknown error';
   if (typeof error === 'string') return error;
@@ -81,13 +160,83 @@ export class StudentPaymentService {
     };
   }
 
+  private async loadStudentForPaymentSnapshot(studentId: number) {
+    const student = await this.prisma.student.findFirst({
+      where: { StudentRegistrationId: studentId, IsDeleted: false },
+      include: {
+        studentProfile: true,
+        year: true,
+        semester: true,
+        program: true,
+        admissionSession: true,
+      },
+    });
+    if (!student) {
+      throw new NotFoundException(`Student with ID ${studentId} not found`);
+    }
+    return student;
+  }
+
+  private buildPaymentSnapshot(
+    student: Awaited<ReturnType<StudentPaymentService['loadStudentForPaymentSnapshot']>>,
+    extras?: {
+      enrollNo?: string | null;
+      bankRrnNo?: string | null;
+      merchantOrderId?: string | null;
+      paymentDateTime?: Date | null;
+    },
+  ) {
+    return {
+      registrationNo: student.registrationNo || null,
+      studentName: student.candidateName || null,
+      studentEmail: student.email || null,
+      fatherName: student.fatherName || null,
+      contactNo: student.mobileNo || null,
+      addresses: mergeStudentAddresses(student.studentProfile),
+      yearId: student.yearId ?? null,
+      semesterId: student.semId ?? null,
+      enrollNo: extras?.enrollNo ?? null,
+      bankRrnNo: extras?.bankRrnNo ?? null,
+      merchantOrderId: extras?.merchantOrderId ?? null,
+      paymentDateTime: extras?.paymentDateTime ?? null,
+    };
+  }
+
+  private async resolveFeeTypeId(feeTypeName?: string | null, feeTypeId?: number | null) {
+    const feeTypeDb = (this.prisma as any).feeTypeMaster;
+    if (feeTypeId) {
+      const byId = await feeTypeDb.findFirst({
+        where: { feeTypeId, IsDeleted: false },
+      });
+      return byId?.feeTypeId ?? null;
+    }
+    const name = String(feeTypeName || '').trim();
+    if (!name) return null;
+    const byName = await feeTypeDb.findFirst({
+      where: { feeTypeName: name, IsDeleted: false },
+    });
+    return byName?.feeTypeId ?? null;
+  }
+
   async create(data: any) {
+    const studentId = Number(data.studentId);
+    const student = await this.loadStudentForPaymentSnapshot(studentId);
+    const snapshot = this.buildPaymentSnapshot(student, {
+      enrollNo: data.enrollNo || null,
+      bankRrnNo: data.bankRrnNo || null,
+      merchantOrderId: data.merchantOrderId || null,
+      paymentDateTime: data.paymentDateTime ? new Date(data.paymentDateTime) : new Date(),
+    });
+    const feeTypeId = await this.resolveFeeTypeId(data.feeType, data.feeTypeId);
+
     return this.prisma.studentPayment.create({
       data: {
-        studentId: Number(data.studentId),
+        studentId,
         feeType: data.feeType,
+        feeTypeId,
         amountPaid: Number(data.amountPaid),
         paymentStatus: data.paymentStatus || 'PENDING',
+        ...snapshot,
         razorpayOrderId: data.razorpayOrderId || null,
         razorpayPaymentId: data.razorpayPaymentId || null,
         razorpaySignature: data.razorpaySignature || null,
@@ -99,6 +248,9 @@ export class StudentPaymentService {
       },
       include: {
         student: true,
+        year: true,
+        semester: true,
+        feeTypeMaster: true,
       },
     });
   }
@@ -111,13 +263,7 @@ export class StudentPaymentService {
     const studentId = Number(data.studentId);
     const feeType = (data.feeType || 'REGISTRATION').toUpperCase();
 
-    const student = await this.prisma.student.findFirst({
-      where: { StudentRegistrationId: studentId, IsDeleted: false },
-      include: { program: true, admissionSession: true },
-    });
-    if (!student) {
-      throw new NotFoundException(`Student with ID ${studentId} not found`);
-    }
+    const student = await this.loadStudentForPaymentSnapshot(studentId);
     if (!student.programId || !student.admissionSessionId) {
       throw new BadRequestException(
         'Student program and admission session must be saved before payment',
@@ -188,12 +334,20 @@ export class StudentPaymentService {
       throw new BadRequestException('Razorpay did not return an order id');
     }
 
+    const snapshot = this.buildPaymentSnapshot(student, {
+      merchantOrderId: order.id,
+      paymentDateTime: new Date(),
+    });
+    const feeTypeId = await this.resolveFeeTypeId(feeType);
+
     const payment = await this.prisma.studentPayment.create({
       data: {
         studentId,
         feeType,
+        feeTypeId,
         amountPaid: amount,
         paymentStatus: 'PENDING',
+        ...snapshot,
         razorpayOrderId: order.id,
         CreatedBy: data.CreatedBy,
         Remarks: `${feeType} fee order created`,
@@ -205,8 +359,13 @@ export class StudentPaymentService {
           include: {
             program: { include: { programCategory: true } },
             admissionSession: true,
+            year: true,
+            semester: true,
           },
         },
+        year: true,
+        semester: true,
+        feeTypeMaster: true,
       },
     });
 
@@ -262,6 +421,25 @@ export class StudentPaymentService {
       throw new BadRequestException('Payment signature verification failed');
     }
 
+    const student = await this.loadStudentForPaymentSnapshot(payment.studentId);
+    let razorpayPayment: any = null;
+    try {
+      const { client } = this.getRazorpayClient();
+      razorpayPayment = await client.payments.fetch(data.razorpayPaymentId);
+    } catch {
+      // RRN is best-effort; verification itself already passed
+    }
+
+    const snapshot = this.buildPaymentSnapshot(student, {
+      enrollNo: payment.enrollNo,
+      bankRrnNo:
+        extractBankRrnNo(data.gatewayResponse, razorpayPayment) ||
+        payment.bankRrnNo ||
+        null,
+      merchantOrderId: payment.merchantOrderId || data.razorpayOrderId || null,
+      paymentDateTime: new Date(),
+    });
+
     return this.prisma.studentPayment.update({
       where: { paymentId: payment.paymentId },
       data: {
@@ -269,11 +447,15 @@ export class StudentPaymentService {
         razorpayPaymentId: data.razorpayPaymentId,
         razorpaySignature: data.razorpaySignature,
         gatewayResponse: data.gatewayResponse || null,
+        ...snapshot,
         UpdatedBy: data.UpdatedBy,
         Remarks: 'Payment verified successfully via Razorpay',
       },
       include: {
         student: true,
+        year: true,
+        semester: true,
+        feeTypeMaster: true,
       },
     });
   }
@@ -283,6 +465,9 @@ export class StudentPaymentService {
       where: { IsDeleted: false },
       include: {
         student: true,
+        year: true,
+        semester: true,
+        feeTypeMaster: true,
       },
       orderBy: { CreatedOn: 'desc' },
     });
@@ -293,6 +478,9 @@ export class StudentPaymentService {
       where: { paymentId, IsDeleted: false },
       include: {
         student: true,
+        year: true,
+        semester: true,
+        feeTypeMaster: true,
       },
     });
     if (!payment) {
@@ -306,6 +494,9 @@ export class StudentPaymentService {
       where: { studentId, IsDeleted: false },
       include: {
         student: true,
+        year: true,
+        semester: true,
+        feeTypeMaster: true,
       },
       orderBy: { CreatedOn: 'desc' },
     });
@@ -316,10 +507,15 @@ export class StudentPaymentService {
       where: { razorpayOrderId, IsDeleted: false },
       include: {
         student: true,
+        year: true,
+        semester: true,
+        feeTypeMaster: true,
       },
     });
     if (!payment) {
-      throw new NotFoundException(`Payment with Razorpay Order ID ${razorpayOrderId} not found`);
+      throw new NotFoundException(
+        `Payment with Razorpay Order ID ${razorpayOrderId} not found`,
+      );
     }
     return payment;
   }
@@ -331,15 +527,23 @@ export class StudentPaymentService {
       where: { paymentId },
       data: {
         paymentStatus: data.paymentStatus,
+        amountPaid: data.amountPaid !== undefined ? Number(data.amountPaid) : undefined,
+        feeType: data.feeType !== undefined ? data.feeType : undefined,
+        feeTypeId: data.feeTypeId !== undefined ? Number(data.feeTypeId) || null : undefined,
         razorpayPaymentId: data.razorpayPaymentId,
         razorpaySignature: data.razorpaySignature,
         gatewayResponse: data.gatewayResponse,
+        bankRrnNo: data.bankRrnNo !== undefined ? data.bankRrnNo : undefined,
+        enrollNo: data.enrollNo !== undefined ? data.enrollNo : undefined,
         UpdatedBy: data.UpdatedBy,
         IsActive: data.IsActive,
         Remarks: data.Remarks,
       },
       include: {
         student: true,
+        year: true,
+        semester: true,
+        feeTypeMaster: true,
       },
     });
   }

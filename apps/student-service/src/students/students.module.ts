@@ -9,6 +9,7 @@ import { StudentAcademicSubjectModule } from './student-academic-subject/student
 import { StudentProgramSubjectModule } from './student-program-subject/student-program-subject.module';
 import { StudentPaymentModule } from './student-payment/student-payment.module';
 import { StudentAttachmentModule } from './student-attachment/student-attachment.module';
+import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { StudentAttachmentModule } from './student-attachment/student-attachment
     StudentProgramSubjectModule,
     StudentPaymentModule,
     StudentAttachmentModule,
+    StudentEnrollmentModule,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],

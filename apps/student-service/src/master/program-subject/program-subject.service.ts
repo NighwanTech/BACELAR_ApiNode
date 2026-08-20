@@ -1,27 +1,64 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
 
 @Injectable()
 export class ProgramSubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private async assertProgram(programId: number) {
+  private getIncludeRelations() {
+    return {
+      program: true,
+      programCategory: true,
+    };
+  }
+
+  private async resolveProgramFields(
+    programId: number,
+    programCategoryId?: number,
+  ) {
     const program = await this.prisma.program.findFirst({
       where: { programId, IsDeleted: false },
+      include: { programCategory: true },
     });
     if (!program) {
       throw new NotFoundException(`Program with ID ${programId} not found`);
     }
-    return program;
+
+    if (
+      programCategoryId !== undefined &&
+      programCategoryId !== null &&
+      Number(programCategoryId) !== program.programCategoryId
+    ) {
+      throw new BadRequestException(
+        'Program does not belong to the selected program category',
+      );
+    }
+
+    return {
+      programId: program.programId,
+      programName: program.programName,
+      programCategoryId: program.programCategoryId,
+      programCategoryName: program.programCategory?.programCategoryName || null,
+    };
   }
 
   async create(data: any) {
-    await this.assertProgram(Number(data.programId));
+    const resolved = await this.resolveProgramFields(
+      Number(data.programId),
+      data.programCategoryId !== undefined && data.programCategoryId !== null && data.programCategoryId !== ''
+        ? Number(data.programCategoryId)
+        : undefined,
+    );
 
     const programSubjectName = String(data.programSubjectName || '').trim();
     const existing = await this.prisma.programSubjectMaster.findFirst({
       where: {
-        programId: Number(data.programId),
+        programId: resolved.programId,
         programSubjectName,
         IsDeleted: false,
       },
@@ -32,58 +69,63 @@ export class ProgramSubjectService {
       );
     }
 
-    return this.prisma.programSubjectMaster.create({
-      data: {
-        programId: Number(data.programId),
-        programSubjectName,
-        CreatedBy: data.CreatedBy,
-        Remarks: data.Remarks || null,
-        IsActive: true,
-        IsDeleted: false,
-      },
-    });
+    return this.mapRow(
+      await this.prisma.programSubjectMaster.create({
+        data: {
+          programId: resolved.programId,
+          programName: data.programName || resolved.programName,
+          programCategoryId: resolved.programCategoryId,
+          programCategoryName:
+            data.programCategoryName || resolved.programCategoryName,
+          programSubjectName,
+          CreatedBy: data.CreatedBy,
+          Remarks: data.Remarks || null,
+          IsActive: true,
+          IsDeleted: false,
+        },
+        include: this.getIncludeRelations(),
+      }),
+    );
+  }
+
+  private mapRow(row: any) {
+    return {
+      ...row,
+      programId: row.programId,
+      programName: row.programName || row.program?.programName || null,
+      programCategoryId:
+        row.programCategoryId ?? row.program?.programCategoryId ?? null,
+      programCategoryName:
+        row.programCategoryName ||
+        row.programCategory?.programCategoryName ||
+        row.program?.programCategory?.programCategoryName ||
+        null,
+    };
   }
 
   async findAll(programId?: number) {
-    return this.prisma.programSubjectMaster.findMany({
+    const rows = await this.prisma.programSubjectMaster.findMany({
       where: {
         IsDeleted: false,
         ...(programId ? { programId: Number(programId) } : {}),
       },
-      include: {
-        program: {
-          select: {
-            programId: true,
-            programName: true,
-            programShortName: true,
-            programCode: true,
-          },
-        },
-      },
+      include: this.getIncludeRelations(),
       orderBy: [{ programId: 'asc' }, { programSubjectName: 'asc' }],
     });
+    return rows.map((row) => this.mapRow(row));
   }
 
   async findOne(programSubjectId: number) {
     const programSubject = await this.prisma.programSubjectMaster.findFirst({
       where: { programSubjectId, IsDeleted: false },
-      include: {
-        program: {
-          select: {
-            programId: true,
-            programName: true,
-            programShortName: true,
-            programCode: true,
-          },
-        },
-      },
+      include: this.getIncludeRelations(),
     });
     if (!programSubject) {
       throw new NotFoundException(
         `Program subject with ID ${programSubjectId} not found`,
       );
     }
-    return programSubject;
+    return this.mapRow(programSubject);
   }
 
   async update(programSubjectId: number, data: any) {
@@ -95,13 +137,23 @@ export class ProgramSubjectService {
         ? String(data.programSubjectName).trim()
         : current.programSubjectName;
 
-    if (data.programId !== undefined) {
-      await this.assertProgram(programId);
-    }
+    const categoryIdForCheck =
+      data.programCategoryId !== undefined &&
+      data.programCategoryId !== null &&
+      data.programCategoryId !== ''
+        ? Number(data.programCategoryId)
+        : data.programId !== undefined
+          ? undefined
+          : current.programCategoryId ?? undefined;
+
+    const resolved = await this.resolveProgramFields(
+      programId,
+      categoryIdForCheck,
+    );
 
     const existing = await this.prisma.programSubjectMaster.findFirst({
       where: {
-        programId,
+        programId: resolved.programId,
         programSubjectName,
         IsDeleted: false,
         NOT: { programSubjectId },
@@ -113,21 +165,36 @@ export class ProgramSubjectService {
       );
     }
 
-    return this.prisma.programSubjectMaster.update({
-      where: { programSubjectId },
-      data: {
-        programId: data.programId !== undefined ? programId : undefined,
-        programSubjectName:
-          data.programSubjectName !== undefined ? programSubjectName : undefined,
-        UpdatedBy: data.UpdatedBy,
-        IsActive: data.IsActive,
-        Remarks: data.Remarks,
-      },
-    });
+    return this.mapRow(
+      await this.prisma.programSubjectMaster.update({
+        where: { programSubjectId },
+        data: {
+          programId: resolved.programId,
+          programName:
+            data.programName !== undefined
+              ? data.programName
+              : resolved.programName,
+          programCategoryId: resolved.programCategoryId,
+          programCategoryName:
+            data.programCategoryName !== undefined
+              ? data.programCategoryName
+              : resolved.programCategoryName,
+          programSubjectName:
+            data.programSubjectName !== undefined ? programSubjectName : undefined,
+          UpdatedBy: data.UpdatedBy,
+          IsActive: data.IsActive,
+          Remarks: data.Remarks,
+        },
+        include: this.getIncludeRelations(),
+      }),
+    );
   }
 
-  
-  async updateStatus(programSubjectId: number, IsActive: boolean, UpdatedBy: string) {
+  async updateStatus(
+    programSubjectId: number,
+    IsActive: boolean,
+    UpdatedBy: string,
+  ) {
     await this.findOne(programSubjectId);
     return this.prisma.programSubjectMaster.update({
       where: { programSubjectId },
@@ -135,6 +202,7 @@ export class ProgramSubjectService {
         IsActive,
         UpdatedBy,
       },
+      include: this.getIncludeRelations(),
     });
   }
 

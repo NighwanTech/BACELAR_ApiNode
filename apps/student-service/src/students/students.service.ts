@@ -2,6 +2,7 @@ import { Injectable, ConflictException, NotFoundException, UnauthorizedException
 import { PrismaService } from '@app/prisma';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { resolveFirstYearAndSemester } from './resolve-first-year-semester';
 
 /** Student role in loginMaster */
 const STUDENT_ROLE_ID = 1;
@@ -115,6 +116,9 @@ export class StudentsService {
     const createdBy = data.CreatedBy || 'System';
 
     const newStudent = await this.prisma.$transaction(async (tx) => {
+      // Register → always start in Year 1 + Sem 1
+      const first = await resolveFirstYearAndSemester(tx);
+
       const student = await tx.student.create({
         data: {
           candidateName: data.candidateName,
@@ -122,6 +126,8 @@ export class StudentsService {
           email: data.email,
           mobileNo: data.mobileNo,
           registrationNo: regNo,
+          yearId: first.yearId,
+          semId: first.semId,
           CreatedBy: createdBy,
           Remarks: data.Remarks,
           IsActive: true,
@@ -150,7 +156,11 @@ export class StudentsService {
 
       return tx.student.findUnique({
         where: { StudentRegistrationId: student.StudentRegistrationId },
-        include: { loginMaster: true },
+        include: {
+          loginMaster: true,
+          year: true,
+          semester: true,
+        },
       });
     });
 
@@ -171,7 +181,14 @@ export class StudentsService {
     const login = await this.prisma.loginMaster.findUnique({
       where: { RegistrationNo: registrationNo },
       include: {
-        student: true,
+        student: {
+          include: {
+            program: { include: { programCategory: true } },
+            admissionSession: true,
+            year: true,
+            semester: true,
+          },
+        },
       },
     });
 
@@ -228,6 +245,12 @@ export class StudentsService {
       },
       include: {
         loginMaster: true,
+        program: {
+          include: { programCategory: true },
+        },
+        admissionSession: true,
+        year: true,
+        semester: true,
       },
       orderBy: {
         CreatedOn: 'desc',
@@ -247,6 +270,8 @@ export class StudentsService {
           include: { programCategory: true },
         },
         admissionSession: true,
+        year: true,
+        semester: true,
         loginMaster: true,
       },
     });
@@ -298,6 +323,8 @@ export class StudentsService {
           email: data.email,
           mobileNo: data.mobileNo,
           registrationNo: data.registrationNo,
+          yearId: data.yearId !== undefined ? data.yearId : undefined,
+          semId: data.semId !== undefined ? data.semId : undefined,
           UpdatedBy: data.UpdatedBy,
           IsActive: data.IsActive,
           Remarks: data.Remarks,
@@ -514,6 +541,66 @@ export class StudentsService {
       StudentRegistrationId,
       registrationNo: student.registrationNo,
       plainTextPassword,
+    };
+  }
+
+  async adminSetPassword(registrationNo: string, newPasswordString: string, UpdatedBy = 'Admin User') {
+    const student = await this.prisma.student.findFirst({
+      where: { registrationNo, IsDeleted: false },
+      include: { loginMaster: true },
+    });
+
+    if (!student) {
+      throw new NotFoundException(`Student with registration no ${registrationNo} not found`);
+    }
+
+    const hashedPassword = await bcrypt.hash(newPasswordString, 10);
+
+    if (student.loginMaster) {
+      await this.prisma.loginMaster.update({
+        where: { LoginId: student.loginMaster.LoginId },
+        data: {
+          OldPassword: student.loginMaster.PlainPassword || student.loginMaster.Password,
+          Password: hashedPassword,
+          PlainPassword: newPasswordString,
+          IsPasswordUpdated: false,
+          PasswordChangeOn: new Date(),
+          ModifyBy: UpdatedBy,
+        },
+      });
+    } else {
+      await this.prisma.loginMaster.create({
+        data: {
+          StudentId: student.StudentRegistrationId,
+          RegistrationNo: student.registrationNo,
+          LoginName: student.candidateName,
+          Mobile: student.mobileNo,
+          EmailId: student.email,
+          Password: hashedPassword,
+          PlainPassword: newPasswordString,
+          IsPasswordUpdated: false,
+          PasswordChangeOn: new Date(),
+          RoleId: STUDENT_ROLE_ID,
+          IsActive: true,
+          CreatedBy: UpdatedBy,
+          ModifyBy: UpdatedBy,
+        },
+      });
+    }
+
+    await (this.prisma as any).studentEnrollment.updateMany({
+      where: { studentId: student.StudentRegistrationId, IsDeleted: false },
+      data: {
+        loginPassword: newPasswordString,
+        UpdatedBy,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Password updated successfully',
+      StudentRegistrationId: student.StudentRegistrationId,
+      registrationNo: student.registrationNo,
     };
   }
 }

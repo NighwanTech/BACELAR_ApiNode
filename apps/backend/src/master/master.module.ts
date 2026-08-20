@@ -5,6 +5,7 @@ import { ProgramCategoryModule } from './program-category/program-category.modul
 import { SubjectModule } from './subject/subject.module';
 import { ProgramModule } from './program/program.module';
 import { BoardModule } from './board/board.module';
+import { FeeTypeModule } from './fee-type/fee-type.module';
 import { QualificationModule } from './qualification/qualification.module';
 import { AdmissionSessionModule } from './admission-session/admission-session.module';
 import { AcademicSessionModule } from './academic-session/academic-session.module';
@@ -21,6 +22,7 @@ import { YearModule } from './year/year.module';
 import { SemesterModule } from './semester/semester.module';
 import { PaperDetailModule } from './paper-detail/paper-detail.module';
 import { ExamSubjectModule } from './exam-subject/exam-subject.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { ExamSubjectModule } from './exam-subject/exam-subject.module';
     ProgramSubjectModule,
     ProgramEligibilityModule,
     BoardModule,
+    FeeTypeModule,
     QualificationModule,
     AdmissionSessionModule,
     AcademicSessionModule,
@@ -46,6 +49,7 @@ import { ExamSubjectModule } from './exam-subject/exam-subject.module';
     SemesterModule,
     PaperDetailModule,
     ExamSubjectModule,
+    RoleModule,
   ],
   exports: [
     StateModule,
@@ -58,6 +62,7 @@ import { ExamSubjectModule } from './exam-subject/exam-subject.module';
     ProgramSubjectModule,
     ProgramEligibilityModule,
     BoardModule,
+    FeeTypeModule,
     QualificationModule,
     AdmissionSessionModule,
     AcademicSessionModule,
@@ -70,13 +75,7 @@ import { ExamSubjectModule } from './exam-subject/exam-subject.module';
     SemesterModule,
     PaperDetailModule,
     ExamSubjectModule,
+    RoleModule,
   ],
 })
 export class MasterModule {}
-
-
-
-
-
-
-
