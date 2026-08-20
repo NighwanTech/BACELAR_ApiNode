@@ -20,6 +20,7 @@ import { ExamTypeModule } from './exam-type/exam-type.module';
 import { YearModule } from './year/year.module';
 import { SemesterModule } from './semester/semester.module';
 import { PaperDetailModule } from './paper-detail/paper-detail.module';
+import { ExamSubjectModule } from './exam-subject/exam-subject.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { PaperDetailModule } from './paper-detail/paper-detail.module';
     YearModule,
     SemesterModule,
     PaperDetailModule,
+    ExamSubjectModule,
   ],
   exports: [
     StateModule,
@@ -67,6 +69,7 @@ import { PaperDetailModule } from './paper-detail/paper-detail.module';
     YearModule,
     SemesterModule,
     PaperDetailModule,
+    ExamSubjectModule,
   ],
 })
 export class MasterModule {}
