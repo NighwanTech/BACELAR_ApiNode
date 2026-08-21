@@ -9,6 +9,7 @@ import {
   PutObjectCommandInput,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Readable } from 'stream';
@@ -16,8 +17,11 @@ import { Readable } from 'stream';
 @Injectable()
 export class StorageService {
   private readonly uploadDir = process.env.UPLOAD_DIR || 'public/uploads';
-  private readonly storageProvider = process.env.STORAGE_PROVIDER || 'local';
   private s3Client: S3Client | null = null;
+
+  private get storageProvider(): string {
+    return String(process.env.STORAGE_PROVIDER || 'local').trim().toLowerCase();
+  }
 
   constructor() {
     // Ensure upload directory exists for local storage
@@ -185,6 +189,10 @@ export class StorageService {
         accessKeyId,
         secretAccessKey,
       },
+      requestHandler: new NodeHttpHandler({
+        connectionTimeout: 10_000,
+        requestTimeout: 30_000,
+      }),
       ...(endpoint
         ? {
             endpoint,
@@ -238,9 +246,14 @@ export class StorageService {
     }
 
     if (!file?.buffer) {
-      throw new InternalServerErrorException(
-        'Uploaded file buffer is missing — ensure Multer memory storage is used',
-      );
+      // Disk-storage fallback (multer default writes to temp file)
+      if (file?.path && fs.existsSync(file.path)) {
+        file.buffer = await fs.promises.readFile(file.path);
+      } else {
+        throw new InternalServerErrorException(
+          'Uploaded file buffer is missing — ensure Multer memory storage is used',
+        );
+      }
     }
 
     try {
@@ -277,12 +290,23 @@ export class StorageService {
         }
       }
 
-      // Private buckets: serve via authenticated API proxy (not direct S3 URL)
-      return `/api/v1/storage/object/${key}`;
+      // Always return MinIO / S3 public URL (never localhost)
+      const { publicBaseUrl, endpoint, region } = this.getS3Config();
+      if (publicBaseUrl) {
+        return `${publicBaseUrl.replace(/\/$/, '')}/${key}`;
+      }
+      if (endpoint) {
+        // path-style: https://s3.host/bucket/key
+        return `${endpoint.replace(/\/$/, '')}/${bucketName}/${key}`;
+      }
+      // AWS virtual-hosted-style
+      return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
     } catch (error: any) {
-      throw new InternalServerErrorException(
-        `S3 upload failed: ${error.message}`,
-      );
+      const detail =
+        error?.name === 'TimeoutError' || /timeout|ECONNREFUSED|ENOTFOUND|ETIMEDOUT/i.test(String(error?.message || ''))
+          ? `Cannot reach S3 endpoint (${process.env.S3_ENDPOINT || process.env.AWS_ENDPOINT || 'not set'}). Check network/VPN/firewall and bucket credentials.`
+          : error.message;
+      throw new InternalServerErrorException(`S3 upload failed: ${detail}`);
     }
   }
 }

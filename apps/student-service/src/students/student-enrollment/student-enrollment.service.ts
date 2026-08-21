@@ -79,8 +79,9 @@ export class StudentEnrollmentService {
       select: { enrollmentNo: true },
     });
 
+    // Serial is year-wide (all programs), so it keeps increasing: 0001, 0002, ...
     let maxSerial = 0;
-    const pattern = new RegExp(`^${prefix}(\\d{4})$`);
+    const pattern = new RegExp(`^${COLLEGE_PREFIX}${year}\\d{2}(\\d{4})$`);
     for (const row of rows) {
       const m = String(row.enrollmentNo || '').match(pattern);
       if (!m) continue;
@@ -90,7 +91,7 @@ export class StudentEnrollmentService {
 
     const next = maxSerial + 1;
     if (next > 9999) {
-      throw new BadRequestException(`Enrollment serial exhausted for ${prefix}`);
+      throw new BadRequestException(`Enrollment serial exhausted for ${COLLEGE_PREFIX}${year}`);
     }
     return `${prefix}${String(next).padStart(4, '0')}`;
   }

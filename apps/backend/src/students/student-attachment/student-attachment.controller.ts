@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -19,7 +20,12 @@ export class StudentAttachmentController {
   ) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Upload file (Photo/Signature) and save attachment record' })
   @ApiResponse({ status: 201, description: 'File uploaded and registered successfully' })

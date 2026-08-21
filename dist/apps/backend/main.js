@@ -8592,12 +8592,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StorageService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const client_s3_1 = __webpack_require__(/*! @aws-sdk/client-s3 */ "@aws-sdk/client-s3");
+const node_http_handler_1 = __webpack_require__(/*! @smithy/node-http-handler */ "@smithy/node-http-handler");
 const fs = __importStar(__webpack_require__(/*! fs */ "fs"));
 const path = __importStar(__webpack_require__(/*! path */ "path"));
 let StorageService = class StorageService {
+    get storageProvider() {
+        return String(process.env.STORAGE_PROVIDER || 'local').trim().toLowerCase();
+    }
     constructor() {
         this.uploadDir = process.env.UPLOAD_DIR || 'public/uploads';
-        this.storageProvider = process.env.STORAGE_PROVIDER || 'local';
         this.s3Client = null;
         if (this.storageProvider === 'local') {
             const fullPath = path.resolve(this.uploadDir);
@@ -8709,6 +8712,10 @@ let StorageService = class StorageService {
                 accessKeyId,
                 secretAccessKey,
             },
+            requestHandler: new node_http_handler_1.NodeHttpHandler({
+                connectionTimeout: 10_000,
+                requestTimeout: 30_000,
+            }),
             ...(endpoint
                 ? {
                     endpoint,
@@ -8742,7 +8749,12 @@ let StorageService = class StorageService {
             throw new common_1.InternalServerErrorException('S3 bucket is not configured (S3_BUCKET)');
         }
         if (!file?.buffer) {
-            throw new common_1.InternalServerErrorException('Uploaded file buffer is missing — ensure Multer memory storage is used');
+            if (file?.path && fs.existsSync(file.path)) {
+                file.buffer = await fs.promises.readFile(file.path);
+            }
+            else {
+                throw new common_1.InternalServerErrorException('Uploaded file buffer is missing — ensure Multer memory storage is used');
+            }
         }
         try {
             const ext = path.extname(file.originalname || '');
@@ -8774,10 +8786,20 @@ let StorageService = class StorageService {
                     throw aclError;
                 }
             }
-            return `/api/v1/storage/object/${key}`;
+            const { publicBaseUrl, endpoint, region } = this.getS3Config();
+            if (publicBaseUrl) {
+                return `${publicBaseUrl.replace(/\/$/, '')}/${key}`;
+            }
+            if (endpoint) {
+                return `${endpoint.replace(/\/$/, '')}/${bucketName}/${key}`;
+            }
+            return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
         }
         catch (error) {
-            throw new common_1.InternalServerErrorException(`S3 upload failed: ${error.message}`);
+            const detail = error?.name === 'TimeoutError' || /timeout|ECONNREFUSED|ENOTFOUND|ETIMEDOUT/i.test(String(error?.message || ''))
+                ? `Cannot reach S3 endpoint (${process.env.S3_ENDPOINT || process.env.AWS_ENDPOINT || 'not set'}). Check network/VPN/firewall and bucket credentials.`
+                : error.message;
+            throw new common_1.InternalServerErrorException(`S3 upload failed: ${detail}`);
         }
     }
 };
@@ -10813,6 +10835,7 @@ exports.StudentAttachmentController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
 const platform_express_1 = __webpack_require__(/*! @nestjs/platform-express */ "@nestjs/platform-express");
+const multer_1 = __webpack_require__(/*! multer */ "multer");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const rxjs_1 = __webpack_require__(/*! rxjs */ "rxjs");
 const operators_1 = __webpack_require__(/*! rxjs/operators */ "rxjs/operators");
@@ -10873,7 +10896,10 @@ let StudentAttachmentController = class StudentAttachmentController {
 exports.StudentAttachmentController = StudentAttachmentController;
 __decorate([
     (0, common_1.Post)('upload'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.memoryStorage)(),
+        limits: { fileSize: 10 * 1024 * 1024 },
+    })),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_1.ApiOperation)({ summary: 'Upload file (Photo/Signature) and save attachment record' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'File uploaded and registered successfully' }),
@@ -17421,6 +17447,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UploadController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const platform_express_1 = __webpack_require__(/*! @nestjs/platform-express */ "@nestjs/platform-express");
+const multer_1 = __webpack_require__(/*! multer */ "multer");
 const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
 const storage_service_1 = __webpack_require__(/*! ../../shared/storage/storage.service */ "./apps/backend/src/shared/storage/storage.service.ts");
 let UploadController = class UploadController {
@@ -17432,24 +17459,43 @@ let UploadController = class UploadController {
             return { success: false, message: 'No file uploaded' };
         }
         const subfolder = folder || 'hero';
-        const relativePath = await this.storageService.uploadFile(file, subfolder);
-        const port = process.env.PORT || '5000';
-        const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
-        const fullUrl = relativePath.startsWith('http')
-            ? relativePath
-            : `${baseUrl.replace(/\/+$/, '')}${relativePath.startsWith('/') ? '' : '/'}${relativePath}`;
+        const storedPath = await this.storageService.uploadFile(file, subfolder);
+        const url = this.toClientUrl(storedPath);
         return {
             success: true,
-            url: fullUrl,
-            relativePath,
+            url,
+            relativePath: storedPath,
             filename: file.originalname,
         };
+    }
+    toClientUrl(storedPath) {
+        if (/^https?:\/\//i.test(storedPath)) {
+            return storedPath;
+        }
+        const proxyPrefix = '/api/v1/storage/object/';
+        if (storedPath.startsWith(proxyPrefix)) {
+            const key = storedPath.slice(proxyPrefix.length);
+            const bucket = process.env.S3_BUCKET || process.env.AWS_BUCKET_NAME || '';
+            const publicBase = (process.env.S3_PUBLIC_URL || '').replace(/\/$/, '') ||
+                (process.env.S3_ENDPOINT || process.env.AWS_ENDPOINT
+                    ? `${(process.env.S3_ENDPOINT || process.env.AWS_ENDPOINT || '').replace(/\/$/, '')}/${bucket}`
+                    : '');
+            if (publicBase) {
+                return `${publicBase}/${key}`;
+            }
+        }
+        const port = process.env.PORT || '5001';
+        const baseUrl = (process.env.BASE_URL || `http://localhost:${port}`).replace(/\/+$/, '');
+        return `${baseUrl}${storedPath.startsWith('/') ? '' : '/'}${storedPath}`;
     }
 };
 exports.UploadController = UploadController;
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.memoryStorage)(),
+        limits: { fileSize: 10 * 1024 * 1024 },
+    })),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_1.ApiOperation)({ summary: 'Upload file to storage (S3 or local via StorageService)' }),
     (0, swagger_1.ApiQuery)({ name: 'folder', required: false, example: 'hero', description: 'Subfolder / S3 key prefix' }),
@@ -17977,6 +18023,16 @@ module.exports = require("@nestjs/swagger");
 
 /***/ }),
 
+/***/ "@smithy/node-http-handler":
+/*!********************************************!*\
+  !*** external "@smithy/node-http-handler" ***!
+  \********************************************/
+/***/ ((module) => {
+
+module.exports = require("@smithy/node-http-handler");
+
+/***/ }),
+
 /***/ "class-transformer":
 /*!************************************!*\
   !*** external "class-transformer" ***!
@@ -18004,6 +18060,16 @@ module.exports = require("class-validator");
 /***/ ((module) => {
 
 module.exports = require("dotenv/config");
+
+/***/ }),
+
+/***/ "multer":
+/*!*************************!*\
+  !*** external "multer" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("multer");
 
 /***/ }),
 

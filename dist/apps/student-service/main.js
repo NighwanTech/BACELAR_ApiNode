@@ -9821,7 +9821,7 @@ let StudentEnrollmentService = class StudentEnrollmentService {
             select: { enrollmentNo: true },
         });
         let maxSerial = 0;
-        const pattern = new RegExp(`^${prefix}(\\d{4})$`);
+        const pattern = new RegExp(`^${COLLEGE_PREFIX}${year}\\d{2}(\\d{4})$`);
         for (const row of rows) {
             const m = String(row.enrollmentNo || '').match(pattern);
             if (!m)
@@ -9832,7 +9832,7 @@ let StudentEnrollmentService = class StudentEnrollmentService {
         }
         const next = maxSerial + 1;
         if (next > 9999) {
-            throw new common_1.BadRequestException(`Enrollment serial exhausted for ${prefix}`);
+            throw new common_1.BadRequestException(`Enrollment serial exhausted for ${COLLEGE_PREFIX}${year}`);
         }
         return `${prefix}${String(next).padStart(4, '0')}`;
     }
