@@ -1,0 +1,12 @@
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_studentId_fkey` FOREIGN KEY (`studentId`) REFERENCES `students`(`StudentRegistrationId`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_examTypeId_fkey` FOREIGN KEY (`examTypeId`) REFERENCES `examTypeMaster`(`examTypeId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_courseCategoryId_fkey` FOREIGN KEY (`courseCategoryId`) REFERENCES `programCategory`(`programCategoryId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_courseId_fkey` FOREIGN KEY (`courseId`) REFERENCES `programs`(`programId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_yearId_fkey` FOREIGN KEY (`yearId`) REFERENCES `yearMaster`(`yearId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_semId_fkey` FOREIGN KEY (`semId`) REFERENCES `semesterMaster`(`semId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_sessionId_fkey` FOREIGN KEY (`sessionId`) REFERENCES `admissionSessions`(`admissionSessionId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_examFeeId_fkey` FOREIGN KEY (`examFeeId`) REFERENCES `programFeeConfigs`(`feeConfigId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExamPaper` ADD CONSTRAINT `studentExamPaper_studentExamId_fkey` FOREIGN KEY (`studentExamId`) REFERENCES `studentExam`(`studentExamId`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `studentExamPaper` ADD CONSTRAINT `studentExamPaper_studentId_fkey` FOREIGN KEY (`studentId`) REFERENCES `students`(`StudentRegistrationId`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `studentExamPaper` ADD CONSTRAINT `studentExamPaper_enrollmentId_fkey` FOREIGN KEY (`enrollmentId`) REFERENCES `studentEnrollment`(`enrollmentId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExamPaper` ADD CONSTRAINT `studentExamPaper_paperId_fkey` FOREIGN KEY (`paperId`) REFERENCES `paperDetailMaster`(`paperId`) ON DELETE SET NULL ON UPDATE CASCADE;

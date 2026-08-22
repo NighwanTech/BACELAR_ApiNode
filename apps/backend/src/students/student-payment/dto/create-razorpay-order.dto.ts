@@ -16,6 +16,11 @@ export class CreateRazorpayOrderDto {
   @IsOptional()
   feeType?: string;
 
+  @ApiProperty({ example: 'BACE2026020001', description: 'Student enrollment number', required: false })
+  @IsString()
+  @IsOptional()
+  enrollNo?: string;
+
   @ApiProperty({ example: 'Student Portal', description: 'Username of creator' })
   @IsString()
   @IsNotEmpty()

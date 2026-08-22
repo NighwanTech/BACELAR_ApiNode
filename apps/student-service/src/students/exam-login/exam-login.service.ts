@@ -1,6 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
 
+const DEFAULT_COLLEGE_NAME =
+  '686-BHAGWAN AADINATH COLLEGE OF EDUCATION, MAHARRA, LALITPUR (U.P.)';
+
 @Injectable()
 export class ExamLoginService {
   constructor(private readonly prisma: PrismaService) {}
@@ -11,6 +14,14 @@ export class ExamLoginService {
 
   private enrollment() {
     return (this.prisma as any).studentEnrollment;
+  }
+
+  private studentExam() {
+    return (this.prisma as any).studentExam;
+  }
+
+  private studentExamPaper() {
+    return (this.prisma as any).studentExamPaper;
   }
 
   private formatDate(dateVal: any): string | null {
@@ -34,6 +45,337 @@ export class ExamLoginService {
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
+  }
+
+  private parsePaperIds(csv: string | null | undefined): number[] {
+    if (!csv) return [];
+    return String(csv)
+      .split(',')
+      .map((v) => Number(String(v).trim()))
+      .filter((n) => Number.isFinite(n) && n > 0);
+  }
+
+  private async loadStudentFull(studentId: number) {
+    return this.prisma.student.findFirst({
+      where: { StudentRegistrationId: studentId, IsDeleted: false },
+      include: {
+        studentProfile: true,
+        program: { include: { programCategory: true } },
+        year: true,
+        semester: true,
+        admissionSession: true,
+        studentEnrollments: {
+          include: {
+            program: { include: { programCategory: true } },
+            year: true,
+            semester: true,
+          },
+          orderBy: { CreatedOn: 'desc' },
+        },
+        studentAttachments: true,
+      },
+    });
+  }
+
+  private pickAttachment(attachments: any[], type: string) {
+    const match = (attachments || []).find(
+      (a: any) => !a.IsDeleted && String(a.documentType || '').toUpperCase() === type,
+    );
+    if (!match?.fileUrl) return { url: null, name: null };
+    const url = String(match.fileUrl);
+    const name = url.split('/').pop() || null;
+    return { url, name };
+  }
+
+  private async resolveExamTypeId(examTypeName: string) {
+    try {
+      const rows: any[] = await (this.prisma as any).examTypeMaster.findMany({
+        where: { IsDeleted: false },
+        select: { examTypeId: true, examTypeName: true },
+      });
+      const needle = String(examTypeName || '').trim().toUpperCase();
+      const exact = rows.find((r) => String(r.examTypeName || '').toUpperCase() === needle);
+      if (exact?.examTypeId) return exact.examTypeId as number;
+      const fuzzy = rows.find((r) => String(r.examTypeName || '').toUpperCase().includes(needle));
+      return fuzzy?.examTypeId || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private async resolveEnrollmentSnapshot(student: any) {
+    const studentId = Number(student?.StudentRegistrationId);
+    const enrollments = (student?.studentEnrollments || []).filter((e: any) => !e.IsDeleted);
+    const enrollment: any = enrollments[0] || student?.studentEnrollments?.[0] || null;
+    const examLogin: any = studentId
+      ? await this.examLogin().findFirst({
+          where: { studentId, IsDeleted: false },
+        })
+      : null;
+    const enrollmentNo =
+      enrollment?.enrollmentNo || examLogin?.enrollmentNo || null;
+    return {
+      enrollment,
+      examLogin,
+      enrollmentNo,
+      enrollmentId: enrollment?.enrollmentId || examLogin?.enrollmentId || null,
+    };
+  }
+
+  private async buildStudentExamSnapshot(student: any) {
+    const profile: any = student?.studentProfile || {};
+    const { enrollment, enrollmentNo } = await this.resolveEnrollmentSnapshot(student);
+    const program: any = student?.program || enrollment?.program || null;
+    const category: any = program?.programCategory || null;
+    const photo = this.pickAttachment(student?.studentAttachments, 'PHOTO');
+    const sign = this.pickAttachment(student?.studentAttachments, 'SIGNATURE');
+    const examType = 'Regular';
+    const examTypeId = await this.resolveExamTypeId(examType);
+
+    let feeConfig: any = null;
+    const programId = student?.programId || enrollment?.programId || program?.programId || null;
+    const sessionId = student?.admissionSessionId || enrollment?.sessionId || null;
+    if (programId && sessionId) {
+      feeConfig = await (this.prisma as any).programFeeConfig.findFirst({
+        where: {
+          programId,
+          admissionSessionId: sessionId,
+          IsDeleted: false,
+        },
+      });
+    }
+
+    return {
+      registrationNo: student?.registrationNo || enrollment?.registrationNo || null,
+      enrollmentNo,
+      studentNameEng: student?.candidateName || enrollment?.studentName || null,
+      studentNameHindi: profile.studentNameHindi || null,
+      fatherName: student?.fatherName || enrollment?.fatherName || null,
+      motherName: profile.motherName || enrollment?.motherName || null,
+      dob: profile.dateOfBirth || enrollment?.dateOfBirth || null,
+      mobileNo: student?.mobileNo || profile.fatherMobileNumber || null,
+      emailId: student?.email || enrollment?.emailId || null,
+      rollNo: `ROLL${student.StudentRegistrationId}`,
+      admissionNo: student?.registrationNo || null,
+      examTypeId,
+      examType,
+      courseCategoryId: category?.programCategoryId || program?.programCategoryId || null,
+      courseCategory: category?.programCategoryName || null,
+      courseId: programId,
+      courseShortName: program?.programName || null,
+      yearId: student?.yearId || enrollment?.yearId || null,
+      yearName: student?.year?.yearName || enrollment?.year?.yearName || null,
+      semId: student?.semId || enrollment?.semId || null,
+      semName: student?.semester?.semesterName || enrollment?.semester?.semesterName || null,
+      sessionId,
+      studentImgURL: photo.url,
+      studentImgName: photo.name,
+      studentSignImgURL: sign.url,
+      studentSignImgName: sign.name,
+      examFeeId: feeConfig?.feeConfigId || null,
+      totalExamFee: feeConfig?.examinationFinal || feeConfig?.examinationBaseFee || 0,
+    };
+  }
+
+  private async upsertStudentExamDraft(studentId: number, updatedBy: string) {
+    const student = await this.loadStudentFull(studentId);
+    if (!student) {
+      throw new NotFoundException(`Student record not found for ID ${studentId}`);
+    }
+
+    const snapshot = await this.buildStudentExamSnapshot(student);
+    const existing: any = await this.studentExam().findFirst({
+      where: { studentId, IsDeleted: false },
+      orderBy: { studentExamId: 'desc' },
+    });
+
+    if (existing) {
+      const shouldSyncProgram =
+        snapshot.courseId &&
+        (existing.courseId !== snapshot.courseId || existing.courseShortName !== snapshot.courseShortName);
+      const data: any = {
+        registrationNo: snapshot.registrationNo,
+        enrollmentNo: snapshot.enrollmentNo,
+        studentNameEng: snapshot.studentNameEng,
+        studentNameHindi: snapshot.studentNameHindi,
+        fatherName: snapshot.fatherName,
+        motherName: snapshot.motherName,
+        dob: snapshot.dob,
+        mobileNo: existing.mobileNo || snapshot.mobileNo,
+        emailId: existing.emailId || snapshot.emailId,
+        rollNo: existing.rollNo || snapshot.rollNo,
+        admissionNo: snapshot.admissionNo,
+        examTypeId: snapshot.examTypeId,
+        examType: existing.examType || snapshot.examType,
+        studentImgURL: snapshot.studentImgURL,
+        studentImgName: snapshot.studentImgName,
+        studentSignImgURL: snapshot.studentSignImgURL,
+        studentSignImgName: snapshot.studentSignImgName,
+        UpdatedBy: updatedBy,
+      };
+      if (shouldSyncProgram || !existing.courseId) {
+        Object.assign(data, {
+          courseCategoryId: snapshot.courseCategoryId,
+          courseCategory: snapshot.courseCategory,
+          courseId: snapshot.courseId,
+          courseShortName: snapshot.courseShortName,
+          yearId: snapshot.yearId,
+          yearName: snapshot.yearName,
+          semId: snapshot.semId,
+          semName: snapshot.semName,
+          sessionId: snapshot.sessionId,
+          examFeeId: snapshot.examFeeId,
+          totalExamFee: existing.isExamFeePaid ? existing.totalExamFee : snapshot.totalExamFee,
+        });
+      }
+      return this.studentExam().update({
+        where: { studentExamId: existing.studentExamId },
+        data,
+      });
+    }
+
+    return this.studentExam().create({
+      data: {
+        studentId,
+        ...snapshot,
+        IsActive: true,
+        IsDeleted: false,
+        CreatedBy: updatedBy,
+      },
+    });
+  }
+
+  private async replaceSelectedPapers(params: {
+    studentExamId: number;
+    studentId: number;
+    enrollmentId?: number | null;
+    enrollmentNo?: string | null;
+    selectedPaperIds: number[];
+    updatedBy: string;
+  }) {
+    const { studentExamId, studentId, enrollmentId, enrollmentNo, selectedPaperIds, updatedBy } = params;
+    const uniqueIds = [
+      ...new Set(
+        selectedPaperIds
+          .map((id) => Number(id))
+          .filter((id) => Number.isFinite(id) && id > 0),
+      ),
+    ];
+
+    const existingRows: any[] = await this.studentExamPaper().findMany({
+      where: { studentExamId },
+    });
+    const existingByPaperId = new Map<number, any>(
+      existingRows.filter((row) => row.paperId).map((row) => [Number(row.paperId), row]),
+    );
+
+    const papers: any[] = uniqueIds.length
+      ? await (this.prisma as any).paperDetailMaster.findMany({
+          where: { paperId: { in: uniqueIds }, IsDeleted: false },
+          include: { paperTypeRelation: true },
+        })
+      : [];
+    const paperById = new Map<number, any>(papers.map((p: any) => [p.paperId, p]));
+    const keptIds: number[] = [];
+
+    for (const paperId of uniqueIds) {
+      const paper = paperById.get(paperId);
+      const pCode = paper?.paperCode || String(paperId);
+      const pName = paper?.paperName || 'SUBJECT / PAPER';
+      const pType = paper?.paperTypeRelation?.name || paper?.paperType || 'THEORY';
+      const payload = {
+        studentExamId,
+        studentId,
+        enrollmentId: enrollmentId || null,
+        enrollmentNo: enrollmentNo || null,
+        paperId,
+        paperType: pType,
+        subjectName: paper?.subjectName || null,
+        paperName: pName,
+        paperCode: pCode,
+        paperNameWithCode: `[${pCode}] ${String(pName).toUpperCase()}`,
+        isChosen: true,
+        IsActive: true,
+        IsDeleted: false,
+      };
+      const existing = existingByPaperId.get(paperId);
+      if (existing?.studentExamPaperId) {
+        const updated = await this.studentExamPaper().update({
+          where: { studentExamPaperId: existing.studentExamPaperId },
+          data: {
+            ...payload,
+            UpdatedBy: updatedBy,
+          },
+        });
+        keptIds.push(updated.studentExamPaperId);
+      } else {
+        const created = await this.studentExamPaper().create({
+          data: {
+            ...payload,
+            CreatedBy: updatedBy,
+          },
+        });
+        keptIds.push(created.studentExamPaperId);
+      }
+    }
+
+    if (keptIds.length) {
+      await this.studentExamPaper().updateMany({
+        where: {
+          studentExamId,
+          studentExamPaperId: { notIn: keptIds },
+        },
+        data: {
+          isChosen: false,
+          IsDeleted: true,
+          UpdatedBy: updatedBy,
+        },
+      });
+    }
+
+    await this.studentExam().update({
+      where: { studentExamId },
+      data: {
+        selectedPaperIds: uniqueIds.join(','),
+        UpdatedBy: updatedBy,
+      },
+    });
+  }
+
+  private async loadMasterPapers(programId: number | null, courseName: string | null) {
+    let paperList: any[] = [];
+    if (programId) {
+      paperList = await (this.prisma as any).paperDetailMaster.findMany({
+        where: { programId, IsDeleted: false },
+        include: { paperTypeRelation: true, program: true, year: true, semester: true },
+        orderBy: { paperId: 'asc' },
+      });
+    }
+    if (!paperList.length && (programId || (courseName && courseName !== 'N/A'))) {
+      paperList = await (this.prisma as any).paperDetailMaster.findMany({
+        where: {
+          OR: [
+            ...(programId ? [{ programId }] : []),
+            ...(courseName && courseName !== 'N/A' ? [{ program: { programName: courseName } }] : []),
+          ],
+          IsDeleted: false,
+        },
+        include: { paperTypeRelation: true, program: true, year: true, semester: true },
+        orderBy: { paperId: 'asc' },
+      });
+    }
+    return paperList;
+  }
+
+  private async latestExamPayment(studentId: number) {
+    return this.prisma.studentPayment.findFirst({
+      where: {
+        studentId,
+        feeType: 'EXAMINATION',
+        IsDeleted: false,
+      },
+      orderBy: { CreatedOn: 'desc' },
+    });
   }
 
   /**
@@ -84,7 +426,6 @@ export class ExamLoginService {
     });
 
     if (!enrollmentRecord) {
-      // Fallback search directly in student table by registrationNo
       const student: any = await this.prisma.student.findFirst({
         where: {
           OR: [
@@ -179,16 +520,7 @@ export class ExamLoginService {
     let student: any = null;
 
     if (rawStudentId) {
-      student = await this.prisma.student.findFirst({
-        where: { StudentRegistrationId: rawStudentId, IsDeleted: false },
-        include: {
-          studentProfile: true,
-          program: true,
-          year: true,
-          semester: true,
-          admissionSession: true,
-        },
-      });
+      student = await this.loadStudentFull(rawStudentId);
     }
 
     if (!student && dto.enrollmentNo) {
@@ -211,18 +543,12 @@ export class ExamLoginService {
           IsDeleted: false,
         },
         include: {
-          student: {
-            include: {
-              studentProfile: true,
-              program: true,
-              year: true,
-              semester: true,
-              admissionSession: true,
-            },
-          },
+          student: true,
         },
       });
-      student = enrollRec?.student;
+      if (enrollRec?.studentId) {
+        student = await this.loadStudentFull(enrollRec.studentId);
+      }
     }
 
     if (!student) {
@@ -230,16 +556,10 @@ export class ExamLoginService {
     }
 
     const studentId = student.StudentRegistrationId;
-
-    const enrollmentRecord: any = await this.enrollment().findFirst({
-      where: { studentId, IsDeleted: false },
-      orderBy: { CreatedOn: 'desc' },
-    });
-
+    const enrollmentRecord: any = student.studentEnrollments?.[0] || null;
     const profile: any = student.studentProfile || {};
     const enrollmentNo = dto.enrollmentNo || enrollmentRecord?.enrollmentNo || student.registrationNo;
 
-    // UPDATE EXAM PASSWORD ONLY in StudentEnrollment (Do NOT touch loginPassword!)
     if (enrollmentRecord) {
       await this.enrollment().update({
         where: { enrollmentId: enrollmentRecord.enrollmentId },
@@ -250,29 +570,11 @@ export class ExamLoginService {
       });
     }
 
-    let examFee = 0;
-    if (student.programId && student.admissionSessionId) {
-      const feeConfig: any = await (this.prisma as any).programFeeConfig.findFirst({
-        where: {
-          programId: student.programId,
-          admissionSessionId: student.admissionSessionId,
-          IsDeleted: false,
-        },
-      });
-      if (feeConfig) {
-        examFee = feeConfig.examinationFinal || feeConfig.examinationBaseFee || 0;
-      }
-    }
-
-    const resolvedProgramId = student.programId || enrollmentRecord?.programId || null;
-    const resolvedCourseName = student.program?.programName || enrollmentRecord?.program?.programName || null;
-
-    // Save ONLY into ExamLoginMaster
     const examLoginRecord: any = await this.examLogin().upsert({
       where: { studentId },
       update: {
         enrollmentId: enrollmentRecord?.enrollmentId || null,
-        enrollmentNo: enrollmentNo,
+        enrollmentNo,
         registrationNo: student.registrationNo || null,
         studentName: student.candidateName,
         fatherName: student.fatherName,
@@ -286,19 +588,14 @@ export class ExamLoginService {
         password: dto.password,
         plainPassword: dto.password,
         isPasswordSet: true,
-        programId: resolvedProgramId,
-        courseName: resolvedCourseName,
-        yearId: student.yearId || null,
-        semId: student.semId || null,
-        sessionId: student.admissionSessionId || null,
-        collegeName: '686-BHAGWAN AADINATH COLLEGE OF EDUCATION, MAHARRA, LALITPUR (U.P.)',
-        examinationFees: examFee,
+        examType: 'Regular',
+        collegeName: DEFAULT_COLLEGE_NAME,
         UpdatedBy: 'Student Exam Password Create',
       },
       create: {
-        studentId: studentId,
+        studentId,
         enrollmentId: enrollmentRecord?.enrollmentId || null,
-        enrollmentNo: enrollmentNo,
+        enrollmentNo,
         registrationNo: student.registrationNo || null,
         rollNo: `ROLL${studentId}`,
         studentName: student.candidateName,
@@ -313,14 +610,8 @@ export class ExamLoginService {
         password: dto.password,
         plainPassword: dto.password,
         isPasswordSet: true,
-        programId: resolvedProgramId,
-        courseName: resolvedCourseName,
-        yearId: student.yearId || null,
-        semId: student.semId || null,
-        sessionId: student.admissionSessionId || null,
         examType: 'Regular',
-        collegeName: '686-BHAGWAN AADINATH COLLEGE OF EDUCATION, MAHARRA, LALITPUR (U.P.)',
-        examinationFees: examFee,
+        collegeName: DEFAULT_COLLEGE_NAME,
         CreatedBy: 'Student Exam Password Create',
       },
     });
@@ -348,7 +639,6 @@ export class ExamLoginService {
 
     const cleanInput = rawInput.replace(/^BACE/i, '').trim();
 
-    // 1. Search ExamLoginMaster by Enrollment No or Registration No or Clean Input
     let examLogin: any = await this.examLogin().findFirst({
       where: {
         OR: [
@@ -363,7 +653,6 @@ export class ExamLoginService {
       },
     });
 
-    // 2. Search StudentEnrollment or Student table if not found in ExamLoginMaster
     let enrollmentRecord: any = null;
     let studentRecord: any = null;
 
@@ -413,7 +702,6 @@ export class ExamLoginService {
       const targetStudentId = enrollmentRecord?.studentId || studentRecord?.StudentRegistrationId;
       const targetEnrollmentNo = enrollmentRecord?.enrollmentNo || studentRecord?.registrationNo || rawInput;
 
-      // Auto create exam login entry if student exists but exam password hasn't been created in ExamLoginMaster yet
       const res = await this.createPassword({
         studentId: targetStudentId,
         enrollmentId: enrollmentRecord?.enrollmentId,
@@ -427,7 +715,6 @@ export class ExamLoginService {
       throw new UnauthorizedException(`Student record not found for "${rawInput}". Please check your User ID / Registration No.`);
     }
 
-    // Fetch Student & LoginMaster to check all password fields
     if (!studentRecord && examLogin.studentId) {
       studentRecord = await this.prisma.student.findFirst({
         where: { StudentRegistrationId: examLogin.studentId },
@@ -443,7 +730,6 @@ export class ExamLoginService {
 
     const loginMasterPwd = studentRecord?.loginMaster?.PlainPassword || studentRecord?.loginMaster?.Password;
 
-    // Check Exam Password OR LoginMaster Password OR StudentEnrollment passwords
     const isPasswordMatch =
       examLogin.password === dto.password ||
       examLogin.plainPassword === dto.password ||
@@ -454,6 +740,11 @@ export class ExamLoginService {
     if (!isPasswordMatch) {
       throw new UnauthorizedException('Invalid User ID or Password. Please check your password and try again.');
     }
+
+    const examForm: any = await this.studentExam().findFirst({
+      where: { studentId: examLogin.studentId, IsDeleted: false },
+      orderBy: { studentExamId: 'desc' },
+    });
 
     return {
       success: true,
@@ -467,9 +758,9 @@ export class ExamLoginService {
         studentName: examLogin.studentName,
         emailId: examLogin.emailId,
         mobileNo: examLogin.mobileNo,
-        programId: examLogin.programId,
-        yearId: examLogin.yearId,
-        semId: examLogin.semId,
+        programId: examForm?.courseId || studentRecord?.programId || null,
+        yearId: examForm?.yearId || studentRecord?.yearId || null,
+        semId: examForm?.semId || studentRecord?.semId || null,
       },
     };
   }
@@ -483,31 +774,15 @@ export class ExamLoginService {
       throw new BadRequestException('Valid Student ID is required');
     }
 
-    // 1. Fetch Student from DB to get latest programId & details
-    const student: any = await this.prisma.student.findFirst({
-      where: { StudentRegistrationId: sId },
-      include: {
-        studentProfile: true,
-        program: true,
-        year: true,
-        semester: true,
-        admissionSession: true,
-        studentEnrollments: {
-          include: {
-            program: true,
-            year: true,
-            semester: true,
-          },
-        },
-      },
-    });
+    const student: any = await this.loadStudentFull(sId);
 
     let examLoginRecord: any = await this.examLogin().findFirst({
       where: { studentId: sId, IsDeleted: false },
     });
 
     if (!examLoginRecord && student) {
-      const enrollmentNo = student.studentEnrollments?.[0]?.enrollmentNo || student.registrationNo;
+      const liveEnrollments = (student.studentEnrollments || []).filter((e: any) => !e.IsDeleted);
+      const enrollmentNo = liveEnrollments[0]?.enrollmentNo || student.registrationNo;
       await this.createPassword({
         studentId: sId,
         enrollmentNo,
@@ -520,104 +795,95 @@ export class ExamLoginService {
       throw new NotFoundException(`Student record not found for ID ${sId}`);
     }
 
-    const enrollmentRec = student?.studentEnrollments?.[0];
-    const profile: any = student?.studentProfile || {};
-
-    const resolvedProgramId = student?.programId || enrollmentRec?.programId || examLoginRecord?.programId || null;
-    const resolvedCourseName = student?.program?.programName || enrollmentRec?.program?.programName || examLoginRecord?.courseName || 'N/A';
-
-    // DYNAMIC SYNC: Update ExamLoginMaster if programId was updated in Student table after initial registration!
-    if (resolvedProgramId && (examLoginRecord.programId !== resolvedProgramId || examLoginRecord.courseName !== resolvedCourseName)) {
-      await this.examLogin().update({
-        where: { studentId: sId },
-        data: {
-          programId: resolvedProgramId,
-          courseName: resolvedCourseName,
-        },
-      });
-      examLoginRecord.programId = resolvedProgramId;
-      examLoginRecord.courseName = resolvedCourseName;
+    let examForm: any = await this.studentExam().findFirst({
+      where: { studentId: sId, IsDeleted: false },
+      orderBy: { studentExamId: 'desc' },
+    });
+    if (!examForm && student) {
+      examForm = {
+        studentExamId: null,
+        ...(await this.buildStudentExamSnapshot(student)),
+        isExamFeePaid: false,
+        isExamFormFinalSubmit: false,
+        selectedPaperIds: null,
+        examPaymentIds: null,
+      };
     }
+    if (!examForm) {
+      throw new NotFoundException(`Student record not found for ID ${sId}`);
+    }
+    const profile: any = student?.studentProfile || {};
+    const examPayment = await this.latestExamPayment(sId);
+    const paymentStatus =
+      examForm.isExamFeePaid || examPayment?.paymentStatus === 'SUCCESS'
+        ? 'SUCCESS'
+        : examPayment?.paymentStatus || 'PENDING';
 
     const studentDetails = {
-      studentId: examLoginRecord.studentId,
-      registrationNo: examLoginRecord.registrationNo || student?.registrationNo || 'N/A',
-      enrollmentNo: examLoginRecord.enrollmentNo || 'N/A',
-      rollNo: examLoginRecord.rollNo || `BED${String(sId).padStart(6, '0')}`,
-      courseName: examLoginRecord.courseName || resolvedCourseName,
-      studentName: examLoginRecord.studentName || student?.candidateName || 'N/A',
-      fatherName: examLoginRecord.fatherName || student?.fatherName || 'N/A',
-      motherName: examLoginRecord.motherName || profile.motherName || 'N/A',
+      studentId: sId,
+      studentExamId: examForm.studentExamId,
+      registrationNo: examForm.registrationNo || examLoginRecord.registrationNo || student?.registrationNo || 'N/A',
+      enrollmentNo: examForm.enrollmentNo || examLoginRecord.enrollmentNo || 'N/A',
+      rollNo: examForm.rollNo || examLoginRecord.rollNo || `ROLL${sId}`,
+      courseName: examForm.courseShortName || 'N/A',
+      studentName: examForm.studentNameEng || examLoginRecord.studentName || student?.candidateName || 'N/A',
+      fatherName: examForm.fatherName || examLoginRecord.fatherName || student?.fatherName || 'N/A',
+      motherName: examForm.motherName || examLoginRecord.motherName || profile.motherName || 'N/A',
       category: examLoginRecord.category || profile.category || 'General',
-      mobile: examLoginRecord.mobileNo || student?.mobileNo || profile.fatherMobileNumber || 'N/A',
-      dateOfBirth: this.formatDate(examLoginRecord.dateOfBirth || profile.dateOfBirth),
-      emailId: examLoginRecord.emailId || student?.email || 'N/A',
+      mobile: examForm.mobileNo || examLoginRecord.mobileNo || student?.mobileNo || profile.fatherMobileNumber || 'N/A',
+      dateOfBirth: this.formatDate(examForm.dob || examLoginRecord.dateOfBirth || profile.dateOfBirth),
+      emailId: examForm.emailId || examLoginRecord.emailId || student?.email || 'N/A',
       address: examLoginRecord.address || profile.CaddressLine1 || profile.PaddressLine1 || 'N/A',
-      examType: examLoginRecord.examType || 'Regular',
-      examinationFees: examLoginRecord.examinationFees || 4350.0,
-      collegeName: examLoginRecord.collegeName || '686-BHAGWAN AADINATH COLLEGE OF EDUCATION, MAHARRA, LALITPUR (U.P.)',
-      isFormSubmitted: examLoginRecord.isFormSubmitted || false,
-      declarationAccepted: examLoginRecord.declarationAccepted || false,
-      paymentStatus: examLoginRecord.paymentStatus || 'PENDING',
+      examType: examForm.examType || examLoginRecord.examType || 'Regular',
+      examinationFees: examForm.totalExamFee || 0,
+      collegeName: examLoginRecord.collegeName || DEFAULT_COLLEGE_NAME,
+      isFormSubmitted: Boolean(examForm.isExamFormFinalSubmit),
+      declarationAccepted: Boolean(examForm.isExamFormFinalSubmit),
+      paymentStatus,
     };
 
-    // REAL-TIME DYNAMIC PAPER LOOKUP: Search papers by resolvedProgramId OR courseName!
-    let paperList: any[] = [];
-
-    if (resolvedProgramId) {
-      paperList = await (this.prisma as any).paperDetailMaster.findMany({
-        where: {
-          programId: resolvedProgramId,
-          IsDeleted: false,
-        },
-        include: {
-          paperTypeRelation: true,
-          program: true,
-          year: true,
-          semester: true,
-        },
-        orderBy: { paperId: 'asc' },
-      });
-    }
-
-    // Fallback: If no papers found by programId number, match by program name or unassigned master papers
-    if (!paperList || paperList.length === 0) {
-      paperList = await (this.prisma as any).paperDetailMaster.findMany({
-        where: {
-          OR: [
-            ...(resolvedProgramId ? [{ programId: resolvedProgramId }] : []),
-            ...(resolvedCourseName !== 'N/A' ? [{ program: { programName: resolvedCourseName } }] : []),
-          ],
-          IsDeleted: false,
-        },
-        include: {
-          paperTypeRelation: true,
-          program: true,
-          year: true,
-          semester: true,
-        },
-        orderBy: { paperId: 'asc' },
-      });
-    }
-
-    const selectedPaperIds: number[] = Array.isArray(examLoginRecord.selectedPapers)
-      ? (examLoginRecord.selectedPapers as number[])
+    const savedPapers: any[] = examForm.studentExamId
+      ? await this.studentExamPaper().findMany({
+          where: { studentExamId: examForm.studentExamId },
+          orderBy: { studentExamPaperId: 'asc' },
+        })
       : [];
+    const livePapers = savedPapers.filter((p) => !p.IsDeleted);
+    const papersForUi = livePapers.length ? livePapers : savedPapers.filter((p) => p.isChosen);
+    const selectedPaperIds = papersForUi.length
+      ? papersForUi.filter((p) => p.isChosen).map((p) => p.paperId).filter(Boolean)
+      : this.parsePaperIds(examForm.selectedPaperIds);
 
-    const paperDetails = paperList.map((paper: any, index: number) => {
-      const pCode = paper.paperCode ? paper.paperCode : `${1490 + index + 1}`;
-      const pName = paper.paperName || 'SUBJECT / PAPER';
-      const pType = paper.paperTypeRelation?.name || paper.paperType || (index < 3 ? 'Compulsory' : 'Elective');
+    const masterPapers = await this.loadMasterPapers(examForm.courseId || null, examForm.courseShortName || null);
+    const masterById = new Map<number, any>(masterPapers.map((p: any) => [p.paperId, p]));
+    const savedByPaperId = new Map<number, any>(
+      papersForUi.filter((p) => p.paperId).map((p) => [p.paperId, p]),
+    );
+
+    const orderedIds: number[] = [];
+    for (const paper of masterPapers) orderedIds.push(paper.paperId);
+    for (const row of savedPapers) {
+      if (row.paperId && !orderedIds.includes(row.paperId)) orderedIds.push(row.paperId);
+    }
+
+    const paperDetails = orderedIds.map((paperId, index) => {
+      const saved = savedByPaperId.get(paperId);
+      const paper = masterById.get(paperId);
+      const pCode = saved?.paperCode || paper?.paperCode || `${paperId}`;
+      const pName = saved?.paperName || paper?.paperName || 'SUBJECT / PAPER';
+      const pType = saved?.paperType || paper?.paperTypeRelation?.name || paper?.paperType || 'THEORY';
+      const isChosen =
+        selectedPaperIds.length === 0 ? true : selectedPaperIds.includes(paperId);
 
       return {
         sNo: index + 1,
-        paperId: paper.paperId,
+        paperId,
         paperType: pType,
-        subjectName: paper.subjectName || null,
-        paperNameWithCode: `[${pCode}] ${pName.toUpperCase()}`,
+        subjectName: saved?.subjectName || paper?.subjectName || null,
+        paperNameWithCode: saved?.paperNameWithCode || `[${pCode}] ${String(pName).toUpperCase()}`,
         paperCode: pCode,
         paperName: pName,
-        isChosen: selectedPaperIds.length === 0 ? true : selectedPaperIds.includes(paper.paperId),
+        isChosen,
       };
     });
 
@@ -641,6 +907,20 @@ export class ExamLoginService {
       where: { studentId: sId },
       data: payload,
     });
+
+    const examForm: any = await this.studentExam().findFirst({
+      where: { studentId: sId, IsDeleted: false },
+      orderBy: { studentExamId: 'desc' },
+    });
+    if (examForm) {
+      const examPayload: any = { UpdatedBy: 'Student Dashboard Update' };
+      if (dto.emailId !== undefined) examPayload.emailId = dto.emailId;
+      if (dto.mobileNo !== undefined) examPayload.mobileNo = dto.mobileNo;
+      await this.studentExam().update({
+        where: { studentExamId: examForm.studentExamId },
+        data: examPayload,
+      });
+    }
 
     if (dto.emailId || dto.mobileNo) {
       await this.prisma.student.update({
@@ -667,12 +947,29 @@ export class ExamLoginService {
       throw new BadRequestException('At least one paper must be selected');
     }
 
-    await this.examLogin().update({
-      where: { studentId: sId },
+    const student: any = await this.loadStudentFull(sId);
+    if (!student) {
+      throw new NotFoundException(`Student record not found for ID ${sId}`);
+    }
+
+    const examForm: any = await this.upsertStudentExamDraft(sId, 'Student Form Submit');
+    const { enrollmentId, enrollmentNo } = await this.resolveEnrollmentSnapshot(student);
+    const savedEnrollmentNo = enrollmentNo || examForm.enrollmentNo || null;
+
+    await this.replaceSelectedPapers({
+      studentExamId: examForm.studentExamId,
+      studentId: sId,
+      enrollmentId,
+      enrollmentNo: savedEnrollmentNo,
+      selectedPaperIds: dto.selectedPapers,
+      updatedBy: 'Student Form Submit',
+    });
+
+    await this.studentExam().update({
+      where: { studentExamId: examForm.studentExamId },
       data: {
-        selectedPapers: dto.selectedPapers,
-        declarationAccepted: Boolean(dto.declarationAccepted),
-        isFormSubmitted: true,
+        enrollmentNo: savedEnrollmentNo,
+        isExamFormFinalSubmit: Boolean(dto.declarationAccepted),
         UpdatedBy: 'Student Form Submit',
       },
     });
@@ -680,6 +977,7 @@ export class ExamLoginService {
     return {
       success: true,
       message: 'Examination form submitted successfully. Please proceed to fee payment.',
+      studentExamId: examForm.studentExamId,
     };
   }
 }

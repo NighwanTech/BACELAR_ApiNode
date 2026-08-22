@@ -41,6 +41,8 @@ model Student {
   studentEnrollments    StudentEnrollment[]
   loginMaster           LoginMaster?
   examLoginMaster       ExamLoginMaster?
+  studentExams          StudentExam[]
+  studentExamPapers     StudentExamPaper[]
 
   @@index([yearId])
   @@index([semId])
@@ -158,6 +160,7 @@ model ProgramCategory {
   programs            Program[]
   programSubjects     ProgramSubjectMaster[]
   examSubjects        ExamSubjectMaster[]
+  studentExams        StudentExam[]
 
   @@map("programCategory")
 }
@@ -269,6 +272,7 @@ model Program {
   Remarks            String?             @db.VarChar(255)
   paperDetailMasters PaperDetailMaster[]
   examSubjects       ExamSubjectMaster[]
+  studentExams       StudentExam[]
 
   @@map("programs")
 }
@@ -501,6 +505,7 @@ model AdmissionSession {
   feeConfigs           ProgramFeeConfig[]
   students             Student[]
   studentEnrollments   StudentEnrollment[]
+  studentExams         StudentExam[]
 
   // Common Audit Fields
   CreatedOn      DateTime  @default(now())
@@ -545,6 +550,8 @@ model ProgramFeeConfig {
   DeletedOn      DateTime?
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
+
+  studentExams StudentExam[]
 
   @@unique([programId, admissionSessionId])
   @@map("programFeeConfigs")
@@ -663,6 +670,7 @@ model StudentEnrollment {
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
   examLoginMasters ExamLoginMaster[]
+  studentExamPapers StudentExamPaper[]
 
   @@index([studentId])
   @@index([programId])
@@ -1170,6 +1178,7 @@ model ExamTypeMaster {
   DeletedBy          String?             @db.VarChar(255)
   Remarks            String?             @db.VarChar(255)
   paperDetailMasters PaperDetailMaster[]
+  studentExams       StudentExam[]
 
   @@map("examTypeMaster")
 }
@@ -1194,6 +1203,7 @@ model YearMaster {
   students           Student[]
   studentPayments    StudentPayment[]
   studentEnrollments StudentEnrollment[]
+  studentExams       StudentExam[]
 
   @@index([typeId])
   @@map("yearMaster")
@@ -1218,6 +1228,7 @@ model SemesterMaster {
   students           Student[]
   studentPayments    StudentPayment[]
   studentEnrollments StudentEnrollment[]
+  studentExams       StudentExam[]
 
   @@index([yearId])
   @@map("semesterMaster")
@@ -1267,6 +1278,8 @@ model PaperDetailMaster {
   DeletedOn      DateTime?
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
+
+  studentExamPapers StudentExamPaper[]
 
   @@index([paperTypeId])
   @@index([examTypeId])
@@ -1361,54 +1374,168 @@ model AdminLoginMaster {
 }
 
 model ExamLoginMaster {
-  examLoginId       Int       @id @default(autoincrement())
-  studentId         Int       @unique
-  student           Student   @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
-  enrollmentId      Int?
-  enrollment        StudentEnrollment? @relation(fields: [enrollmentId], references: [enrollmentId], onDelete: SetNull)
+  examLoginId    Int     @id @default(autoincrement())
+  studentId      Int     @unique
+  student        Student @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
+  enrollmentId   Int?
+  enrollment     StudentEnrollment? @relation(fields: [enrollmentId], references: [enrollmentId], onDelete: SetNull)
 
-  registrationNo    String?   @db.VarChar(100)
-  enrollmentNo      String    @unique @db.VarChar(100)
-  rollNo            String?   @db.VarChar(100)
+  registrationNo String? @db.VarChar(100)
+  enrollmentNo   String  @unique @db.VarChar(100)
+  rollNo         String? @db.VarChar(100)
 
-  studentName       String?   @db.VarChar(255)
-  fatherName        String?   @db.VarChar(255)
-  motherName        String?   @db.VarChar(255)
-  dateOfBirth       DateTime?
-  gender            String?   @db.VarChar(20)
-  category          String?   @db.VarChar(50)
-  emailId           String?   @db.VarChar(255)
-  mobileNo          String?   @db.VarChar(20)
-  address           String?   @db.Text
+  studentName String?   @db.VarChar(255)
+  fatherName  String?   @db.VarChar(255)
+  motherName  String?   @db.VarChar(255)
+  dateOfBirth DateTime?
+  gender      String?   @db.VarChar(20)
+  category    String?   @db.VarChar(50)
+  emailId     String?   @db.VarChar(255)
+  mobileNo    String?   @db.VarChar(20)
+  address     String?   @db.Text
 
-  password          String    @db.VarChar(255)
-  plainPassword     String?   @db.VarChar(100)
-  isPasswordSet     Boolean   @default(true)
+  password      String  @db.VarChar(255)
+  plainPassword String? @db.VarChar(100)
+  isPasswordSet Boolean @default(true)
 
-  programId         Int?
-  courseName        String?   @db.VarChar(255)
-  yearId            Int?
-  semId             Int?
-  sessionId         Int?
-  examType          String?   @default("Regular") @db.VarChar(50)
-  collegeName       String?   @db.VarChar(255)
-  examinationFees   Float?    @default(0.0)
+  examType    String? @default("Regular") @db.VarChar(50)
+  collegeName String? @db.VarChar(255)
 
-  isFormSubmitted   Boolean   @default(false)
-  selectedPapers    Json?
-  declarationAccepted Boolean @default(false)
-  paymentStatus     String    @default("PENDING") @db.VarChar(20)
-  paymentId         Int?
-
-  CreatedOn         DateTime  @default(now())
-  CreatedBy         String?   @db.VarChar(255)
-  UpdatedOn         DateTime? @updatedAt
-  UpdatedBy         String?   @db.VarChar(255)
-  IsActive          Boolean   @default(true)
-  IsDeleted         Boolean   @default(false)
+  CreatedOn DateTime  @default(now())
+  CreatedBy String?   @db.VarChar(255)
+  UpdatedOn DateTime? @updatedAt
+  UpdatedBy String?   @db.VarChar(255)
+  IsActive  Boolean   @default(true)
+  IsDeleted Boolean   @default(false)
 
   @@index([enrollmentNo])
   @@index([registrationNo])
   @@index([studentId])
   @@map("examLoginMaster")
+}
+
+model StudentExam {
+  studentExamId Int     @id @default(autoincrement())
+  studentId     Int
+  student       Student @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
+
+  registrationNo   String? @db.VarChar(100)
+  enrollmentNo     String? @db.VarChar(100)
+  studentNameEng   String? @db.VarChar(255)
+  studentNameHindi String? @db.VarChar(255)
+  fatherName       String? @db.VarChar(255)
+  motherName       String? @db.VarChar(255)
+  dob              DateTime?
+  mobileNo         String? @db.VarChar(20)
+  emailId          String? @db.VarChar(255)
+  rollNo           String? @db.VarChar(100)
+  admissionNo      String? @db.VarChar(100)
+  barNo            String? @db.VarChar(100)
+  examFormNo       String? @db.VarChar(100)
+  uniqueNo         String? @db.VarChar(100)
+
+  examTypeId       Int?
+  examTypeRelation ExamTypeMaster? @relation(fields: [examTypeId], references: [examTypeId], onDelete: SetNull)
+  examType         String?         @db.VarChar(50)
+
+  courseCategoryId       Int?
+  courseCategoryRelation ProgramCategory? @relation(fields: [courseCategoryId], references: [programCategoryId], onDelete: SetNull)
+  courseCategory         String?          @db.VarChar(255)
+  courseId               Int?
+  course                 Program?         @relation(fields: [courseId], references: [programId], onDelete: SetNull)
+  courseShortName        String?          @db.VarChar(255)
+  yearId                 Int?
+  year                   YearMaster?      @relation(fields: [yearId], references: [yearId], onDelete: SetNull)
+  yearName               String?          @db.VarChar(100)
+  semId                  Int?
+  semester               SemesterMaster?  @relation(fields: [semId], references: [semId], onDelete: SetNull)
+  semName                String?          @db.VarChar(100)
+  sessionId              Int?
+  session                AdmissionSession? @relation(fields: [sessionId], references: [admissionSessionId], onDelete: SetNull)
+
+  studentImgURL      String? @db.VarChar(2000)
+  studentImgName     String? @db.VarChar(255)
+  studentSignImgURL  String? @db.VarChar(2000)
+  studentSignImgName String? @db.VarChar(255)
+
+  examFeeId        Int?
+  examFeeConfig    ProgramFeeConfig? @relation(fields: [examFeeId], references: [feeConfigId], onDelete: SetNull)
+  totalExamFee     Float?            @default(0.0)
+  isFeePaymentDone Boolean           @default(false)
+  totalPaidAmount  Float?            @default(0.0)
+  bankTxnNo        String?           @db.VarChar(100)
+  bankTxnDetail    String?           @db.Text
+  feePaymentDate   DateTime?
+  isExamFeePaid    Boolean           @default(false)
+
+  isExamFormFinalSubmit  Boolean   @default(false)
+  isExamFormPrintTaken   Boolean   @default(false)
+  isExamFormSendOnEmail  Boolean   @default(false)
+  isExamFormVerify       Boolean   @default(false)
+  verifyBy               String?   @db.VarChar(255)
+  verifyDate             DateTime?
+  verificationRemarks    String?   @db.Text
+  isReadyForAdmitCard    Boolean   @default(false)
+
+  selectedPaperIds String? @db.VarChar(500)
+  examPaymentIds   String? @db.VarChar(500)
+
+  papers StudentExamPaper[]
+
+  Remarks        String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+
+  @@index([studentId])
+  @@index([enrollmentNo])
+  @@index([registrationNo])
+  @@index([courseId])
+  @@index([examFeeId])
+  @@index([examTypeId])
+  @@index([yearId])
+  @@index([semId])
+  @@index([sessionId])
+  @@map("studentExam")
+}
+
+model StudentExamPaper {
+  studentExamPaperId Int         @id @default(autoincrement())
+  studentExamId      Int
+  studentExam        StudentExam @relation(fields: [studentExamId], references: [studentExamId], onDelete: Cascade)
+
+  studentId    Int
+  student      Student @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
+  enrollmentId Int?
+  enrollment   StudentEnrollment? @relation(fields: [enrollmentId], references: [enrollmentId], onDelete: SetNull)
+  enrollmentNo String? @db.VarChar(100)
+
+  paperId Int?
+  paper   PaperDetailMaster? @relation(fields: [paperId], references: [paperId], onDelete: SetNull)
+
+  paperType         String? @db.VarChar(100)
+  subjectName       String? @db.VarChar(255)
+  paperName         String? @db.VarChar(255)
+  paperCode         String? @db.VarChar(100)
+  paperNameWithCode String? @db.VarChar(255)
+  isChosen          Boolean @default(true)
+
+  Remarks        String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+
+  @@index([studentExamId])
+  @@index([studentId])
+  @@index([enrollmentId])
+  @@index([paperId])
+  @@map("studentExamPaper")
 }

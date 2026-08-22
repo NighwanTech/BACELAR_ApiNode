@@ -169,12 +169,45 @@ export class StudentPaymentService {
         semester: true,
         program: true,
         admissionSession: true,
+        studentEnrollments: {
+          orderBy: { CreatedOn: 'desc' },
+        },
       },
     });
     if (!student) {
       throw new NotFoundException(`Student with ID ${studentId} not found`);
     }
     return student;
+  }
+
+  private async resolvePaymentEnrollNo(
+    studentId: number,
+    student: Awaited<ReturnType<StudentPaymentService['loadStudentForPaymentSnapshot']>>,
+    preferred?: string | null,
+  ) {
+    const fromEnrollment = (student.studentEnrollments || [])
+      .filter((e) => !e.IsDeleted && e.enrollmentNo)
+      .map((e) => e.enrollmentNo)[0];
+    if (fromEnrollment) return fromEnrollment;
+
+    const examLogin: any = await (this.prisma as any).examLoginMaster.findFirst({
+      where: { studentId, IsDeleted: false },
+      select: { enrollmentNo: true },
+    });
+    if (examLogin?.enrollmentNo) return examLogin.enrollmentNo as string;
+
+    const examForm: any = await (this.prisma as any).studentExam.findFirst({
+      where: { studentId, IsDeleted: false },
+      orderBy: { studentExamId: 'desc' },
+      select: { enrollmentNo: true },
+    });
+    if (examForm?.enrollmentNo) return examForm.enrollmentNo as string;
+
+    const preferredNo = String(preferred || '').trim();
+    if (preferredNo && preferredNo.toUpperCase() !== 'N/A') {
+      return preferredNo;
+    }
+    return null;
   }
 
   private buildPaymentSnapshot(
@@ -208,34 +241,133 @@ export class StudentPaymentService {
       const byId = await feeTypeDb.findFirst({
         where: { feeTypeId, IsDeleted: false },
       });
-      return byId?.feeTypeId ?? null;
+      if (byId?.feeTypeId) return byId.feeTypeId as number;
     }
     const name = String(feeTypeName || '').trim();
     if (!name) return null;
-    const byName = await feeTypeDb.findFirst({
-      where: { feeTypeName: name, IsDeleted: false },
+
+    const rows: Array<{ feeTypeId: number; feeTypeName?: string | null; IsDeleted?: boolean }> =
+      await feeTypeDb.findMany({
+        select: { feeTypeId: true, feeTypeName: true, IsDeleted: true },
+      });
+
+    const needle = name.toUpperCase();
+    const matches = (label: string) => {
+      const value = String(label || '').toUpperCase();
+      return (
+        value === needle ||
+        value.includes(needle) ||
+        (needle === 'EXAMINATION' && value.includes('EXAM')) ||
+        (needle === 'REGISTRATION' && value.includes('REGIST'))
+      );
+    };
+
+    const live = rows.find((r) => !r.IsDeleted && matches(String(r.feeTypeName || '')));
+    if (live?.feeTypeId) return live.feeTypeId;
+
+    const deleted = rows.find((r) => r.IsDeleted && matches(String(r.feeTypeName || '')));
+    if (deleted?.feeTypeId) {
+      const restored = await feeTypeDb.update({
+        where: { feeTypeId: deleted.feeTypeId },
+        data: { IsDeleted: false, IsActive: true, UpdatedBy: 'System' },
+      });
+      return restored.feeTypeId as number;
+    }
+
+    const canonical =
+      needle === 'EXAMINATION' ? 'EXAMINATION' : needle === 'REGISTRATION' ? 'REGISTRATION' : name;
+    try {
+      const created = await feeTypeDb.create({
+        data: {
+          feeTypeName: canonical,
+          CreatedBy: 'System',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+      return created.feeTypeId as number;
+    } catch {
+      const retry = await feeTypeDb.findFirst({
+        where: { feeTypeName: canonical },
+      });
+      return retry?.feeTypeId ?? null;
+    }
+  }
+
+  private async syncStudentExamPayment(payment: {
+    studentId: number;
+    feeType?: string | null;
+    paymentStatus?: string | null;
+    amountPaid?: number | null;
+    bankRrnNo?: string | null;
+    razorpayPaymentId?: string | null;
+    razorpayOrderId?: string | null;
+    paymentDateTime?: Date | null;
+  }) {
+    if (String(payment.feeType || '').toUpperCase() !== 'EXAMINATION') {
+      return;
+    }
+
+    const examDb = (this.prisma as any).studentExam;
+    const examForm = await examDb.findFirst({
+      where: { studentId: payment.studentId, IsDeleted: false },
+      orderBy: { studentExamId: 'desc' },
     });
-    return byName?.feeTypeId ?? null;
+    if (!examForm) return;
+
+    const paid = String(payment.paymentStatus || '').toUpperCase() === 'SUCCESS';
+    const txnParts = [payment.razorpayPaymentId, payment.razorpayOrderId].filter(Boolean);
+    const paymentId = Number((payment as any).paymentId);
+    const existingPayIds = String(examForm.examPaymentIds || '')
+      .split(',')
+      .map((v: string) => v.trim())
+      .filter(Boolean);
+    if (paymentId && !existingPayIds.includes(String(paymentId))) {
+      existingPayIds.push(String(paymentId));
+    }
+
+    await examDb.update({
+      where: { studentExamId: examForm.studentExamId },
+      data: {
+        isFeePaymentDone: paid,
+        isExamFeePaid: paid,
+        totalPaidAmount: paid ? Number(payment.amountPaid || 0) : examForm.totalPaidAmount,
+        bankTxnNo: payment.bankRrnNo || examForm.bankTxnNo,
+        bankTxnDetail: txnParts.length ? txnParts.join(' | ') : examForm.bankTxnDetail,
+        feePaymentDate: paid ? payment.paymentDateTime || new Date() : examForm.feePaymentDate,
+        examPaymentIds: existingPayIds.join(',') || null,
+        UpdatedBy: 'Examination Payment',
+      },
+    });
   }
 
   async create(data: any) {
     const studentId = Number(data.studentId);
     const student = await this.loadStudentForPaymentSnapshot(studentId);
+    const paymentStatus = data.paymentStatus || 'PENDING';
+    const paidAt =
+      paymentStatus === 'SUCCESS'
+        ? data.paymentDateTime
+          ? new Date(data.paymentDateTime)
+          : new Date()
+        : data.paymentDateTime
+          ? new Date(data.paymentDateTime)
+          : null;
     const snapshot = this.buildPaymentSnapshot(student, {
-      enrollNo: data.enrollNo || null,
+      enrollNo: await this.resolvePaymentEnrollNo(studentId, student, data.enrollNo),
       bankRrnNo: data.bankRrnNo || null,
       merchantOrderId: data.merchantOrderId || null,
-      paymentDateTime: data.paymentDateTime ? new Date(data.paymentDateTime) : new Date(),
+      paymentDateTime: paidAt,
     });
     const feeTypeId = await this.resolveFeeTypeId(data.feeType, data.feeTypeId);
 
-    return this.prisma.studentPayment.create({
+    const payment = await this.prisma.studentPayment.create({
       data: {
         studentId,
         feeType: data.feeType,
         feeTypeId,
         amountPaid: Number(data.amountPaid),
-        paymentStatus: data.paymentStatus || 'PENDING',
+        paymentStatus,
         ...snapshot,
         razorpayOrderId: data.razorpayOrderId || null,
         razorpayPaymentId: data.razorpayPaymentId || null,
@@ -253,11 +385,15 @@ export class StudentPaymentService {
         feeTypeMaster: true,
       },
     });
+
+    await this.syncStudentExamPayment(payment);
+    return payment;
   }
 
   async createRazorpayOrder(data: {
     studentId: number;
     feeType?: string;
+    enrollNo?: string;
     CreatedBy: string;
   }) {
     const studentId = Number(data.studentId);
@@ -309,6 +445,16 @@ export class StudentPaymentService {
       );
     }
 
+    const existingPending = await this.prisma.studentPayment.findFirst({
+      where: {
+        studentId,
+        feeType,
+        paymentStatus: 'PENDING',
+        IsDeleted: false,
+      },
+      orderBy: { CreatedOn: 'desc' },
+    });
+
     const { keyId, client } = this.getRazorpayClient();
     const amountInPaise = Math.round(amount * 100);
 
@@ -335,39 +481,62 @@ export class StudentPaymentService {
     }
 
     const snapshot = this.buildPaymentSnapshot(student, {
+      enrollNo: await this.resolvePaymentEnrollNo(studentId, student, data.enrollNo),
       merchantOrderId: order.id,
-      paymentDateTime: new Date(),
+      paymentDateTime: null,
     });
     const feeTypeId = await this.resolveFeeTypeId(feeType);
 
-    const payment = await this.prisma.studentPayment.create({
-      data: {
-        studentId,
-        feeType,
-        feeTypeId,
-        amountPaid: amount,
-        paymentStatus: 'PENDING',
-        ...snapshot,
-        razorpayOrderId: order.id,
-        CreatedBy: data.CreatedBy,
-        Remarks: `${feeType} fee order created`,
-        IsActive: true,
-        IsDeleted: false,
-      },
-      include: {
-        student: {
-          include: {
-            program: { include: { programCategory: true } },
-            admissionSession: true,
-            year: true,
-            semester: true,
-          },
+    const paymentInclude = {
+      student: {
+        include: {
+          program: { include: { programCategory: true } },
+          admissionSession: true,
+          year: true,
+          semester: true,
         },
-        year: true,
-        semester: true,
-        feeTypeMaster: true,
       },
-    });
+      year: true,
+      semester: true,
+      feeTypeMaster: true,
+    };
+
+    const payment = existingPending
+      ? await this.prisma.studentPayment.update({
+          where: { paymentId: existingPending.paymentId },
+          data: {
+            feeType,
+            feeTypeId,
+            amountPaid: amount,
+            paymentStatus: 'PENDING',
+            ...snapshot,
+            razorpayOrderId: order.id,
+            razorpayPaymentId: null,
+            razorpaySignature: null,
+            gatewayResponse: null,
+            UpdatedBy: data.CreatedBy,
+            Remarks: `${feeType} fee order created`,
+          },
+          include: paymentInclude,
+        })
+      : await this.prisma.studentPayment.create({
+          data: {
+            studentId,
+            feeType,
+            feeTypeId,
+            amountPaid: amount,
+            paymentStatus: 'PENDING',
+            ...snapshot,
+            razorpayOrderId: order.id,
+            CreatedBy: data.CreatedBy,
+            Remarks: `${feeType} fee order created`,
+            IsActive: true,
+            IsDeleted: false,
+          },
+          include: paymentInclude,
+        });
+
+    await this.syncStudentExamPayment(payment);
 
     return {
       paymentId: payment.paymentId,
@@ -431,7 +600,11 @@ export class StudentPaymentService {
     }
 
     const snapshot = this.buildPaymentSnapshot(student, {
-      enrollNo: payment.enrollNo,
+      enrollNo: await this.resolvePaymentEnrollNo(
+        payment.studentId,
+        student,
+        payment.enrollNo,
+      ),
       bankRrnNo:
         extractBankRrnNo(data.gatewayResponse, razorpayPayment) ||
         payment.bankRrnNo ||
@@ -439,11 +612,14 @@ export class StudentPaymentService {
       merchantOrderId: payment.merchantOrderId || data.razorpayOrderId || null,
       paymentDateTime: new Date(),
     });
+    const feeTypeId =
+      payment.feeTypeId || (await this.resolveFeeTypeId(payment.feeType));
 
-    return this.prisma.studentPayment.update({
+    const updated = await this.prisma.studentPayment.update({
       where: { paymentId: payment.paymentId },
       data: {
         paymentStatus: 'SUCCESS',
+        feeTypeId,
         razorpayPaymentId: data.razorpayPaymentId,
         razorpaySignature: data.razorpaySignature,
         gatewayResponse: data.gatewayResponse || null,
@@ -458,6 +634,9 @@ export class StudentPaymentService {
         feeTypeMaster: true,
       },
     });
+
+    await this.syncStudentExamPayment(updated);
+    return updated;
   }
 
   async findAll() {
@@ -523,7 +702,7 @@ export class StudentPaymentService {
   async update(paymentId: number, data: any) {
     await this.findOne(paymentId);
 
-    return this.prisma.studentPayment.update({
+    const updated = await this.prisma.studentPayment.update({
       where: { paymentId },
       data: {
         paymentStatus: data.paymentStatus,
@@ -546,6 +725,9 @@ export class StudentPaymentService {
         feeTypeMaster: true,
       },
     });
+
+    await this.syncStudentExamPayment(updated);
+    return updated;
   }
 
   async softDelete(paymentId: number, DeletedBy: string, DeletedRemarks?: string) {
