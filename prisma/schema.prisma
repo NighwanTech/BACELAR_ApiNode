@@ -1412,4 +1412,3 @@ model ExamLoginMaster {
   @@index([studentId])
   @@map("examLoginMaster")
 }
-
