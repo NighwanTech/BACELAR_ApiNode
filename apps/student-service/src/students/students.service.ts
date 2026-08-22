@@ -202,7 +202,21 @@ export class StudentsService {
       throw new UnauthorizedException('Invalid credentials or account is disabled');
     }
 
-    const isPasswordValid = await bcrypt.compare(passwordString, login.Password);
+    let isPasswordValid = false;
+    try {
+      if (login.Password && login.Password.startsWith('$2')) {
+        isPasswordValid = await bcrypt.compare(passwordString, login.Password);
+      }
+    } catch (err) {
+      isPasswordValid = false;
+    }
+
+    if (!isPasswordValid) {
+      isPasswordValid =
+        login.PlainPassword === passwordString ||
+        login.Password === passwordString;
+    }
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials or account is disabled');
     }

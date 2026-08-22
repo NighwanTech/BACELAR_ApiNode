@@ -9644,6 +9644,409 @@ __decorate([
 
 /***/ }),
 
+/***/ "./apps/backend/src/students/exam-login/dto/create-exam-password.dto.ts":
+/*!******************************************************************************!*\
+  !*** ./apps/backend/src/students/exam-login/dto/create-exam-password.dto.ts ***!
+  \******************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateExamPasswordDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class CreateExamPasswordDto {
+}
+exports.CreateExamPasswordDto = CreateExamPasswordDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Student Registration ID' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateExamPasswordDto.prototype, "studentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Student Enrollment ID', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateExamPasswordDto.prototype, "enrollmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'BACE2024010001', description: 'Enrollment Number' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateExamPasswordDto.prototype, "enrollmentNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Password@123', description: 'New password for student exam login' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(6, { message: 'Password must be at least 6 characters long' }),
+    __metadata("design:type", String)
+], CreateExamPasswordDto.prototype, "password", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/exam-login/dto/exam-login.dto.ts":
+/*!********************************************************************!*\
+  !*** ./apps/backend/src/students/exam-login/dto/exam-login.dto.ts ***!
+  \********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExamLoginDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class ExamLoginDto {
+}
+exports.ExamLoginDto = ExamLoginDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'BACE2024010001', description: 'User ID or Enrollment Number' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ExamLoginDto.prototype, "enrollmentNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Password@123', description: 'Exam login password' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ExamLoginDto.prototype, "password", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'dBC9fP', description: 'Captcha text', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ExamLoginDto.prototype, "captcha", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/exam-login/dto/submit-exam-form.dto.ts":
+/*!**************************************************************************!*\
+  !*** ./apps/backend/src/students/exam-login/dto/submit-exam-form.dto.ts ***!
+  \**************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SubmitExamFormDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class SubmitExamFormDto {
+}
+exports.SubmitExamFormDto = SubmitExamFormDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: [1491, 1492, 1493], description: 'Array of chosen Paper IDs' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], SubmitExamFormDto.prototype, "selectedPapers", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Declaration accepted status' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], SubmitExamFormDto.prototype, "declarationAccepted", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/exam-login/dto/update-exam-profile.dto.ts":
+/*!*****************************************************************************!*\
+  !*** ./apps/backend/src/students/exam-login/dto/update-exam-profile.dto.ts ***!
+  \*****************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateExamProfileDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class UpdateExamProfileDto {
+}
+exports.UpdateExamProfileDto = UpdateExamProfileDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'student@example.com', description: 'Updated Email Address', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], UpdateExamProfileDto.prototype, "emailId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9876543210', description: 'Updated Mobile Number', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateExamProfileDto.prototype, "mobileNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'House 123, Lalitpur, UP', description: 'Updated Address', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateExamProfileDto.prototype, "address", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/exam-login/dto/verify-enrollment.dto.ts":
+/*!***************************************************************************!*\
+  !*** ./apps/backend/src/students/exam-login/dto/verify-enrollment.dto.ts ***!
+  \***************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.VerifyEnrollmentDto = void 0;
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class VerifyEnrollmentDto {
+}
+exports.VerifyEnrollmentDto = VerifyEnrollmentDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'BACE2024010001',
+        description: 'Student BACE Enrollment Number or Serial',
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], VerifyEnrollmentDto.prototype, "enrollmentNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: '2004-05-15',
+        description: 'Student Date of Birth (YYYY-MM-DD)',
+    }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], VerifyEnrollmentDto.prototype, "dateOfBirth", void 0);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/exam-login/exam-login.controller.ts":
+/*!***********************************************************************!*\
+  !*** ./apps/backend/src/students/exam-login/exam-login.controller.ts ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExamLoginController = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const swagger_1 = __webpack_require__(/*! @nestjs/swagger */ "@nestjs/swagger");
+const rxjs_1 = __webpack_require__(/*! rxjs */ "rxjs");
+const verify_enrollment_dto_1 = __webpack_require__(/*! ./dto/verify-enrollment.dto */ "./apps/backend/src/students/exam-login/dto/verify-enrollment.dto.ts");
+const create_exam_password_dto_1 = __webpack_require__(/*! ./dto/create-exam-password.dto */ "./apps/backend/src/students/exam-login/dto/create-exam-password.dto.ts");
+const exam_login_dto_1 = __webpack_require__(/*! ./dto/exam-login.dto */ "./apps/backend/src/students/exam-login/dto/exam-login.dto.ts");
+const update_exam_profile_dto_1 = __webpack_require__(/*! ./dto/update-exam-profile.dto */ "./apps/backend/src/students/exam-login/dto/update-exam-profile.dto.ts");
+const submit_exam_form_dto_1 = __webpack_require__(/*! ./dto/submit-exam-form.dto */ "./apps/backend/src/students/exam-login/dto/submit-exam-form.dto.ts");
+let ExamLoginController = class ExamLoginController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    handleError(error) {
+        let status = Number(error?.statusCode || error?.status);
+        if (!status || Number.isNaN(status) || status < 100 || status > 599) {
+            status = common_1.HttpStatus.BAD_REQUEST;
+        }
+        const rawMessage = error?.message || error?.response?.message || error?.error || 'Request failed';
+        const message = Array.isArray(rawMessage) ? rawMessage.join(', ') : String(rawMessage);
+        return (0, rxjs_1.throwError)(() => new common_1.HttpException(message, status));
+    }
+    verifyEnrollment(verifyDto) {
+        return this.studentClient.send({ cmd: 'verify_exam_enrollment' }, verifyDto).pipe((0, rxjs_1.catchError)((error) => this.handleError(error)));
+    }
+    createPassword(createPasswordDto) {
+        return this.studentClient.send({ cmd: 'create_exam_password' }, createPasswordDto).pipe((0, rxjs_1.catchError)((error) => this.handleError(error)));
+    }
+    login(loginDto) {
+        return this.studentClient.send({ cmd: 'exam_login' }, loginDto).pipe((0, rxjs_1.catchError)((error) => this.handleError(error)));
+    }
+    getDashboardData(studentId) {
+        return this.studentClient.send({ cmd: 'get_exam_dashboard_data' }, { studentId }).pipe((0, rxjs_1.catchError)((error) => this.handleError(error)));
+    }
+    updateProfile(studentId, updateProfileDto) {
+        return this.studentClient.send({ cmd: 'update_exam_profile' }, { studentId, ...updateProfileDto }).pipe((0, rxjs_1.catchError)((error) => this.handleError(error)));
+    }
+    submitForm(studentId, submitFormDto) {
+        return this.studentClient.send({ cmd: 'submit_exam_form' }, { studentId, ...submitFormDto }).pipe((0, rxjs_1.catchError)((error) => this.handleError(error)));
+    }
+};
+exports.ExamLoginController = ExamLoginController;
+__decorate([
+    (0, common_1.Post)('verify-enrollment'),
+    (0, swagger_1.ApiOperation)({ summary: 'Verify Enrollment No & Date of Birth for Registration Pop-up' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return student snapshot details if verified' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof verify_enrollment_dto_1.VerifyEnrollmentDto !== "undefined" && verify_enrollment_dto_1.VerifyEnrollmentDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], ExamLoginController.prototype, "verifyEnrollment", null);
+__decorate([
+    (0, common_1.Post)('create-password'),
+    (0, swagger_1.ApiOperation)({ summary: 'Create or Set password for Exam Portal Login' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Password created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_d = typeof create_exam_password_dto_1.CreateExamPasswordDto !== "undefined" && create_exam_password_dto_1.CreateExamPasswordDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], ExamLoginController.prototype, "createPassword", null);
+__decorate([
+    (0, common_1.Post)('login'),
+    (0, swagger_1.ApiOperation)({ summary: 'Student Exam Portal Login' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Login successful, return token & student info' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_f = typeof exam_login_dto_1.ExamLoginDto !== "undefined" && exam_login_dto_1.ExamLoginDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], ExamLoginController.prototype, "login", null);
+__decorate([
+    (0, common_1.Get)('dashboard/:studentId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get Student Dashboard Data (Personal Info + Paper Details Table)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return student details and matching course papers table' }),
+    __param(0, (0, common_1.Param)('studentId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], ExamLoginController.prototype, "getDashboardData", null);
+__decorate([
+    (0, common_1.Put)('update-profile/:studentId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update Student Profile (Email, Mobile, Address)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Profile details updated successfully' }),
+    __param(0, (0, common_1.Param)('studentId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_j = typeof update_exam_profile_dto_1.UpdateExamProfileDto !== "undefined" && update_exam_profile_dto_1.UpdateExamProfileDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
+], ExamLoginController.prototype, "updateProfile", null);
+__decorate([
+    (0, common_1.Post)('submit-form/:studentId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Submit Examination Form & Save Selected Papers' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Examination form submitted successfully' }),
+    __param(0, (0, common_1.Param)('studentId', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_l = typeof submit_exam_form_dto_1.SubmitExamFormDto !== "undefined" && submit_exam_form_dto_1.SubmitExamFormDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
+], ExamLoginController.prototype, "submitForm", null);
+exports.ExamLoginController = ExamLoginController = __decorate([
+    (0, swagger_1.ApiTags)('Student - Exam Portal & Login'),
+    (0, common_1.Controller)('students-exam-login'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], ExamLoginController);
+
+
+/***/ }),
+
+/***/ "./apps/backend/src/students/exam-login/exam-login.module.ts":
+/*!*******************************************************************!*\
+  !*** ./apps/backend/src/students/exam-login/exam-login.module.ts ***!
+  \*******************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExamLoginModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
+const exam_login_controller_1 = __webpack_require__(/*! ./exam-login.controller */ "./apps/backend/src/students/exam-login/exam-login.controller.ts");
+let ExamLoginModule = class ExamLoginModule {
+};
+exports.ExamLoginModule = ExamLoginModule;
+exports.ExamLoginModule = ExamLoginModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: 'STUDENT_SERVICE',
+                    imports: [config_1.ConfigModule],
+                    inject: [config_1.ConfigService],
+                    useFactory: (configService) => ({
+                        transport: microservices_1.Transport.TCP,
+                        options: {
+                            host: configService.get('STUDENT_SERVICE_HOST', '127.0.0.1'),
+                            port: Number(configService.get('TCP_PORT', 4001)),
+                        },
+                    }),
+                },
+            ]),
+        ],
+        controllers: [exam_login_controller_1.ExamLoginController],
+    })
+], ExamLoginModule);
+
+
+/***/ }),
+
 /***/ "./apps/backend/src/students/student-academic-subject/dto/bulk-delete-academic-subjects.dto.ts":
 /*!*****************************************************************************************************!*\
   !*** ./apps/backend/src/students/student-academic-subject/dto/bulk-delete-academic-subjects.dto.ts ***!
@@ -12659,6 +13062,7 @@ const student_program_subject_module_1 = __webpack_require__(/*! ./student-progr
 const student_payment_module_1 = __webpack_require__(/*! ./student-payment/student-payment.module */ "./apps/backend/src/students/student-payment/student-payment.module.ts");
 const student_attachment_module_1 = __webpack_require__(/*! ./student-attachment/student-attachment.module */ "./apps/backend/src/students/student-attachment/student-attachment.module.ts");
 const student_enrollment_module_1 = __webpack_require__(/*! ./student-enrollment/student-enrollment.module */ "./apps/backend/src/students/student-enrollment/student-enrollment.module.ts");
+const exam_login_module_1 = __webpack_require__(/*! ./exam-login/exam-login.module */ "./apps/backend/src/students/exam-login/exam-login.module.ts");
 let StudentsModule = class StudentsModule {
 };
 exports.StudentsModule = StudentsModule;
@@ -12681,6 +13085,7 @@ exports.StudentsModule = StudentsModule = __decorate([
             student_payment_module_1.StudentPaymentModule,
             student_attachment_module_1.StudentAttachmentModule,
             student_enrollment_module_1.StudentEnrollmentModule,
+            exam_login_module_1.ExamLoginModule,
         ],
         controllers: [students_controller_1.StudentsController, student_profile_controller_1.StudentProfileController],
     })

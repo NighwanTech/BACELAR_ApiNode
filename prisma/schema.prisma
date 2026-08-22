@@ -40,6 +40,7 @@ model Student {
   studentAttachments    StudentAttachment[]
   studentEnrollments    StudentEnrollment[]
   loginMaster           LoginMaster?
+  examLoginMaster       ExamLoginMaster?
 
   @@index([yearId])
   @@index([semId])
@@ -661,6 +662,7 @@ model StudentEnrollment {
   DeletedOn      DateTime?
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
+  examLoginMasters ExamLoginMaster[]
 
   @@index([studentId])
   @@index([programId])
@@ -1357,3 +1359,57 @@ model AdminLoginMaster {
   @@index([Mobile])
   @@map("adminLoginMaster")
 }
+
+model ExamLoginMaster {
+  examLoginId       Int       @id @default(autoincrement())
+  studentId         Int       @unique
+  student           Student   @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
+  enrollmentId      Int?
+  enrollment        StudentEnrollment? @relation(fields: [enrollmentId], references: [enrollmentId], onDelete: SetNull)
+
+  registrationNo    String?   @db.VarChar(100)
+  enrollmentNo      String    @unique @db.VarChar(100)
+  rollNo            String?   @db.VarChar(100)
+
+  studentName       String?   @db.VarChar(255)
+  fatherName        String?   @db.VarChar(255)
+  motherName        String?   @db.VarChar(255)
+  dateOfBirth       DateTime?
+  gender            String?   @db.VarChar(20)
+  category          String?   @db.VarChar(50)
+  emailId           String?   @db.VarChar(255)
+  mobileNo          String?   @db.VarChar(20)
+  address           String?   @db.Text
+
+  password          String    @db.VarChar(255)
+  plainPassword     String?   @db.VarChar(100)
+  isPasswordSet     Boolean   @default(true)
+
+  programId         Int?
+  courseName        String?   @db.VarChar(255)
+  yearId            Int?
+  semId             Int?
+  sessionId         Int?
+  examType          String?   @default("Regular") @db.VarChar(50)
+  collegeName       String?   @db.VarChar(255)
+  examinationFees   Float?    @default(0.0)
+
+  isFormSubmitted   Boolean   @default(false)
+  selectedPapers    Json?
+  declarationAccepted Boolean @default(false)
+  paymentStatus     String    @default("PENDING") @db.VarChar(20)
+  paymentId         Int?
+
+  CreatedOn         DateTime  @default(now())
+  CreatedBy         String?   @db.VarChar(255)
+  UpdatedOn         DateTime? @updatedAt
+  UpdatedBy         String?   @db.VarChar(255)
+  IsActive          Boolean   @default(true)
+  IsDeleted         Boolean   @default(false)
+
+  @@index([enrollmentNo])
+  @@index([registrationNo])
+  @@index([studentId])
+  @@map("examLoginMaster")
+}
+

@@ -10,6 +10,7 @@ import { StudentProgramSubjectModule } from './student-program-subject/student-p
 import { StudentPaymentModule } from './student-payment/student-payment.module';
 import { StudentAttachmentModule } from './student-attachment/student-attachment.module';
 import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
+import { ExamLoginModule } from './exam-login/exam-login.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { StudentEnrollmentModule } from './student-enrollment/student-enrollment
     StudentPaymentModule,
     StudentAttachmentModule,
     StudentEnrollmentModule,
+    ExamLoginModule,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],
