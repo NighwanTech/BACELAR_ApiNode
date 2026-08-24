@@ -42,6 +42,21 @@ export class CreateProgramFeeConfigDto {
   @IsOptional()
   examinationGstRate?: number;
 
+  @ApiProperty({ example: 500.00, description: 'Back Paper Base Fee', required: false })
+  @IsNumber()
+  @IsOptional()
+  backPaperBaseFee?: number;
+
+  @ApiProperty({ example: 2.00, description: 'Back Paper Payment Gateway Rate Percentage', required: false })
+  @IsNumber()
+  @IsOptional()
+  backPaperPgRate?: number;
+
+  @ApiProperty({ example: 18.00, description: 'Back Paper GST Rate Percentage', required: false })
+  @IsNumber()
+  @IsOptional()
+  backPaperGstRate?: number;
+
   @ApiProperty({ example: 'Admin User', description: 'Username of creator' })
   @IsString()
   @IsNotEmpty()

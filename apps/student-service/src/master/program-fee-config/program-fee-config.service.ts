@@ -47,6 +47,12 @@ export class ProgramFeeConfigService {
       Number(data.examinationGstRate ?? 18.0),
     );
 
+    const backPaperFinal = calculateFinalFee(
+      Number(data.backPaperBaseFee ?? 0.0),
+      Number(data.backPaperPgRate ?? 2.0),
+      Number(data.backPaperGstRate ?? 18.0),
+    );
+
     return this.prisma.programFeeConfig.create({
       data: {
         programId: Number(data.programId),
@@ -59,6 +65,10 @@ export class ProgramFeeConfigService {
         examinationPgRate: Number(data.examinationPgRate ?? 2.0),
         examinationGstRate: Number(data.examinationGstRate ?? 18.0),
         examinationFinal: examFinal,
+        backPaperBaseFee: Number(data.backPaperBaseFee ?? 0.0),
+        backPaperPgRate: Number(data.backPaperPgRate ?? 2.0),
+        backPaperGstRate: Number(data.backPaperGstRate ?? 18.0),
+        backPaperFinal,
         CreatedBy: data.CreatedBy,
         Remarks: data.Remarks || null,
         IsActive: true,
@@ -123,11 +133,19 @@ export class ProgramFeeConfigService {
     const examGst = data.examinationGstRate !== undefined ? Number(data.examinationGstRate) : current.examinationGstRate;
     const examFinal = calculateFinalFee(examBase, examPg, examGst);
 
+    const existing = current as typeof current & {
+      backPaperBaseFee?: number | null;
+      backPaperPgRate?: number | null;
+      backPaperGstRate?: number | null;
+    };
+    const backPaperBase = data.backPaperBaseFee !== undefined ? Number(data.backPaperBaseFee) : Number(existing.backPaperBaseFee ?? 0);
+    const backPaperPg = data.backPaperPgRate !== undefined ? Number(data.backPaperPgRate) : Number(existing.backPaperPgRate ?? 2);
+    const backPaperGst = data.backPaperGstRate !== undefined ? Number(data.backPaperGstRate) : Number(existing.backPaperGstRate ?? 18);
+    const backPaperFinal = calculateFinalFee(backPaperBase, backPaperPg, backPaperGst);
+
     return this.prisma.programFeeConfig.update({
       where: { feeConfigId },
       data: {
-        programId: data.programId !== undefined ? Number(data.programId) : undefined,
-        admissionSessionId: data.admissionSessionId !== undefined ? Number(data.admissionSessionId) : undefined,
         registrationBaseFee: regBase,
         registrationPgRate: regPg,
         registrationGstRate: regGst,
@@ -136,9 +154,13 @@ export class ProgramFeeConfigService {
         examinationPgRate: examPg,
         examinationGstRate: examGst,
         examinationFinal: examFinal,
+        backPaperBaseFee: backPaperBase,
+        backPaperPgRate: backPaperPg,
+        backPaperGstRate: backPaperGst,
+        backPaperFinal,
         UpdatedBy: data.UpdatedBy,
-        IsActive: data.IsActive,
-        Remarks: data.Remarks,
+        ...(data.IsActive !== undefined ? { IsActive: data.IsActive } : {}),
+        ...(data.Remarks !== undefined ? { Remarks: data.Remarks } : {}),
       },
       include: {
         program: true,

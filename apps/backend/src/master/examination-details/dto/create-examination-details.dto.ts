@@ -14,6 +14,11 @@ export class CreateExaminationDetailsDto {
   @IsNotEmpty()
   examinationName: string;
 
+  @ApiProperty({ example: 'Annual', description: 'Exam type: Annual or Semester', required: false })
+  @IsString()
+  @IsOptional()
+  examType?: string;
+
   @ApiProperty({ example: 'Admin User', description: 'Username of creator' })
   @IsString()
   @IsNotEmpty()

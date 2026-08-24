@@ -21,6 +21,7 @@ export class ExaminationDetailsService {
     await this.assertAcademicSession(Number(data.academicId));
 
     const examinationName = String(data.examinationName || '').trim();
+    const examType = data.examType ? String(data.examType).trim() : null;
     const existing = await this.prisma.examinationDetails.findFirst({
       where: {
         academicId: Number(data.academicId),
@@ -38,6 +39,7 @@ export class ExaminationDetailsService {
       data: {
         academicId: Number(data.academicId),
         examinationName,
+        examType,
         CreatedBy: data.CreatedBy,
         Remarks: data.Remarks || null,
         IsActive: true,
@@ -119,6 +121,7 @@ export class ExaminationDetailsService {
         academicId: data.academicId !== undefined ? academicId : undefined,
         examinationName:
           data.examinationName !== undefined ? examinationName : undefined,
+        examType: data.examType !== undefined ? String(data.examType).trim() || null : undefined,
         UpdatedBy: data.UpdatedBy,
         IsActive: data.IsActive,
         Remarks: data.Remarks,

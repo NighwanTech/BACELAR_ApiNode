@@ -14,6 +14,11 @@ export class UpdateExaminationDetailsDto {
   @IsOptional()
   examinationName?: string;
 
+  @ApiProperty({ example: 'Semester', required: false })
+  @IsString()
+  @IsOptional()
+  examType?: string;
+
   @ApiProperty({ example: 'Editor Admin' })
   @IsString()
   @IsNotEmpty()

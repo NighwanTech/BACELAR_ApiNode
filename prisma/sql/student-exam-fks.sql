@@ -6,6 +6,7 @@ ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_yearId_fkey` FOREIGN KEY (
 ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_semId_fkey` FOREIGN KEY (`semId`) REFERENCES `semesterMaster`(`semId`) ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_sessionId_fkey` FOREIGN KEY (`sessionId`) REFERENCES `admissionSessions`(`admissionSessionId`) ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_examFeeId_fkey` FOREIGN KEY (`examFeeId`) REFERENCES `programFeeConfigs`(`feeConfigId`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `studentExam` ADD CONSTRAINT `studentExam_examinationDetailId_fkey` FOREIGN KEY (`examinationDetailId`) REFERENCES `examinationDetails`(`examinationId`) ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE `studentExamPaper` ADD CONSTRAINT `studentExamPaper_studentExamId_fkey` FOREIGN KEY (`studentExamId`) REFERENCES `studentExam`(`studentExamId`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `studentExamPaper` ADD CONSTRAINT `studentExamPaper_studentId_fkey` FOREIGN KEY (`studentId`) REFERENCES `students`(`StudentRegistrationId`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `studentExamPaper` ADD CONSTRAINT `studentExamPaper_enrollmentId_fkey` FOREIGN KEY (`enrollmentId`) REFERENCES `studentEnrollment`(`enrollmentId`) ON DELETE SET NULL ON UPDATE CASCADE;

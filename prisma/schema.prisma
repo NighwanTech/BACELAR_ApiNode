@@ -539,6 +539,11 @@ model ProgramFeeConfig {
   examinationGstRate Float @default(18.0)
   examinationFinal   Float @default(0.0)
 
+  backPaperBaseFee Float @default(0.0)
+  backPaperPgRate  Float @default(2.0)
+  backPaperGstRate Float @default(18.0)
+  backPaperFinal   Float @default(0.0)
+
   // Common Audit Fields
   CreatedOn      DateTime  @default(now())
   CreatedBy      String    @db.VarChar(255)
@@ -1011,6 +1016,7 @@ model ExaminationDetails {
   academicId      Int
   academicSession AcademicSession @relation(fields: [academicId], references: [academicSessionId], onDelete: Cascade)
   examinationName String          @db.VarChar(100)
+  examType        String?         @db.VarChar(50)
   CreatedOn       DateTime        @default(now())
   CreatedBy       String          @db.VarChar(255)
   UpdatedOn       DateTime?       @updatedAt
@@ -1021,6 +1027,8 @@ model ExaminationDetails {
   DeletedOn       DateTime?
   DeletedBy       String?         @db.VarChar(255)
   Remarks         String?         @db.VarChar(255)
+
+  studentExams    StudentExam[]
 
   @@index([academicId])
   @@map("examinationDetails")
@@ -1480,6 +1488,10 @@ model StudentExam {
   selectedPaperIds String? @db.VarChar(500)
   examPaymentIds   String? @db.VarChar(500)
 
+  examinationDetailId Int?
+  examinationDetail   ExaminationDetails? @relation(fields: [examinationDetailId], references: [examinationId], onDelete: SetNull)
+  examinationName     String?             @db.VarChar(100)
+
   papers StudentExamPaper[]
 
   Remarks        String?   @db.VarChar(255)
@@ -1500,6 +1512,7 @@ model StudentExam {
   @@index([yearId])
   @@index([semId])
   @@index([sessionId])
+  @@index([examinationDetailId])
   @@map("studentExam")
 }
 

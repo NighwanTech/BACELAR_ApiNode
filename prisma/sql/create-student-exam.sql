@@ -49,6 +49,9 @@ CREATE TABLE IF NOT EXISTS `studentExam` (
     `verificationRemarks` TEXT NULL,
     `isReadyForAdmitCard` BOOLEAN NOT NULL DEFAULT false,
     `selectedPaperIds` VARCHAR(500) NULL,
+    `examPaymentIds` VARCHAR(500) NULL,
+    `examinationDetailId` INTEGER NULL,
+    `examinationName` VARCHAR(100) NULL,
     `Remarks` VARCHAR(255) NULL,
     `IsActive` BOOLEAN NOT NULL DEFAULT true,
     `IsDeleted` BOOLEAN NOT NULL DEFAULT false,
@@ -66,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `studentExam` (
     INDEX `studentExam_yearId_idx`(`yearId`),
     INDEX `studentExam_semId_idx`(`semId`),
     INDEX `studentExam_sessionId_idx`(`sessionId`),
+    INDEX `studentExam_examinationDetailId_idx`(`examinationDetailId`),
     PRIMARY KEY (`studentExamId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
