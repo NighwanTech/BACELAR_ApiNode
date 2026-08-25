@@ -62,4 +62,14 @@ export class ValidateProgramEligibilityDto {
   @IsBoolean()
   @IsOptional()
   hasPg?: boolean;
+
+  @ApiProperty({
+    example: true,
+    description:
+      'B.P.Ed.: student has sport certificate → apply SPORT_CERT graduation % rules',
+    required: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  hasSportCertificate?: boolean;
 }

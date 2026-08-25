@@ -17,6 +17,13 @@ export class StudentsController {
     @Inject('STUDENT_SERVICE') private readonly studentClient: ClientProxy,
   ) {}
 
+  @Post('check-availability')
+  @ApiOperation({ summary: 'Check if email or mobile number already exists' })
+  @ApiResponse({ status: 200, description: 'Availability status for email and mobile' })
+  checkAvailability(@Body() body: { email?: string; mobileNo?: string }): Observable<any> {
+    return this.studentClient.send({ cmd: 'check_student_availability' }, body);
+  }
+
   @Post('login')
   @ApiOperation({ summary: 'Login student using registration number and password' })
   @ApiResponse({ status: 200, description: 'Student authenticated successfully, returns JWT token' })

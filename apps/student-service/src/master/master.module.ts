@@ -16,6 +16,7 @@ import { ProgramEligibilityModule } from './program-eligibility/program-eligibil
 import { StreamModule } from './stream/stream.module';
 import { ProgramSubjectModule } from './program-subject/program-subject.module';
 import { ExaminationDetailsModule } from './examination-details/examination-details.module';
+import { ExamSchemeModule } from './exam-scheme/exam-scheme.module';
 import { PaperTypeModule } from './paper-type/paper-type.module';
 import { ExamTypeModule } from './exam-type/exam-type.module';
 import { YearModule } from './year/year.module';
@@ -41,6 +42,7 @@ import { RoleModule } from './role/role.module';
     AdmissionSessionModule,
     AcademicSessionModule,
     ExaminationDetailsModule,
+    ExamSchemeModule,
     ProgramFeeConfigModule,
     CollegeModule,
     PaperTypeModule,
@@ -67,6 +69,7 @@ import { RoleModule } from './role/role.module';
     AdmissionSessionModule,
     AcademicSessionModule,
     ExaminationDetailsModule,
+    ExamSchemeModule,
     ProgramFeeConfigModule,
     CollegeModule,
     PaperTypeModule,

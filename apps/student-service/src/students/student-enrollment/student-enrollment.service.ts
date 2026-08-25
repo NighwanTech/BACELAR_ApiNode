@@ -178,6 +178,20 @@ export class StudentEnrollmentService {
       throw new BadRequestException('Student program is missing. Assign a program before confirming enrollment.');
     }
 
+    const payments = await this.prisma.studentPayment.findMany({
+      where: { studentId, IsDeleted: false },
+      orderBy: { CreatedOn: 'desc' },
+    });
+    const hasSuccessfulPayment = payments.some((p) => {
+      const status = String(p.paymentStatus || '').toUpperCase();
+      return status === 'SUCCESS';
+    });
+    if (!hasSuccessfulPayment) {
+      throw new BadRequestException(
+        'Enrollment number can be generated only after successful payment.',
+      );
+    }
+
     const snapshot = this.snapshotFromStudent(student);
     const year = this.resolveEnrollmentYear(student.admissionSession?.admissionSessionName);
     const programCode = this.resolveProgramCode(student.program);

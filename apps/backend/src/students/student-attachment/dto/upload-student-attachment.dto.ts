@@ -7,7 +7,7 @@ export class UploadStudentAttachmentDto {
   @IsString()
   studentId: string;
 
-  @ApiProperty({ example: 'PHOTO', description: 'Document Type (e.g. PHOTO, SIGNATURE)' })
+  @ApiProperty({ example: 'PHOTO', description: 'Document Type (e.g. PHOTO, SIGNATURE, SPORT_CERTIFICATE)' })
   @IsNotEmpty()
   @IsString()
   documentType: string;

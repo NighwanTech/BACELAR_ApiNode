@@ -49,6 +49,15 @@ export class StudentsController {
     }
   }
 
+  @MessagePattern({ cmd: 'check_student_availability' })
+  async checkAvailability(@Payload() data: { email?: string; mobileNo?: string }) {
+    try {
+      return await this.studentsService.checkAvailability(data);
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'create_student' })
   async create(@Payload() data: any) {
     try {

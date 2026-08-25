@@ -586,6 +586,29 @@ async function main() {
         : `Compulsory: Minimum Graduation aggregate ${minPercent}% required for SC/ST.`,
   });
 
+  /** B.P.Ed. conditional graduation % — ruleKey SPORT_CERT | NO_SPORT_CERT */
+  const pctGradSport = (
+    category: 'GENERAL' | 'RESERVED',
+    minPercent: number,
+    displayOrder: number,
+    withSport: boolean,
+  ): EligRule => ({
+    ruleType: 'MIN_PERCENT',
+    qualificationLevel: 'GRAD',
+    category,
+    ruleKey: withSport ? 'SPORT_CERT' : 'NO_SPORT_CERT',
+    minPercent,
+    severity: 'Compulsory',
+    displayOrder,
+    message: withSport
+      ? category === 'GENERAL'
+        ? `Compulsory: With Sport Certificate — minimum Graduation aggregate ${minPercent}% for GEN/OBC/Minority.`
+        : `Compulsory: With Sport Certificate — minimum Graduation aggregate ${minPercent}% for SC/ST.`
+      : category === 'GENERAL'
+        ? `Compulsory: Without Sport Certificate — minimum Graduation aggregate ${minPercent}% for GEN/OBC/Minority.`
+        : `Compulsory: Without Sport Certificate — minimum Graduation aggregate ${minPercent}% for SC/ST.`,
+  });
+
   const gradRequired = (displayOrder: number): EligRule => ({
     ruleType: 'QUALIFICATION',
     qualificationLevel: 'GRAD',
@@ -717,10 +740,16 @@ async function main() {
       pct12('GENERAL', 50, 3),
       pct12('RESERVED', 45, 4),
       gradRequired(5),
+      // Without sport certificate
+      pctGradSport('GENERAL', 50, 6, false),
+      pctGradSport('RESERVED', 45, 7, false),
+      // With sport certificate (GEN/OBC 45%, SC/ST 40%)
+      pctGradSport('GENERAL', 45, 8, true),
+      pctGradSport('RESERVED', 40, 9, true),
       streamRule(
         STREAM_KEY_COMMON,
         'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
-        6,
+        10,
       ),
     ],
     // B.Ed.

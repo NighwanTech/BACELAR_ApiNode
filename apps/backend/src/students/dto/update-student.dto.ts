@@ -41,4 +41,13 @@ export class UpdateStudentDto {
   @IsString()
   @IsOptional()
   Remarks?: string;
+
+  @ApiProperty({
+    example: false,
+    description: 'B.P.Ed. sport certificate flag (optional; default false in DB)',
+    required: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  hasSportCertificate?: boolean;
 }

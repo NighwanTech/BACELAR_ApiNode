@@ -15,6 +15,7 @@ export class StudentAcademicController {
       CreatedBy: string;
       programId: number;
       programSubjectIds?: number[];
+      hasSportCertificate?: boolean;
     },
   ) {
     try {
@@ -24,6 +25,7 @@ export class StudentAcademicController {
         data.CreatedBy,
         data.programId,
         data.programSubjectIds,
+        data.hasSportCertificate,
       );
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };

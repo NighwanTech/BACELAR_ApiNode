@@ -66,6 +66,7 @@ export class StudentAcademicService {
     CreatedBy: string,
     programId: number,
     programSubjectIds?: number[],
+    hasSportCertificate?: boolean,
   ) {
     return this.prisma.$transaction(async (tx) => {
       const student = await tx.student.findFirst({
@@ -100,6 +101,10 @@ export class StudentAcademicService {
       const assignedAdmissionSessionId = activeSession.admissionSessionId;
       const assignedAdmissionSessionName = activeSession.admissionSessionName;
 
+      // Sport certificate applies only to B.P.Ed. (programCode "6"); otherwise always false
+      const isBped = String(program.programCode || '').trim() === '6';
+      const sportFlag = isBped ? Boolean(hasSportCertificate) : false;
+
       // First academic save → Year 1 + Sem 1. Later promote keeps existing values.
       let assignedYearId = student.yearId ?? null;
       let assignedSemId = student.semId ?? null;
@@ -132,6 +137,7 @@ export class StudentAcademicService {
           admissionSessionId: assignedAdmissionSessionId,
           yearId: assignedYearId,
           semId: assignedSemId,
+          hasSportCertificate: sportFlag,
           UpdatedBy: CreatedBy || 'System',
         },
       });
@@ -254,6 +260,7 @@ export class StudentAcademicService {
         semId: assignedSemId,
         yearName: assignedYearName,
         semesterName: assignedSemesterName,
+        hasSportCertificate: sportFlag,
       };
     });
   }

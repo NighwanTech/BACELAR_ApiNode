@@ -27,7 +27,7 @@ export class StudentAttachmentController {
     }),
   )
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload file (Photo/Signature) and save attachment record' })
+  @ApiOperation({ summary: 'Upload file (Photo/Signature/Sport Certificate) to MinIO/S3 and save attachment record' })
   @ApiResponse({ status: 201, description: 'File uploaded and registered successfully' })
   upload(
     @Body() body: UploadStudentAttachmentDto,
@@ -39,7 +39,9 @@ export class StudentAttachmentController {
       );
     }
     if (!body?.documentType) {
-      throw new BadRequestException('documentType is required (e.g. PHOTO, SIGNATURE).');
+      throw new BadRequestException(
+        'documentType is required (e.g. PHOTO, SIGNATURE, SPORT_CERTIFICATE).',
+      );
     }
     if (!body?.studentId) {
       throw new BadRequestException('studentId is required.');

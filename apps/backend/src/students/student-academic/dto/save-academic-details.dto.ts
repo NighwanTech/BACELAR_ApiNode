@@ -157,4 +157,14 @@ export class SaveAcademicDetailsDto {
   @Type(() => Number)
   @IsInt({ each: true })
   programSubjectIds?: number[];
+
+  @ApiProperty({
+    example: false,
+    description:
+      'B.P.Ed. only — has recognized sport certificate (default false; safe for admin)',
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  hasSportCertificate?: boolean;
 }

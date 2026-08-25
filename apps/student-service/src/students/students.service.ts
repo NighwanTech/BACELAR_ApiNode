@@ -89,6 +89,37 @@ export class StudentsService {
   }
 
   /**
+   * Check if email / mobile already exist (for registration form).
+   */
+  async checkAvailability(data: { email?: string; mobileNo?: string }) {
+    const email = data.email?.trim();
+    const mobileNo = data.mobileNo?.trim();
+
+    let emailExists = false;
+    let mobileExists = false;
+
+    if (email) {
+      const existingEmail = await this.prisma.student.findUnique({
+        where: { email },
+      });
+      emailExists = !!existingEmail;
+    }
+
+    if (mobileNo) {
+      const existingMobile = await this.prisma.student.findFirst({
+        where: { mobileNo, IsDeleted: false },
+      });
+      mobileExists = !!existingMobile;
+    }
+
+    return {
+      emailExists,
+      mobileExists,
+      available: !emailExists && !mobileExists,
+    };
+  }
+
+  /**
    * CREATE: Register student + create loginMaster (auth only in loginMaster).
    */
   async create(data: any) {
@@ -97,6 +128,13 @@ export class StudentsService {
     });
     if (existingEmail) {
       throw new ConflictException('Email already registered');
+    }
+
+    const existingMobile = await this.prisma.student.findFirst({
+      where: { mobileNo: data.mobileNo, IsDeleted: false },
+    });
+    if (existingMobile) {
+      throw new ConflictException('Phone number already registered');
     }
 
     let regNo = data.registrationNo;
@@ -339,6 +377,9 @@ export class StudentsService {
           registrationNo: data.registrationNo,
           yearId: data.yearId !== undefined ? data.yearId : undefined,
           semId: data.semId !== undefined ? data.semId : undefined,
+          ...(data.hasSportCertificate !== undefined
+            ? { hasSportCertificate: Boolean(data.hasSportCertificate) }
+            : {}),
           UpdatedBy: data.UpdatedBy,
           IsActive: data.IsActive,
           Remarks: data.Remarks,

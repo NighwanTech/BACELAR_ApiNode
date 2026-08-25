@@ -315,6 +315,8 @@ export class ProgramEligibilityService {
     twelfthSubjectCodes?: string[];
     hasGraduation?: boolean;
     hasPg?: boolean;
+    /** B.P.Ed.: when true, SPORT_CERT min-% rules apply; else NO_SPORT_CERT */
+    hasSportCertificate?: boolean;
   }) {
     const programId = Number(payload.programId);
     await this.assertProgram(programId);
@@ -334,6 +336,7 @@ export class ProgramEligibilityService {
       String(c).trim().toUpperCase(),
     );
     const stream = String(payload.twelfthStream || '').trim().toUpperCase();
+    const hasSportCertificate = Boolean(payload.hasSportCertificate);
     const errors: string[] = [];
 
     const percentForLevel = (level: string): number => {
@@ -379,6 +382,11 @@ export class ProgramEligibilityService {
       }
 
       if (rule.ruleType === 'MIN_PERCENT') {
+        const ruleKey = String(rule.ruleKey || 'AGGREGATE').trim().toUpperCase();
+        // Conditional graduation thresholds (admin-editable via ruleKey)
+        if (ruleKey === 'SPORT_CERT' && !hasSportCertificate) continue;
+        if (ruleKey === 'NO_SPORT_CERT' && hasSportCertificate) continue;
+
         const min = rule.minPercent != null ? Number(rule.minPercent) : NaN;
         if (Number.isNaN(min)) continue;
         const actual = percentForLevel(rule.qualificationLevel);
@@ -400,6 +408,7 @@ export class ProgramEligibilityService {
       ok: errors.length === 0,
       programId,
       category: normalizeCategory(category),
+      hasSportCertificate,
       errors,
     };
   }
