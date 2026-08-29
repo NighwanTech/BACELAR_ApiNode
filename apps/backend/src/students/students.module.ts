@@ -10,12 +10,9 @@ import { StudentAttachmentModule } from './student-attachment/student-attachment
 import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
 import { ExamLoginModule } from './exam-login/exam-login.module';
 import { StudentRollNumberModule } from './student-roll-number/student-roll-number.module';
-<<<<<<< Updated upstream
 import { ExamAdmitCardModule } from './exam-admit-card/exam-admit-card.module';
-=======
 import { StudentAttendanceModule } from './student-attendance/student-attendance.module';
 import { StudentMarksModule } from './student-marks/student-marks.module';
->>>>>>> Stashed changes
 
 @Module({
   imports: [
@@ -38,12 +35,9 @@ import { StudentMarksModule } from './student-marks/student-marks.module';
     StudentEnrollmentModule,
     ExamLoginModule,
     StudentRollNumberModule,
-<<<<<<< Updated upstream
     ExamAdmitCardModule,
-=======
     StudentAttendanceModule,
     StudentMarksModule,
->>>>>>> Stashed changes
   ],
   controllers: [StudentsController, StudentProfileController],
 })

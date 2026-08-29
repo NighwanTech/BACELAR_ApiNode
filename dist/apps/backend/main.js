@@ -121,15 +121,9 @@ exports.AppModule = void 0;
 const common_1 = __webpack_require__(2);
 const config_1 = __webpack_require__(7);
 const students_module_1 = __webpack_require__(8);
-<<<<<<< Updated upstream
-const master_module_1 = __webpack_require__(79);
-const website_module_1 = __webpack_require__(187);
-const admin_module_1 = __webpack_require__(250);
-=======
-const master_module_1 = __webpack_require__(83);
-const website_module_1 = __webpack_require__(191);
-const admin_module_1 = __webpack_require__(254);
->>>>>>> Stashed changes
+const master_module_1 = __webpack_require__(85);
+const website_module_1 = __webpack_require__(193);
+const admin_module_1 = __webpack_require__(256);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -178,12 +172,9 @@ const student_attachment_module_1 = __webpack_require__(45);
 const student_enrollment_module_1 = __webpack_require__(60);
 const exam_login_module_1 = __webpack_require__(66);
 const student_roll_number_module_1 = __webpack_require__(73);
-<<<<<<< Updated upstream
 const exam_admit_card_module_1 = __webpack_require__(77);
-=======
-const student_attendance_module_1 = __webpack_require__(77);
-const student_marks_module_1 = __webpack_require__(80);
->>>>>>> Stashed changes
+const student_attendance_module_1 = __webpack_require__(79);
+const student_marks_module_1 = __webpack_require__(82);
 let StudentsModule = class StudentsModule {
 };
 exports.StudentsModule = StudentsModule;
@@ -208,12 +199,9 @@ exports.StudentsModule = StudentsModule = __decorate([
             student_enrollment_module_1.StudentEnrollmentModule,
             exam_login_module_1.ExamLoginModule,
             student_roll_number_module_1.StudentRollNumberModule,
-<<<<<<< Updated upstream
             exam_admit_card_module_1.ExamAdmitCardModule,
-=======
             student_attendance_module_1.StudentAttendanceModule,
             student_marks_module_1.StudentMarksModule,
->>>>>>> Stashed changes
         ],
         controllers: [students_controller_1.StudentsController, student_profile_controller_1.StudentProfileController],
     })
@@ -5029,7 +5017,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-<<<<<<< Updated upstream
 exports.ExamAdmitCardModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
@@ -5038,16 +5025,6 @@ let ExamAdmitCardModule = class ExamAdmitCardModule {
 };
 exports.ExamAdmitCardModule = ExamAdmitCardModule;
 exports.ExamAdmitCardModule = ExamAdmitCardModule = __decorate([
-=======
-exports.StudentAttendanceModule = void 0;
-const common_1 = __webpack_require__(2);
-const microservices_1 = __webpack_require__(9);
-const student_attendance_controller_1 = __webpack_require__(78);
-let StudentAttendanceModule = class StudentAttendanceModule {
-};
-exports.StudentAttendanceModule = StudentAttendanceModule;
-exports.StudentAttendanceModule = StudentAttendanceModule = __decorate([
->>>>>>> Stashed changes
     (0, common_1.Module)({
         imports: [
             microservices_1.ClientsModule.register([
@@ -5056,24 +5033,14 @@ exports.StudentAttendanceModule = StudentAttendanceModule = __decorate([
                     transport: microservices_1.Transport.TCP,
                     options: {
                         host: '127.0.0.1',
-<<<<<<< Updated upstream
                         port: Number(process.env.TCP_PORT) || 4001,
-=======
-                        port: Number(process.env.TCP_PORT ?? 4001),
->>>>>>> Stashed changes
                     },
                 },
             ]),
         ],
-<<<<<<< Updated upstream
         controllers: [exam_admit_card_controller_1.ExamAdmitCardController],
     })
 ], ExamAdmitCardModule);
-=======
-        controllers: [student_attendance_controller_1.StudentAttendanceController],
-    })
-], StudentAttendanceModule);
->>>>>>> Stashed changes
 
 
 /***/ }),
@@ -5093,20 +5060,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-<<<<<<< Updated upstream
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamAdmitCardController = void 0;
-=======
-var _a, _b, _c, _d, _e, _f;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StudentAttendanceController = void 0;
->>>>>>> Stashed changes
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
 let ExamAdmitCardController = class ExamAdmitCardController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -5160,8 +5120,71 @@ exports.ExamAdmitCardController = ExamAdmitCardController = __decorate([
     __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
     __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
 ], ExamAdmitCardController);
-=======
-const save_attendance_dto_1 = __webpack_require__(79);
+
+
+/***/ }),
+/* 79 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAttendanceModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const student_attendance_controller_1 = __webpack_require__(80);
+let StudentAttendanceModule = class StudentAttendanceModule {
+};
+exports.StudentAttendanceModule = StudentAttendanceModule;
+exports.StudentAttendanceModule = StudentAttendanceModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [student_attendance_controller_1.StudentAttendanceController],
+    })
+], StudentAttendanceModule);
+
+
+/***/ }),
+/* 80 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StudentAttendanceController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const save_attendance_dto_1 = __webpack_require__(81);
 let StudentAttendanceController = class StudentAttendanceController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -5251,11 +5274,10 @@ exports.StudentAttendanceController = StudentAttendanceController = __decorate([
     __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
     __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
 ], StudentAttendanceController);
->>>>>>> Stashed changes
 
 
 /***/ }),
-/* 79 */
+/* 81 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5265,36 +5287,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-<<<<<<< Updated upstream
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MasterModule = void 0;
-const common_1 = __webpack_require__(2);
-const state_module_1 = __webpack_require__(80);
-const city_module_1 = __webpack_require__(84);
-const program_category_module_1 = __webpack_require__(88);
-const subject_module_1 = __webpack_require__(92);
-const program_module_1 = __webpack_require__(96);
-const board_module_1 = __webpack_require__(101);
-const fee_type_module_1 = __webpack_require__(106);
-const qualification_module_1 = __webpack_require__(111);
-const admission_session_module_1 = __webpack_require__(116);
-const academic_session_module_1 = __webpack_require__(121);
-const program_fee_config_module_1 = __webpack_require__(125);
-const college_module_1 = __webpack_require__(130);
-const zipcode_module_1 = __webpack_require__(134);
-const program_eligibility_module_1 = __webpack_require__(138);
-const stream_module_1 = __webpack_require__(143);
-const program_subject_module_1 = __webpack_require__(147);
-const examination_details_module_1 = __webpack_require__(151);
-const exam_scheme_module_1 = __webpack_require__(155);
-const paper_type_module_1 = __webpack_require__(158);
-const exam_type_module_1 = __webpack_require__(162);
-const year_module_1 = __webpack_require__(166);
-const semester_module_1 = __webpack_require__(170);
-const paper_detail_module_1 = __webpack_require__(174);
-const exam_subject_module_1 = __webpack_require__(178);
-const role_module_1 = __webpack_require__(182);
-=======
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
@@ -5438,7 +5430,7 @@ __decorate([
 
 
 /***/ }),
-/* 80 */
+/* 82 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5452,7 +5444,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StudentMarksModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const student_marks_controller_1 = __webpack_require__(81);
+const student_marks_controller_1 = __webpack_require__(83);
 let StudentMarksModule = class StudentMarksModule {
 };
 exports.StudentMarksModule = StudentMarksModule;
@@ -5476,7 +5468,7 @@ exports.StudentMarksModule = StudentMarksModule = __decorate([
 
 
 /***/ }),
-/* 81 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5499,7 +5491,7 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const save_marks_dto_1 = __webpack_require__(82);
+const save_marks_dto_1 = __webpack_require__(84);
 let StudentMarksController = class StudentMarksController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -5604,7 +5596,7 @@ exports.StudentMarksController = StudentMarksController = __decorate([
 
 
 /***/ }),
-/* 82 */
+/* 84 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5769,7 +5761,7 @@ __decorate([
 
 
 /***/ }),
-/* 83 */
+/* 85 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5782,32 +5774,31 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MasterModule = void 0;
 const common_1 = __webpack_require__(2);
-const state_module_1 = __webpack_require__(84);
-const city_module_1 = __webpack_require__(88);
-const program_category_module_1 = __webpack_require__(92);
-const subject_module_1 = __webpack_require__(96);
-const program_module_1 = __webpack_require__(100);
-const board_module_1 = __webpack_require__(105);
-const fee_type_module_1 = __webpack_require__(110);
-const qualification_module_1 = __webpack_require__(115);
-const admission_session_module_1 = __webpack_require__(120);
-const academic_session_module_1 = __webpack_require__(125);
-const program_fee_config_module_1 = __webpack_require__(129);
-const college_module_1 = __webpack_require__(134);
-const zipcode_module_1 = __webpack_require__(138);
-const program_eligibility_module_1 = __webpack_require__(142);
-const stream_module_1 = __webpack_require__(147);
-const program_subject_module_1 = __webpack_require__(151);
-const examination_details_module_1 = __webpack_require__(155);
-const exam_scheme_module_1 = __webpack_require__(159);
-const paper_type_module_1 = __webpack_require__(162);
-const exam_type_module_1 = __webpack_require__(166);
-const year_module_1 = __webpack_require__(170);
-const semester_module_1 = __webpack_require__(174);
-const paper_detail_module_1 = __webpack_require__(178);
-const exam_subject_module_1 = __webpack_require__(182);
-const role_module_1 = __webpack_require__(186);
->>>>>>> Stashed changes
+const state_module_1 = __webpack_require__(86);
+const city_module_1 = __webpack_require__(90);
+const program_category_module_1 = __webpack_require__(94);
+const subject_module_1 = __webpack_require__(98);
+const program_module_1 = __webpack_require__(102);
+const board_module_1 = __webpack_require__(107);
+const fee_type_module_1 = __webpack_require__(112);
+const qualification_module_1 = __webpack_require__(117);
+const admission_session_module_1 = __webpack_require__(122);
+const academic_session_module_1 = __webpack_require__(127);
+const program_fee_config_module_1 = __webpack_require__(131);
+const college_module_1 = __webpack_require__(136);
+const zipcode_module_1 = __webpack_require__(140);
+const program_eligibility_module_1 = __webpack_require__(144);
+const stream_module_1 = __webpack_require__(149);
+const program_subject_module_1 = __webpack_require__(153);
+const examination_details_module_1 = __webpack_require__(157);
+const exam_scheme_module_1 = __webpack_require__(161);
+const paper_type_module_1 = __webpack_require__(164);
+const exam_type_module_1 = __webpack_require__(168);
+const year_module_1 = __webpack_require__(172);
+const semester_module_1 = __webpack_require__(176);
+const paper_detail_module_1 = __webpack_require__(180);
+const exam_subject_module_1 = __webpack_require__(184);
+const role_module_1 = __webpack_require__(188);
 let MasterModule = class MasterModule {
 };
 exports.MasterModule = MasterModule;
@@ -5872,11 +5863,7 @@ exports.MasterModule = MasterModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 80 */
-=======
-/* 84 */
->>>>>>> Stashed changes
+/* 86 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5890,11 +5877,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StateModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const state_controller_1 = __webpack_require__(81);
-=======
-const state_controller_1 = __webpack_require__(85);
->>>>>>> Stashed changes
+const state_controller_1 = __webpack_require__(87);
 let StateModule = class StateModule {
 };
 exports.StateModule = StateModule;
@@ -5918,11 +5901,7 @@ exports.StateModule = StateModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 81 */
-=======
-/* 85 */
->>>>>>> Stashed changes
+/* 87 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5945,13 +5924,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_state_dto_1 = __webpack_require__(82);
-const update_state_dto_1 = __webpack_require__(83);
-=======
-const create_state_dto_1 = __webpack_require__(86);
-const update_state_dto_1 = __webpack_require__(87);
->>>>>>> Stashed changes
+const create_state_dto_1 = __webpack_require__(88);
+const update_state_dto_1 = __webpack_require__(89);
 const update_status_dto_1 = __webpack_require__(19);
 let StateController = class StateController {
     constructor(studentClient) {
@@ -6045,11 +6019,7 @@ exports.StateController = StateController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 82 */
-=======
-/* 86 */
->>>>>>> Stashed changes
+/* 88 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6096,11 +6066,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 83 */
-=======
-/* 87 */
->>>>>>> Stashed changes
+/* 89 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6153,11 +6119,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 84 */
-=======
-/* 88 */
->>>>>>> Stashed changes
+/* 90 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6171,11 +6133,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CityModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const city_controller_1 = __webpack_require__(85);
-=======
-const city_controller_1 = __webpack_require__(89);
->>>>>>> Stashed changes
+const city_controller_1 = __webpack_require__(91);
 let CityModule = class CityModule {
 };
 exports.CityModule = CityModule;
@@ -6199,11 +6157,7 @@ exports.CityModule = CityModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 85 */
-=======
-/* 89 */
->>>>>>> Stashed changes
+/* 91 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6226,13 +6180,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_city_dto_1 = __webpack_require__(86);
-const update_city_dto_1 = __webpack_require__(87);
-=======
-const create_city_dto_1 = __webpack_require__(90);
-const update_city_dto_1 = __webpack_require__(91);
->>>>>>> Stashed changes
+const create_city_dto_1 = __webpack_require__(92);
+const update_city_dto_1 = __webpack_require__(93);
 const update_status_dto_1 = __webpack_require__(19);
 let CityController = class CityController {
     constructor(studentClient) {
@@ -6331,11 +6280,7 @@ exports.CityController = CityController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 86 */
-=======
-/* 90 */
->>>>>>> Stashed changes
+/* 92 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6388,11 +6333,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 87 */
-=======
-/* 91 */
->>>>>>> Stashed changes
+/* 93 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6451,11 +6392,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 88 */
-=======
-/* 92 */
->>>>>>> Stashed changes
+/* 94 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6469,11 +6406,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramCategoryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const program_category_controller_1 = __webpack_require__(89);
-=======
-const program_category_controller_1 = __webpack_require__(93);
->>>>>>> Stashed changes
+const program_category_controller_1 = __webpack_require__(95);
 let ProgramCategoryModule = class ProgramCategoryModule {
 };
 exports.ProgramCategoryModule = ProgramCategoryModule;
@@ -6497,11 +6430,7 @@ exports.ProgramCategoryModule = ProgramCategoryModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 89 */
-=======
-/* 93 */
->>>>>>> Stashed changes
+/* 95 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6524,13 +6453,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_program_category_dto_1 = __webpack_require__(90);
-const update_program_category_dto_1 = __webpack_require__(91);
-=======
-const create_program_category_dto_1 = __webpack_require__(94);
-const update_program_category_dto_1 = __webpack_require__(95);
->>>>>>> Stashed changes
+const create_program_category_dto_1 = __webpack_require__(96);
+const update_program_category_dto_1 = __webpack_require__(97);
 const update_status_dto_1 = __webpack_require__(19);
 let ProgramCategoryController = class ProgramCategoryController {
     constructor(studentClient) {
@@ -6624,11 +6548,7 @@ exports.ProgramCategoryController = ProgramCategoryController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 90 */
-=======
-/* 94 */
->>>>>>> Stashed changes
+/* 96 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6681,11 +6601,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 91 */
-=======
-/* 95 */
->>>>>>> Stashed changes
+/* 97 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6744,11 +6660,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 92 */
-=======
-/* 96 */
->>>>>>> Stashed changes
+/* 98 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6762,11 +6674,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubjectModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const subject_controller_1 = __webpack_require__(93);
-=======
-const subject_controller_1 = __webpack_require__(97);
->>>>>>> Stashed changes
+const subject_controller_1 = __webpack_require__(99);
 let SubjectModule = class SubjectModule {
 };
 exports.SubjectModule = SubjectModule;
@@ -6790,11 +6698,7 @@ exports.SubjectModule = SubjectModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 93 */
-=======
-/* 97 */
->>>>>>> Stashed changes
+/* 99 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6817,13 +6721,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_subject_dto_1 = __webpack_require__(94);
-const update_subject_dto_1 = __webpack_require__(95);
-=======
-const create_subject_dto_1 = __webpack_require__(98);
-const update_subject_dto_1 = __webpack_require__(99);
->>>>>>> Stashed changes
+const create_subject_dto_1 = __webpack_require__(100);
+const update_subject_dto_1 = __webpack_require__(101);
 const update_status_dto_1 = __webpack_require__(19);
 let SubjectController = class SubjectController {
     constructor(studentClient) {
@@ -6921,11 +6820,7 @@ exports.SubjectController = SubjectController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 94 */
-=======
-/* 98 */
->>>>>>> Stashed changes
+/* 100 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6985,11 +6880,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 95 */
-=======
-/* 99 */
->>>>>>> Stashed changes
+/* 101 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7055,11 +6946,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 96 */
-=======
-/* 100 */
->>>>>>> Stashed changes
+/* 102 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7073,11 +6960,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const program_controller_1 = __webpack_require__(97);
-=======
-const program_controller_1 = __webpack_require__(101);
->>>>>>> Stashed changes
+const program_controller_1 = __webpack_require__(103);
 let ProgramModule = class ProgramModule {
 };
 exports.ProgramModule = ProgramModule;
@@ -7101,11 +6984,7 @@ exports.ProgramModule = ProgramModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 97 */
-=======
-/* 101 */
->>>>>>> Stashed changes
+/* 103 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7128,15 +7007,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_program_dto_1 = __webpack_require__(98);
-const update_program_dto_1 = __webpack_require__(99);
-const bulk_delete_programs_dto_1 = __webpack_require__(100);
-=======
-const create_program_dto_1 = __webpack_require__(102);
-const update_program_dto_1 = __webpack_require__(103);
-const bulk_delete_programs_dto_1 = __webpack_require__(104);
->>>>>>> Stashed changes
+const create_program_dto_1 = __webpack_require__(104);
+const update_program_dto_1 = __webpack_require__(105);
+const bulk_delete_programs_dto_1 = __webpack_require__(106);
 const update_status_dto_1 = __webpack_require__(19);
 let ProgramController = class ProgramController {
     constructor(studentClient) {
@@ -7248,11 +7121,7 @@ exports.ProgramController = ProgramController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 98 */
-=======
-/* 102 */
->>>>>>> Stashed changes
+/* 104 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7335,11 +7204,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 99 */
-=======
-/* 103 */
->>>>>>> Stashed changes
+/* 105 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7428,11 +7293,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 100 */
-=======
-/* 104 */
->>>>>>> Stashed changes
+/* 106 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7474,11 +7335,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 101 */
-=======
-/* 105 */
->>>>>>> Stashed changes
+/* 107 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7492,11 +7349,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BoardModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const board_controller_1 = __webpack_require__(102);
-=======
-const board_controller_1 = __webpack_require__(106);
->>>>>>> Stashed changes
+const board_controller_1 = __webpack_require__(108);
 let BoardModule = class BoardModule {
 };
 exports.BoardModule = BoardModule;
@@ -7520,11 +7373,7 @@ exports.BoardModule = BoardModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 102 */
-=======
-/* 106 */
->>>>>>> Stashed changes
+/* 108 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7547,15 +7396,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_board_dto_1 = __webpack_require__(103);
-const update_board_dto_1 = __webpack_require__(104);
-const bulk_delete_boards_dto_1 = __webpack_require__(105);
-=======
-const create_board_dto_1 = __webpack_require__(107);
-const update_board_dto_1 = __webpack_require__(108);
-const bulk_delete_boards_dto_1 = __webpack_require__(109);
->>>>>>> Stashed changes
+const create_board_dto_1 = __webpack_require__(109);
+const update_board_dto_1 = __webpack_require__(110);
+const bulk_delete_boards_dto_1 = __webpack_require__(111);
 const update_status_dto_1 = __webpack_require__(19);
 let BoardController = class BoardController {
     constructor(studentClient) {
@@ -7661,11 +7504,7 @@ exports.BoardController = BoardController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 103 */
-=======
-/* 107 */
->>>>>>> Stashed changes
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7706,11 +7545,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 104 */
-=======
-/* 108 */
->>>>>>> Stashed changes
+/* 110 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7757,11 +7592,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 105 */
-=======
-/* 109 */
->>>>>>> Stashed changes
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7803,11 +7634,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 106 */
-=======
-/* 110 */
->>>>>>> Stashed changes
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7821,11 +7648,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FeeTypeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const fee_type_controller_1 = __webpack_require__(107);
-=======
-const fee_type_controller_1 = __webpack_require__(111);
->>>>>>> Stashed changes
+const fee_type_controller_1 = __webpack_require__(113);
 let FeeTypeModule = class FeeTypeModule {
 };
 exports.FeeTypeModule = FeeTypeModule;
@@ -7849,11 +7672,7 @@ exports.FeeTypeModule = FeeTypeModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 107 */
-=======
-/* 111 */
->>>>>>> Stashed changes
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7876,15 +7695,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_fee_type_dto_1 = __webpack_require__(108);
-const update_fee_type_dto_1 = __webpack_require__(109);
-const bulk_delete_fee_types_dto_1 = __webpack_require__(110);
-=======
-const create_fee_type_dto_1 = __webpack_require__(112);
-const update_fee_type_dto_1 = __webpack_require__(113);
-const bulk_delete_fee_types_dto_1 = __webpack_require__(114);
->>>>>>> Stashed changes
+const create_fee_type_dto_1 = __webpack_require__(114);
+const update_fee_type_dto_1 = __webpack_require__(115);
+const bulk_delete_fee_types_dto_1 = __webpack_require__(116);
 const update_status_dto_1 = __webpack_require__(19);
 let FeeTypeController = class FeeTypeController {
     constructor(studentClient) {
@@ -7990,11 +7803,7 @@ exports.FeeTypeController = FeeTypeController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 108 */
-=======
-/* 112 */
->>>>>>> Stashed changes
+/* 114 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8035,11 +7844,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 109 */
-=======
-/* 113 */
->>>>>>> Stashed changes
+/* 115 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8086,11 +7891,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 110 */
-=======
-/* 114 */
->>>>>>> Stashed changes
+/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8132,11 +7933,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 111 */
-=======
-/* 115 */
->>>>>>> Stashed changes
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8150,11 +7947,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.QualificationModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const qualification_controller_1 = __webpack_require__(112);
-=======
-const qualification_controller_1 = __webpack_require__(116);
->>>>>>> Stashed changes
+const qualification_controller_1 = __webpack_require__(118);
 let QualificationModule = class QualificationModule {
 };
 exports.QualificationModule = QualificationModule;
@@ -8178,11 +7971,7 @@ exports.QualificationModule = QualificationModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 112 */
-=======
-/* 116 */
->>>>>>> Stashed changes
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8205,15 +7994,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_qualification_dto_1 = __webpack_require__(113);
-const update_qualification_dto_1 = __webpack_require__(114);
-const bulk_delete_qualifications_dto_1 = __webpack_require__(115);
-=======
-const create_qualification_dto_1 = __webpack_require__(117);
-const update_qualification_dto_1 = __webpack_require__(118);
-const bulk_delete_qualifications_dto_1 = __webpack_require__(119);
->>>>>>> Stashed changes
+const create_qualification_dto_1 = __webpack_require__(119);
+const update_qualification_dto_1 = __webpack_require__(120);
+const bulk_delete_qualifications_dto_1 = __webpack_require__(121);
 const update_status_dto_1 = __webpack_require__(19);
 let QualificationController = class QualificationController {
     constructor(studentClient) {
@@ -8319,11 +8102,7 @@ exports.QualificationController = QualificationController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 113 */
-=======
-/* 117 */
->>>>>>> Stashed changes
+/* 119 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8364,11 +8143,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 114 */
-=======
-/* 118 */
->>>>>>> Stashed changes
+/* 120 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8415,11 +8190,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 115 */
-=======
-/* 119 */
->>>>>>> Stashed changes
+/* 121 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8461,11 +8232,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 116 */
-=======
-/* 120 */
->>>>>>> Stashed changes
+/* 122 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8479,11 +8246,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionSessionModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const admission_session_controller_1 = __webpack_require__(117);
-=======
-const admission_session_controller_1 = __webpack_require__(121);
->>>>>>> Stashed changes
+const admission_session_controller_1 = __webpack_require__(123);
 let AdmissionSessionModule = class AdmissionSessionModule {
 };
 exports.AdmissionSessionModule = AdmissionSessionModule;
@@ -8507,11 +8270,7 @@ exports.AdmissionSessionModule = AdmissionSessionModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 117 */
-=======
-/* 121 */
->>>>>>> Stashed changes
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8534,15 +8293,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_admission_session_dto_1 = __webpack_require__(118);
-const update_admission_session_dto_1 = __webpack_require__(119);
-const bulk_delete_admission_sessions_dto_1 = __webpack_require__(120);
-=======
-const create_admission_session_dto_1 = __webpack_require__(122);
-const update_admission_session_dto_1 = __webpack_require__(123);
-const bulk_delete_admission_sessions_dto_1 = __webpack_require__(124);
->>>>>>> Stashed changes
+const create_admission_session_dto_1 = __webpack_require__(124);
+const update_admission_session_dto_1 = __webpack_require__(125);
+const bulk_delete_admission_sessions_dto_1 = __webpack_require__(126);
 const update_status_dto_1 = __webpack_require__(19);
 let AdmissionSessionController = class AdmissionSessionController {
     constructor(studentClient) {
@@ -8648,11 +8401,7 @@ exports.AdmissionSessionController = AdmissionSessionController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 118 */
-=======
-/* 122 */
->>>>>>> Stashed changes
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8693,11 +8442,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 119 */
-=======
-/* 123 */
->>>>>>> Stashed changes
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8744,11 +8489,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 120 */
-=======
-/* 124 */
->>>>>>> Stashed changes
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8788,11 +8529,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 121 */
-=======
-/* 125 */
->>>>>>> Stashed changes
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8806,11 +8543,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const academic_session_controller_1 = __webpack_require__(122);
-=======
-const academic_session_controller_1 = __webpack_require__(126);
->>>>>>> Stashed changes
+const academic_session_controller_1 = __webpack_require__(128);
 let AcademicSessionModule = class AcademicSessionModule {
 };
 exports.AcademicSessionModule = AcademicSessionModule;
@@ -8834,11 +8567,7 @@ exports.AcademicSessionModule = AcademicSessionModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 122 */
-=======
-/* 126 */
->>>>>>> Stashed changes
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8861,13 +8590,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_academic_session_dto_1 = __webpack_require__(123);
-const update_academic_session_dto_1 = __webpack_require__(124);
-=======
-const create_academic_session_dto_1 = __webpack_require__(127);
-const update_academic_session_dto_1 = __webpack_require__(128);
->>>>>>> Stashed changes
+const create_academic_session_dto_1 = __webpack_require__(129);
+const update_academic_session_dto_1 = __webpack_require__(130);
 const update_status_dto_1 = __webpack_require__(19);
 let AcademicSessionController = class AcademicSessionController {
     constructor(studentClient) {
@@ -8966,11 +8690,7 @@ exports.AcademicSessionController = AcademicSessionController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 123 */
-=======
-/* 127 */
->>>>>>> Stashed changes
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9047,11 +8767,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 124 */
-=======
-/* 128 */
->>>>>>> Stashed changes
+/* 130 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9138,11 +8854,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 125 */
-=======
-/* 129 */
->>>>>>> Stashed changes
+/* 131 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9156,11 +8868,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramFeeConfigModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const program_fee_config_controller_1 = __webpack_require__(126);
-=======
-const program_fee_config_controller_1 = __webpack_require__(130);
->>>>>>> Stashed changes
+const program_fee_config_controller_1 = __webpack_require__(132);
 let ProgramFeeConfigModule = class ProgramFeeConfigModule {
 };
 exports.ProgramFeeConfigModule = ProgramFeeConfigModule;
@@ -9184,11 +8892,7 @@ exports.ProgramFeeConfigModule = ProgramFeeConfigModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 126 */
-=======
-/* 130 */
->>>>>>> Stashed changes
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9211,15 +8915,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_program_fee_config_dto_1 = __webpack_require__(127);
-const update_program_fee_config_dto_1 = __webpack_require__(128);
-const bulk_delete_program_fee_configs_dto_1 = __webpack_require__(129);
-=======
-const create_program_fee_config_dto_1 = __webpack_require__(131);
-const update_program_fee_config_dto_1 = __webpack_require__(132);
-const bulk_delete_program_fee_configs_dto_1 = __webpack_require__(133);
->>>>>>> Stashed changes
+const create_program_fee_config_dto_1 = __webpack_require__(133);
+const update_program_fee_config_dto_1 = __webpack_require__(134);
+const bulk_delete_program_fee_configs_dto_1 = __webpack_require__(135);
 const update_status_dto_1 = __webpack_require__(19);
 let ProgramFeeConfigController = class ProgramFeeConfigController {
     constructor(studentClient) {
@@ -9338,11 +9036,7 @@ exports.ProgramFeeConfigController = ProgramFeeConfigController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 127 */
-=======
-/* 131 */
->>>>>>> Stashed changes
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9443,11 +9137,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 128 */
-=======
-/* 132 */
->>>>>>> Stashed changes
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9554,11 +9244,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 129 */
-=======
-/* 133 */
->>>>>>> Stashed changes
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9600,11 +9286,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 130 */
-=======
-/* 134 */
->>>>>>> Stashed changes
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9618,11 +9300,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CollegeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const college_controller_1 = __webpack_require__(131);
-=======
-const college_controller_1 = __webpack_require__(135);
->>>>>>> Stashed changes
+const college_controller_1 = __webpack_require__(137);
 let CollegeModule = class CollegeModule {
 };
 exports.CollegeModule = CollegeModule;
@@ -9646,11 +9324,7 @@ exports.CollegeModule = CollegeModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 131 */
-=======
-/* 135 */
->>>>>>> Stashed changes
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9673,13 +9347,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_college_dto_1 = __webpack_require__(132);
-const update_college_dto_1 = __webpack_require__(133);
-=======
-const create_college_dto_1 = __webpack_require__(136);
-const update_college_dto_1 = __webpack_require__(137);
->>>>>>> Stashed changes
+const create_college_dto_1 = __webpack_require__(138);
+const update_college_dto_1 = __webpack_require__(139);
 const update_status_dto_1 = __webpack_require__(19);
 let CollegeController = class CollegeController {
     constructor(studentClient) {
@@ -9773,11 +9442,7 @@ exports.CollegeController = CollegeController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 132 */
-=======
-/* 136 */
->>>>>>> Stashed changes
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9872,11 +9537,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 133 */
-=======
-/* 137 */
->>>>>>> Stashed changes
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9971,11 +9632,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 134 */
-=======
-/* 138 */
->>>>>>> Stashed changes
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9989,11 +9646,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ZipcodeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const zipcode_controller_1 = __webpack_require__(135);
-=======
-const zipcode_controller_1 = __webpack_require__(139);
->>>>>>> Stashed changes
+const zipcode_controller_1 = __webpack_require__(141);
 let ZipcodeModule = class ZipcodeModule {
 };
 exports.ZipcodeModule = ZipcodeModule;
@@ -10017,11 +9670,7 @@ exports.ZipcodeModule = ZipcodeModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 135 */
-=======
-/* 139 */
->>>>>>> Stashed changes
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10044,13 +9693,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_zipcode_dto_1 = __webpack_require__(136);
-const update_zipcode_dto_1 = __webpack_require__(137);
-=======
-const create_zipcode_dto_1 = __webpack_require__(140);
-const update_zipcode_dto_1 = __webpack_require__(141);
->>>>>>> Stashed changes
+const create_zipcode_dto_1 = __webpack_require__(142);
+const update_zipcode_dto_1 = __webpack_require__(143);
 const update_status_dto_1 = __webpack_require__(19);
 let ZipcodeController = class ZipcodeController {
     constructor(studentClient) {
@@ -10160,11 +9804,7 @@ exports.ZipcodeController = ZipcodeController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 136 */
-=======
-/* 140 */
->>>>>>> Stashed changes
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10223,11 +9863,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 137 */
-=======
-/* 141 */
->>>>>>> Stashed changes
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10292,11 +9928,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 138 */
-=======
-/* 142 */
->>>>>>> Stashed changes
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10310,11 +9942,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramEligibilityModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const program_eligibility_controller_1 = __webpack_require__(139);
-=======
-const program_eligibility_controller_1 = __webpack_require__(143);
->>>>>>> Stashed changes
+const program_eligibility_controller_1 = __webpack_require__(145);
 let ProgramEligibilityModule = class ProgramEligibilityModule {
 };
 exports.ProgramEligibilityModule = ProgramEligibilityModule;
@@ -10338,11 +9966,7 @@ exports.ProgramEligibilityModule = ProgramEligibilityModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 139 */
-=======
-/* 143 */
->>>>>>> Stashed changes
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10365,15 +9989,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_program_eligibility_dto_1 = __webpack_require__(140);
-const update_program_eligibility_dto_1 = __webpack_require__(141);
-const validate_program_eligibility_dto_1 = __webpack_require__(142);
-=======
-const create_program_eligibility_dto_1 = __webpack_require__(144);
-const update_program_eligibility_dto_1 = __webpack_require__(145);
-const validate_program_eligibility_dto_1 = __webpack_require__(146);
->>>>>>> Stashed changes
+const create_program_eligibility_dto_1 = __webpack_require__(146);
+const update_program_eligibility_dto_1 = __webpack_require__(147);
+const validate_program_eligibility_dto_1 = __webpack_require__(148);
 const update_status_dto_1 = __webpack_require__(19);
 let ProgramEligibilityController = class ProgramEligibilityController {
     constructor(studentClient) {
@@ -10494,11 +10112,7 @@ exports.ProgramEligibilityController = ProgramEligibilityController = __decorate
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 140 */
-=======
-/* 144 */
->>>>>>> Stashed changes
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10608,11 +10222,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 141 */
-=======
-/* 145 */
->>>>>>> Stashed changes
+/* 147 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10714,11 +10324,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 142 */
-=======
-/* 146 */
->>>>>>> Stashed changes
+/* 148 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10822,11 +10428,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 143 */
-=======
-/* 147 */
->>>>>>> Stashed changes
+/* 149 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10840,11 +10442,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StreamModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const stream_controller_1 = __webpack_require__(144);
-=======
-const stream_controller_1 = __webpack_require__(148);
->>>>>>> Stashed changes
+const stream_controller_1 = __webpack_require__(150);
 let StreamModule = class StreamModule {
 };
 exports.StreamModule = StreamModule;
@@ -10868,11 +10466,7 @@ exports.StreamModule = StreamModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 144 */
-=======
-/* 148 */
->>>>>>> Stashed changes
+/* 150 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10895,13 +10489,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_stream_dto_1 = __webpack_require__(145);
-const update_stream_dto_1 = __webpack_require__(146);
-=======
-const create_stream_dto_1 = __webpack_require__(149);
-const update_stream_dto_1 = __webpack_require__(150);
->>>>>>> Stashed changes
+const create_stream_dto_1 = __webpack_require__(151);
+const update_stream_dto_1 = __webpack_require__(152);
 const update_status_dto_1 = __webpack_require__(19);
 let StreamController = class StreamController {
     constructor(studentClient) {
@@ -11000,11 +10589,7 @@ exports.StreamController = StreamController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 145 */
-=======
-/* 149 */
->>>>>>> Stashed changes
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11053,11 +10638,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 146 */
-=======
-/* 150 */
->>>>>>> Stashed changes
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11112,11 +10693,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 147 */
-=======
-/* 151 */
->>>>>>> Stashed changes
+/* 153 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11130,11 +10707,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramSubjectModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const program_subject_controller_1 = __webpack_require__(148);
-=======
-const program_subject_controller_1 = __webpack_require__(152);
->>>>>>> Stashed changes
+const program_subject_controller_1 = __webpack_require__(154);
 let ProgramSubjectModule = class ProgramSubjectModule {
 };
 exports.ProgramSubjectModule = ProgramSubjectModule;
@@ -11158,11 +10731,7 @@ exports.ProgramSubjectModule = ProgramSubjectModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 148 */
-=======
-/* 152 */
->>>>>>> Stashed changes
+/* 154 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11185,13 +10754,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_program_subject_dto_1 = __webpack_require__(149);
-const update_program_subject_dto_1 = __webpack_require__(150);
-=======
-const create_program_subject_dto_1 = __webpack_require__(153);
-const update_program_subject_dto_1 = __webpack_require__(154);
->>>>>>> Stashed changes
+const create_program_subject_dto_1 = __webpack_require__(155);
+const update_program_subject_dto_1 = __webpack_require__(156);
 const update_status_dto_1 = __webpack_require__(19);
 let ProgramSubjectController = class ProgramSubjectController {
     constructor(studentClient) {
@@ -11290,11 +10854,7 @@ exports.ProgramSubjectController = ProgramSubjectController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 149 */
-=======
-/* 153 */
->>>>>>> Stashed changes
+/* 155 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11362,11 +10922,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 150 */
-=======
-/* 154 */
->>>>>>> Stashed changes
+/* 156 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11440,11 +10996,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 151 */
-=======
-/* 155 */
->>>>>>> Stashed changes
+/* 157 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11458,11 +11010,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExaminationDetailsModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const examination_details_controller_1 = __webpack_require__(152);
-=======
-const examination_details_controller_1 = __webpack_require__(156);
->>>>>>> Stashed changes
+const examination_details_controller_1 = __webpack_require__(158);
 let ExaminationDetailsModule = class ExaminationDetailsModule {
 };
 exports.ExaminationDetailsModule = ExaminationDetailsModule;
@@ -11486,11 +11034,7 @@ exports.ExaminationDetailsModule = ExaminationDetailsModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 152 */
-=======
-/* 156 */
->>>>>>> Stashed changes
+/* 158 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11513,13 +11057,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_examination_details_dto_1 = __webpack_require__(153);
-const update_examination_details_dto_1 = __webpack_require__(154);
-=======
-const create_examination_details_dto_1 = __webpack_require__(157);
-const update_examination_details_dto_1 = __webpack_require__(158);
->>>>>>> Stashed changes
+const create_examination_details_dto_1 = __webpack_require__(159);
+const update_examination_details_dto_1 = __webpack_require__(160);
 const update_status_dto_1 = __webpack_require__(19);
 let ExaminationDetailsController = class ExaminationDetailsController {
     constructor(studentClient) {
@@ -11618,11 +11157,7 @@ exports.ExaminationDetailsController = ExaminationDetailsController = __decorate
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 153 */
-=======
-/* 157 */
->>>>>>> Stashed changes
+/* 159 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11677,11 +11212,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 154 */
-=======
-/* 158 */
->>>>>>> Stashed changes
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11742,11 +11273,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 155 */
-=======
-/* 159 */
->>>>>>> Stashed changes
+/* 161 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11760,11 +11287,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSchemeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const exam_scheme_controller_1 = __webpack_require__(156);
-=======
-const exam_scheme_controller_1 = __webpack_require__(160);
->>>>>>> Stashed changes
+const exam_scheme_controller_1 = __webpack_require__(162);
 let ExamSchemeModule = class ExamSchemeModule {
 };
 exports.ExamSchemeModule = ExamSchemeModule;
@@ -11788,11 +11311,7 @@ exports.ExamSchemeModule = ExamSchemeModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 156 */
-=======
-/* 160 */
->>>>>>> Stashed changes
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11815,11 +11334,7 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const save_exam_scheme_dto_1 = __webpack_require__(157);
-=======
-const save_exam_scheme_dto_1 = __webpack_require__(161);
->>>>>>> Stashed changes
+const save_exam_scheme_dto_1 = __webpack_require__(163);
 const update_status_dto_1 = __webpack_require__(19);
 let ExamSchemeController = class ExamSchemeController {
     constructor(studentClient) {
@@ -11928,11 +11443,7 @@ exports.ExamSchemeController = ExamSchemeController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 157 */
-=======
-/* 161 */
->>>>>>> Stashed changes
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12096,11 +11607,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 158 */
-=======
-/* 162 */
->>>>>>> Stashed changes
+/* 164 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12114,11 +11621,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperTypeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const paper_type_controller_1 = __webpack_require__(159);
-=======
-const paper_type_controller_1 = __webpack_require__(163);
->>>>>>> Stashed changes
+const paper_type_controller_1 = __webpack_require__(165);
 let PaperTypeModule = class PaperTypeModule {
 };
 exports.PaperTypeModule = PaperTypeModule;
@@ -12142,11 +11645,7 @@ exports.PaperTypeModule = PaperTypeModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 159 */
-=======
-/* 163 */
->>>>>>> Stashed changes
+/* 165 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12169,13 +11668,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_paper_type_dto_1 = __webpack_require__(160);
-const update_paper_type_dto_1 = __webpack_require__(161);
-=======
-const create_paper_type_dto_1 = __webpack_require__(164);
-const update_paper_type_dto_1 = __webpack_require__(165);
->>>>>>> Stashed changes
+const create_paper_type_dto_1 = __webpack_require__(166);
+const update_paper_type_dto_1 = __webpack_require__(167);
 let PaperTypeController = class PaperTypeController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -12255,11 +11749,7 @@ exports.PaperTypeController = PaperTypeController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 160 */
-=======
-/* 164 */
->>>>>>> Stashed changes
+/* 166 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12306,11 +11796,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 161 */
-=======
-/* 165 */
->>>>>>> Stashed changes
+/* 167 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12326,11 +11812,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdatePaperTypeDto = void 0;
 const swagger_1 = __webpack_require__(4);
-<<<<<<< Updated upstream
-const create_paper_type_dto_1 = __webpack_require__(160);
-=======
-const create_paper_type_dto_1 = __webpack_require__(164);
->>>>>>> Stashed changes
+const create_paper_type_dto_1 = __webpack_require__(166);
 const swagger_2 = __webpack_require__(4);
 const class_validator_1 = __webpack_require__(13);
 class UpdatePaperTypeDto extends (0, swagger_1.PartialType)(create_paper_type_dto_1.CreatePaperTypeDto) {
@@ -12351,11 +11833,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 162 */
-=======
-/* 166 */
->>>>>>> Stashed changes
+/* 168 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12369,11 +11847,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamTypeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const exam_type_controller_1 = __webpack_require__(163);
-=======
-const exam_type_controller_1 = __webpack_require__(167);
->>>>>>> Stashed changes
+const exam_type_controller_1 = __webpack_require__(169);
 let ExamTypeModule = class ExamTypeModule {
 };
 exports.ExamTypeModule = ExamTypeModule;
@@ -12397,11 +11871,7 @@ exports.ExamTypeModule = ExamTypeModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 163 */
-=======
-/* 167 */
->>>>>>> Stashed changes
+/* 169 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12424,13 +11894,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_exam_type_dto_1 = __webpack_require__(164);
-const update_exam_type_dto_1 = __webpack_require__(165);
-=======
-const create_exam_type_dto_1 = __webpack_require__(168);
-const update_exam_type_dto_1 = __webpack_require__(169);
->>>>>>> Stashed changes
+const create_exam_type_dto_1 = __webpack_require__(170);
+const update_exam_type_dto_1 = __webpack_require__(171);
 let ExamTypeController = class ExamTypeController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -12510,11 +11975,7 @@ exports.ExamTypeController = ExamTypeController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 164 */
-=======
-/* 168 */
->>>>>>> Stashed changes
+/* 170 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12555,11 +12016,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 165 */
-=======
-/* 169 */
->>>>>>> Stashed changes
+/* 171 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12575,11 +12032,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateExamTypeDto = void 0;
 const swagger_1 = __webpack_require__(4);
-<<<<<<< Updated upstream
-const create_exam_type_dto_1 = __webpack_require__(164);
-=======
-const create_exam_type_dto_1 = __webpack_require__(168);
->>>>>>> Stashed changes
+const create_exam_type_dto_1 = __webpack_require__(170);
 const swagger_2 = __webpack_require__(4);
 const class_validator_1 = __webpack_require__(13);
 class UpdateExamTypeDto extends (0, swagger_1.PartialType)(create_exam_type_dto_1.CreateExamTypeDto) {
@@ -12600,11 +12053,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 166 */
-=======
-/* 170 */
->>>>>>> Stashed changes
+/* 172 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12618,11 +12067,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.YearModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const year_controller_1 = __webpack_require__(167);
-=======
-const year_controller_1 = __webpack_require__(171);
->>>>>>> Stashed changes
+const year_controller_1 = __webpack_require__(173);
 let YearModule = class YearModule {
 };
 exports.YearModule = YearModule;
@@ -12646,11 +12091,7 @@ exports.YearModule = YearModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 167 */
-=======
-/* 171 */
->>>>>>> Stashed changes
+/* 173 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12673,13 +12114,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_year_dto_1 = __webpack_require__(168);
-const update_year_dto_1 = __webpack_require__(169);
-=======
-const create_year_dto_1 = __webpack_require__(172);
-const update_year_dto_1 = __webpack_require__(173);
->>>>>>> Stashed changes
+const create_year_dto_1 = __webpack_require__(174);
+const update_year_dto_1 = __webpack_require__(175);
 let YearController = class YearController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -12759,11 +12195,7 @@ exports.YearController = YearController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 168 */
-=======
-/* 172 */
->>>>>>> Stashed changes
+/* 174 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12810,11 +12242,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 169 */
-=======
-/* 173 */
->>>>>>> Stashed changes
+/* 175 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12830,11 +12258,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateYearDto = void 0;
 const swagger_1 = __webpack_require__(4);
-<<<<<<< Updated upstream
-const create_year_dto_1 = __webpack_require__(168);
-=======
-const create_year_dto_1 = __webpack_require__(172);
->>>>>>> Stashed changes
+const create_year_dto_1 = __webpack_require__(174);
 const swagger_2 = __webpack_require__(4);
 const class_validator_1 = __webpack_require__(13);
 class UpdateYearDto extends (0, swagger_1.PartialType)(create_year_dto_1.CreateYearDto) {
@@ -12855,11 +12279,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 170 */
-=======
-/* 174 */
->>>>>>> Stashed changes
+/* 176 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12873,11 +12293,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemesterModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const semester_controller_1 = __webpack_require__(171);
-=======
-const semester_controller_1 = __webpack_require__(175);
->>>>>>> Stashed changes
+const semester_controller_1 = __webpack_require__(177);
 let SemesterModule = class SemesterModule {
 };
 exports.SemesterModule = SemesterModule;
@@ -12901,11 +12317,7 @@ exports.SemesterModule = SemesterModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 171 */
-=======
-/* 175 */
->>>>>>> Stashed changes
+/* 177 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12928,13 +12340,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_semester_dto_1 = __webpack_require__(172);
-const update_semester_dto_1 = __webpack_require__(173);
-=======
-const create_semester_dto_1 = __webpack_require__(176);
-const update_semester_dto_1 = __webpack_require__(177);
->>>>>>> Stashed changes
+const create_semester_dto_1 = __webpack_require__(178);
+const update_semester_dto_1 = __webpack_require__(179);
 let SemesterController = class SemesterController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -13014,11 +12421,7 @@ exports.SemesterController = SemesterController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 172 */
-=======
-/* 176 */
->>>>>>> Stashed changes
+/* 178 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13065,11 +12468,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 173 */
-=======
-/* 177 */
->>>>>>> Stashed changes
+/* 179 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13085,11 +12484,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateSemesterDto = void 0;
 const swagger_1 = __webpack_require__(4);
-<<<<<<< Updated upstream
-const create_semester_dto_1 = __webpack_require__(172);
-=======
-const create_semester_dto_1 = __webpack_require__(176);
->>>>>>> Stashed changes
+const create_semester_dto_1 = __webpack_require__(178);
 const swagger_2 = __webpack_require__(4);
 const class_validator_1 = __webpack_require__(13);
 class UpdateSemesterDto extends (0, swagger_1.PartialType)(create_semester_dto_1.CreateSemesterDto) {
@@ -13110,11 +12505,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 174 */
-=======
-/* 178 */
->>>>>>> Stashed changes
+/* 180 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13128,11 +12519,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperDetailModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const paper_detail_controller_1 = __webpack_require__(175);
-=======
-const paper_detail_controller_1 = __webpack_require__(179);
->>>>>>> Stashed changes
+const paper_detail_controller_1 = __webpack_require__(181);
 let PaperDetailModule = class PaperDetailModule {
 };
 exports.PaperDetailModule = PaperDetailModule;
@@ -13156,11 +12543,7 @@ exports.PaperDetailModule = PaperDetailModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 175 */
-=======
-/* 179 */
->>>>>>> Stashed changes
+/* 181 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13183,13 +12566,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_paper_detail_dto_1 = __webpack_require__(176);
-const update_paper_detail_dto_1 = __webpack_require__(177);
-=======
-const create_paper_detail_dto_1 = __webpack_require__(180);
-const update_paper_detail_dto_1 = __webpack_require__(181);
->>>>>>> Stashed changes
+const create_paper_detail_dto_1 = __webpack_require__(182);
+const update_paper_detail_dto_1 = __webpack_require__(183);
 let PaperDetailController = class PaperDetailController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -13269,11 +12647,7 @@ exports.PaperDetailController = PaperDetailController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 176 */
-=======
-/* 180 */
->>>>>>> Stashed changes
+/* 182 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13452,11 +12826,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 177 */
-=======
-/* 181 */
->>>>>>> Stashed changes
+/* 183 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13472,11 +12842,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdatePaperDetailDto = void 0;
 const swagger_1 = __webpack_require__(4);
-<<<<<<< Updated upstream
-const create_paper_detail_dto_1 = __webpack_require__(176);
-=======
-const create_paper_detail_dto_1 = __webpack_require__(180);
->>>>>>> Stashed changes
+const create_paper_detail_dto_1 = __webpack_require__(182);
 const swagger_2 = __webpack_require__(4);
 const class_validator_1 = __webpack_require__(13);
 class UpdatePaperDetailDto extends (0, swagger_1.PartialType)(create_paper_detail_dto_1.CreatePaperDetailDto) {
@@ -13497,11 +12863,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 178 */
-=======
-/* 182 */
->>>>>>> Stashed changes
+/* 184 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13515,11 +12877,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSubjectModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const exam_subject_controller_1 = __webpack_require__(179);
-=======
-const exam_subject_controller_1 = __webpack_require__(183);
->>>>>>> Stashed changes
+const exam_subject_controller_1 = __webpack_require__(185);
 let ExamSubjectModule = class ExamSubjectModule {
 };
 exports.ExamSubjectModule = ExamSubjectModule;
@@ -13544,11 +12902,7 @@ exports.ExamSubjectModule = ExamSubjectModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 179 */
-=======
-/* 183 */
->>>>>>> Stashed changes
+/* 185 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13571,13 +12925,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_exam_subject_dto_1 = __webpack_require__(180);
-const update_exam_subject_dto_1 = __webpack_require__(181);
-=======
-const create_exam_subject_dto_1 = __webpack_require__(184);
-const update_exam_subject_dto_1 = __webpack_require__(185);
->>>>>>> Stashed changes
+const create_exam_subject_dto_1 = __webpack_require__(186);
+const update_exam_subject_dto_1 = __webpack_require__(187);
 let ExamSubjectController = class ExamSubjectController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -13657,11 +13006,7 @@ exports.ExamSubjectController = ExamSubjectController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 180 */
-=======
-/* 184 */
->>>>>>> Stashed changes
+/* 186 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13726,11 +13071,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 181 */
-=======
-/* 185 */
->>>>>>> Stashed changes
+/* 187 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13746,11 +13087,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateExamSubjectDto = void 0;
 const swagger_1 = __webpack_require__(4);
-<<<<<<< Updated upstream
-const create_exam_subject_dto_1 = __webpack_require__(180);
-=======
-const create_exam_subject_dto_1 = __webpack_require__(184);
->>>>>>> Stashed changes
+const create_exam_subject_dto_1 = __webpack_require__(186);
 const class_validator_1 = __webpack_require__(13);
 class UpdateExamSubjectDto extends (0, swagger_1.PartialType)(create_exam_subject_dto_1.CreateExamSubjectDto) {
 }
@@ -13770,11 +13107,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 182 */
-=======
-/* 186 */
->>>>>>> Stashed changes
+/* 188 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13788,11 +13121,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RoleModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const role_controller_1 = __webpack_require__(183);
-=======
-const role_controller_1 = __webpack_require__(187);
->>>>>>> Stashed changes
+const role_controller_1 = __webpack_require__(189);
 let RoleModule = class RoleModule {
 };
 exports.RoleModule = RoleModule;
@@ -13816,11 +13145,7 @@ exports.RoleModule = RoleModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 183 */
-=======
-/* 187 */
->>>>>>> Stashed changes
+/* 189 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13843,15 +13168,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_role_dto_1 = __webpack_require__(184);
-const update_role_dto_1 = __webpack_require__(185);
-const bulk_delete_roles_dto_1 = __webpack_require__(186);
-=======
-const create_role_dto_1 = __webpack_require__(188);
-const update_role_dto_1 = __webpack_require__(189);
-const bulk_delete_roles_dto_1 = __webpack_require__(190);
->>>>>>> Stashed changes
+const create_role_dto_1 = __webpack_require__(190);
+const update_role_dto_1 = __webpack_require__(191);
+const bulk_delete_roles_dto_1 = __webpack_require__(192);
 const update_status_dto_1 = __webpack_require__(19);
 let RoleController = class RoleController {
     constructor(studentClient) {
@@ -13950,11 +13269,7 @@ exports.RoleController = RoleController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 184 */
-=======
-/* 188 */
->>>>>>> Stashed changes
+/* 190 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14001,11 +13316,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 185 */
-=======
-/* 189 */
->>>>>>> Stashed changes
+/* 191 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14058,11 +13369,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 186 */
-=======
-/* 190 */
->>>>>>> Stashed changes
+/* 192 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14104,11 +13411,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 187 */
-=======
-/* 191 */
->>>>>>> Stashed changes
+/* 193 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14121,41 +13424,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.WebsiteModule = void 0;
 const common_1 = __webpack_require__(2);
-<<<<<<< Updated upstream
-const campus_quick_link_module_1 = __webpack_require__(188);
-const latest_update_module_1 = __webpack_require__(192);
-const admission_enquiry_module_1 = __webpack_require__(196);
-const hero_section_module_1 = __webpack_require__(200);
-const upload_module_1 = __webpack_require__(204);
-const notice_board_module_1 = __webpack_require__(206);
-const accreditation_slider_module_1 = __webpack_require__(210);
-const top_achiever_module_1 = __webpack_require__(214);
-const image_gallery_module_1 = __webpack_require__(218);
-const video_gallery_module_1 = __webpack_require__(222);
-const contact_enquiry_module_1 = __webpack_require__(226);
-const stats_counter_module_1 = __webpack_require__(230);
-const testimonial_module_1 = __webpack_require__(234);
-const header_button_module_1 = __webpack_require__(238);
-const committee_module_1 = __webpack_require__(242);
-const committee_submenu_module_1 = __webpack_require__(246);
-=======
-const campus_quick_link_module_1 = __webpack_require__(192);
-const latest_update_module_1 = __webpack_require__(196);
-const admission_enquiry_module_1 = __webpack_require__(200);
-const hero_section_module_1 = __webpack_require__(204);
-const upload_module_1 = __webpack_require__(208);
-const notice_board_module_1 = __webpack_require__(210);
-const accreditation_slider_module_1 = __webpack_require__(214);
-const top_achiever_module_1 = __webpack_require__(218);
-const image_gallery_module_1 = __webpack_require__(222);
-const video_gallery_module_1 = __webpack_require__(226);
-const contact_enquiry_module_1 = __webpack_require__(230);
-const stats_counter_module_1 = __webpack_require__(234);
-const testimonial_module_1 = __webpack_require__(238);
-const header_button_module_1 = __webpack_require__(242);
-const committee_module_1 = __webpack_require__(246);
-const committee_submenu_module_1 = __webpack_require__(250);
->>>>>>> Stashed changes
+const campus_quick_link_module_1 = __webpack_require__(194);
+const latest_update_module_1 = __webpack_require__(198);
+const admission_enquiry_module_1 = __webpack_require__(202);
+const hero_section_module_1 = __webpack_require__(206);
+const upload_module_1 = __webpack_require__(210);
+const notice_board_module_1 = __webpack_require__(212);
+const accreditation_slider_module_1 = __webpack_require__(216);
+const top_achiever_module_1 = __webpack_require__(220);
+const image_gallery_module_1 = __webpack_require__(224);
+const video_gallery_module_1 = __webpack_require__(228);
+const contact_enquiry_module_1 = __webpack_require__(232);
+const stats_counter_module_1 = __webpack_require__(236);
+const testimonial_module_1 = __webpack_require__(240);
+const header_button_module_1 = __webpack_require__(244);
+const committee_module_1 = __webpack_require__(248);
+const committee_submenu_module_1 = __webpack_require__(252);
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
@@ -14168,11 +13452,7 @@ exports.WebsiteModule = WebsiteModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 188 */
-=======
-/* 192 */
->>>>>>> Stashed changes
+/* 194 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14186,11 +13466,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CampusQuickLinkModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const campus_quick_link_controller_1 = __webpack_require__(189);
-=======
-const campus_quick_link_controller_1 = __webpack_require__(193);
->>>>>>> Stashed changes
+const campus_quick_link_controller_1 = __webpack_require__(195);
 let CampusQuickLinkModule = class CampusQuickLinkModule {
 };
 exports.CampusQuickLinkModule = CampusQuickLinkModule;
@@ -14214,11 +13490,7 @@ exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 189 */
-=======
-/* 193 */
->>>>>>> Stashed changes
+/* 195 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14242,13 +13514,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_campus_quick_link_dto_1 = __webpack_require__(190);
-const update_campus_quick_link_dto_1 = __webpack_require__(191);
-=======
-const create_campus_quick_link_dto_1 = __webpack_require__(194);
-const update_campus_quick_link_dto_1 = __webpack_require__(195);
->>>>>>> Stashed changes
+const create_campus_quick_link_dto_1 = __webpack_require__(196);
+const update_campus_quick_link_dto_1 = __webpack_require__(197);
 let CampusQuickLinkController = class CampusQuickLinkController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -14341,11 +13608,7 @@ exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 190 */
-=======
-/* 194 */
->>>>>>> Stashed changes
+/* 196 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14404,11 +13667,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 191 */
-=======
-/* 195 */
->>>>>>> Stashed changes
+/* 197 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14467,11 +13726,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 192 */
-=======
-/* 196 */
->>>>>>> Stashed changes
+/* 198 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14485,11 +13740,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LatestUpdateModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const latest_update_controller_1 = __webpack_require__(193);
-=======
-const latest_update_controller_1 = __webpack_require__(197);
->>>>>>> Stashed changes
+const latest_update_controller_1 = __webpack_require__(199);
 let LatestUpdateModule = class LatestUpdateModule {
 };
 exports.LatestUpdateModule = LatestUpdateModule;
@@ -14513,11 +13764,7 @@ exports.LatestUpdateModule = LatestUpdateModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 193 */
-=======
-/* 197 */
->>>>>>> Stashed changes
+/* 199 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14541,13 +13788,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_latest_update_dto_1 = __webpack_require__(194);
-const update_latest_update_dto_1 = __webpack_require__(195);
-=======
-const create_latest_update_dto_1 = __webpack_require__(198);
-const update_latest_update_dto_1 = __webpack_require__(199);
->>>>>>> Stashed changes
+const create_latest_update_dto_1 = __webpack_require__(200);
+const update_latest_update_dto_1 = __webpack_require__(201);
 let LatestUpdateController = class LatestUpdateController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -14640,11 +13882,7 @@ exports.LatestUpdateController = LatestUpdateController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 194 */
-=======
-/* 198 */
->>>>>>> Stashed changes
+/* 200 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14739,11 +13977,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 195 */
-=======
-/* 199 */
->>>>>>> Stashed changes
+/* 201 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14838,11 +14072,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 196 */
-=======
-/* 200 */
->>>>>>> Stashed changes
+/* 202 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14856,11 +14086,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const admission_enquiry_controller_1 = __webpack_require__(197);
-=======
-const admission_enquiry_controller_1 = __webpack_require__(201);
->>>>>>> Stashed changes
+const admission_enquiry_controller_1 = __webpack_require__(203);
 let AdmissionEnquiryModule = class AdmissionEnquiryModule {
 };
 exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
@@ -14884,11 +14110,7 @@ exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 197 */
-=======
-/* 201 */
->>>>>>> Stashed changes
+/* 203 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14912,13 +14134,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_admission_enquiry_dto_1 = __webpack_require__(198);
-const update_admission_enquiry_dto_1 = __webpack_require__(199);
-=======
-const create_admission_enquiry_dto_1 = __webpack_require__(202);
-const update_admission_enquiry_dto_1 = __webpack_require__(203);
->>>>>>> Stashed changes
+const create_admission_enquiry_dto_1 = __webpack_require__(204);
+const update_admission_enquiry_dto_1 = __webpack_require__(205);
 let AdmissionEnquiryController = class AdmissionEnquiryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -15011,11 +14228,7 @@ exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 198 */
-=======
-/* 202 */
->>>>>>> Stashed changes
+/* 204 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15158,11 +14371,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 199 */
-=======
-/* 203 */
->>>>>>> Stashed changes
+/* 205 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15299,11 +14508,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 200 */
-=======
-/* 204 */
->>>>>>> Stashed changes
+/* 206 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15317,11 +14522,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const hero_section_controller_1 = __webpack_require__(201);
-=======
-const hero_section_controller_1 = __webpack_require__(205);
->>>>>>> Stashed changes
+const hero_section_controller_1 = __webpack_require__(207);
 let HeroSectionModule = class HeroSectionModule {
 };
 exports.HeroSectionModule = HeroSectionModule;
@@ -15345,11 +14546,7 @@ exports.HeroSectionModule = HeroSectionModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 201 */
-=======
-/* 205 */
->>>>>>> Stashed changes
+/* 207 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15373,13 +14570,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_hero_section_dto_1 = __webpack_require__(202);
-const update_hero_section_dto_1 = __webpack_require__(203);
-=======
-const create_hero_section_dto_1 = __webpack_require__(206);
-const update_hero_section_dto_1 = __webpack_require__(207);
->>>>>>> Stashed changes
+const create_hero_section_dto_1 = __webpack_require__(208);
+const update_hero_section_dto_1 = __webpack_require__(209);
 let HeroSectionController = class HeroSectionController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -15472,11 +14664,7 @@ exports.HeroSectionController = HeroSectionController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 202 */
-=======
-/* 206 */
->>>>>>> Stashed changes
+/* 208 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15577,11 +14765,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 203 */
-=======
-/* 207 */
->>>>>>> Stashed changes
+/* 209 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15682,11 +14866,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 204 */
-=======
-/* 208 */
->>>>>>> Stashed changes
+/* 210 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15699,11 +14879,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UploadModule = void 0;
 const common_1 = __webpack_require__(2);
-<<<<<<< Updated upstream
-const upload_controller_1 = __webpack_require__(205);
-=======
-const upload_controller_1 = __webpack_require__(209);
->>>>>>> Stashed changes
+const upload_controller_1 = __webpack_require__(211);
 const storage_module_1 = __webpack_require__(58);
 let UploadModule = class UploadModule {
 };
@@ -15717,11 +14893,7 @@ exports.UploadModule = UploadModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 205 */
-=======
-/* 209 */
->>>>>>> Stashed changes
+/* 211 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15821,11 +14993,7 @@ exports.UploadController = UploadController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 206 */
-=======
-/* 210 */
->>>>>>> Stashed changes
+/* 212 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15839,11 +15007,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const notice_board_controller_1 = __webpack_require__(207);
-=======
-const notice_board_controller_1 = __webpack_require__(211);
->>>>>>> Stashed changes
+const notice_board_controller_1 = __webpack_require__(213);
 let NoticeBoardModule = class NoticeBoardModule {
 };
 exports.NoticeBoardModule = NoticeBoardModule;
@@ -15867,11 +15031,7 @@ exports.NoticeBoardModule = NoticeBoardModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 207 */
-=======
-/* 211 */
->>>>>>> Stashed changes
+/* 213 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15895,13 +15055,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_notice_board_dto_1 = __webpack_require__(208);
-const update_notice_board_dto_1 = __webpack_require__(209);
-=======
-const create_notice_board_dto_1 = __webpack_require__(212);
-const update_notice_board_dto_1 = __webpack_require__(213);
->>>>>>> Stashed changes
+const create_notice_board_dto_1 = __webpack_require__(214);
+const update_notice_board_dto_1 = __webpack_require__(215);
 let NoticeBoardController = class NoticeBoardController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -15994,11 +15149,7 @@ exports.NoticeBoardController = NoticeBoardController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 208 */
-=======
-/* 212 */
->>>>>>> Stashed changes
+/* 214 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16099,11 +15250,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 209 */
-=======
-/* 213 */
->>>>>>> Stashed changes
+/* 215 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16204,11 +15351,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 210 */
-=======
-/* 214 */
->>>>>>> Stashed changes
+/* 216 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16222,11 +15365,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AccreditationSliderModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const accreditation_slider_controller_1 = __webpack_require__(211);
-=======
-const accreditation_slider_controller_1 = __webpack_require__(215);
->>>>>>> Stashed changes
+const accreditation_slider_controller_1 = __webpack_require__(217);
 let AccreditationSliderModule = class AccreditationSliderModule {
 };
 exports.AccreditationSliderModule = AccreditationSliderModule;
@@ -16250,11 +15389,7 @@ exports.AccreditationSliderModule = AccreditationSliderModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 211 */
-=======
-/* 215 */
->>>>>>> Stashed changes
+/* 217 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16278,13 +15413,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_accreditation_slider_dto_1 = __webpack_require__(212);
-const update_accreditation_slider_dto_1 = __webpack_require__(213);
-=======
-const create_accreditation_slider_dto_1 = __webpack_require__(216);
-const update_accreditation_slider_dto_1 = __webpack_require__(217);
->>>>>>> Stashed changes
+const create_accreditation_slider_dto_1 = __webpack_require__(218);
+const update_accreditation_slider_dto_1 = __webpack_require__(219);
 let AccreditationSliderController = class AccreditationSliderController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -16377,11 +15507,7 @@ exports.AccreditationSliderController = AccreditationSliderController = __decora
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 212 */
-=======
-/* 216 */
->>>>>>> Stashed changes
+/* 218 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16446,11 +15572,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 213 */
-=======
-/* 217 */
->>>>>>> Stashed changes
+/* 219 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16515,11 +15637,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 214 */
-=======
-/* 218 */
->>>>>>> Stashed changes
+/* 220 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16533,11 +15651,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const top_achiever_controller_1 = __webpack_require__(215);
-=======
-const top_achiever_controller_1 = __webpack_require__(219);
->>>>>>> Stashed changes
+const top_achiever_controller_1 = __webpack_require__(221);
 let TopAchieverModule = class TopAchieverModule {
 };
 exports.TopAchieverModule = TopAchieverModule;
@@ -16561,11 +15675,7 @@ exports.TopAchieverModule = TopAchieverModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 215 */
-=======
-/* 219 */
->>>>>>> Stashed changes
+/* 221 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16589,13 +15699,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_top_achiever_dto_1 = __webpack_require__(216);
-const update_top_achiever_dto_1 = __webpack_require__(217);
-=======
-const create_top_achiever_dto_1 = __webpack_require__(220);
-const update_top_achiever_dto_1 = __webpack_require__(221);
->>>>>>> Stashed changes
+const create_top_achiever_dto_1 = __webpack_require__(222);
+const update_top_achiever_dto_1 = __webpack_require__(223);
 let TopAchieverController = class TopAchieverController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -16688,11 +15793,7 @@ exports.TopAchieverController = TopAchieverController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 216 */
-=======
-/* 220 */
->>>>>>> Stashed changes
+/* 222 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16787,11 +15888,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 217 */
-=======
-/* 221 */
->>>>>>> Stashed changes
+/* 223 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16886,11 +15983,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 218 */
-=======
-/* 222 */
->>>>>>> Stashed changes
+/* 224 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16904,11 +15997,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageGalleryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const image_gallery_controller_1 = __webpack_require__(219);
-=======
-const image_gallery_controller_1 = __webpack_require__(223);
->>>>>>> Stashed changes
+const image_gallery_controller_1 = __webpack_require__(225);
 let ImageGalleryModule = class ImageGalleryModule {
 };
 exports.ImageGalleryModule = ImageGalleryModule;
@@ -16932,11 +16021,7 @@ exports.ImageGalleryModule = ImageGalleryModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 219 */
-=======
-/* 223 */
->>>>>>> Stashed changes
+/* 225 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16960,13 +16045,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_image_gallery_dto_1 = __webpack_require__(220);
-const update_image_gallery_dto_1 = __webpack_require__(221);
-=======
-const create_image_gallery_dto_1 = __webpack_require__(224);
-const update_image_gallery_dto_1 = __webpack_require__(225);
->>>>>>> Stashed changes
+const create_image_gallery_dto_1 = __webpack_require__(226);
+const update_image_gallery_dto_1 = __webpack_require__(227);
 let ImageGalleryController = class ImageGalleryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -17059,11 +16139,7 @@ exports.ImageGalleryController = ImageGalleryController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 220 */
-=======
-/* 224 */
->>>>>>> Stashed changes
+/* 226 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17143,11 +16219,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 221 */
-=======
-/* 225 */
->>>>>>> Stashed changes
+/* 227 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17227,11 +16299,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 222 */
-=======
-/* 226 */
->>>>>>> Stashed changes
+/* 228 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17245,11 +16313,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const video_gallery_controller_1 = __webpack_require__(223);
-=======
-const video_gallery_controller_1 = __webpack_require__(227);
->>>>>>> Stashed changes
+const video_gallery_controller_1 = __webpack_require__(229);
 let VideoGalleryModule = class VideoGalleryModule {
 };
 exports.VideoGalleryModule = VideoGalleryModule;
@@ -17273,11 +16337,7 @@ exports.VideoGalleryModule = VideoGalleryModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 223 */
-=======
-/* 227 */
->>>>>>> Stashed changes
+/* 229 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17301,13 +16361,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_video_gallery_dto_1 = __webpack_require__(224);
-const update_video_gallery_dto_1 = __webpack_require__(225);
-=======
-const create_video_gallery_dto_1 = __webpack_require__(228);
-const update_video_gallery_dto_1 = __webpack_require__(229);
->>>>>>> Stashed changes
+const create_video_gallery_dto_1 = __webpack_require__(230);
+const update_video_gallery_dto_1 = __webpack_require__(231);
 let VideoGalleryController = class VideoGalleryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -17400,11 +16455,7 @@ exports.VideoGalleryController = VideoGalleryController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 224 */
-=======
-/* 228 */
->>>>>>> Stashed changes
+/* 230 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17493,11 +16544,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 225 */
-=======
-/* 229 */
->>>>>>> Stashed changes
+/* 231 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17586,11 +16633,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 226 */
-=======
-/* 230 */
->>>>>>> Stashed changes
+/* 232 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17604,11 +16647,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ContactEnquiryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const contact_enquiry_controller_1 = __webpack_require__(227);
-=======
-const contact_enquiry_controller_1 = __webpack_require__(231);
->>>>>>> Stashed changes
+const contact_enquiry_controller_1 = __webpack_require__(233);
 let ContactEnquiryModule = class ContactEnquiryModule {
 };
 exports.ContactEnquiryModule = ContactEnquiryModule;
@@ -17632,11 +16671,7 @@ exports.ContactEnquiryModule = ContactEnquiryModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 227 */
-=======
-/* 231 */
->>>>>>> Stashed changes
+/* 233 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17660,13 +16695,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_contact_enquiry_dto_1 = __webpack_require__(228);
-const update_contact_enquiry_dto_1 = __webpack_require__(229);
-=======
-const create_contact_enquiry_dto_1 = __webpack_require__(232);
-const update_contact_enquiry_dto_1 = __webpack_require__(233);
->>>>>>> Stashed changes
+const create_contact_enquiry_dto_1 = __webpack_require__(234);
+const update_contact_enquiry_dto_1 = __webpack_require__(235);
 let ContactEnquiryController = class ContactEnquiryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -17759,11 +16789,7 @@ exports.ContactEnquiryController = ContactEnquiryController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 228 */
-=======
-/* 232 */
->>>>>>> Stashed changes
+/* 234 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17846,11 +16872,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 229 */
-=======
-/* 233 */
->>>>>>> Stashed changes
+/* 235 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17933,11 +16955,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 230 */
-=======
-/* 234 */
->>>>>>> Stashed changes
+/* 236 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17951,11 +16969,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatsCounterModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const stats_counter_controller_1 = __webpack_require__(231);
-=======
-const stats_counter_controller_1 = __webpack_require__(235);
->>>>>>> Stashed changes
+const stats_counter_controller_1 = __webpack_require__(237);
 let StatsCounterModule = class StatsCounterModule {
 };
 exports.StatsCounterModule = StatsCounterModule;
@@ -17979,11 +16993,7 @@ exports.StatsCounterModule = StatsCounterModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 231 */
-=======
-/* 235 */
->>>>>>> Stashed changes
+/* 237 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18007,13 +17017,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_stats_counter_dto_1 = __webpack_require__(232);
-const update_stats_counter_dto_1 = __webpack_require__(233);
-=======
-const create_stats_counter_dto_1 = __webpack_require__(236);
-const update_stats_counter_dto_1 = __webpack_require__(237);
->>>>>>> Stashed changes
+const create_stats_counter_dto_1 = __webpack_require__(238);
+const update_stats_counter_dto_1 = __webpack_require__(239);
 let StatsCounterController = class StatsCounterController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -18106,11 +17111,7 @@ exports.StatsCounterController = StatsCounterController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 232 */
-=======
-/* 236 */
->>>>>>> Stashed changes
+/* 238 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18187,11 +17188,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 233 */
-=======
-/* 237 */
->>>>>>> Stashed changes
+/* 239 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18268,11 +17265,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 234 */
-=======
-/* 238 */
->>>>>>> Stashed changes
+/* 240 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18286,11 +17279,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestimonialModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const testimonial_controller_1 = __webpack_require__(235);
-=======
-const testimonial_controller_1 = __webpack_require__(239);
->>>>>>> Stashed changes
+const testimonial_controller_1 = __webpack_require__(241);
 let TestimonialModule = class TestimonialModule {
 };
 exports.TestimonialModule = TestimonialModule;
@@ -18314,11 +17303,7 @@ exports.TestimonialModule = TestimonialModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 235 */
-=======
-/* 239 */
->>>>>>> Stashed changes
+/* 241 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18342,13 +17327,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_testimonial_dto_1 = __webpack_require__(236);
-const update_testimonial_dto_1 = __webpack_require__(237);
-=======
-const create_testimonial_dto_1 = __webpack_require__(240);
-const update_testimonial_dto_1 = __webpack_require__(241);
->>>>>>> Stashed changes
+const create_testimonial_dto_1 = __webpack_require__(242);
+const update_testimonial_dto_1 = __webpack_require__(243);
 let TestimonialController = class TestimonialController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -18441,11 +17421,7 @@ exports.TestimonialController = TestimonialController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 236 */
-=======
-/* 240 */
->>>>>>> Stashed changes
+/* 242 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18524,11 +17500,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 237 */
-=======
-/* 241 */
->>>>>>> Stashed changes
+/* 243 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18607,11 +17579,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 238 */
-=======
-/* 242 */
->>>>>>> Stashed changes
+/* 244 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18625,11 +17593,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderButtonModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const header_button_controller_1 = __webpack_require__(239);
-=======
-const header_button_controller_1 = __webpack_require__(243);
->>>>>>> Stashed changes
+const header_button_controller_1 = __webpack_require__(245);
 let HeaderButtonModule = class HeaderButtonModule {
 };
 exports.HeaderButtonModule = HeaderButtonModule;
@@ -18653,11 +17617,7 @@ exports.HeaderButtonModule = HeaderButtonModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 239 */
-=======
-/* 243 */
->>>>>>> Stashed changes
+/* 245 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18681,13 +17641,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_header_button_dto_1 = __webpack_require__(240);
-const update_header_button_dto_1 = __webpack_require__(241);
-=======
-const create_header_button_dto_1 = __webpack_require__(244);
-const update_header_button_dto_1 = __webpack_require__(245);
->>>>>>> Stashed changes
+const create_header_button_dto_1 = __webpack_require__(246);
+const update_header_button_dto_1 = __webpack_require__(247);
 let HeaderButtonController = class HeaderButtonController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -18780,11 +17735,7 @@ exports.HeaderButtonController = HeaderButtonController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 240 */
-=======
-/* 244 */
->>>>>>> Stashed changes
+/* 246 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18855,11 +17806,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 241 */
-=======
-/* 245 */
->>>>>>> Stashed changes
+/* 247 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18930,11 +17877,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 242 */
-=======
-/* 246 */
->>>>>>> Stashed changes
+/* 248 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18948,11 +17891,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const committee_controller_1 = __webpack_require__(243);
-=======
-const committee_controller_1 = __webpack_require__(247);
->>>>>>> Stashed changes
+const committee_controller_1 = __webpack_require__(249);
 let CommitteeModule = class CommitteeModule {
 };
 exports.CommitteeModule = CommitteeModule;
@@ -18976,11 +17915,7 @@ exports.CommitteeModule = CommitteeModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 243 */
-=======
-/* 247 */
->>>>>>> Stashed changes
+/* 249 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19003,13 +17938,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_committee_dto_1 = __webpack_require__(244);
-const update_committee_dto_1 = __webpack_require__(245);
-=======
-const create_committee_dto_1 = __webpack_require__(248);
-const update_committee_dto_1 = __webpack_require__(249);
->>>>>>> Stashed changes
+const create_committee_dto_1 = __webpack_require__(250);
+const update_committee_dto_1 = __webpack_require__(251);
 let CommitteeController = class CommitteeController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -19089,11 +18019,7 @@ exports.CommitteeController = CommitteeController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 244 */
-=======
-/* 248 */
->>>>>>> Stashed changes
+/* 250 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19152,11 +18078,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 245 */
-=======
-/* 249 */
->>>>>>> Stashed changes
+/* 251 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19215,11 +18137,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 246 */
-=======
-/* 250 */
->>>>>>> Stashed changes
+/* 252 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19233,11 +18151,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeSubmenuModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const committee_submenu_controller_1 = __webpack_require__(247);
-=======
-const committee_submenu_controller_1 = __webpack_require__(251);
->>>>>>> Stashed changes
+const committee_submenu_controller_1 = __webpack_require__(253);
 let CommitteeSubmenuModule = class CommitteeSubmenuModule {
 };
 exports.CommitteeSubmenuModule = CommitteeSubmenuModule;
@@ -19261,11 +18175,7 @@ exports.CommitteeSubmenuModule = CommitteeSubmenuModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 247 */
-=======
-/* 251 */
->>>>>>> Stashed changes
+/* 253 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19288,13 +18198,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_committee_submenu_dto_1 = __webpack_require__(248);
-const update_committee_submenu_dto_1 = __webpack_require__(249);
-=======
-const create_committee_submenu_dto_1 = __webpack_require__(252);
-const update_committee_submenu_dto_1 = __webpack_require__(253);
->>>>>>> Stashed changes
+const create_committee_submenu_dto_1 = __webpack_require__(254);
+const update_committee_submenu_dto_1 = __webpack_require__(255);
 let CommitteeSubmenuController = class CommitteeSubmenuController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -19388,11 +18293,7 @@ exports.CommitteeSubmenuController = CommitteeSubmenuController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 248 */
-=======
-/* 252 */
->>>>>>> Stashed changes
+/* 254 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19457,11 +18358,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 249 */
-=======
-/* 253 */
->>>>>>> Stashed changes
+/* 255 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19526,11 +18423,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 250 */
-=======
-/* 254 */
->>>>>>> Stashed changes
+/* 256 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19543,11 +18436,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminModule = void 0;
 const common_1 = __webpack_require__(2);
-<<<<<<< Updated upstream
-const admin_login_module_1 = __webpack_require__(251);
-=======
-const admin_login_module_1 = __webpack_require__(255);
->>>>>>> Stashed changes
+const admin_login_module_1 = __webpack_require__(257);
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -19560,11 +18449,7 @@ exports.AdminModule = AdminModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 251 */
-=======
-/* 255 */
->>>>>>> Stashed changes
+/* 257 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19578,11 +18463,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminLoginModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-<<<<<<< Updated upstream
-const admin_login_controller_1 = __webpack_require__(252);
-=======
-const admin_login_controller_1 = __webpack_require__(256);
->>>>>>> Stashed changes
+const admin_login_controller_1 = __webpack_require__(258);
 let AdminLoginModule = class AdminLoginModule {
 };
 exports.AdminLoginModule = AdminLoginModule;
@@ -19606,11 +18487,7 @@ exports.AdminLoginModule = AdminLoginModule = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 252 */
-=======
-/* 256 */
->>>>>>> Stashed changes
+/* 258 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19633,21 +18510,12 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-<<<<<<< Updated upstream
-const create_admin_login_dto_1 = __webpack_require__(253);
-const update_admin_login_dto_1 = __webpack_require__(254);
-const bulk_delete_admin_logins_dto_1 = __webpack_require__(255);
-const admin_login_auth_dto_1 = __webpack_require__(256);
-const change_admin_password_dto_1 = __webpack_require__(257);
-const update_admin_profile_dto_1 = __webpack_require__(258);
-=======
-const create_admin_login_dto_1 = __webpack_require__(257);
-const update_admin_login_dto_1 = __webpack_require__(258);
-const bulk_delete_admin_logins_dto_1 = __webpack_require__(259);
-const admin_login_auth_dto_1 = __webpack_require__(260);
-const change_admin_password_dto_1 = __webpack_require__(261);
-const update_admin_profile_dto_1 = __webpack_require__(262);
->>>>>>> Stashed changes
+const create_admin_login_dto_1 = __webpack_require__(259);
+const update_admin_login_dto_1 = __webpack_require__(260);
+const bulk_delete_admin_logins_dto_1 = __webpack_require__(261);
+const admin_login_auth_dto_1 = __webpack_require__(262);
+const change_admin_password_dto_1 = __webpack_require__(263);
+const update_admin_profile_dto_1 = __webpack_require__(264);
 const update_status_dto_1 = __webpack_require__(19);
 let AdminLoginController = class AdminLoginController {
     constructor(studentClient) {
@@ -19784,11 +18652,7 @@ exports.AdminLoginController = AdminLoginController = __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 253 */
-=======
-/* 257 */
->>>>>>> Stashed changes
+/* 259 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19868,11 +18732,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 254 */
-=======
-/* 258 */
->>>>>>> Stashed changes
+/* 260 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19958,11 +18818,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 255 */
-=======
-/* 259 */
->>>>>>> Stashed changes
+/* 261 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20004,11 +18860,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 256 */
-=======
-/* 260 */
->>>>>>> Stashed changes
+/* 262 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20046,11 +18898,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 257 */
-=======
-/* 261 */
->>>>>>> Stashed changes
+/* 263 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20092,11 +18940,7 @@ __decorate([
 
 
 /***/ }),
-<<<<<<< Updated upstream
-/* 258 */
-=======
-/* 262 */
->>>>>>> Stashed changes
+/* 264 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
