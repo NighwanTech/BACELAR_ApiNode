@@ -11,6 +11,7 @@ import { StudentPaymentModule } from './student-payment/student-payment.module';
 import { StudentAttachmentModule } from './student-attachment/student-attachment.module';
 import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
 import { ExamLoginModule } from './exam-login/exam-login.module';
+import { StudentRollNumberModule } from './student-roll-number/student-roll-number.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ExamLoginModule } from './exam-login/exam-login.module';
     StudentAttachmentModule,
     StudentEnrollmentModule,
     ExamLoginModule,
+    StudentRollNumberModule,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],

@@ -45,6 +45,7 @@ model Student {
   examLoginMaster       ExamLoginMaster?
   studentExams          StudentExam[]
   studentExamPapers     StudentExamPaper[]
+  studentRollNumbers    StudentRollNumber[]
 
   @@index([yearId])
   @@index([semId])
@@ -261,6 +262,7 @@ model Program {
   eligibilityRules  ProgramEligibility[]
   streams           StreamMaster[]
   programSubjects   ProgramSubjectMaster[]
+  studentRollNumbers StudentRollNumber[]
 
   // Common Audit Fields
   CreatedOn          DateTime            @default(now())
@@ -510,6 +512,7 @@ model AdmissionSession {
   students             Student[]
   studentEnrollments   StudentEnrollment[]
   studentExams         StudentExam[]
+  studentRollNumbers   StudentRollNumber[]
 
   // Common Audit Fields
   CreatedOn      DateTime  @default(now())
@@ -680,6 +683,7 @@ model StudentEnrollment {
   Remarks        String?   @db.VarChar(255)
   examLoginMasters ExamLoginMaster[]
   studentExamPapers StudentExamPaper[]
+  studentRollNumbers StudentRollNumber[]
 
   @@index([studentId])
   @@index([programId])
@@ -1656,4 +1660,43 @@ model ExamSchemePaper {
   @@index([paperId])
   @@index([paperTypeId])
   @@map("examSchemePaper")
+}
+
+/// College exam roll number (12-digit): CollegeCode + AdmissionYear + ProgramCode + Serial
+model StudentRollNumber {
+  rollId         Int     @id @default(autoincrement())
+  rollNo         String  @unique @db.VarChar(12)
+  studentId      Int
+  student        Student @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
+  enrollmentId   Int?
+  enrollment     StudentEnrollment? @relation(fields: [enrollmentId], references: [enrollmentId], onDelete: SetNull)
+  sessionId      Int?
+  session        AdmissionSession? @relation(fields: [sessionId], references: [admissionSessionId], onDelete: SetNull)
+  programId      Int?
+  program        Program? @relation(fields: [programId], references: [programId], onDelete: SetNull)
+
+  admissionYear  String  @db.VarChar(4)
+  collegeCode    String  @db.VarChar(3)
+  programCode    String  @db.VarChar(2)
+  serialNo       String  @db.VarChar(3)
+
+  // Common Audit Fields
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@unique([studentId, admissionYear])
+  @@index([studentId])
+  @@index([enrollmentId])
+  @@index([sessionId])
+  @@index([programId])
+  @@index([admissionYear])
+  @@map("studentRollNumber")
 }
