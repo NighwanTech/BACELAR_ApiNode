@@ -523,7 +523,23 @@ export class StudentsService {
       return { status: 'error', message: 'Student account not found' };
     }
 
-    const isPasswordValid = await bcrypt.compare(currentPasswordString, login.Password);
+    // Match login(): bcrypt hash, then PlainPassword fallback (auto-generated temp passwords)
+    let isPasswordValid = false;
+    try {
+      if (login.Password && login.Password.startsWith('$2')) {
+        isPasswordValid = await bcrypt.compare(
+          currentPasswordString,
+          login.Password,
+        );
+      }
+    } catch {
+      isPasswordValid = false;
+    }
+    if (!isPasswordValid) {
+      isPasswordValid =
+        login.PlainPassword === currentPasswordString ||
+        login.Password === currentPasswordString;
+    }
     if (!isPasswordValid) {
       return { status: 'error', message: 'Current password is incorrect' };
     }

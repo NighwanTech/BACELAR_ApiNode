@@ -10,6 +10,7 @@ import { StudentAttachmentModule } from './student-attachment/student-attachment
 import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
 import { ExamLoginModule } from './exam-login/exam-login.module';
 import { StudentRollNumberModule } from './student-roll-number/student-roll-number.module';
+import { ExamAdmitCardModule } from './exam-admit-card/exam-admit-card.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { StudentRollNumberModule } from './student-roll-number/student-roll-numb
     StudentEnrollmentModule,
     ExamLoginModule,
     StudentRollNumberModule,
+    ExamAdmitCardModule,
   ],
   controllers: [StudentsController, StudentProfileController],
 })

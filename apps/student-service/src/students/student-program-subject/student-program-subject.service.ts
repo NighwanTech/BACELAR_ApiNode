@@ -40,23 +40,29 @@ export class StudentProgramSubjectService {
       }
     }
 
-    await this.prisma.$transaction(async (tx) => {
-      await tx.studentProgramSubject.deleteMany({
-        where: { studentId: Number(studentId) },
-      });
-      if (ids.length > 0) {
-        await tx.studentProgramSubject.createMany({
-          data: ids.map((id, idx) => ({
-            studentId: Number(studentId),
-            programSubjectId: id,
-            sequenceNo: idx + 1,
-            CreatedBy: CreatedBy || 'System',
-            IsActive: true,
-            IsDeleted: false,
-          })),
+    await this.prisma.$transaction(
+      async (tx) => {
+        await tx.studentProgramSubject.deleteMany({
+          where: { studentId: Number(studentId) },
         });
-      }
-    });
+        if (ids.length > 0) {
+          await tx.studentProgramSubject.createMany({
+            data: ids.map((id, idx) => ({
+              studentId: Number(studentId),
+              programSubjectId: id,
+              sequenceNo: idx + 1,
+              CreatedBy: CreatedBy || 'System',
+              IsActive: true,
+              IsDeleted: false,
+            })),
+          });
+        }
+      },
+      {
+        maxWait: 15_000,
+        timeout: 30_000,
+      },
+    );
 
     return this.findByStudent(studentId);
   }

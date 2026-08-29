@@ -35,9 +35,9 @@ exports.StudentServiceModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
 const students_module_1 = __webpack_require__(11);
-const master_module_1 = __webpack_require__(46);
-const website_module_1 = __webpack_require__(122);
-const admin_module_1 = __webpack_require__(168);
+const master_module_1 = __webpack_require__(49);
+const website_module_1 = __webpack_require__(125);
+const admin_module_1 = __webpack_require__(171);
 let StudentServiceModule = class StudentServiceModule {
 };
 exports.StudentServiceModule = StudentServiceModule;
@@ -208,6 +208,7 @@ const student_attachment_module_1 = __webpack_require__(34);
 const student_enrollment_module_1 = __webpack_require__(37);
 const exam_login_module_1 = __webpack_require__(40);
 const student_roll_number_module_1 = __webpack_require__(43);
+const exam_admit_card_module_1 = __webpack_require__(46);
 let StudentsModule = class StudentsModule {
 };
 exports.StudentsModule = StudentsModule;
@@ -228,6 +229,7 @@ exports.StudentsModule = StudentsModule = __decorate([
             student_enrollment_module_1.StudentEnrollmentModule,
             exam_login_module_1.ExamLoginModule,
             student_roll_number_module_1.StudentRollNumberModule,
+            exam_admit_card_module_1.ExamAdmitCardModule,
         ],
         controllers: [students_controller_1.StudentsController],
         providers: [students_service_1.StudentsService],
@@ -929,7 +931,20 @@ let StudentsService = class StudentsService {
         if (!login || !login.student || login.student.IsDeleted) {
             return { status: 'error', message: 'Student account not found' };
         }
-        const isPasswordValid = await bcrypt.compare(currentPasswordString, login.Password);
+        let isPasswordValid = false;
+        try {
+            if (login.Password && login.Password.startsWith('$2')) {
+                isPasswordValid = await bcrypt.compare(currentPasswordString, login.Password);
+            }
+        }
+        catch {
+            isPasswordValid = false;
+        }
+        if (!isPasswordValid) {
+            isPasswordValid =
+                login.PlainPassword === currentPasswordString ||
+                    login.Password === currentPasswordString;
+        }
         if (!isPasswordValid) {
             return { status: 'error', message: 'Current password is incorrect' };
         }
@@ -1683,25 +1698,29 @@ let StudentAcademicService = class StudentAcademicService {
     }
     async save(studentId, qualifications, CreatedBy, programId, programSubjectIds, hasSportCertificate) {
         return this.prisma.$transaction(async (tx) => {
-            const student = await tx.student.findFirst({
-                where: { StudentRegistrationId: Number(studentId), IsDeleted: false },
-            });
-            if (!student) {
-                throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
-            }
             if (programId === undefined || programId === null) {
                 throw new common_1.BadRequestException('programId is required');
             }
-            const program = await tx.program.findFirst({
-                where: { programId: Number(programId), IsDeleted: false },
-            });
+            const sid = Number(studentId);
+            const pid = Number(programId);
+            const [student, program, activeSession] = await Promise.all([
+                tx.student.findFirst({
+                    where: { StudentRegistrationId: sid, IsDeleted: false },
+                }),
+                tx.program.findFirst({
+                    where: { programId: pid, IsDeleted: false },
+                }),
+                tx.admissionSession.findFirst({
+                    where: { IsActive: true, IsDeleted: false },
+                    orderBy: { CreatedOn: 'desc' },
+                }),
+            ]);
+            if (!student) {
+                throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
+            }
             if (!program) {
                 throw new common_1.NotFoundException(`Program with ID ${programId} not found`);
             }
-            const activeSession = await tx.admissionSession.findFirst({
-                where: { IsActive: true, IsDeleted: false },
-                orderBy: { CreatedOn: 'desc' },
-            });
             if (!activeSession) {
                 throw new common_1.NotFoundException('No active admission session found. Please activate a session in masters.');
             }
@@ -1733,8 +1752,29 @@ let StudentAcademicService = class StudentAcademicService {
                 assignedYearName = y?.yearName ?? null;
                 assignedSemesterName = s?.semesterName ?? null;
             }
+            const programSubjectIdList = Array.isArray(programSubjectIds)
+                ? [
+                    ...new Set(programSubjectIds
+                        .map((id) => Number(id))
+                        .filter((id) => Number.isFinite(id) && id > 0)),
+                ]
+                : null;
+            if (programSubjectIdList && programSubjectIdList.length > 0) {
+                const masters = await tx.programSubjectMaster.findMany({
+                    where: {
+                        programSubjectId: { in: programSubjectIdList },
+                        programId: assignedProgramId,
+                        IsDeleted: false,
+                    },
+                    select: { programSubjectId: true },
+                });
+                const allowed = new Set(masters.map((m) => m.programSubjectId));
+                if (programSubjectIdList.some((id) => !allowed.has(id))) {
+                    throw new common_1.BadRequestException('One or more program subjects are invalid for this program');
+                }
+            }
             await tx.student.update({
-                where: { StudentRegistrationId: Number(studentId) },
+                where: { StudentRegistrationId: sid },
                 data: {
                     programId: assignedProgramId,
                     admissionSessionId: assignedAdmissionSessionId,
@@ -1745,19 +1785,18 @@ let StudentAcademicService = class StudentAcademicService {
                 },
             });
             await tx.studentAcademicDetail.deleteMany({
-                where: { studentId: Number(studentId) },
+                where: { studentId: sid },
             });
-            const createdDetails = [];
-            for (const qual of qualifications) {
+            for (const qual of qualifications || []) {
                 const computed = computeAcademicResult({
                     marksType: qual.marksType,
                     maxMarks: qual.maxMarks,
                     obtainedMarks: qual.obtainedMarks,
                     percentage: qual.percentage,
                 });
-                const detail = await tx.studentAcademicDetail.create({
+                await tx.studentAcademicDetail.create({
                     data: {
-                        studentId: Number(studentId),
+                        studentId: sid,
                         qualificationId: Number(qual.qualificationId),
                         boardId: Number(qual.boardId),
                         schoolName: qual.schoolName,
@@ -1787,7 +1826,9 @@ let StudentAcademicService = class StudentAcademicService {
                                     minMarks: Number(sub.minMarks || 33),
                                     obtainedMarks: Number(sub.obtainedMarks),
                                     grade: sub.grade || subComputed.grade,
-                                    practicalMarks: sub.practicalMarks ? Number(sub.practicalMarks) : null,
+                                    practicalMarks: sub.practicalMarks
+                                        ? Number(sub.practicalMarks)
+                                        : null,
                                     theoryMarks: sub.theoryMarks ? Number(sub.theoryMarks) : null,
                                     isOptional: !!sub.isOptional,
                                     CreatedBy: CreatedBy || 'System',
@@ -1797,42 +1838,16 @@ let StudentAcademicService = class StudentAcademicService {
                             }),
                         },
                     },
-                    include: {
-                        subjects: {
-                            include: {
-                                subject: true,
-                            },
-                        },
-                        qualification: true,
-                        board: true,
-                    },
                 });
-                createdDetails.push(detail);
             }
-            if (Array.isArray(programSubjectIds)) {
-                const ids = [
-                    ...new Set(programSubjectIds
-                        .map((id) => Number(id))
-                        .filter((id) => Number.isFinite(id) && id > 0)),
-                ];
+            if (programSubjectIdList) {
                 await tx.studentProgramSubject.deleteMany({
-                    where: { studentId: Number(studentId) },
+                    where: { studentId: sid },
                 });
-                if (ids.length > 0) {
-                    const masters = await tx.programSubjectMaster.findMany({
-                        where: {
-                            programSubjectId: { in: ids },
-                            programId: assignedProgramId,
-                            IsDeleted: false,
-                        },
-                    });
-                    const allowed = new Set(masters.map((m) => m.programSubjectId));
-                    if (ids.some((id) => !allowed.has(id))) {
-                        throw new common_1.BadRequestException('One or more program subjects are invalid for this program');
-                    }
+                if (programSubjectIdList.length > 0) {
                     await tx.studentProgramSubject.createMany({
-                        data: ids.map((id, idx) => ({
-                            studentId: Number(studentId),
+                        data: programSubjectIdList.map((id, idx) => ({
+                            studentId: sid,
                             programSubjectId: id,
                             sequenceNo: idx + 1,
                             CreatedBy: CreatedBy || 'System',
@@ -1842,6 +1857,19 @@ let StudentAcademicService = class StudentAcademicService {
                     });
                 }
             }
+            const createdDetails = await tx.studentAcademicDetail.findMany({
+                where: { studentId: sid, IsDeleted: false },
+                include: {
+                    subjects: {
+                        include: {
+                            subject: true,
+                        },
+                    },
+                    qualification: true,
+                    board: true,
+                },
+                orderBy: { academicDetailId: 'asc' },
+            });
             return {
                 status: 'success',
                 message: 'Academic qualifications and subjects saved successfully',
@@ -1855,6 +1883,9 @@ let StudentAcademicService = class StudentAcademicService {
                 semesterName: assignedSemesterName,
                 hasSportCertificate: sportFlag,
             };
+        }, {
+            maxWait: 20_000,
+            timeout: 60_000,
         });
     }
     async findAll() {
@@ -2469,6 +2500,9 @@ let StudentProgramSubjectService = class StudentProgramSubjectService {
                     })),
                 });
             }
+        }, {
+            maxWait: 15_000,
+            timeout: 30_000,
         });
         return this.findByStudent(studentId);
     }
@@ -5796,33 +5830,555 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExamAdmitCardModule = void 0;
+const common_1 = __webpack_require__(5);
+const exam_admit_card_controller_1 = __webpack_require__(47);
+const exam_admit_card_service_1 = __webpack_require__(48);
+let ExamAdmitCardModule = class ExamAdmitCardModule {
+};
+exports.ExamAdmitCardModule = ExamAdmitCardModule;
+exports.ExamAdmitCardModule = ExamAdmitCardModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [exam_admit_card_controller_1.ExamAdmitCardController],
+        providers: [exam_admit_card_service_1.ExamAdmitCardService],
+    })
+], ExamAdmitCardModule);
+
+
+/***/ }),
+/* 47 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExamAdmitCardController = void 0;
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const exam_admit_card_service_1 = __webpack_require__(48);
+let ExamAdmitCardController = class ExamAdmitCardController {
+    constructor(admitCardService) {
+        this.admitCardService = admitCardService;
+    }
+    async list(data) {
+        try {
+            return await this.admitCardService.list(data || {});
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.admitCardService.findOne(Number(data.studentExamId));
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.ExamAdmitCardController = ExamAdmitCardController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'list_exam_admit_cards' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ExamAdmitCardController.prototype, "list", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_exam_admit_card' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ExamAdmitCardController.prototype, "findOne", null);
+exports.ExamAdmitCardController = ExamAdmitCardController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof exam_admit_card_service_1.ExamAdmitCardService !== "undefined" && exam_admit_card_service_1.ExamAdmitCardService) === "function" ? _a : Object])
+], ExamAdmitCardController);
+
+
+/***/ }),
+/* 48 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExamAdmitCardService = void 0;
+const common_1 = __webpack_require__(5);
+const prisma_1 = __webpack_require__(6);
+let ExamAdmitCardService = class ExamAdmitCardService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    studentExam() {
+        return this.prisma.studentExam;
+    }
+    roll() {
+        return this.prisma.studentRollNumber;
+    }
+    enrollment() {
+        return this.prisma.studentEnrollment;
+    }
+    examScheme() {
+        return this.prisma.examScheme;
+    }
+    toNum(value) {
+        if (value === undefined || value === null || value === '')
+            return null;
+        const n = Number(value);
+        return Number.isFinite(n) ? n : null;
+    }
+    toDateInput(value) {
+        if (!value)
+            return null;
+        const raw = String(value);
+        if (/^\d{4}-\d{2}-\d{2}/.test(raw))
+            return raw.slice(0, 10);
+        const d = new Date(value);
+        if (Number.isNaN(d.getTime()))
+            return null;
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+    pickRoll(student, exam) {
+        const fromExam = String(exam?.rollNo || '').trim();
+        const rolls = Array.isArray(student?.studentRollNumbers)
+            ? student.studentRollNumbers.filter((row) => row && row.IsDeleted !== true)
+            : [];
+        const byYear = rolls.find((row) => String(row.admissionYear || '') === String(exam?.session?.admissionSessionName || '').match(/(20\d{2})/)?.[1]);
+        const latest = [...rolls].sort((a, b) => Number(b.rollId || 0) - Number(a.rollId || 0))[0];
+        return String(fromExam || byYear?.rollNo || latest?.rollNo || '').trim();
+    }
+    pickAttachment(attachments, type) {
+        const match = (attachments || []).find((a) => !a.IsDeleted && String(a.documentType || '').toUpperCase() === type);
+        return match?.fileUrl ? String(match.fileUrl) : null;
+    }
+    paperLabel(code, name, withCode) {
+        const pCode = String(code || '').trim();
+        const pName = String(name || '').trim();
+        if (pCode && pName)
+            return `[${pCode}] ${pName}`;
+        if (withCode)
+            return String(withCode).trim();
+        return pName || pCode || '';
+    }
+    async schemePaperMap(params) {
+        const map = new Map();
+        if (!params.examinationDetailId || !params.programId || !params.yearId)
+            return map;
+        const scheme = await this.examScheme().findFirst({
+            where: {
+                examinationDetailId: params.examinationDetailId,
+                programId: params.programId,
+                yearId: params.yearId,
+                semId: params.semId || null,
+                IsDeleted: false,
+            },
+            include: {
+                papers: { where: { IsDeleted: false } },
+            },
+        });
+        for (const paper of scheme?.papers || []) {
+            if (paper?.paperId)
+                map.set(Number(paper.paperId), paper);
+        }
+        return map;
+    }
+    mapRow(exam, schemeMap) {
+        const student = exam.student || {};
+        const profile = student.studentProfile || {};
+        const program = exam.course || student.program || {};
+        const category = exam.courseCategoryRelation || program.programCategory || {};
+        const attachments = student.studentAttachments || [];
+        const papers = (exam.papers || [])
+            .filter((paper) => paper.IsDeleted !== true && paper.isChosen !== false)
+            .map((paper) => {
+            const scheme = paper.paperId ? schemeMap.get(Number(paper.paperId)) : null;
+            return {
+                paperId: paper.paperId || null,
+                subjectName: paper.subjectName || null,
+                paperName: paper.paperName || null,
+                paperCode: paper.paperCode || null,
+                paperNameWithCode: this.paperLabel(paper.paperCode, paper.paperName, paper.paperNameWithCode),
+                paperType: paper.paperType || scheme?.paperType || null,
+                examDate: this.toDateInput(scheme?.examDate),
+                examTime: scheme?.examTime || null,
+                shift: scheme?.shift || null,
+            };
+        });
+        return {
+            studentExamId: exam.studentExamId,
+            studentId: exam.studentId,
+            enrollmentNo: exam.enrollmentNo || null,
+            rollNo: this.pickRoll(student, exam) || null,
+            studentName: exam.studentNameEng || student.candidateName || null,
+            fatherName: exam.fatherName || student.fatherName || profile.fatherNameHindi || null,
+            motherName: exam.motherName || profile.motherName || null,
+            gender: exam.gender || profile.gender || student.gender || null,
+            mobileNo: exam.mobileNo || student.mobileNo || null,
+            examType: exam.examType || exam.examTypeRelation?.examTypeName || null,
+            programId: exam.courseId || program.programId || null,
+            programName: exam.courseShortName || program.programShortName || program.programName || null,
+            programFullName: program.programName || null,
+            programCategoryId: exam.courseCategoryId || category.programCategoryId || null,
+            pcShortName: category.pcShortName || null,
+            programCategoryName: exam.courseCategory || category.programCategoryName || null,
+            yearId: exam.yearId || null,
+            yearName: exam.yearName || exam.year?.yearName || null,
+            semId: exam.semId || null,
+            semName: exam.semName || exam.semester?.semesterName || null,
+            sessionId: exam.sessionId || null,
+            sessionName: exam.session?.admissionSessionName || null,
+            examinationDetailId: exam.examinationDetailId || null,
+            examinationName: exam.examinationName || exam.examinationDetail?.examinationName || null,
+            academicSessionId: exam.examinationDetail?.academicId || exam.examinationDetail?.academicSession?.academicSessionId || null,
+            academicSessionName: exam.examinationDetail?.academicSession?.academicSessionName || null,
+            studentImgURL: exam.studentImgURL || this.pickAttachment(attachments, 'PHOTO') || null,
+            studentSignImgURL: exam.studentSignImgURL || this.pickAttachment(attachments, 'SIGNATURE') || null,
+            papers,
+        };
+    }
+    examInclude() {
+        return {
+            student: {
+                include: {
+                    studentProfile: true,
+                    studentAttachments: true,
+                    program: { include: { programCategory: true } },
+                    studentRollNumbers: {
+                        where: { IsDeleted: false },
+                        orderBy: { rollId: 'desc' },
+                    },
+                },
+            },
+            course: { include: { programCategory: true } },
+            courseCategoryRelation: true,
+            year: true,
+            semester: true,
+            session: true,
+            examinationDetail: { include: { academicSession: true } },
+            examTypeRelation: true,
+            papers: {
+                where: { IsDeleted: false },
+                orderBy: { studentExamPaperId: 'asc' },
+            },
+        };
+    }
+    async list(query) {
+        const examinationDetailId = this.toNum(query.examinationDetailId);
+        const academicSessionId = this.toNum(query.academicSessionId ?? query.sessionId);
+        const programCategoryId = this.toNum(query.programCategoryId);
+        const programId = this.toNum(query.programId);
+        const yearId = this.toNum(query.yearId);
+        const semId = this.toNum(query.semId);
+        const examType = String(query.examType || '').trim().toLowerCase();
+        const search = String(query.search || '').trim().toLowerCase();
+        const enrollmentWhere = {
+            IsDeleted: false,
+            enrollmentNo: { not: null },
+        };
+        if (programId != null)
+            enrollmentWhere.programId = programId;
+        if (yearId != null)
+            enrollmentWhere.yearId = yearId;
+        if (semId != null)
+            enrollmentWhere.semId = semId;
+        const enrollments = await this.enrollment().findMany({
+            where: enrollmentWhere,
+            include: {
+                student: {
+                    include: {
+                        studentProfile: true,
+                        studentAttachments: true,
+                        program: { include: { programCategory: true } },
+                    },
+                },
+                program: { include: { programCategory: true } },
+                year: true,
+                semester: true,
+                session: true,
+            },
+            orderBy: { enrollmentId: 'asc' },
+        });
+        let rows = (enrollments || []).filter((e) => String(e.enrollmentNo || '').trim());
+        if (programCategoryId != null) {
+            rows = rows.filter((e) => {
+                const catId = e.program?.programCategoryId ||
+                    e.student?.program?.programCategoryId ||
+                    e.program?.programCategory?.programCategoryId ||
+                    null;
+                return Number(catId) === programCategoryId;
+            });
+        }
+        const studentIds = Array.from(new Set(rows.map((e) => Number(e.studentId)).filter(Boolean)));
+        const rolls = studentIds.length
+            ? await this.roll().findMany({
+                where: { IsDeleted: false, studentId: { in: studentIds } },
+            })
+            : [];
+        const rollByStudent = new Map();
+        for (const roll of rolls) {
+            const sid = Number(roll.studentId);
+            const current = rollByStudent.get(sid);
+            if (!current || Number(roll.rollId) > Number(current.rollId))
+                rollByStudent.set(sid, roll);
+        }
+        rows = rows.filter((e) => rollByStudent.get(Number(e.studentId))?.rollNo);
+        const exams = studentIds.length
+            ? await this.studentExam().findMany({
+                where: { IsDeleted: false, studentId: { in: studentIds } },
+                include: this.examInclude(),
+                orderBy: { studentExamId: 'desc' },
+            })
+            : [];
+        const examByStudent = new Map();
+        for (const exam of exams || []) {
+            const sid = Number(exam.studentId);
+            if (!examByStudent.has(sid))
+                examByStudent.set(sid, exam);
+            const existing = examByStudent.get(sid);
+            const e = rows.find((r) => Number(r.studentId) === sid);
+            if (e &&
+                Number(exam.courseId || 0) === Number(e.programId || 0) &&
+                Number(exam.yearId || 0) === Number(e.yearId || 0) &&
+                Number(exam.semId || 0) === Number(e.semId || 0)) {
+                examByStudent.set(sid, exam);
+            }
+            else if (existing && e) {
+                const existingMatch = Number(existing.courseId || 0) === Number(e.programId || 0) &&
+                    Number(existing.yearId || 0) === Number(e.yearId || 0);
+                const nextMatch = Number(exam.courseId || 0) === Number(e.programId || 0) &&
+                    Number(exam.yearId || 0) === Number(e.yearId || 0);
+                if (nextMatch && !existingMatch)
+                    examByStudent.set(sid, exam);
+            }
+        }
+        const examination = examinationDetailId
+            ? await this.prisma.examinationDetails.findFirst({
+                where: { examinationId: examinationDetailId, IsDeleted: false },
+                include: { academicSession: true },
+            })
+            : null;
+        const schemeCache = new Map();
+        const uniqueKeys = [
+            ...new Set(rows.map((e) => `${examinationDetailId || examByStudent.get(Number(e.studentId))?.examinationDetailId || ''}:${e.programId}:${e.yearId}:${e.semId}`)),
+        ];
+        for (const key of uniqueKeys) {
+            const [exId, pId, yId, sId] = key.split(':');
+            schemeCache.set(key, await this.schemePaperMap({
+                examinationDetailId: this.toNum(exId),
+                programId: this.toNum(pId),
+                yearId: this.toNum(yId),
+                semId: this.toNum(sId),
+            }));
+        }
+        let items = rows.map((e) => {
+            const studentId = Number(e.studentId);
+            const exam = examByStudent.get(studentId);
+            const roll = rollByStudent.get(studentId);
+            const schemeKey = [
+                examinationDetailId || exam?.examinationDetailId,
+                e.programId,
+                e.yearId,
+                e.semId,
+            ].join(':');
+            const mapped = exam
+                ? this.mapRow(exam, schemeCache.get(schemeKey) || new Map())
+                : this.mapEnrollmentRow(e, roll, schemeCache.get(schemeKey) || new Map());
+            if (roll?.rollNo)
+                mapped.rollNo = roll.rollNo;
+            if (examination) {
+                mapped.examinationDetailId = examination.examinationId;
+                mapped.examinationName = examination.examinationName;
+                mapped.academicSessionId = examination.academicId || mapped.academicSessionId;
+                mapped.academicSessionName = examination.academicSession?.academicSessionName || mapped.academicSessionName;
+            }
+            if (!mapped.papers?.length) {
+                const schemePapers = Array.from((schemeCache.get(schemeKey) || new Map()).values());
+                mapped.papers = schemePapers.map((paper) => ({
+                    paperId: paper.paperId || null,
+                    subjectName: paper.subjectName || null,
+                    paperName: paper.paperName || null,
+                    paperCode: paper.paperCode || null,
+                    paperNameWithCode: this.paperLabel(paper.paperCode, paper.paperName, paper.paperNameWithCode),
+                    paperType: paper.paperType || null,
+                    examDate: this.toDateInput(paper.examDate),
+                    examTime: paper.examTime || null,
+                    shift: paper.shift || null,
+                }));
+            }
+            return mapped;
+        });
+        if (academicSessionId != null) {
+            items = items.filter((item) => {
+                const rowSessionId = Number(item.academicSessionId);
+                if (Number.isFinite(rowSessionId))
+                    return rowSessionId === academicSessionId;
+                return true;
+            });
+        }
+        if (examType) {
+            items = items.filter((item) => String(item.examType || '').trim().toLowerCase() === examType);
+        }
+        if (search) {
+            items = items.filter((item) => {
+                const hay = [
+                    item.enrollmentNo,
+                    item.rollNo,
+                    item.studentName,
+                    item.fatherName,
+                    item.motherName,
+                    item.mobileNo,
+                    item.programName,
+                    item.pcShortName,
+                ]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase();
+                return hay.includes(search);
+            });
+        }
+        items.sort((a, b) => String(a.studentName || '').localeCompare(String(b.studentName || ''), undefined, {
+            sensitivity: 'base',
+        }));
+        return { total: items.length, items };
+    }
+    mapEnrollmentRow(e, roll, schemeMap) {
+        const student = e.student || {};
+        const profile = student.studentProfile || {};
+        const program = e.program || student.program || {};
+        const category = program.programCategory || {};
+        const attachments = student.studentAttachments || [];
+        return {
+            studentExamId: null,
+            studentId: Number(e.studentId),
+            enrollmentId: e.enrollmentId,
+            enrollmentNo: e.enrollmentNo || null,
+            rollNo: roll?.rollNo || null,
+            studentName: e.studentName || student.candidateName || null,
+            fatherName: e.fatherName || student.fatherName || null,
+            motherName: e.motherName || profile.motherName || null,
+            gender: e.gender || profile.gender || student.gender || null,
+            mobileNo: student.mobileNo || e.fatherMobNo || null,
+            examType: 'Regular',
+            programId: e.programId || program.programId || null,
+            programName: program.programShortName || program.programName || null,
+            programFullName: program.programName || null,
+            programCategoryId: program.programCategoryId || category.programCategoryId || null,
+            pcShortName: category.pcShortName || null,
+            programCategoryName: category.programCategoryName || null,
+            yearId: e.yearId || null,
+            yearName: e.year?.yearName || null,
+            semId: e.semId || null,
+            semName: e.semester?.semesterName || null,
+            sessionId: e.sessionId || null,
+            sessionName: e.session?.admissionSessionName || null,
+            examinationDetailId: null,
+            examinationName: null,
+            academicSessionId: null,
+            academicSessionName: null,
+            studentImgURL: this.pickAttachment(attachments, 'PHOTO'),
+            studentSignImgURL: this.pickAttachment(attachments, 'SIGNATURE'),
+            papers: Array.from(schemeMap.values()).map((paper) => ({
+                paperId: paper.paperId || null,
+                subjectName: paper.subjectName || null,
+                paperName: paper.paperName || null,
+                paperCode: paper.paperCode || null,
+                paperNameWithCode: this.paperLabel(paper.paperCode, paper.paperName, paper.paperNameWithCode),
+                paperType: paper.paperType || null,
+                examDate: this.toDateInput(paper.examDate),
+                examTime: paper.examTime || null,
+                shift: paper.shift || null,
+            })),
+        };
+    }
+    async findOne(studentExamId) {
+        const exam = await this.studentExam().findFirst({
+            where: { studentExamId, IsDeleted: false },
+            include: this.examInclude(),
+        });
+        if (!exam)
+            throw new common_1.NotFoundException('Exam form not found');
+        const schemeMap = await this.schemePaperMap({
+            examinationDetailId: exam.examinationDetailId,
+            programId: exam.courseId,
+            yearId: exam.yearId,
+            semId: exam.semId,
+        });
+        return this.mapRow(exam, schemeMap);
+    }
+};
+exports.ExamAdmitCardService = ExamAdmitCardService;
+exports.ExamAdmitCardService = ExamAdmitCardService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], ExamAdmitCardService);
+
+
+/***/ }),
+/* 49 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MasterModule = void 0;
 const common_1 = __webpack_require__(5);
-const state_module_1 = __webpack_require__(47);
-const city_module_1 = __webpack_require__(50);
-const program_category_module_1 = __webpack_require__(53);
-const subject_module_1 = __webpack_require__(56);
-const program_module_1 = __webpack_require__(59);
-const board_module_1 = __webpack_require__(62);
-const fee_type_module_1 = __webpack_require__(65);
-const qualification_module_1 = __webpack_require__(68);
-const admission_session_module_1 = __webpack_require__(71);
-const academic_session_module_1 = __webpack_require__(74);
-const program_fee_config_module_1 = __webpack_require__(77);
-const college_module_1 = __webpack_require__(80);
-const zipcode_module_1 = __webpack_require__(83);
-const program_eligibility_module_1 = __webpack_require__(86);
-const stream_module_1 = __webpack_require__(89);
-const program_subject_module_1 = __webpack_require__(92);
-const examination_details_module_1 = __webpack_require__(95);
-const exam_scheme_module_1 = __webpack_require__(98);
-const paper_type_module_1 = __webpack_require__(101);
-const exam_type_module_1 = __webpack_require__(104);
-const year_module_1 = __webpack_require__(107);
-const semester_module_1 = __webpack_require__(110);
-const paper_detail_module_1 = __webpack_require__(113);
-const exam_subject_module_1 = __webpack_require__(116);
-const role_module_1 = __webpack_require__(119);
+const state_module_1 = __webpack_require__(50);
+const city_module_1 = __webpack_require__(53);
+const program_category_module_1 = __webpack_require__(56);
+const subject_module_1 = __webpack_require__(59);
+const program_module_1 = __webpack_require__(62);
+const board_module_1 = __webpack_require__(65);
+const fee_type_module_1 = __webpack_require__(68);
+const qualification_module_1 = __webpack_require__(71);
+const admission_session_module_1 = __webpack_require__(74);
+const academic_session_module_1 = __webpack_require__(77);
+const program_fee_config_module_1 = __webpack_require__(80);
+const college_module_1 = __webpack_require__(83);
+const zipcode_module_1 = __webpack_require__(86);
+const program_eligibility_module_1 = __webpack_require__(89);
+const stream_module_1 = __webpack_require__(92);
+const program_subject_module_1 = __webpack_require__(95);
+const examination_details_module_1 = __webpack_require__(98);
+const exam_scheme_module_1 = __webpack_require__(101);
+const paper_type_module_1 = __webpack_require__(104);
+const exam_type_module_1 = __webpack_require__(107);
+const year_module_1 = __webpack_require__(110);
+const semester_module_1 = __webpack_require__(113);
+const paper_detail_module_1 = __webpack_require__(116);
+const exam_subject_module_1 = __webpack_require__(119);
+const role_module_1 = __webpack_require__(122);
 let MasterModule = class MasterModule {
 };
 exports.MasterModule = MasterModule;
@@ -5887,7 +6443,7 @@ exports.MasterModule = MasterModule = __decorate([
 
 
 /***/ }),
-/* 47 */
+/* 50 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5900,8 +6456,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StateModule = void 0;
 const common_1 = __webpack_require__(5);
-const state_service_1 = __webpack_require__(48);
-const state_controller_1 = __webpack_require__(49);
+const state_service_1 = __webpack_require__(51);
+const state_controller_1 = __webpack_require__(52);
 const prisma_1 = __webpack_require__(6);
 let StateModule = class StateModule {
 };
@@ -5917,7 +6473,7 @@ exports.StateModule = StateModule = __decorate([
 
 
 /***/ }),
-/* 48 */
+/* 51 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6045,7 +6601,7 @@ exports.StateService = StateService = __decorate([
 
 
 /***/ }),
-/* 49 */
+/* 52 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6066,7 +6622,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StateController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const state_service_1 = __webpack_require__(48);
+const state_service_1 = __webpack_require__(51);
 let StateController = class StateController {
     constructor(stateService) {
         this.stateService = stateService;
@@ -6170,7 +6726,7 @@ exports.StateController = StateController = __decorate([
 
 
 /***/ }),
-/* 50 */
+/* 53 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6183,8 +6739,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CityModule = void 0;
 const common_1 = __webpack_require__(5);
-const city_service_1 = __webpack_require__(51);
-const city_controller_1 = __webpack_require__(52);
+const city_service_1 = __webpack_require__(54);
+const city_controller_1 = __webpack_require__(55);
 const prisma_1 = __webpack_require__(6);
 let CityModule = class CityModule {
 };
@@ -6200,7 +6756,7 @@ exports.CityModule = CityModule = __decorate([
 
 
 /***/ }),
-/* 51 */
+/* 54 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6334,7 +6890,7 @@ exports.CityService = CityService = __decorate([
 
 
 /***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6355,7 +6911,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CityController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const city_service_1 = __webpack_require__(51);
+const city_service_1 = __webpack_require__(54);
 let CityController = class CityController {
     constructor(cityService) {
         this.cityService = cityService;
@@ -6460,7 +7016,7 @@ exports.CityController = CityController = __decorate([
 
 
 /***/ }),
-/* 53 */
+/* 56 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6473,8 +7029,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramCategoryModule = void 0;
 const common_1 = __webpack_require__(5);
-const program_category_service_1 = __webpack_require__(54);
-const program_category_controller_1 = __webpack_require__(55);
+const program_category_service_1 = __webpack_require__(57);
+const program_category_controller_1 = __webpack_require__(58);
 const prisma_1 = __webpack_require__(6);
 let ProgramCategoryModule = class ProgramCategoryModule {
 };
@@ -6490,7 +7046,7 @@ exports.ProgramCategoryModule = ProgramCategoryModule = __decorate([
 
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6586,7 +7142,7 @@ exports.ProgramCategoryService = ProgramCategoryService = __decorate([
 
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6607,7 +7163,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramCategoryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const program_category_service_1 = __webpack_require__(54);
+const program_category_service_1 = __webpack_require__(57);
 let ProgramCategoryController = class ProgramCategoryController {
     constructor(programCategoryService) {
         this.programCategoryService = programCategoryService;
@@ -6711,7 +7267,7 @@ exports.ProgramCategoryController = ProgramCategoryController = __decorate([
 
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6724,8 +7280,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubjectModule = void 0;
 const common_1 = __webpack_require__(5);
-const subject_service_1 = __webpack_require__(57);
-const subject_controller_1 = __webpack_require__(58);
+const subject_service_1 = __webpack_require__(60);
+const subject_controller_1 = __webpack_require__(61);
 const prisma_1 = __webpack_require__(6);
 let SubjectModule = class SubjectModule {
 };
@@ -6741,7 +7297,7 @@ exports.SubjectModule = SubjectModule = __decorate([
 
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6849,7 +7405,7 @@ exports.SubjectService = SubjectService = __decorate([
 
 
 /***/ }),
-/* 58 */
+/* 61 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6870,7 +7426,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubjectController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const subject_service_1 = __webpack_require__(57);
+const subject_service_1 = __webpack_require__(60);
 let SubjectController = class SubjectController {
     constructor(subjectService) {
         this.subjectService = subjectService;
@@ -6975,7 +7531,7 @@ exports.SubjectController = SubjectController = __decorate([
 
 
 /***/ }),
-/* 59 */
+/* 62 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -6988,8 +7544,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramModule = void 0;
 const common_1 = __webpack_require__(5);
-const program_controller_1 = __webpack_require__(60);
-const program_service_1 = __webpack_require__(61);
+const program_controller_1 = __webpack_require__(63);
+const program_service_1 = __webpack_require__(64);
 let ProgramModule = class ProgramModule {
 };
 exports.ProgramModule = ProgramModule;
@@ -7002,7 +7558,7 @@ exports.ProgramModule = ProgramModule = __decorate([
 
 
 /***/ }),
-/* 60 */
+/* 63 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7023,7 +7579,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const program_service_1 = __webpack_require__(61);
+const program_service_1 = __webpack_require__(64);
 let ProgramController = class ProgramController {
     constructor(programService) {
         this.programService = programService;
@@ -7143,7 +7699,7 @@ exports.ProgramController = ProgramController = __decorate([
 
 
 /***/ }),
-/* 61 */
+/* 64 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7278,7 +7834,7 @@ exports.ProgramService = ProgramService = __decorate([
 
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7291,8 +7847,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BoardModule = void 0;
 const common_1 = __webpack_require__(5);
-const board_controller_1 = __webpack_require__(63);
-const board_service_1 = __webpack_require__(64);
+const board_controller_1 = __webpack_require__(66);
+const board_service_1 = __webpack_require__(67);
 let BoardModule = class BoardModule {
 };
 exports.BoardModule = BoardModule;
@@ -7305,7 +7861,7 @@ exports.BoardModule = BoardModule = __decorate([
 
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7326,7 +7882,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BoardController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const board_service_1 = __webpack_require__(64);
+const board_service_1 = __webpack_require__(67);
 let BoardController = class BoardController {
     constructor(boardService) {
         this.boardService = boardService;
@@ -7445,7 +8001,7 @@ exports.BoardController = BoardController = __decorate([
 
 
 /***/ }),
-/* 64 */
+/* 67 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7556,7 +8112,7 @@ exports.BoardService = BoardService = __decorate([
 
 
 /***/ }),
-/* 65 */
+/* 68 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7569,8 +8125,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FeeTypeModule = void 0;
 const common_1 = __webpack_require__(5);
-const fee_type_controller_1 = __webpack_require__(66);
-const fee_type_service_1 = __webpack_require__(67);
+const fee_type_controller_1 = __webpack_require__(69);
+const fee_type_service_1 = __webpack_require__(70);
 let FeeTypeModule = class FeeTypeModule {
 };
 exports.FeeTypeModule = FeeTypeModule;
@@ -7583,7 +8139,7 @@ exports.FeeTypeModule = FeeTypeModule = __decorate([
 
 
 /***/ }),
-/* 66 */
+/* 69 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7604,7 +8160,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.FeeTypeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const fee_type_service_1 = __webpack_require__(67);
+const fee_type_service_1 = __webpack_require__(70);
 let FeeTypeController = class FeeTypeController {
     constructor(feeTypeService) {
         this.feeTypeService = feeTypeService;
@@ -7723,7 +8279,7 @@ exports.FeeTypeController = FeeTypeController = __decorate([
 
 
 /***/ }),
-/* 67 */
+/* 70 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7837,7 +8393,7 @@ exports.FeeTypeService = FeeTypeService = __decorate([
 
 
 /***/ }),
-/* 68 */
+/* 71 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7850,8 +8406,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.QualificationModule = void 0;
 const common_1 = __webpack_require__(5);
-const qualification_controller_1 = __webpack_require__(69);
-const qualification_service_1 = __webpack_require__(70);
+const qualification_controller_1 = __webpack_require__(72);
+const qualification_service_1 = __webpack_require__(73);
 let QualificationModule = class QualificationModule {
 };
 exports.QualificationModule = QualificationModule;
@@ -7864,7 +8420,7 @@ exports.QualificationModule = QualificationModule = __decorate([
 
 
 /***/ }),
-/* 69 */
+/* 72 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -7885,7 +8441,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.QualificationController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const qualification_service_1 = __webpack_require__(70);
+const qualification_service_1 = __webpack_require__(73);
 let QualificationController = class QualificationController {
     constructor(qualificationService) {
         this.qualificationService = qualificationService;
@@ -8004,7 +8560,7 @@ exports.QualificationController = QualificationController = __decorate([
 
 
 /***/ }),
-/* 70 */
+/* 73 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8115,7 +8671,7 @@ exports.QualificationService = QualificationService = __decorate([
 
 
 /***/ }),
-/* 71 */
+/* 74 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8128,8 +8684,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionSessionModule = void 0;
 const common_1 = __webpack_require__(5);
-const admission_session_controller_1 = __webpack_require__(72);
-const admission_session_service_1 = __webpack_require__(73);
+const admission_session_controller_1 = __webpack_require__(75);
+const admission_session_service_1 = __webpack_require__(76);
 let AdmissionSessionModule = class AdmissionSessionModule {
 };
 exports.AdmissionSessionModule = AdmissionSessionModule;
@@ -8142,7 +8698,7 @@ exports.AdmissionSessionModule = AdmissionSessionModule = __decorate([
 
 
 /***/ }),
-/* 72 */
+/* 75 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8163,7 +8719,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionSessionController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const admission_session_service_1 = __webpack_require__(73);
+const admission_session_service_1 = __webpack_require__(76);
 let AdmissionSessionController = class AdmissionSessionController {
     constructor(sessionService) {
         this.sessionService = sessionService;
@@ -8282,7 +8838,7 @@ exports.AdmissionSessionController = AdmissionSessionController = __decorate([
 
 
 /***/ }),
-/* 73 */
+/* 76 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8393,7 +8949,7 @@ exports.AdmissionSessionService = AdmissionSessionService = __decorate([
 
 
 /***/ }),
-/* 74 */
+/* 77 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8406,8 +8962,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionModule = void 0;
 const common_1 = __webpack_require__(5);
-const academic_session_service_1 = __webpack_require__(75);
-const academic_session_controller_1 = __webpack_require__(76);
+const academic_session_service_1 = __webpack_require__(78);
+const academic_session_controller_1 = __webpack_require__(79);
 const prisma_1 = __webpack_require__(6);
 let AcademicSessionModule = class AcademicSessionModule {
 };
@@ -8423,7 +8979,7 @@ exports.AcademicSessionModule = AcademicSessionModule = __decorate([
 
 
 /***/ }),
-/* 75 */
+/* 78 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8587,7 +9143,7 @@ exports.AcademicSessionService = AcademicSessionService = __decorate([
 
 
 /***/ }),
-/* 76 */
+/* 79 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8608,7 +9164,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const academic_session_service_1 = __webpack_require__(75);
+const academic_session_service_1 = __webpack_require__(78);
 let AcademicSessionController = class AcademicSessionController {
     constructor(academicSessionService) {
         this.academicSessionService = academicSessionService;
@@ -8713,7 +9269,7 @@ exports.AcademicSessionController = AcademicSessionController = __decorate([
 
 
 /***/ }),
-/* 77 */
+/* 80 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8726,8 +9282,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramFeeConfigModule = void 0;
 const common_1 = __webpack_require__(5);
-const program_fee_config_controller_1 = __webpack_require__(78);
-const program_fee_config_service_1 = __webpack_require__(79);
+const program_fee_config_controller_1 = __webpack_require__(81);
+const program_fee_config_service_1 = __webpack_require__(82);
 let ProgramFeeConfigModule = class ProgramFeeConfigModule {
 };
 exports.ProgramFeeConfigModule = ProgramFeeConfigModule;
@@ -8740,7 +9296,7 @@ exports.ProgramFeeConfigModule = ProgramFeeConfigModule = __decorate([
 
 
 /***/ }),
-/* 78 */
+/* 81 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -8761,7 +9317,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramFeeConfigController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const program_fee_config_service_1 = __webpack_require__(79);
+const program_fee_config_service_1 = __webpack_require__(82);
 let ProgramFeeConfigController = class ProgramFeeConfigController {
     constructor(feeConfigService) {
         this.feeConfigService = feeConfigService;
@@ -8895,7 +9451,7 @@ exports.ProgramFeeConfigController = ProgramFeeConfigController = __decorate([
 
 
 /***/ }),
-/* 79 */
+/* 82 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9100,7 +9656,7 @@ exports.ProgramFeeConfigService = ProgramFeeConfigService = __decorate([
 
 
 /***/ }),
-/* 80 */
+/* 83 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9114,8 +9670,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CollegeModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const college_controller_1 = __webpack_require__(81);
-const college_service_1 = __webpack_require__(82);
+const college_controller_1 = __webpack_require__(84);
+const college_service_1 = __webpack_require__(85);
 let CollegeModule = class CollegeModule {
 };
 exports.CollegeModule = CollegeModule;
@@ -9130,7 +9686,7 @@ exports.CollegeModule = CollegeModule = __decorate([
 
 
 /***/ }),
-/* 81 */
+/* 84 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9151,7 +9707,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CollegeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const college_service_1 = __webpack_require__(82);
+const college_service_1 = __webpack_require__(85);
 let CollegeController = class CollegeController {
     constructor(collegeService) {
         this.collegeService = collegeService;
@@ -9255,7 +9811,7 @@ exports.CollegeController = CollegeController = __decorate([
 
 
 /***/ }),
-/* 82 */
+/* 85 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9366,7 +9922,7 @@ exports.CollegeService = CollegeService = __decorate([
 
 
 /***/ }),
-/* 83 */
+/* 86 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9379,8 +9935,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ZipcodeModule = void 0;
 const common_1 = __webpack_require__(5);
-const zipcode_service_1 = __webpack_require__(84);
-const zipcode_controller_1 = __webpack_require__(85);
+const zipcode_service_1 = __webpack_require__(87);
+const zipcode_controller_1 = __webpack_require__(88);
 const prisma_1 = __webpack_require__(6);
 let ZipcodeModule = class ZipcodeModule {
 };
@@ -9396,7 +9952,7 @@ exports.ZipcodeModule = ZipcodeModule = __decorate([
 
 
 /***/ }),
-/* 84 */
+/* 87 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9526,7 +10082,7 @@ exports.ZipcodeService = ZipcodeService = __decorate([
 
 
 /***/ }),
-/* 85 */
+/* 88 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9547,7 +10103,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ZipcodeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const zipcode_service_1 = __webpack_require__(84);
+const zipcode_service_1 = __webpack_require__(87);
 let ZipcodeController = class ZipcodeController {
     constructor(zipcodeService) {
         this.zipcodeService = zipcodeService;
@@ -9652,7 +10208,7 @@ exports.ZipcodeController = ZipcodeController = __decorate([
 
 
 /***/ }),
-/* 86 */
+/* 89 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -9665,8 +10221,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramEligibilityModule = void 0;
 const common_1 = __webpack_require__(5);
-const program_eligibility_service_1 = __webpack_require__(87);
-const program_eligibility_controller_1 = __webpack_require__(88);
+const program_eligibility_service_1 = __webpack_require__(90);
+const program_eligibility_controller_1 = __webpack_require__(91);
 const prisma_1 = __webpack_require__(6);
 let ProgramEligibilityModule = class ProgramEligibilityModule {
 };
@@ -9682,7 +10238,7 @@ exports.ProgramEligibilityModule = ProgramEligibilityModule = __decorate([
 
 
 /***/ }),
-/* 87 */
+/* 90 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10052,7 +10608,7 @@ exports.ProgramEligibilityService = ProgramEligibilityService = __decorate([
 
 
 /***/ }),
-/* 88 */
+/* 91 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10073,7 +10629,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramEligibilityController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const program_eligibility_service_1 = __webpack_require__(87);
+const program_eligibility_service_1 = __webpack_require__(90);
 let ProgramEligibilityController = class ProgramEligibilityController {
     constructor(eligibilityService) {
         this.eligibilityService = eligibilityService;
@@ -10193,7 +10749,7 @@ exports.ProgramEligibilityController = ProgramEligibilityController = __decorate
 
 
 /***/ }),
-/* 89 */
+/* 92 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10206,8 +10762,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StreamModule = void 0;
 const common_1 = __webpack_require__(5);
-const stream_service_1 = __webpack_require__(90);
-const stream_controller_1 = __webpack_require__(91);
+const stream_service_1 = __webpack_require__(93);
+const stream_controller_1 = __webpack_require__(94);
 const prisma_1 = __webpack_require__(6);
 let StreamModule = class StreamModule {
 };
@@ -10223,7 +10779,7 @@ exports.StreamModule = StreamModule = __decorate([
 
 
 /***/ }),
-/* 90 */
+/* 93 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10379,7 +10935,7 @@ exports.StreamService = StreamService = __decorate([
 
 
 /***/ }),
-/* 91 */
+/* 94 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10400,7 +10956,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StreamController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const stream_service_1 = __webpack_require__(90);
+const stream_service_1 = __webpack_require__(93);
 let StreamController = class StreamController {
     constructor(streamService) {
         this.streamService = streamService;
@@ -10505,7 +11061,7 @@ exports.StreamController = StreamController = __decorate([
 
 
 /***/ }),
-/* 92 */
+/* 95 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10518,8 +11074,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramSubjectModule = void 0;
 const common_1 = __webpack_require__(5);
-const program_subject_service_1 = __webpack_require__(93);
-const program_subject_controller_1 = __webpack_require__(94);
+const program_subject_service_1 = __webpack_require__(96);
+const program_subject_controller_1 = __webpack_require__(97);
 const prisma_1 = __webpack_require__(6);
 let ProgramSubjectModule = class ProgramSubjectModule {
 };
@@ -10535,7 +11091,7 @@ exports.ProgramSubjectModule = ProgramSubjectModule = __decorate([
 
 
 /***/ }),
-/* 93 */
+/* 96 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10723,7 +11279,7 @@ exports.ProgramSubjectService = ProgramSubjectService = __decorate([
 
 
 /***/ }),
-/* 94 */
+/* 97 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10744,7 +11300,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramSubjectController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const program_subject_service_1 = __webpack_require__(93);
+const program_subject_service_1 = __webpack_require__(96);
 let ProgramSubjectController = class ProgramSubjectController {
     constructor(programSubjectService) {
         this.programSubjectService = programSubjectService;
@@ -10849,7 +11405,7 @@ exports.ProgramSubjectController = ProgramSubjectController = __decorate([
 
 
 /***/ }),
-/* 95 */
+/* 98 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10862,8 +11418,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExaminationDetailsModule = void 0;
 const common_1 = __webpack_require__(5);
-const examination_details_service_1 = __webpack_require__(96);
-const examination_details_controller_1 = __webpack_require__(97);
+const examination_details_service_1 = __webpack_require__(99);
+const examination_details_controller_1 = __webpack_require__(100);
 const prisma_1 = __webpack_require__(6);
 let ExaminationDetailsModule = class ExaminationDetailsModule {
 };
@@ -10879,7 +11435,7 @@ exports.ExaminationDetailsModule = ExaminationDetailsModule = __decorate([
 
 
 /***/ }),
-/* 96 */
+/* 99 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11036,7 +11592,7 @@ exports.ExaminationDetailsService = ExaminationDetailsService = __decorate([
 
 
 /***/ }),
-/* 97 */
+/* 100 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11057,7 +11613,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExaminationDetailsController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const examination_details_service_1 = __webpack_require__(96);
+const examination_details_service_1 = __webpack_require__(99);
 let ExaminationDetailsController = class ExaminationDetailsController {
     constructor(examinationDetailsService) {
         this.examinationDetailsService = examinationDetailsService;
@@ -11162,7 +11718,7 @@ exports.ExaminationDetailsController = ExaminationDetailsController = __decorate
 
 
 /***/ }),
-/* 98 */
+/* 101 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11175,8 +11731,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSchemeModule = void 0;
 const common_1 = __webpack_require__(5);
-const exam_scheme_controller_1 = __webpack_require__(99);
-const exam_scheme_service_1 = __webpack_require__(100);
+const exam_scheme_controller_1 = __webpack_require__(102);
+const exam_scheme_service_1 = __webpack_require__(103);
 let ExamSchemeModule = class ExamSchemeModule {
 };
 exports.ExamSchemeModule = ExamSchemeModule;
@@ -11190,7 +11746,7 @@ exports.ExamSchemeModule = ExamSchemeModule = __decorate([
 
 
 /***/ }),
-/* 99 */
+/* 102 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11211,7 +11767,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSchemeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const exam_scheme_service_1 = __webpack_require__(100);
+const exam_scheme_service_1 = __webpack_require__(103);
 let ExamSchemeController = class ExamSchemeController {
     constructor(examSchemeService) {
         this.examSchemeService = examSchemeService;
@@ -11314,7 +11870,7 @@ exports.ExamSchemeController = ExamSchemeController = __decorate([
 
 
 /***/ }),
-/* 100 */
+/* 103 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11755,7 +12311,7 @@ exports.ExamSchemeService = ExamSchemeService = __decorate([
 
 
 /***/ }),
-/* 101 */
+/* 104 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11768,8 +12324,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperTypeModule = void 0;
 const common_1 = __webpack_require__(5);
-const paper_type_controller_1 = __webpack_require__(102);
-const paper_type_service_1 = __webpack_require__(103);
+const paper_type_controller_1 = __webpack_require__(105);
+const paper_type_service_1 = __webpack_require__(106);
 let PaperTypeModule = class PaperTypeModule {
 };
 exports.PaperTypeModule = PaperTypeModule;
@@ -11783,7 +12339,7 @@ exports.PaperTypeModule = PaperTypeModule = __decorate([
 
 
 /***/ }),
-/* 102 */
+/* 105 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11804,7 +12360,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperTypeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const paper_type_service_1 = __webpack_require__(103);
+const paper_type_service_1 = __webpack_require__(106);
 let PaperTypeController = class PaperTypeController {
     constructor(paperTypeService) {
         this.paperTypeService = paperTypeService;
@@ -11893,7 +12449,7 @@ exports.PaperTypeController = PaperTypeController = __decorate([
 
 
 /***/ }),
-/* 103 */
+/* 106 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11995,7 +12551,7 @@ exports.PaperTypeService = PaperTypeService = __decorate([
 
 
 /***/ }),
-/* 104 */
+/* 107 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12008,8 +12564,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamTypeModule = void 0;
 const common_1 = __webpack_require__(5);
-const exam_type_controller_1 = __webpack_require__(105);
-const exam_type_service_1 = __webpack_require__(106);
+const exam_type_controller_1 = __webpack_require__(108);
+const exam_type_service_1 = __webpack_require__(109);
 let ExamTypeModule = class ExamTypeModule {
 };
 exports.ExamTypeModule = ExamTypeModule;
@@ -12023,7 +12579,7 @@ exports.ExamTypeModule = ExamTypeModule = __decorate([
 
 
 /***/ }),
-/* 105 */
+/* 108 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12044,7 +12600,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamTypeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const exam_type_service_1 = __webpack_require__(106);
+const exam_type_service_1 = __webpack_require__(109);
 let ExamTypeController = class ExamTypeController {
     constructor(examTypeService) {
         this.examTypeService = examTypeService;
@@ -12133,7 +12689,7 @@ exports.ExamTypeController = ExamTypeController = __decorate([
 
 
 /***/ }),
-/* 106 */
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12233,7 +12789,7 @@ exports.ExamTypeService = ExamTypeService = __decorate([
 
 
 /***/ }),
-/* 107 */
+/* 110 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12246,8 +12802,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.YearModule = void 0;
 const common_1 = __webpack_require__(5);
-const year_controller_1 = __webpack_require__(108);
-const year_service_1 = __webpack_require__(109);
+const year_controller_1 = __webpack_require__(111);
+const year_service_1 = __webpack_require__(112);
 let YearModule = class YearModule {
 };
 exports.YearModule = YearModule;
@@ -12261,7 +12817,7 @@ exports.YearModule = YearModule = __decorate([
 
 
 /***/ }),
-/* 108 */
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12282,7 +12838,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.YearController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const year_service_1 = __webpack_require__(109);
+const year_service_1 = __webpack_require__(112);
 let YearController = class YearController {
     constructor(yearService) {
         this.yearService = yearService;
@@ -12371,7 +12927,7 @@ exports.YearController = YearController = __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12520,7 +13076,7 @@ exports.YearService = YearService = __decorate([
 
 
 /***/ }),
-/* 110 */
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12533,8 +13089,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemesterModule = void 0;
 const common_1 = __webpack_require__(5);
-const semester_controller_1 = __webpack_require__(111);
-const semester_service_1 = __webpack_require__(112);
+const semester_controller_1 = __webpack_require__(114);
+const semester_service_1 = __webpack_require__(115);
 let SemesterModule = class SemesterModule {
 };
 exports.SemesterModule = SemesterModule;
@@ -12548,7 +13104,7 @@ exports.SemesterModule = SemesterModule = __decorate([
 
 
 /***/ }),
-/* 111 */
+/* 114 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12569,7 +13125,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemesterController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const semester_service_1 = __webpack_require__(112);
+const semester_service_1 = __webpack_require__(115);
 let SemesterController = class SemesterController {
     constructor(semesterService) {
         this.semesterService = semesterService;
@@ -12658,7 +13214,7 @@ exports.SemesterController = SemesterController = __decorate([
 
 
 /***/ }),
-/* 112 */
+/* 115 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12823,7 +13379,7 @@ exports.SemesterService = SemesterService = __decorate([
 
 
 /***/ }),
-/* 113 */
+/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12836,8 +13392,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperDetailModule = void 0;
 const common_1 = __webpack_require__(5);
-const paper_detail_controller_1 = __webpack_require__(114);
-const paper_detail_service_1 = __webpack_require__(115);
+const paper_detail_controller_1 = __webpack_require__(117);
+const paper_detail_service_1 = __webpack_require__(118);
 let PaperDetailModule = class PaperDetailModule {
 };
 exports.PaperDetailModule = PaperDetailModule;
@@ -12851,7 +13407,7 @@ exports.PaperDetailModule = PaperDetailModule = __decorate([
 
 
 /***/ }),
-/* 114 */
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12872,7 +13428,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperDetailController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const paper_detail_service_1 = __webpack_require__(115);
+const paper_detail_service_1 = __webpack_require__(118);
 let PaperDetailController = class PaperDetailController {
     constructor(paperDetailService) {
         this.paperDetailService = paperDetailService;
@@ -12961,7 +13517,7 @@ exports.PaperDetailController = PaperDetailController = __decorate([
 
 
 /***/ }),
-/* 115 */
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13218,7 +13774,7 @@ exports.PaperDetailService = PaperDetailService = __decorate([
 
 
 /***/ }),
-/* 116 */
+/* 119 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13231,8 +13787,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSubjectModule = void 0;
 const common_1 = __webpack_require__(5);
-const exam_subject_controller_1 = __webpack_require__(117);
-const exam_subject_service_1 = __webpack_require__(118);
+const exam_subject_controller_1 = __webpack_require__(120);
+const exam_subject_service_1 = __webpack_require__(121);
 let ExamSubjectModule = class ExamSubjectModule {
 };
 exports.ExamSubjectModule = ExamSubjectModule;
@@ -13246,7 +13802,7 @@ exports.ExamSubjectModule = ExamSubjectModule = __decorate([
 
 
 /***/ }),
-/* 117 */
+/* 120 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13267,7 +13823,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSubjectController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const exam_subject_service_1 = __webpack_require__(118);
+const exam_subject_service_1 = __webpack_require__(121);
 let ExamSubjectController = class ExamSubjectController {
     constructor(examSubjectService) {
         this.examSubjectService = examSubjectService;
@@ -13356,7 +13912,7 @@ exports.ExamSubjectController = ExamSubjectController = __decorate([
 
 
 /***/ }),
-/* 118 */
+/* 121 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13504,7 +14060,7 @@ exports.ExamSubjectService = ExamSubjectService = __decorate([
 
 
 /***/ }),
-/* 119 */
+/* 122 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13517,8 +14073,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RoleModule = void 0;
 const common_1 = __webpack_require__(5);
-const role_controller_1 = __webpack_require__(120);
-const role_service_1 = __webpack_require__(121);
+const role_controller_1 = __webpack_require__(123);
+const role_service_1 = __webpack_require__(124);
 let RoleModule = class RoleModule {
 };
 exports.RoleModule = RoleModule;
@@ -13532,7 +14088,7 @@ exports.RoleModule = RoleModule = __decorate([
 
 
 /***/ }),
-/* 120 */
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13553,7 +14109,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RoleController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const role_service_1 = __webpack_require__(121);
+const role_service_1 = __webpack_require__(124);
 let RoleController = class RoleController {
     constructor(roleService) {
         this.roleService = roleService;
@@ -13672,7 +14228,7 @@ exports.RoleController = RoleController = __decorate([
 
 
 /***/ }),
-/* 121 */
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13790,7 +14346,7 @@ exports.RoleService = RoleService = __decorate([
 
 
 /***/ }),
-/* 122 */
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13803,21 +14359,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.WebsiteModule = void 0;
 const common_1 = __webpack_require__(5);
-const campus_quick_link_module_1 = __webpack_require__(123);
-const latest_update_module_1 = __webpack_require__(126);
-const admission_enquiry_module_1 = __webpack_require__(129);
-const hero_section_module_1 = __webpack_require__(132);
-const notice_board_module_1 = __webpack_require__(135);
-const accreditation_slider_module_1 = __webpack_require__(138);
-const top_achiever_module_1 = __webpack_require__(141);
-const image_gallery_module_1 = __webpack_require__(144);
-const video_gallery_module_1 = __webpack_require__(147);
-const contact_enquiry_module_1 = __webpack_require__(150);
-const stats_counter_module_1 = __webpack_require__(153);
-const testimonial_module_1 = __webpack_require__(156);
-const header_button_module_1 = __webpack_require__(159);
-const committee_module_1 = __webpack_require__(162);
-const committee_submenu_module_1 = __webpack_require__(165);
+const campus_quick_link_module_1 = __webpack_require__(126);
+const latest_update_module_1 = __webpack_require__(129);
+const admission_enquiry_module_1 = __webpack_require__(132);
+const hero_section_module_1 = __webpack_require__(135);
+const notice_board_module_1 = __webpack_require__(138);
+const accreditation_slider_module_1 = __webpack_require__(141);
+const top_achiever_module_1 = __webpack_require__(144);
+const image_gallery_module_1 = __webpack_require__(147);
+const video_gallery_module_1 = __webpack_require__(150);
+const contact_enquiry_module_1 = __webpack_require__(153);
+const stats_counter_module_1 = __webpack_require__(156);
+const testimonial_module_1 = __webpack_require__(159);
+const header_button_module_1 = __webpack_require__(162);
+const committee_module_1 = __webpack_require__(165);
+const committee_submenu_module_1 = __webpack_require__(168);
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
@@ -13830,7 +14386,7 @@ exports.WebsiteModule = WebsiteModule = __decorate([
 
 
 /***/ }),
-/* 123 */
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13844,8 +14400,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CampusQuickLinkModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const campus_quick_link_controller_1 = __webpack_require__(124);
-const campus_quick_link_service_1 = __webpack_require__(125);
+const campus_quick_link_controller_1 = __webpack_require__(127);
+const campus_quick_link_service_1 = __webpack_require__(128);
 let CampusQuickLinkModule = class CampusQuickLinkModule {
 };
 exports.CampusQuickLinkModule = CampusQuickLinkModule;
@@ -13860,7 +14416,7 @@ exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
 
 
 /***/ }),
-/* 124 */
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13881,7 +14437,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CampusQuickLinkController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const campus_quick_link_service_1 = __webpack_require__(125);
+const campus_quick_link_service_1 = __webpack_require__(128);
 let CampusQuickLinkController = class CampusQuickLinkController {
     constructor(campusQuickLinkService) {
         this.campusQuickLinkService = campusQuickLinkService;
@@ -13985,7 +14541,7 @@ exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14074,7 +14630,7 @@ exports.CampusQuickLinkService = CampusQuickLinkService = __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14088,8 +14644,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LatestUpdateModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const latest_update_controller_1 = __webpack_require__(127);
-const latest_update_service_1 = __webpack_require__(128);
+const latest_update_controller_1 = __webpack_require__(130);
+const latest_update_service_1 = __webpack_require__(131);
 let LatestUpdateModule = class LatestUpdateModule {
 };
 exports.LatestUpdateModule = LatestUpdateModule;
@@ -14104,7 +14660,7 @@ exports.LatestUpdateModule = LatestUpdateModule = __decorate([
 
 
 /***/ }),
-/* 127 */
+/* 130 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14125,7 +14681,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LatestUpdateController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const latest_update_service_1 = __webpack_require__(128);
+const latest_update_service_1 = __webpack_require__(131);
 let LatestUpdateController = class LatestUpdateController {
     constructor(latestUpdateService) {
         this.latestUpdateService = latestUpdateService;
@@ -14229,7 +14785,7 @@ exports.LatestUpdateController = LatestUpdateController = __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 131 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14342,7 +14898,7 @@ exports.LatestUpdateService = LatestUpdateService = __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14356,8 +14912,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const admission_enquiry_controller_1 = __webpack_require__(130);
-const admission_enquiry_service_1 = __webpack_require__(131);
+const admission_enquiry_controller_1 = __webpack_require__(133);
+const admission_enquiry_service_1 = __webpack_require__(134);
 let AdmissionEnquiryModule = class AdmissionEnquiryModule {
 };
 exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
@@ -14372,7 +14928,7 @@ exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 130 */
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14393,7 +14949,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const admission_enquiry_service_1 = __webpack_require__(131);
+const admission_enquiry_service_1 = __webpack_require__(134);
 let AdmissionEnquiryController = class AdmissionEnquiryController {
     constructor(admissionEnquiryService) {
         this.admissionEnquiryService = admissionEnquiryService;
@@ -14497,7 +15053,7 @@ exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
 
 
 /***/ }),
-/* 131 */
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14638,7 +15194,7 @@ exports.AdmissionEnquiryService = AdmissionEnquiryService = __decorate([
 
 
 /***/ }),
-/* 132 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14652,8 +15208,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const hero_section_controller_1 = __webpack_require__(133);
-const hero_section_service_1 = __webpack_require__(134);
+const hero_section_controller_1 = __webpack_require__(136);
+const hero_section_service_1 = __webpack_require__(137);
 let HeroSectionModule = class HeroSectionModule {
 };
 exports.HeroSectionModule = HeroSectionModule;
@@ -14668,7 +15224,7 @@ exports.HeroSectionModule = HeroSectionModule = __decorate([
 
 
 /***/ }),
-/* 133 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14689,7 +15245,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const hero_section_service_1 = __webpack_require__(134);
+const hero_section_service_1 = __webpack_require__(137);
 let HeroSectionController = class HeroSectionController {
     constructor(heroSectionService) {
         this.heroSectionService = heroSectionService;
@@ -14793,7 +15349,7 @@ exports.HeroSectionController = HeroSectionController = __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14909,7 +15465,7 @@ exports.HeroSectionService = HeroSectionService = __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14923,8 +15479,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const notice_board_controller_1 = __webpack_require__(136);
-const notice_board_service_1 = __webpack_require__(137);
+const notice_board_controller_1 = __webpack_require__(139);
+const notice_board_service_1 = __webpack_require__(140);
 let NoticeBoardModule = class NoticeBoardModule {
 };
 exports.NoticeBoardModule = NoticeBoardModule;
@@ -14939,7 +15495,7 @@ exports.NoticeBoardModule = NoticeBoardModule = __decorate([
 
 
 /***/ }),
-/* 136 */
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14960,7 +15516,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const notice_board_service_1 = __webpack_require__(137);
+const notice_board_service_1 = __webpack_require__(140);
 let NoticeBoardController = class NoticeBoardController {
     constructor(noticeBoardService) {
         this.noticeBoardService = noticeBoardService;
@@ -15064,7 +15620,7 @@ exports.NoticeBoardController = NoticeBoardController = __decorate([
 
 
 /***/ }),
-/* 137 */
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15180,7 +15736,7 @@ exports.NoticeBoardService = NoticeBoardService = __decorate([
 
 
 /***/ }),
-/* 138 */
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15194,8 +15750,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AccreditationSliderModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const accreditation_slider_controller_1 = __webpack_require__(139);
-const accreditation_slider_service_1 = __webpack_require__(140);
+const accreditation_slider_controller_1 = __webpack_require__(142);
+const accreditation_slider_service_1 = __webpack_require__(143);
 let AccreditationSliderModule = class AccreditationSliderModule {
 };
 exports.AccreditationSliderModule = AccreditationSliderModule;
@@ -15210,7 +15766,7 @@ exports.AccreditationSliderModule = AccreditationSliderModule = __decorate([
 
 
 /***/ }),
-/* 139 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15231,7 +15787,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AccreditationSliderController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const accreditation_slider_service_1 = __webpack_require__(140);
+const accreditation_slider_service_1 = __webpack_require__(143);
 let AccreditationSliderController = class AccreditationSliderController {
     constructor(accreditationSliderService) {
         this.accreditationSliderService = accreditationSliderService;
@@ -15335,7 +15891,7 @@ exports.AccreditationSliderController = AccreditationSliderController = __decora
 
 
 /***/ }),
-/* 140 */
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15433,7 +15989,7 @@ exports.AccreditationSliderService = AccreditationSliderService = __decorate([
 
 
 /***/ }),
-/* 141 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15447,8 +16003,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const top_achiever_controller_1 = __webpack_require__(142);
-const top_achiever_service_1 = __webpack_require__(143);
+const top_achiever_controller_1 = __webpack_require__(145);
+const top_achiever_service_1 = __webpack_require__(146);
 let TopAchieverModule = class TopAchieverModule {
 };
 exports.TopAchieverModule = TopAchieverModule;
@@ -15463,7 +16019,7 @@ exports.TopAchieverModule = TopAchieverModule = __decorate([
 
 
 /***/ }),
-/* 142 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15484,7 +16040,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const top_achiever_service_1 = __webpack_require__(143);
+const top_achiever_service_1 = __webpack_require__(146);
 let TopAchieverController = class TopAchieverController {
     constructor(topAchieverService) {
         this.topAchieverService = topAchieverService;
@@ -15588,7 +16144,7 @@ exports.TopAchieverController = TopAchieverController = __decorate([
 
 
 /***/ }),
-/* 143 */
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15701,7 +16257,7 @@ exports.TopAchieverService = TopAchieverService = __decorate([
 
 
 /***/ }),
-/* 144 */
+/* 147 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15715,8 +16271,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageGalleryModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const image_gallery_controller_1 = __webpack_require__(145);
-const image_gallery_service_1 = __webpack_require__(146);
+const image_gallery_controller_1 = __webpack_require__(148);
+const image_gallery_service_1 = __webpack_require__(149);
 let ImageGalleryModule = class ImageGalleryModule {
 };
 exports.ImageGalleryModule = ImageGalleryModule;
@@ -15731,7 +16287,7 @@ exports.ImageGalleryModule = ImageGalleryModule = __decorate([
 
 
 /***/ }),
-/* 145 */
+/* 148 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15752,7 +16308,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageGalleryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const image_gallery_service_1 = __webpack_require__(146);
+const image_gallery_service_1 = __webpack_require__(149);
 let ImageGalleryController = class ImageGalleryController {
     constructor(imageGalleryService) {
         this.imageGalleryService = imageGalleryService;
@@ -15856,7 +16412,7 @@ exports.ImageGalleryController = ImageGalleryController = __decorate([
 
 
 /***/ }),
-/* 146 */
+/* 149 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15967,7 +16523,7 @@ exports.ImageGalleryService = ImageGalleryService = __decorate([
 
 
 /***/ }),
-/* 147 */
+/* 150 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15981,8 +16537,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const video_gallery_controller_1 = __webpack_require__(148);
-const video_gallery_service_1 = __webpack_require__(149);
+const video_gallery_controller_1 = __webpack_require__(151);
+const video_gallery_service_1 = __webpack_require__(152);
 let VideoGalleryModule = class VideoGalleryModule {
 };
 exports.VideoGalleryModule = VideoGalleryModule;
@@ -15997,7 +16553,7 @@ exports.VideoGalleryModule = VideoGalleryModule = __decorate([
 
 
 /***/ }),
-/* 148 */
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16018,7 +16574,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const video_gallery_service_1 = __webpack_require__(149);
+const video_gallery_service_1 = __webpack_require__(152);
 let VideoGalleryController = class VideoGalleryController {
     constructor(videoGalleryService) {
         this.videoGalleryService = videoGalleryService;
@@ -16122,7 +16678,7 @@ exports.VideoGalleryController = VideoGalleryController = __decorate([
 
 
 /***/ }),
-/* 149 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16232,7 +16788,7 @@ exports.VideoGalleryService = VideoGalleryService = __decorate([
 
 
 /***/ }),
-/* 150 */
+/* 153 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16246,8 +16802,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ContactEnquiryModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const contact_enquiry_controller_1 = __webpack_require__(151);
-const contact_enquiry_service_1 = __webpack_require__(152);
+const contact_enquiry_controller_1 = __webpack_require__(154);
+const contact_enquiry_service_1 = __webpack_require__(155);
 let ContactEnquiryModule = class ContactEnquiryModule {
 };
 exports.ContactEnquiryModule = ContactEnquiryModule;
@@ -16262,7 +16818,7 @@ exports.ContactEnquiryModule = ContactEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 151 */
+/* 154 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16283,7 +16839,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ContactEnquiryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const contact_enquiry_service_1 = __webpack_require__(152);
+const contact_enquiry_service_1 = __webpack_require__(155);
 let ContactEnquiryController = class ContactEnquiryController {
     constructor(contactEnquiryService) {
         this.contactEnquiryService = contactEnquiryService;
@@ -16387,7 +16943,7 @@ exports.ContactEnquiryController = ContactEnquiryController = __decorate([
 
 
 /***/ }),
-/* 152 */
+/* 155 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16494,7 +17050,7 @@ exports.ContactEnquiryService = ContactEnquiryService = __decorate([
 
 
 /***/ }),
-/* 153 */
+/* 156 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16508,8 +17064,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatsCounterModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const stats_counter_controller_1 = __webpack_require__(154);
-const stats_counter_service_1 = __webpack_require__(155);
+const stats_counter_controller_1 = __webpack_require__(157);
+const stats_counter_service_1 = __webpack_require__(158);
 let StatsCounterModule = class StatsCounterModule {
 };
 exports.StatsCounterModule = StatsCounterModule;
@@ -16524,7 +17080,7 @@ exports.StatsCounterModule = StatsCounterModule = __decorate([
 
 
 /***/ }),
-/* 154 */
+/* 157 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16545,7 +17101,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatsCounterController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const stats_counter_service_1 = __webpack_require__(155);
+const stats_counter_service_1 = __webpack_require__(158);
 let StatsCounterController = class StatsCounterController {
     constructor(statsCounterService) {
         this.statsCounterService = statsCounterService;
@@ -16649,7 +17205,7 @@ exports.StatsCounterController = StatsCounterController = __decorate([
 
 
 /***/ }),
-/* 155 */
+/* 158 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16756,7 +17312,7 @@ exports.StatsCounterService = StatsCounterService = __decorate([
 
 
 /***/ }),
-/* 156 */
+/* 159 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16770,8 +17326,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestimonialModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const testimonial_controller_1 = __webpack_require__(157);
-const testimonial_service_1 = __webpack_require__(158);
+const testimonial_controller_1 = __webpack_require__(160);
+const testimonial_service_1 = __webpack_require__(161);
 let TestimonialModule = class TestimonialModule {
 };
 exports.TestimonialModule = TestimonialModule;
@@ -16786,7 +17342,7 @@ exports.TestimonialModule = TestimonialModule = __decorate([
 
 
 /***/ }),
-/* 157 */
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16807,7 +17363,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestimonialController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const testimonial_service_1 = __webpack_require__(158);
+const testimonial_service_1 = __webpack_require__(161);
 let TestimonialController = class TestimonialController {
     constructor(testimonialService) {
         this.testimonialService = testimonialService;
@@ -16911,7 +17467,7 @@ exports.TestimonialController = TestimonialController = __decorate([
 
 
 /***/ }),
-/* 158 */
+/* 161 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17018,7 +17574,7 @@ exports.TestimonialService = TestimonialService = __decorate([
 
 
 /***/ }),
-/* 159 */
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17031,8 +17587,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderButtonModule = void 0;
 const common_1 = __webpack_require__(5);
-const header_button_controller_1 = __webpack_require__(160);
-const header_button_service_1 = __webpack_require__(161);
+const header_button_controller_1 = __webpack_require__(163);
+const header_button_service_1 = __webpack_require__(164);
 let HeaderButtonModule = class HeaderButtonModule {
 };
 exports.HeaderButtonModule = HeaderButtonModule;
@@ -17046,7 +17602,7 @@ exports.HeaderButtonModule = HeaderButtonModule = __decorate([
 
 
 /***/ }),
-/* 160 */
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17067,7 +17623,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderButtonController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const header_button_service_1 = __webpack_require__(161);
+const header_button_service_1 = __webpack_require__(164);
 let HeaderButtonController = class HeaderButtonController {
     constructor(headerButtonService) {
         this.headerButtonService = headerButtonService;
@@ -17171,7 +17727,7 @@ exports.HeaderButtonController = HeaderButtonController = __decorate([
 
 
 /***/ }),
-/* 161 */
+/* 164 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17275,7 +17831,7 @@ exports.HeaderButtonService = HeaderButtonService = __decorate([
 
 
 /***/ }),
-/* 162 */
+/* 165 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17288,8 +17844,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeModule = void 0;
 const common_1 = __webpack_require__(5);
-const committee_controller_1 = __webpack_require__(163);
-const committee_service_1 = __webpack_require__(164);
+const committee_controller_1 = __webpack_require__(166);
+const committee_service_1 = __webpack_require__(167);
 let CommitteeModule = class CommitteeModule {
 };
 exports.CommitteeModule = CommitteeModule;
@@ -17303,7 +17859,7 @@ exports.CommitteeModule = CommitteeModule = __decorate([
 
 
 /***/ }),
-/* 163 */
+/* 166 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17324,7 +17880,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const committee_service_1 = __webpack_require__(164);
+const committee_service_1 = __webpack_require__(167);
 let CommitteeController = class CommitteeController {
     constructor(committeeService) {
         this.committeeService = committeeService;
@@ -17413,7 +17969,7 @@ exports.CommitteeController = CommitteeController = __decorate([
 
 
 /***/ }),
-/* 164 */
+/* 167 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17505,7 +18061,7 @@ exports.CommitteeService = CommitteeService = __decorate([
 
 
 /***/ }),
-/* 165 */
+/* 168 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17518,8 +18074,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeSubmenuModule = void 0;
 const common_1 = __webpack_require__(5);
-const committee_submenu_controller_1 = __webpack_require__(166);
-const committee_submenu_service_1 = __webpack_require__(167);
+const committee_submenu_controller_1 = __webpack_require__(169);
+const committee_submenu_service_1 = __webpack_require__(170);
 let CommitteeSubmenuModule = class CommitteeSubmenuModule {
 };
 exports.CommitteeSubmenuModule = CommitteeSubmenuModule;
@@ -17533,7 +18089,7 @@ exports.CommitteeSubmenuModule = CommitteeSubmenuModule = __decorate([
 
 
 /***/ }),
-/* 166 */
+/* 169 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17554,7 +18110,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeSubmenuController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const committee_submenu_service_1 = __webpack_require__(167);
+const committee_submenu_service_1 = __webpack_require__(170);
 let CommitteeSubmenuController = class CommitteeSubmenuController {
     constructor(committeeSubmenuService) {
         this.committeeSubmenuService = committeeSubmenuService;
@@ -17659,7 +18215,7 @@ exports.CommitteeSubmenuController = CommitteeSubmenuController = __decorate([
 
 
 /***/ }),
-/* 167 */
+/* 170 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17770,7 +18326,7 @@ exports.CommitteeSubmenuService = CommitteeSubmenuService = __decorate([
 
 
 /***/ }),
-/* 168 */
+/* 171 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17783,7 +18339,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminModule = void 0;
 const common_1 = __webpack_require__(5);
-const admin_login_module_1 = __webpack_require__(169);
+const admin_login_module_1 = __webpack_require__(172);
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -17796,7 +18352,7 @@ exports.AdminModule = AdminModule = __decorate([
 
 
 /***/ }),
-/* 169 */
+/* 172 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17810,8 +18366,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminLoginModule = void 0;
 const common_1 = __webpack_require__(5);
 const jwt_1 = __webpack_require__(12);
-const admin_login_controller_1 = __webpack_require__(170);
-const admin_login_service_1 = __webpack_require__(171);
+const admin_login_controller_1 = __webpack_require__(173);
+const admin_login_service_1 = __webpack_require__(174);
 let AdminLoginModule = class AdminLoginModule {
 };
 exports.AdminLoginModule = AdminLoginModule;
@@ -17831,7 +18387,7 @@ exports.AdminLoginModule = AdminLoginModule = __decorate([
 
 
 /***/ }),
-/* 170 */
+/* 173 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17852,7 +18408,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminLoginController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const admin_login_service_1 = __webpack_require__(171);
+const admin_login_service_1 = __webpack_require__(174);
 let AdminLoginController = class AdminLoginController {
     constructor(adminLoginService) {
         this.adminLoginService = adminLoginService;
@@ -18020,7 +18576,7 @@ exports.AdminLoginController = AdminLoginController = __decorate([
 
 
 /***/ }),
-/* 171 */
+/* 174 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 

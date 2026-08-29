@@ -68,136 +68,194 @@ export class StudentAcademicService {
     programSubjectIds?: number[],
     hasSportCertificate?: boolean,
   ) {
-    return this.prisma.$transaction(async (tx) => {
-      const student = await tx.student.findFirst({
-        where: { StudentRegistrationId: Number(studentId), IsDeleted: false },
-      });
-      if (!student) {
-        throw new NotFoundException(`Student with ID ${studentId} not found`);
-      }
+    // Live/remote MySQL is slower than local — default 5s interactive tx times out.
+    return this.prisma.$transaction(
+      async (tx) => {
+        if (programId === undefined || programId === null) {
+          throw new BadRequestException('programId is required');
+        }
 
-      if (programId === undefined || programId === null) {
-        throw new BadRequestException('programId is required');
-      }
+        const sid = Number(studentId);
+        const pid = Number(programId);
 
-      const program = await tx.program.findFirst({
-        where: { programId: Number(programId), IsDeleted: false },
-      });
-      if (!program) {
-        throw new NotFoundException(`Program with ID ${programId} not found`);
-      }
-
-      const activeSession = await tx.admissionSession.findFirst({
-        where: { IsActive: true, IsDeleted: false },
-        orderBy: { CreatedOn: 'desc' },
-      });
-      if (!activeSession) {
-        throw new NotFoundException(
-          'No active admission session found. Please activate a session in masters.',
-        );
-      }
-
-      const assignedProgramId = program.programId;
-      const assignedAdmissionSessionId = activeSession.admissionSessionId;
-      const assignedAdmissionSessionName = activeSession.admissionSessionName;
-
-      // Sport certificate applies only to B.P.Ed. (programCode "6"); otherwise always false
-      const isBped = String(program.programCode || '').trim() === '6';
-      const sportFlag = isBped ? Boolean(hasSportCertificate) : false;
-
-      // First academic save → Year 1 + Sem 1. Later promote keeps existing values.
-      let assignedYearId = student.yearId ?? null;
-      let assignedSemId = student.semId ?? null;
-      let assignedYearName: string | null = null;
-      let assignedSemesterName: string | null = null;
-
-      if (!assignedYearId || !assignedSemId) {
-        const first = await resolveFirstYearAndSemester(tx);
-        assignedYearId = assignedYearId || first.yearId;
-        assignedSemId = assignedSemId || first.semId;
-        assignedYearName = first.yearName;
-        assignedSemesterName = first.semesterName;
-      } else {
-        const [y, s] = await Promise.all([
-          tx.yearMaster.findFirst({
-            where: { yearId: assignedYearId, IsDeleted: false },
+        const [student, program, activeSession] = await Promise.all([
+          tx.student.findFirst({
+            where: { StudentRegistrationId: sid, IsDeleted: false },
           }),
-          tx.semesterMaster.findFirst({
-            where: { semId: assignedSemId, IsDeleted: false },
+          tx.program.findFirst({
+            where: { programId: pid, IsDeleted: false },
+          }),
+          tx.admissionSession.findFirst({
+            where: { IsActive: true, IsDeleted: false },
+            orderBy: { CreatedOn: 'desc' },
           }),
         ]);
-        assignedYearName = y?.yearName ?? null;
-        assignedSemesterName = s?.semesterName ?? null;
-      }
 
-      await tx.student.update({
-        where: { StudentRegistrationId: Number(studentId) },
-        data: {
-          programId: assignedProgramId,
-          admissionSessionId: assignedAdmissionSessionId,
-          yearId: assignedYearId,
-          semId: assignedSemId,
-          hasSportCertificate: sportFlag,
-          UpdatedBy: CreatedBy || 'System',
-        },
-      });
+        if (!student) {
+          throw new NotFoundException(`Student with ID ${studentId} not found`);
+        }
+        if (!program) {
+          throw new NotFoundException(`Program with ID ${programId} not found`);
+        }
+        if (!activeSession) {
+          throw new NotFoundException(
+            'No active admission session found. Please activate a session in masters.',
+          );
+        }
 
-      // 1. Delete existing academic details for this student (cascades to subjects)
-      await tx.studentAcademicDetail.deleteMany({
-        where: { studentId: Number(studentId) },
-      });
+        const assignedProgramId = program.programId;
+        const assignedAdmissionSessionId = activeSession.admissionSessionId;
+        const assignedAdmissionSessionName = activeSession.admissionSessionName;
 
-      // 2. Insert new academic details
-      const createdDetails = [];
-      for (const qual of qualifications) {
-        const computed = computeAcademicResult({
-          marksType: qual.marksType,
-          maxMarks: qual.maxMarks,
-          obtainedMarks: qual.obtainedMarks,
-          percentage: qual.percentage,
-        });
-        const detail = await tx.studentAcademicDetail.create({
+        // Sport certificate applies only to B.P.Ed. (programCode "6"); otherwise always false
+        const isBped = String(program.programCode || '').trim() === '6';
+        const sportFlag = isBped ? Boolean(hasSportCertificate) : false;
+
+        // First academic save → Year 1 + Sem 1. Later promote keeps existing values.
+        let assignedYearId = student.yearId ?? null;
+        let assignedSemId = student.semId ?? null;
+        let assignedYearName: string | null = null;
+        let assignedSemesterName: string | null = null;
+
+        if (!assignedYearId || !assignedSemId) {
+          const first = await resolveFirstYearAndSemester(tx);
+          assignedYearId = assignedYearId || first.yearId;
+          assignedSemId = assignedSemId || first.semId;
+          assignedYearName = first.yearName;
+          assignedSemesterName = first.semesterName;
+        } else {
+          const [y, s] = await Promise.all([
+            tx.yearMaster.findFirst({
+              where: { yearId: assignedYearId, IsDeleted: false },
+            }),
+            tx.semesterMaster.findFirst({
+              where: { semId: assignedSemId, IsDeleted: false },
+            }),
+          ]);
+          assignedYearName = y?.yearName ?? null;
+          assignedSemesterName = s?.semesterName ?? null;
+        }
+
+        const programSubjectIdList = Array.isArray(programSubjectIds)
+          ? [
+              ...new Set(
+                programSubjectIds
+                  .map((id) => Number(id))
+                  .filter((id) => Number.isFinite(id) && id > 0),
+              ),
+            ]
+          : null;
+
+        // Validate program subjects before heavy writes (fails fast)
+        if (programSubjectIdList && programSubjectIdList.length > 0) {
+          const masters = await tx.programSubjectMaster.findMany({
+            where: {
+              programSubjectId: { in: programSubjectIdList },
+              programId: assignedProgramId,
+              IsDeleted: false,
+            },
+            select: { programSubjectId: true },
+          });
+          const allowed = new Set(masters.map((m) => m.programSubjectId));
+          if (programSubjectIdList.some((id) => !allowed.has(id))) {
+            throw new BadRequestException(
+              'One or more program subjects are invalid for this program',
+            );
+          }
+        }
+
+        await tx.student.update({
+          where: { StudentRegistrationId: sid },
           data: {
-            studentId: Number(studentId),
-            qualificationId: Number(qual.qualificationId),
-            boardId: Number(qual.boardId),
-            schoolName: qual.schoolName,
-            passingYear: Number(qual.passingYear),
-            rollNo: qual.rollNo,
-            resultStatus: qual.resultStatus,
+            programId: assignedProgramId,
+            admissionSessionId: assignedAdmissionSessionId,
+            yearId: assignedYearId,
+            semId: assignedSemId,
+            hasSportCertificate: sportFlag,
+            UpdatedBy: CreatedBy || 'System',
+          },
+        });
+
+        // Overwrite academic rows (cascades to subjects)
+        await tx.studentAcademicDetail.deleteMany({
+          where: { studentId: sid },
+        });
+
+        // Create without heavy includes — one fetch at end (saves round-trips on live DB)
+        for (const qual of qualifications || []) {
+          const computed = computeAcademicResult({
             marksType: qual.marksType,
-            maxMarks: Number(qual.maxMarks),
-            obtainedMarks: Number(qual.obtainedMarks),
-            percentage: computed.percentage,
-            division: qual.division || computed.division,
-            grade: qual.grade || computed.grade,
-            stream: qual.stream || null,
-            CreatedBy: CreatedBy || 'System',
-            IsActive: true,
-            IsDeleted: false,
-            subjects: {
-              create: (qual.subjects || []).map((sub: any) => {
-                const subComputed = computeAcademicResult({
-                  marksType: 'Percentage',
-                  maxMarks: sub.maxMarks,
-                  obtainedMarks: sub.obtainedMarks,
-                });
-                return {
-                subjectId: Number(sub.subjectId),
-                maxMarks: Number(sub.maxMarks),
-                minMarks: Number(sub.minMarks || 33),
-                obtainedMarks: Number(sub.obtainedMarks),
-                grade: sub.grade || subComputed.grade,
-                practicalMarks: sub.practicalMarks ? Number(sub.practicalMarks) : null,
-                theoryMarks: sub.theoryMarks ? Number(sub.theoryMarks) : null,
-                isOptional: !!sub.isOptional,
+            maxMarks: qual.maxMarks,
+            obtainedMarks: qual.obtainedMarks,
+            percentage: qual.percentage,
+          });
+          await tx.studentAcademicDetail.create({
+            data: {
+              studentId: sid,
+              qualificationId: Number(qual.qualificationId),
+              boardId: Number(qual.boardId),
+              schoolName: qual.schoolName,
+              passingYear: Number(qual.passingYear),
+              rollNo: qual.rollNo,
+              resultStatus: qual.resultStatus,
+              marksType: qual.marksType,
+              maxMarks: Number(qual.maxMarks),
+              obtainedMarks: Number(qual.obtainedMarks),
+              percentage: computed.percentage,
+              division: qual.division || computed.division,
+              grade: qual.grade || computed.grade,
+              stream: qual.stream || null,
+              CreatedBy: CreatedBy || 'System',
+              IsActive: true,
+              IsDeleted: false,
+              subjects: {
+                create: (qual.subjects || []).map((sub: any) => {
+                  const subComputed = computeAcademicResult({
+                    marksType: 'Percentage',
+                    maxMarks: sub.maxMarks,
+                    obtainedMarks: sub.obtainedMarks,
+                  });
+                  return {
+                    subjectId: Number(sub.subjectId),
+                    maxMarks: Number(sub.maxMarks),
+                    minMarks: Number(sub.minMarks || 33),
+                    obtainedMarks: Number(sub.obtainedMarks),
+                    grade: sub.grade || subComputed.grade,
+                    practicalMarks: sub.practicalMarks
+                      ? Number(sub.practicalMarks)
+                      : null,
+                    theoryMarks: sub.theoryMarks ? Number(sub.theoryMarks) : null,
+                    isOptional: !!sub.isOptional,
+                    CreatedBy: CreatedBy || 'System',
+                    IsActive: true,
+                    IsDeleted: false,
+                  };
+                }),
+              },
+            },
+          });
+        }
+
+        if (programSubjectIdList) {
+          await tx.studentProgramSubject.deleteMany({
+            where: { studentId: sid },
+          });
+          if (programSubjectIdList.length > 0) {
+            await tx.studentProgramSubject.createMany({
+              data: programSubjectIdList.map((id, idx) => ({
+                studentId: sid,
+                programSubjectId: id,
+                sequenceNo: idx + 1,
                 CreatedBy: CreatedBy || 'System',
                 IsActive: true,
                 IsDeleted: false,
-              };
-              }),
-            },
-          },
+              })),
+            });
+          }
+        }
+
+        const createdDetails = await tx.studentAcademicDetail.findMany({
+          where: { studentId: sid, IsDeleted: false },
           include: {
             subjects: {
               include: {
@@ -207,62 +265,28 @@ export class StudentAcademicService {
             qualification: true,
             board: true,
           },
+          orderBy: { academicDetailId: 'asc' },
         });
-        createdDetails.push(detail);
-      }
 
-      if (Array.isArray(programSubjectIds)) {
-        const ids = [
-          ...new Set(
-            programSubjectIds
-              .map((id) => Number(id))
-              .filter((id) => Number.isFinite(id) && id > 0),
-          ),
-        ];
-        await tx.studentProgramSubject.deleteMany({
-          where: { studentId: Number(studentId) },
-        });
-        if (ids.length > 0) {
-          const masters = await tx.programSubjectMaster.findMany({
-            where: {
-              programSubjectId: { in: ids },
-              programId: assignedProgramId,
-              IsDeleted: false,
-            },
-          });
-          const allowed = new Set(masters.map((m) => m.programSubjectId));
-          if (ids.some((id) => !allowed.has(id))) {
-            throw new BadRequestException(
-              'One or more program subjects are invalid for this program',
-            );
-          }
-          await tx.studentProgramSubject.createMany({
-            data: ids.map((id, idx) => ({
-              studentId: Number(studentId),
-              programSubjectId: id,
-              sequenceNo: idx + 1,
-              CreatedBy: CreatedBy || 'System',
-              IsActive: true,
-              IsDeleted: false,
-            })),
-          });
-        }
-      }
-
-      return {
-        status: 'success',
-        message: 'Academic qualifications and subjects saved successfully',
-        data: createdDetails,
-        programId: assignedProgramId,
-        admissionSessionId: assignedAdmissionSessionId,
-        admissionSessionName: assignedAdmissionSessionName,
-        yearId: assignedYearId,
-        semId: assignedSemId,
-        yearName: assignedYearName,
-        semesterName: assignedSemesterName,
-        hasSportCertificate: sportFlag,
-      };
-    });
+        return {
+          status: 'success',
+          message: 'Academic qualifications and subjects saved successfully',
+          data: createdDetails,
+          programId: assignedProgramId,
+          admissionSessionId: assignedAdmissionSessionId,
+          admissionSessionName: assignedAdmissionSessionName,
+          yearId: assignedYearId,
+          semId: assignedSemId,
+          yearName: assignedYearName,
+          semesterName: assignedSemesterName,
+          hasSportCertificate: sportFlag,
+        };
+      },
+      {
+        maxWait: 20_000,
+        timeout: 60_000,
+      },
+    );
   }
 
   async findAll() {
