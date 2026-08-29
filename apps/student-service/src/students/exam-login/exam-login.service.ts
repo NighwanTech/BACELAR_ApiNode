@@ -866,12 +866,26 @@ export class ExamLoginService {
       if (row.paperId && !orderedIds.includes(row.paperId)) orderedIds.push(row.paperId);
     }
 
+    const isBEdCourse =
+      String(examForm.courseShortName || '').toUpperCase().includes('B.ED') ||
+      String(examForm.courseShortName || '').toUpperCase().includes('BED');
+
     const paperDetails = orderedIds.map((paperId, index) => {
       const saved = savedByPaperId.get(paperId);
       const paper = masterById.get(paperId);
       const pCode = saved?.paperCode || paper?.paperCode || `${paperId}`;
       const pName = saved?.paperName || paper?.paperName || 'SUBJECT / PAPER';
-      const pType = saved?.paperType || paper?.paperTypeRelation?.name || paper?.paperType || 'THEORY';
+      let pType = saved?.paperType || paper?.paperTypeRelation?.name || paper?.paperType || 'THEORY';
+
+      if (
+        isBEdCourse &&
+        (String(pType).toUpperCase().includes('COMPULS') ||
+          String(pType).toUpperCase().includes('MANDATORY') ||
+          index === 0)
+      ) {
+        pType = 'MAJOR (COMPULSORY)';
+      }
+
       const isChosen =
         selectedPaperIds.length === 0 ? true : selectedPaperIds.includes(paperId);
 
@@ -887,9 +901,84 @@ export class ExamLoginService {
       };
     });
 
+    // Dynamic Master & Student Exam Queries for Exam Forms
+    let masterExams: any[] = [];
+    try {
+      masterExams = await (this.prisma as any).examinationDetails.findMany({
+        where: { IsDeleted: false, IsActive: true },
+        orderBy: { examinationId: 'asc' },
+      });
+    } catch {
+      masterExams = [];
+    }
+
+    let studentExams: any[] = [];
+    try {
+      studentExams = await this.studentExam().findMany({
+        where: { studentId: sId, IsDeleted: false },
+        include: { examinationDetail: true },
+        orderBy: { studentExamId: 'asc' },
+      });
+    } catch {
+      studentExams = [];
+    }
+
+    let examForms: any[] = [];
+
+    if (studentExams.length > 0) {
+      examForms = studentExams.map((se: any, idx: number) => {
+        const isPaid = Boolean(se.isExamFeePaid || (idx === 0 && paymentStatus === 'SUCCESS'));
+        return {
+          srNo: idx + 1,
+          studentExamId: se.studentExamId,
+          enrollmentNo: se.enrollmentNo || examForm.enrollmentNo || student?.registrationNo || 'N/A',
+          studentName: se.studentNameEng || examForm.studentNameEng || student?.candidateName || 'N/A',
+          examType: (se.examType || se.examinationDetail?.examType || 'REGULAR').toUpperCase(),
+          examName: se.examinationName || se.examinationDetail?.examinationName || examForm.examinationName || 'Jan 2026',
+          isFormSubmitted: Boolean(se.isExamFormFinalSubmit),
+          isFeePaid: isPaid,
+          paymentStatus: isPaid ? 'SUCCESS' : 'PENDING',
+          feeAmount: se.totalExamFee || examForm.totalExamFee || 0,
+        };
+      });
+    } else if (masterExams.length > 0) {
+      examForms = masterExams.map((me: any, idx: number) => {
+        const isPaid = idx === 0 && paymentStatus === 'SUCCESS';
+        return {
+          srNo: idx + 1,
+          studentExamId: examForm.studentExamId || null,
+          enrollmentNo: examForm.enrollmentNo || examLoginRecord.enrollmentNo || student?.registrationNo || 'N/A',
+          studentName: examForm.studentNameEng || examLoginRecord.studentName || student?.candidateName || 'N/A',
+          examType: (me.examType || 'REGULAR').toUpperCase(),
+          examName: me.examinationName || examForm.examinationName || 'Jan 2026',
+          isFormSubmitted: Boolean(examForm.isExamFormFinalSubmit),
+          isFeePaid: isPaid,
+          paymentStatus: isPaid ? 'SUCCESS' : 'PENDING',
+          feeAmount: examForm.totalExamFee || 0,
+        };
+      });
+    } else {
+      const isPaid = paymentStatus === 'SUCCESS';
+      examForms = [
+        {
+          srNo: 1,
+          studentExamId: examForm.studentExamId || null,
+          enrollmentNo: examForm.enrollmentNo || examLoginRecord.enrollmentNo || student?.registrationNo || 'N/A',
+          studentName: examForm.studentNameEng || examLoginRecord.studentName || student?.candidateName || 'N/A',
+          examType: (examForm.examType || examLoginRecord.examType || 'REGULAR').toUpperCase(),
+          examName: examForm.examinationName || 'Jan 2026',
+          isFormSubmitted: Boolean(examForm.isExamFormFinalSubmit),
+          isFeePaid: isPaid,
+          paymentStatus: isPaid ? 'SUCCESS' : 'PENDING',
+          feeAmount: examForm.totalExamFee || 0,
+        },
+      ];
+    }
+
     return {
       studentDetails,
       paperDetails,
+      examForms,
     };
   }
 
