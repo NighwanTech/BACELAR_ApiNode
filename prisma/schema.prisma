@@ -1858,3 +1858,21 @@ model ExamMarksDetail {
   @@index([studentId])
   @@map("examMarksDetail")
 }
+
+model MarksTypeMaster {
+  marksTypeId    Int       @id @default(autoincrement())
+  marksTypeName  String    @unique @db.VarChar(100)
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@map("marksTypeMaster")
+}
+

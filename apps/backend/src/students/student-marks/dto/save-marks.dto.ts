@@ -93,6 +93,11 @@ export class SaveMarksDto {
   @IsString()
   paperName?: string;
 
+  @ApiPropertyOptional({ example: 1 })
+  @IsOptional()
+  @IsNumber()
+  marksTypeId?: number;
+
   @ApiProperty({ example: 'THEORY', description: 'THEORY | SESSIONAL | EXTERNAL_PRACTICAL | INTERNAL_PRACTICAL | CREDIT | PROJECT | VIVA' })
   @IsNotEmpty()
   @IsString()

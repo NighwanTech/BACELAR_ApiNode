@@ -24,6 +24,7 @@ import { SemesterModule } from './semester/semester.module';
 import { PaperDetailModule } from './paper-detail/paper-detail.module';
 import { ExamSubjectModule } from './exam-subject/exam-subject.module';
 import { RoleModule } from './role/role.module';
+import { MarksTypeModule } from './marks-type/marks-type.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { RoleModule } from './role/role.module';
     PaperDetailModule,
     ExamSubjectModule,
     RoleModule,
+    MarksTypeModule,
   ],
   exports: [
     StateModule,
@@ -79,6 +81,8 @@ import { RoleModule } from './role/role.module';
     PaperDetailModule,
     ExamSubjectModule,
     RoleModule,
+    MarksTypeModule,
   ],
 })
 export class MasterModule {}
+

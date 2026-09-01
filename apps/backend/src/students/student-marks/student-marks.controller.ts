@@ -18,6 +18,7 @@ export class StudentMarksController {
   @ApiQuery({ name: 'programId', required: true })
   @ApiQuery({ name: 'yearId', required: true })
   @ApiQuery({ name: 'semId', required: false })
+  @ApiQuery({ name: 'marksTypeId', required: false })
   @ApiQuery({ name: 'marksType', required: false, example: 'THEORY' })
   @ApiResponse({ status: 200, description: 'List of papers with marks status' })
   getPapersList(
@@ -26,6 +27,7 @@ export class StudentMarksController {
     @Query('programId') programId?: string,
     @Query('yearId') yearId?: string,
     @Query('semId') semId?: string,
+    @Query('marksTypeId') marksTypeId?: string,
     @Query('marksType') marksType?: string,
   ): Observable<any> {
     return this.studentClient.send(
@@ -36,6 +38,7 @@ export class StudentMarksController {
         programId: Number(programId),
         yearId: Number(yearId),
         semId: semId ? Number(semId) : undefined,
+        marksTypeId: marksTypeId ? Number(marksTypeId) : undefined,
         marksType,
       },
     );
@@ -49,6 +52,7 @@ export class StudentMarksController {
   @ApiQuery({ name: 'yearId', required: true })
   @ApiQuery({ name: 'semId', required: false })
   @ApiQuery({ name: 'paperId', required: true })
+  @ApiQuery({ name: 'marksTypeId', required: false })
   @ApiQuery({ name: 'marksType', required: false, example: 'THEORY' })
   @ApiResponse({ status: 200, description: 'Student list and paper details' })
   getPaperStudents(
@@ -58,6 +62,7 @@ export class StudentMarksController {
     @Query('yearId') yearId: string,
     @Query('paperId') paperId: string,
     @Query('semId') semId?: string,
+    @Query('marksTypeId') marksTypeId?: string,
     @Query('marksType') marksType?: string,
   ): Observable<any> {
     return this.studentClient.send(
@@ -69,6 +74,7 @@ export class StudentMarksController {
         yearId: Number(yearId),
         paperId: Number(paperId),
         semId: semId ? Number(semId) : undefined,
+        marksTypeId: marksTypeId ? Number(marksTypeId) : undefined,
         marksType,
       },
     );

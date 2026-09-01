@@ -71,6 +71,7 @@ export class StudentMarksService {
     programId: number;
     yearId: number;
     semId?: number;
+    marksTypeId?: number;
     marksType?: string;
   }) {
     const programId = Number(query.programId);
@@ -78,6 +79,7 @@ export class StudentMarksService {
     const semId = query.semId ? Number(query.semId) : undefined;
     const academicSessionId = query.academicSessionId ? Number(query.academicSessionId) : undefined;
     const examinationDetailId = query.examinationDetailId ? Number(query.examinationDetailId) : undefined;
+    const marksTypeId = query.marksTypeId ? Number(query.marksTypeId) : undefined;
     const marksType = String(query.marksType || 'THEORY').toUpperCase();
 
     if (!programId || !yearId) {
@@ -151,6 +153,7 @@ export class StudentMarksService {
     yearId: number;
     semId?: number;
     paperId: number;
+    marksTypeId?: number;
     marksType?: string;
   }) {
     const academicSessionId = Number(query.academicSessionId);
@@ -159,6 +162,7 @@ export class StudentMarksService {
     const yearId = Number(query.yearId);
     const semId = query.semId ? Number(query.semId) : undefined;
     const paperId = Number(query.paperId);
+    const marksTypeId = query.marksTypeId ? Number(query.marksTypeId) : undefined;
     const marksType = String(query.marksType || 'THEORY').toUpperCase();
 
     if (!programId || !yearId || !paperId) {
@@ -381,6 +385,7 @@ export class StudentMarksService {
     const yearId = Number(data.yearId);
     const semId = data.semId ? Number(data.semId) : null;
     const paperId = Number(data.paperId);
+    const marksTypeId = data.marksTypeId ? Number(data.marksTypeId) : undefined;
     const marksType = String(data.marksType || 'THEORY').toUpperCase();
     const actor = String(data.CreatedBy || data.UpdatedBy || 'Admin User');
     const students: any[] = Array.isArray(data.students) ? data.students : [];
