@@ -53,11 +53,14 @@ export class StudentAttendanceService {
 
     const schemes = await (this.prisma as any).examScheme.findMany({
       where: schemeWhere,
-      select: { examSchemeId: true },
+      select: { examSchemeId: true, programId: true },
     });
 
     const schemeIds = schemes.map((s: any) => s.examSchemeId);
     if (!schemeIds.length) return [];
+
+    const schemeMap = new Map<number, any>();
+    schemes.forEach((s: any) => schemeMap.set(s.examSchemeId, s));
 
     const papers = await (this.prisma as any).examSchemePaper.findMany({
       where: {
@@ -66,6 +69,7 @@ export class StudentAttendanceService {
         examDate: { not: null },
       },
       select: {
+        examSchemeId: true,
         examDate: true,
         examTime: true,
         shift: true,
@@ -74,6 +78,7 @@ export class StudentAttendanceService {
         paperName: true,
         paperCode: true,
         paperType: true,
+        programId: true,
       },
     });
 
@@ -81,10 +86,13 @@ export class StudentAttendanceService {
     for (const paper of papers) {
       if (!paper.examDate) continue;
       const dateStr = this.formatDateString(paper.examDate);
-      const key = `${dateStr}_${paper.examTime || ''}_${paper.shift || ''}`;
+      const scheme = schemeMap.get(paper.examSchemeId);
+      const progId = paper.programId || scheme?.programId || null;
+      const key = `${dateStr}_${progId || ''}_${paper.examTime || ''}_${paper.shift || ''}`;
       if (!dateMap.has(key)) {
         dateMap.set(key, {
           examDate: dateStr,
+          programId: progId,
           examTime: paper.examTime || '',
           shift: paper.shift || '',
           paperId: paper.paperId,
@@ -185,6 +193,19 @@ export class StudentAttendanceService {
     });
 
     if (existingAttendance) {
+      const todayStr = this.formatDateString(new Date());
+      const savedDate = existingAttendance.updatedAt || existingAttendance.CreatedAt || existingAttendance.lockedAt || existingAttendance.examDate;
+      const savedDateStr = this.formatDateString(savedDate);
+
+      // Same-day rule: Saved today is open for edits (isLocked = false).
+      // Next-day rule: If today > savedDate and not manually unlocked, auto-lock!
+      let effectiveIsLocked = existingAttendance.isLocked;
+      if (todayStr > savedDateStr) {
+        effectiveIsLocked = true;
+      } else if (todayStr === savedDateStr) {
+        effectiveIsLocked = false;
+      }
+
       return {
         attendanceId: existingAttendance.attendanceId,
         academicSessionId: existingAttendance.academicSessionId,
@@ -198,7 +219,7 @@ export class StudentAttendanceService {
         examDate: this.formatDateString(existingAttendance.examDate),
         examTime: existingAttendance.examTime || matchedPaper?.examTime || '',
         shift: existingAttendance.shift || matchedPaper?.shift || '',
-        isLocked: existingAttendance.isLocked,
+        isLocked: effectiveIsLocked,
         lockedAt: existingAttendance.lockedAt,
         lockedBy: existingAttendance.lockedBy,
         totalStudents: existingAttendance.totalStudents,
@@ -213,6 +234,7 @@ export class StudentAttendanceService {
           fatherName: d.fatherName || '',
           examCategory: d.examCategory || 'Regular',
           mobileNo: d.mobileNo || '',
+          fatherMobileNo: d.remarks || d.fatherMobileNo || '',
           attendanceStatus: d.attendanceStatus || 'P',
           answerBookletNo: d.answerBookletNo || '',
           remarks: d.remarks || '',
@@ -253,8 +275,9 @@ export class StudentAttendanceService {
         studentName: rn.student?.candidateName || rn.enrollment?.studentName || '',
         fatherName: rn.student?.fatherName || rn.enrollment?.fatherName || rn.student?.studentProfile?.fatherNameHindi || '',
         examCategory: 'Regular',
-        mobileNo: rn.student?.mobileNo || rn.enrollment?.fatherMobNo || rn.student?.studentProfile?.fatherMobileNumber || '',
-        attendanceStatus: 'P',
+        mobileNo: rn.student?.mobileNo || rn.enrollment?.studentMobNo || '',
+        fatherMobileNo: rn.enrollment?.fatherMobNo || rn.student?.studentProfile?.fatherMobileNumber || '',
+        attendanceStatus: '',
         answerBookletNo: '',
         remarks: '',
       }));
@@ -289,8 +312,9 @@ export class StudentAttendanceService {
           studentName: en.studentName || en.student?.candidateName || '',
           fatherName: en.fatherName || en.student?.fatherName || '',
           examCategory: 'Regular',
-          mobileNo: en.student?.mobileNo || en.fatherMobNo || '',
-          attendanceStatus: 'P',
+          mobileNo: en.student?.mobileNo || en.studentMobNo || '',
+          fatherMobileNo: en.fatherMobNo || en.student?.studentProfile?.fatherMobileNumber || '',
+          attendanceStatus: '',
           answerBookletNo: '',
           remarks: '',
         }));
@@ -305,7 +329,11 @@ export class StudentAttendanceService {
           courseId: programId,
         },
         include: {
-          student: true,
+          student: {
+            include: {
+              studentProfile: true,
+            },
+          },
         },
         orderBy: { studentExamId: 'asc' },
       });
@@ -320,7 +348,8 @@ export class StudentAttendanceService {
           fatherName: se.fatherName || se.student?.fatherName || '',
           examCategory: se.examType || 'Regular',
           mobileNo: se.mobileNo || se.student?.mobileNo || '',
-          attendanceStatus: 'P',
+          fatherMobileNo: se.student?.studentProfile?.fatherMobileNumber || '',
+          attendanceStatus: '',
           answerBookletNo: '',
           remarks: '',
         }));
@@ -359,7 +388,8 @@ export class StudentAttendanceService {
         fatherName: s.fatherName || '',
         examCategory: 'Regular',
         mobileNo: s.mobileNo || '',
-        attendanceStatus: 'P',
+        fatherMobileNo: s.studentProfile?.fatherMobileNumber || '',
+        attendanceStatus: '',
         answerBookletNo: '',
         remarks: '',
       }));
@@ -420,8 +450,8 @@ export class StudentAttendanceService {
       examDate,
       examTime: data.examTime || null,
       shift: data.shift || null,
-      isLocked: true,
-      lockedAt: new Date(),
+      isLocked: false,
+      lockedAt: null,
       lockedBy: actor,
       totalStudents,
       totalPresent,
