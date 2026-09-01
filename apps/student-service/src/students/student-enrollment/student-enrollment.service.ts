@@ -10,6 +10,7 @@ const enrollmentInclude = {
       loginMaster: true,
       program: { include: { programCategory: true } },
       admissionSession: true,
+      academicSession: true,
       year: true,
       semester: true,
     },
@@ -169,6 +170,7 @@ export class StudentEnrollmentService {
         loginMaster: true,
         program: true,
         admissionSession: true,
+        academicSession: true,
       },
     });
     if (!student) {
@@ -193,7 +195,9 @@ export class StudentEnrollmentService {
     }
 
     const snapshot = this.snapshotFromStudent(student);
-    const year = this.resolveEnrollmentYear(student.admissionSession?.admissionSessionName);
+    const year = this.resolveEnrollmentYear(
+      student.academicSession?.academicSessionName || student.admissionSession?.admissionSessionName,
+    );
     const programCode = this.resolveProgramCode(student.program);
 
     let lastError: any = null;

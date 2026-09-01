@@ -3,11 +3,17 @@ import { Type } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class GenerateStudentRollNumberDto {
-  @ApiProperty({ example: 1, description: 'Admission session ID' })
+  @ApiProperty({ example: 1, description: 'Admission session ID', required: false })
   @Type(() => Number)
   @IsNumber()
-  @IsNotEmpty()
-  sessionId: number;
+  @IsOptional()
+  sessionId?: number;
+
+  @ApiProperty({ required: false, description: 'Academic session ID used for roll year and student filter' })
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  academicSessionId?: number;
 
   @ApiProperty({ required: false })
   @Type(() => Number)

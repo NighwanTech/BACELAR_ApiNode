@@ -24,6 +24,19 @@ export class AcademicSessionController {
     }
   }
 
+  @MessagePattern({ cmd: 'find_current_academic_session' })
+  async findCurrent() {
+    try {
+      const session = await this.academicSessionService.findCurrent();
+      if (!session) {
+        return { status: 'error', message: 'No current academic session is set' };
+      }
+      return session;
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'find_one_academic_session' })
   async findOne(@Payload() data: { academicSessionId: number }) {
     try {

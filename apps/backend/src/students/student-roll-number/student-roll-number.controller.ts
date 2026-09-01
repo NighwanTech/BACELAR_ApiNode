@@ -15,6 +15,7 @@ export class StudentRollNumberController {
   @Get()
   @ApiOperation({ summary: 'List enrolled students with roll numbers for filters' })
   @ApiQuery({ name: 'sessionId', required: false })
+  @ApiQuery({ name: 'academicSessionId', required: false })
   @ApiQuery({ name: 'programCategoryId', required: false })
   @ApiQuery({ name: 'programId', required: false })
   @ApiQuery({ name: 'yearId', required: false })
@@ -23,6 +24,7 @@ export class StudentRollNumberController {
   @ApiResponse({ status: 200, description: 'Return roll number list rows' })
   list(
     @Query('sessionId') sessionId?: string,
+    @Query('academicSessionId') academicSessionId?: string,
     @Query('programCategoryId') programCategoryId?: string,
     @Query('programId') programId?: string,
     @Query('yearId') yearId?: string,
@@ -31,7 +33,7 @@ export class StudentRollNumberController {
   ): Observable<any> {
     return this.studentClient.send(
       { cmd: 'list_student_roll_numbers' },
-      { sessionId, programCategoryId, programId, yearId, semId, search },
+      { sessionId, academicSessionId, programCategoryId, programId, yearId, semId, search },
     );
   }
 

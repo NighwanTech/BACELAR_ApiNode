@@ -9,6 +9,17 @@ export class CreateExaminationDetailsDto {
   @IsNotEmpty()
   academicId: number;
 
+  @ApiProperty({ example: 1, description: 'Optional program ID', required: false })
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  programId?: number;
+
+  @ApiProperty({ example: 'B.Ed.', description: 'Optional program name snapshot', required: false })
+  @IsString()
+  @IsOptional()
+  programName?: string;
+
   @ApiProperty({ example: 'Mid Term', description: 'Examination name' })
   @IsString()
   @IsNotEmpty()

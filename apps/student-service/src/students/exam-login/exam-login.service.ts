@@ -64,6 +64,7 @@ export class ExamLoginService {
         year: true,
         semester: true,
         admissionSession: true,
+        academicSession: true,
         studentEnrollments: {
           include: {
             program: { include: { programCategory: true } },
@@ -134,7 +135,17 @@ export class ExamLoginService {
 
     let feeConfig: any = null;
     const programId = student?.programId || enrollment?.programId || program?.programId || null;
-    const sessionId = student?.admissionSessionId || enrollment?.sessionId || null;
+    let sessionId = student?.admissionSessionId || enrollment?.sessionId || null;
+    if (!sessionId && student?.academicSessionId) {
+      const academicName = student?.academicSession?.academicSessionName;
+      if (academicName) {
+        const admission = await (this.prisma as any).admissionSession.findFirst({
+          where: { admissionSessionName: academicName, IsDeleted: false },
+          select: { admissionSessionId: true },
+        });
+        sessionId = admission?.admissionSessionId || null;
+      }
+    }
     if (programId && sessionId) {
       feeConfig = await (this.prisma as any).programFeeConfig.findFirst({
         where: {
@@ -416,6 +427,7 @@ export class ExamLoginService {
             year: true,
             semester: true,
             admissionSession: true,
+            academicSession: true,
           },
         },
         program: true,
@@ -441,6 +453,7 @@ export class ExamLoginService {
           year: true,
           semester: true,
           admissionSession: true,
+          academicSession: true,
           studentEnrollments: true,
         },
       });

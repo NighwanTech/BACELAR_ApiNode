@@ -5,6 +5,37 @@ import { PrismaService } from '@app/prisma';
 export class AcademicSessionService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private toBool(value: any, fallback = false): boolean {
+    if (value === undefined || value === null || value === '') return fallback;
+    if (typeof value === 'boolean') return value;
+    const s = String(value).trim().toLowerCase();
+    return s === 'true' || s === '1' || s === 'yes';
+  }
+
+  private async setOnlyCurrent(academicSessionId: number) {
+    await this.prisma.academicSession.updateMany({
+      where: { IsDeleted: false, NOT: { academicSessionId } },
+      data: { isCurrent: false },
+    });
+  }
+
+  async findCurrent() {
+    return this.prisma.academicSession.findFirst({
+      where: { isCurrent: true, IsDeleted: false, IsActive: true },
+      include: {
+        college: {
+          select: {
+            collegeId: true,
+            collegeName: true,
+            shortName: true,
+            collegeCode: true,
+          },
+        },
+      },
+      orderBy: { startYear: 'desc' },
+    });
+  }
+
   private async assertCollege(collegeId: number) {
     const college = await this.prisma.collegeMaster.findFirst({
       where: { collegeId, IsDeleted: false },
@@ -32,7 +63,9 @@ export class AcademicSessionService {
       );
     }
 
-    return this.prisma.academicSession.create({
+    const isCurrent = this.toBool(data.isCurrent, false);
+
+    const created = await this.prisma.academicSession.create({
       data: {
         collegeId: Number(data.collegeId),
         academicSessionName,
@@ -40,12 +73,19 @@ export class AcademicSessionService {
         startYear: Number(data.startYear),
         endMonth: Number(data.endMonth),
         endYear: Number(data.endYear),
+        isCurrent,
         CreatedBy: data.CreatedBy,
         Remarks: data.Remarks || null,
         IsActive: true,
         IsDeleted: false,
       },
     });
+
+    if (created.isCurrent) {
+      await this.setOnlyCurrent(created.academicSessionId);
+    }
+
+    return this.findOne(created.academicSessionId);
   }
 
   async findAll(collegeId?: number) {
@@ -117,7 +157,10 @@ export class AcademicSessionService {
       );
     }
 
-    return this.prisma.academicSession.update({
+    const isCurrent =
+      data.isCurrent !== undefined ? this.toBool(data.isCurrent) : undefined;
+
+    const updated = await this.prisma.academicSession.update({
       where: { academicSessionId },
       data: {
         collegeId: data.collegeId !== undefined ? collegeId : undefined,
@@ -129,11 +172,18 @@ export class AcademicSessionService {
           data.startYear !== undefined ? Number(data.startYear) : undefined,
         endMonth: data.endMonth !== undefined ? Number(data.endMonth) : undefined,
         endYear: data.endYear !== undefined ? Number(data.endYear) : undefined,
+        isCurrent,
         UpdatedBy: data.UpdatedBy,
         IsActive: data.IsActive,
         Remarks: data.Remarks,
       },
     });
+
+    if (updated.isCurrent) {
+      await this.setOnlyCurrent(updated.academicSessionId);
+    }
+
+    return this.findOne(updated.academicSessionId);
   }
 
   

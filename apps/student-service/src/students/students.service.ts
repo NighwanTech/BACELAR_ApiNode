@@ -222,6 +222,7 @@ export class StudentsService {
         student: {
           include: {
             program: { include: { programCategory: true } },
+            academicSession: true,
             admissionSession: true,
             year: true,
             semester: true,
@@ -300,6 +301,7 @@ export class StudentsService {
         program: {
           include: { programCategory: true },
         },
+        academicSession: true,
         admissionSession: true,
         year: true,
         semester: true,
@@ -321,6 +323,7 @@ export class StudentsService {
         program: {
           include: { programCategory: true },
         },
+        academicSession: true,
         admissionSession: true,
         year: true,
         semester: true,

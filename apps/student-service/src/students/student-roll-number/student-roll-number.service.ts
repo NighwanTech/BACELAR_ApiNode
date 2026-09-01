@@ -3,6 +3,7 @@ import { PrismaService } from '@app/prisma';
 
 type ListFilters = {
   sessionId?: number | string | null;
+  academicSessionId?: number | string | null;
   programCategoryId?: number | string | null;
   programId?: number | string | null;
   yearId?: number | string | null;
@@ -82,6 +83,30 @@ export class StudentRollNumberService {
     return m ? m[1] : '';
   }
 
+  private async resolveRollYear(filters: ListFilters): Promise<string> {
+    const academicSessionId = this.toNum(filters.academicSessionId);
+    if (academicSessionId != null) {
+      const academic = await this.prisma.academicSession.findFirst({
+        where: { academicSessionId, IsDeleted: false },
+      });
+      if (!academic) throw new BadRequestException('Academic session not found');
+      const year =
+        this.extractAdmissionYear(academic.academicSessionName) ||
+        (academic.startYear ? String(academic.startYear) : '');
+      if (year && year.length === 4) return year;
+      throw new BadRequestException('Academic session name must include year (e.g. 2026-27)');
+    }
+
+    const sessionId = this.toNum(filters.sessionId);
+    if (sessionId != null) {
+      const session = await (this.prisma as any).admissionSession.findFirst({
+        where: { admissionSessionId: sessionId, IsDeleted: false },
+      });
+      return this.extractAdmissionYear(session?.admissionSessionName);
+    }
+    return '';
+  }
+
   normalizeCollegeCode(code?: string | null): string {
     const digits = String(code || '').replace(/\D/g, '');
     if (!digits) return '686';
@@ -119,6 +144,7 @@ export class StudentRollNumberService {
 
   private async loadEnrollments(filters: ListFilters) {
     const sessionId = this.toNum(filters.sessionId);
+    const academicSessionId = this.toNum(filters.academicSessionId);
     const programId = this.toNum(filters.programId);
     const programCategoryId = this.toNum(filters.programCategoryId);
     const yearId = this.toNum(filters.yearId);
@@ -131,7 +157,11 @@ export class StudentRollNumberService {
       IsDeleted: false,
       enrollmentNo: { not: null },
     };
-    if (sessionId != null) where.sessionId = sessionId;
+    if (academicSessionId != null) {
+      where.student = { academicSessionId, IsDeleted: false };
+    } else if (sessionId != null) {
+      where.sessionId = sessionId;
+    }
     if (programId != null) where.programId = programId;
     if (yearId != null) where.yearId = yearId;
     if (semId != null) where.semId = semId;
@@ -144,6 +174,7 @@ export class StudentRollNumberService {
           include: {
             studentProfile: true,
             program: { include: { programCategory: true } },
+            academicSession: true,
           },
         },
         program: { include: { programCategory: true } },
@@ -230,14 +261,7 @@ export class StudentRollNumberService {
   }
 
   async list(filters: ListFilters = {}) {
-    const sessionId = this.toNum(filters.sessionId);
-    let admissionYear = '';
-    if (sessionId != null) {
-      const session = await (this.prisma as any).admissionSession.findFirst({
-        where: { admissionSessionId: sessionId, IsDeleted: false },
-      });
-      admissionYear = this.extractAdmissionYear(session?.admissionSessionName);
-    }
+    const admissionYear = await this.resolveRollYear(filters);
 
     const enrollments = await this.loadEnrollments(filters);
     const studentIds = Array.from(new Set(enrollments.map((e: any) => Number(e.studentId)).filter(Boolean)));
@@ -297,20 +321,27 @@ export class StudentRollNumberService {
 
   async generate(payload: GeneratePayload) {
     const sessionId = this.toNum(payload.sessionId);
-    if (sessionId == null) {
-      throw new BadRequestException('sessionId is required');
+    const academicSessionId = this.toNum(payload.academicSessionId);
+    if (sessionId == null && academicSessionId == null) {
+      throw new BadRequestException('academicSessionId or sessionId is required');
     }
 
-    const session = await (this.prisma as any).admissionSession.findFirst({
-      where: { admissionSessionId: sessionId, IsDeleted: false },
-    });
-    if (!session) {
-      throw new BadRequestException('Admission session not found');
+    if (sessionId != null) {
+      const session = await (this.prisma as any).admissionSession.findFirst({
+        where: { admissionSessionId: sessionId, IsDeleted: false },
+      });
+      if (!session) {
+        throw new BadRequestException('Admission session not found');
+      }
     }
 
-    const admissionYear = this.extractAdmissionYear(session.admissionSessionName);
+    const admissionYear = await this.resolveRollYear(payload);
     if (!admissionYear || admissionYear.length !== 4) {
-      throw new BadRequestException('Session name must include admission year (e.g. 2025-26)');
+      throw new BadRequestException(
+        academicSessionId != null
+          ? 'Academic session name must include year (e.g. 2026-27)'
+          : 'Session name must include admission year (e.g. 2025-26)',
+      );
     }
 
     const CreatedBy = String(payload.CreatedBy || 'Admin User').trim() || 'Admin User';

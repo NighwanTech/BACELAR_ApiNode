@@ -52,6 +52,11 @@ export class UpdateAcademicSessionDto {
   @IsOptional()
   IsActive?: boolean;
 
+  @ApiProperty({ example: true, description: 'Mark as current session for student registration', required: false })
+  @IsBoolean()
+  @IsOptional()
+  isCurrent?: boolean;
+
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()

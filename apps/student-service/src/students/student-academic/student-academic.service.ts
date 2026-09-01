@@ -58,7 +58,7 @@ export class StudentAcademicService {
 
   /**
    * Save (overwrite) all academic qualifications and their subjects for a student.
-   * Also stores selected programId and auto-assigns active admissionSessionId on Student.
+   * Also stores selected programId and auto-assigns current academicSessionId on Student.
    */
   async save(
     studentId: number,
@@ -78,16 +78,16 @@ export class StudentAcademicService {
         const sid = Number(studentId);
         const pid = Number(programId);
 
-        const [student, program, activeSession] = await Promise.all([
+        const [student, program, currentAcademic] = await Promise.all([
           tx.student.findFirst({
             where: { StudentRegistrationId: sid, IsDeleted: false },
           }),
           tx.program.findFirst({
             where: { programId: pid, IsDeleted: false },
           }),
-          tx.admissionSession.findFirst({
-            where: { IsActive: true, IsDeleted: false },
-            orderBy: { CreatedOn: 'desc' },
+          tx.academicSession.findFirst({
+            where: { isCurrent: true, IsDeleted: false, IsActive: true },
+            orderBy: { startYear: 'desc' },
           }),
         ]);
 
@@ -97,15 +97,57 @@ export class StudentAcademicService {
         if (!program) {
           throw new NotFoundException(`Program with ID ${programId} not found`);
         }
-        if (!activeSession) {
-          throw new NotFoundException(
-            'No active admission session found. Please activate a session in masters.',
-          );
-        }
 
         const assignedProgramId = program.programId;
-        const assignedAdmissionSessionId = activeSession.admissionSessionId;
-        const assignedAdmissionSessionName = activeSession.admissionSessionName;
+        let assignedAcademicSessionId = student.academicSessionId ?? null;
+        let assignedAcademicSessionName: string | null = null;
+
+        if (assignedAcademicSessionId) {
+          const existingAcademic = await tx.academicSession.findFirst({
+            where: { academicSessionId: assignedAcademicSessionId, IsDeleted: false },
+          });
+          assignedAcademicSessionName = existingAcademic?.academicSessionName ?? null;
+        }
+
+        if (!assignedAcademicSessionId || !assignedAcademicSessionName) {
+          if (!currentAcademic) {
+            throw new NotFoundException(
+              'No current academic session found. Mark one Academic Session as Current in masters.',
+            );
+          }
+          assignedAcademicSessionId = currentAcademic.academicSessionId;
+          assignedAcademicSessionName = currentAcademic.academicSessionName;
+        }
+
+        const admissions = await tx.admissionSession.findMany({
+          where: { IsDeleted: false },
+        });
+        const sessionKey = String(assignedAcademicSessionName || '')
+          .trim()
+          .toUpperCase()
+          .replace(/[–—]/g, '-')
+          .replace(/\s+/g, '')
+          .replace(/^(20\d{2})-(\d{2})$/, (_, a, b) => `${a}-20${b}`);
+        const matchedAdmission =
+          admissions.find(
+            (s) => String(s.admissionSessionName || '').trim() === String(assignedAcademicSessionName).trim(),
+          ) ||
+          admissions.find((s) => {
+            const key = String(s.admissionSessionName || '')
+              .trim()
+              .toUpperCase()
+              .replace(/[–—]/g, '-')
+              .replace(/\s+/g, '')
+              .replace(/^(20\d{2})-(\d{2})$/, (_, a, b) => `${a}-20${b}`);
+            return key === sessionKey;
+          }) ||
+          admissions.find((s) => s.IsActive) ||
+          admissions[0] ||
+          null;
+        const assignedAdmissionSessionId =
+          matchedAdmission?.admissionSessionId || student.admissionSessionId || null;
+        const assignedAdmissionSessionName =
+          matchedAdmission?.admissionSessionName || assignedAcademicSessionName;
 
         // Sport certificate applies only to B.P.Ed. (programCode "6"); otherwise always false
         const isBped = String(program.programCode || '').trim() === '6';
@@ -168,6 +210,7 @@ export class StudentAcademicService {
           where: { StudentRegistrationId: sid },
           data: {
             programId: assignedProgramId,
+            academicSessionId: assignedAcademicSessionId,
             admissionSessionId: assignedAdmissionSessionId,
             yearId: assignedYearId,
             semId: assignedSemId,
@@ -273,6 +316,8 @@ export class StudentAcademicService {
           message: 'Academic qualifications and subjects saved successfully',
           data: createdDetails,
           programId: assignedProgramId,
+          academicSessionId: assignedAcademicSessionId,
+          academicSessionName: assignedAcademicSessionName,
           admissionSessionId: assignedAdmissionSessionId,
           admissionSessionName: assignedAdmissionSessionName,
           yearId: assignedYearId,

@@ -32,6 +32,13 @@ export class AcademicSessionController {
     return this.studentClient.send({ cmd: 'find_all_academic_sessions' }, payload);
   }
 
+  @Get('current')
+  @ApiOperation({ summary: 'Get the current academic session used for student registration' })
+  @ApiResponse({ status: 200, description: 'Return current academic session' })
+  findCurrent(): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_current_academic_session' }, {});
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get academic session details by academicSessionId' })
   @ApiResponse({ status: 200, description: 'Return academic session details' })

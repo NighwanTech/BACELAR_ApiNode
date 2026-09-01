@@ -9,6 +9,17 @@ export class UpdateExaminationDetailsDto {
   @IsOptional()
   academicId?: number;
 
+  @ApiProperty({ example: 1, required: false })
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  programId?: number | null;
+
+  @ApiProperty({ example: 'B.Ed.', required: false })
+  @IsString()
+  @IsOptional()
+  programName?: string | null;
+
   @ApiProperty({ example: 'Mid Term', required: false })
   @IsString()
   @IsOptional()

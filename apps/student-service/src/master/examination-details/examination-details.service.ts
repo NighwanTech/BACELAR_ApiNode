@@ -5,6 +5,31 @@ import { PrismaService } from '@app/prisma';
 export class ExaminationDetailsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private examInclude() {
+    return {
+      academicSession: {
+        select: {
+          academicSessionId: true,
+          academicSessionName: true,
+          collegeId: true,
+        },
+      },
+      program: {
+        select: {
+          programId: true,
+          programName: true,
+          programShortName: true,
+        },
+      },
+    };
+  }
+
+  private toNullableNumber(value: any): number | null {
+    if (value === undefined || value === null || value === '') return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  }
+
   private async assertAcademicSession(academicId: number) {
     const academicSession = await this.prisma.academicSession.findFirst({
       where: { academicSessionId: academicId, IsDeleted: false },
@@ -17,8 +42,26 @@ export class ExaminationDetailsService {
     return academicSession;
   }
 
+  private async resolveProgram(programId?: number | null, programName?: string | null) {
+    const id = this.toNullableNumber(programId);
+    if (id == null) {
+      return { programId: null, programName: programName ? String(programName).trim() || null : null };
+    }
+    const program = await this.prisma.program.findFirst({
+      where: { programId: id, IsDeleted: false },
+    });
+    if (!program) {
+      throw new NotFoundException(`Program with ID ${id} not found`);
+    }
+    return {
+      programId: program.programId,
+      programName: String(programName || program.programName || '').trim() || program.programName,
+    };
+  }
+
   async create(data: any) {
     await this.assertAcademicSession(Number(data.academicId));
+    const program = await this.resolveProgram(data.programId, data.programName);
 
     const examinationName = String(data.examinationName || '').trim();
     const examType = data.examType ? String(data.examType).trim() : null;
@@ -38,6 +81,8 @@ export class ExaminationDetailsService {
     return this.prisma.examinationDetails.create({
       data: {
         academicId: Number(data.academicId),
+        programId: program.programId,
+        programName: program.programName,
         examinationName,
         examType,
         CreatedBy: data.CreatedBy,
@@ -45,6 +90,7 @@ export class ExaminationDetailsService {
         IsActive: true,
         IsDeleted: false,
       },
+      include: this.examInclude(),
     });
   }
 
@@ -54,15 +100,7 @@ export class ExaminationDetailsService {
         IsDeleted: false,
         ...(academicId ? { academicId: Number(academicId) } : {}),
       },
-      include: {
-        academicSession: {
-          select: {
-            academicSessionId: true,
-            academicSessionName: true,
-            collegeId: true,
-          },
-        },
-      },
+      include: this.examInclude(),
       orderBy: [{ academicId: 'asc' }, { examinationName: 'asc' }],
     });
   }
@@ -70,15 +108,7 @@ export class ExaminationDetailsService {
   async findOne(examinationId: number) {
     const examination = await this.prisma.examinationDetails.findFirst({
       where: { examinationId, IsDeleted: false },
-      include: {
-        academicSession: {
-          select: {
-            academicSessionId: true,
-            academicSessionName: true,
-            collegeId: true,
-          },
-        },
-      },
+      include: this.examInclude(),
     });
     if (!examination) {
       throw new NotFoundException(
@@ -115,10 +145,21 @@ export class ExaminationDetailsService {
       );
     }
 
+    const program =
+      data.programId !== undefined || data.programName !== undefined
+        ? await this.resolveProgram(
+            data.programId === undefined ? current.programId : data.programId,
+            data.programName === undefined ? current.programName : data.programName,
+          )
+        : null;
+
     return this.prisma.examinationDetails.update({
       where: { examinationId },
       data: {
         academicId: data.academicId !== undefined ? academicId : undefined,
+        ...(program
+          ? { programId: program.programId, programName: program.programName }
+          : {}),
         examinationName:
           data.examinationName !== undefined ? examinationName : undefined,
         examType: data.examType !== undefined ? String(data.examType).trim() || null : undefined,
@@ -126,6 +167,7 @@ export class ExaminationDetailsService {
         IsActive: data.IsActive,
         Remarks: data.Remarks,
       },
+      include: this.examInclude(),
     });
   }
 

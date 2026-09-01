@@ -684,6 +684,7 @@ let StudentsService = class StudentsService {
                 student: {
                     include: {
                         program: { include: { programCategory: true } },
+                        academicSession: true,
                         admissionSession: true,
                         year: true,
                         semester: true,
@@ -752,6 +753,7 @@ let StudentsService = class StudentsService {
                 program: {
                     include: { programCategory: true },
                 },
+                academicSession: true,
                 admissionSession: true,
                 year: true,
                 semester: true,
@@ -772,6 +774,7 @@ let StudentsService = class StudentsService {
                 program: {
                     include: { programCategory: true },
                 },
+                academicSession: true,
                 admissionSession: true,
                 year: true,
                 semester: true,
@@ -1707,16 +1710,16 @@ let StudentAcademicService = class StudentAcademicService {
             }
             const sid = Number(studentId);
             const pid = Number(programId);
-            const [student, program, activeSession] = await Promise.all([
+            const [student, program, currentAcademic] = await Promise.all([
                 tx.student.findFirst({
                     where: { StudentRegistrationId: sid, IsDeleted: false },
                 }),
                 tx.program.findFirst({
                     where: { programId: pid, IsDeleted: false },
                 }),
-                tx.admissionSession.findFirst({
-                    where: { IsActive: true, IsDeleted: false },
-                    orderBy: { CreatedOn: 'desc' },
+                tx.academicSession.findFirst({
+                    where: { isCurrent: true, IsDeleted: false, IsActive: true },
+                    orderBy: { startYear: 'desc' },
                 }),
             ]);
             if (!student) {
@@ -1725,12 +1728,46 @@ let StudentAcademicService = class StudentAcademicService {
             if (!program) {
                 throw new common_1.NotFoundException(`Program with ID ${programId} not found`);
             }
-            if (!activeSession) {
-                throw new common_1.NotFoundException('No active admission session found. Please activate a session in masters.');
-            }
             const assignedProgramId = program.programId;
-            const assignedAdmissionSessionId = activeSession.admissionSessionId;
-            const assignedAdmissionSessionName = activeSession.admissionSessionName;
+            let assignedAcademicSessionId = student.academicSessionId ?? null;
+            let assignedAcademicSessionName = null;
+            if (assignedAcademicSessionId) {
+                const existingAcademic = await tx.academicSession.findFirst({
+                    where: { academicSessionId: assignedAcademicSessionId, IsDeleted: false },
+                });
+                assignedAcademicSessionName = existingAcademic?.academicSessionName ?? null;
+            }
+            if (!assignedAcademicSessionId || !assignedAcademicSessionName) {
+                if (!currentAcademic) {
+                    throw new common_1.NotFoundException('No current academic session found. Mark one Academic Session as Current in masters.');
+                }
+                assignedAcademicSessionId = currentAcademic.academicSessionId;
+                assignedAcademicSessionName = currentAcademic.academicSessionName;
+            }
+            const admissions = await tx.admissionSession.findMany({
+                where: { IsDeleted: false },
+            });
+            const sessionKey = String(assignedAcademicSessionName || '')
+                .trim()
+                .toUpperCase()
+                .replace(/[–—]/g, '-')
+                .replace(/\s+/g, '')
+                .replace(/^(20\d{2})-(\d{2})$/, (_, a, b) => `${a}-20${b}`);
+            const matchedAdmission = admissions.find((s) => String(s.admissionSessionName || '').trim() === String(assignedAcademicSessionName).trim()) ||
+                admissions.find((s) => {
+                    const key = String(s.admissionSessionName || '')
+                        .trim()
+                        .toUpperCase()
+                        .replace(/[–—]/g, '-')
+                        .replace(/\s+/g, '')
+                        .replace(/^(20\d{2})-(\d{2})$/, (_, a, b) => `${a}-20${b}`);
+                    return key === sessionKey;
+                }) ||
+                admissions.find((s) => s.IsActive) ||
+                admissions[0] ||
+                null;
+            const assignedAdmissionSessionId = matchedAdmission?.admissionSessionId || student.admissionSessionId || null;
+            const assignedAdmissionSessionName = matchedAdmission?.admissionSessionName || assignedAcademicSessionName;
             const isBped = String(program.programCode || '').trim() === '6';
             const sportFlag = isBped ? Boolean(hasSportCertificate) : false;
             let assignedYearId = student.yearId ?? null;
@@ -1781,6 +1818,7 @@ let StudentAcademicService = class StudentAcademicService {
                 where: { StudentRegistrationId: sid },
                 data: {
                     programId: assignedProgramId,
+                    academicSessionId: assignedAcademicSessionId,
                     admissionSessionId: assignedAdmissionSessionId,
                     yearId: assignedYearId,
                     semId: assignedSemId,
@@ -1879,6 +1917,8 @@ let StudentAcademicService = class StudentAcademicService {
                 message: 'Academic qualifications and subjects saved successfully',
                 data: createdDetails,
                 programId: assignedProgramId,
+                academicSessionId: assignedAcademicSessionId,
+                academicSessionName: assignedAcademicSessionName,
                 admissionSessionId: assignedAdmissionSessionId,
                 admissionSessionName: assignedAdmissionSessionName,
                 yearId: assignedYearId,
@@ -2926,6 +2966,7 @@ let StudentPaymentService = class StudentPaymentService {
                 semester: true,
                 program: true,
                 admissionSession: true,
+                academicSession: true,
                 studentEnrollments: {
                     orderBy: { CreatedOn: 'desc' },
                 },
@@ -2935,6 +2976,58 @@ let StudentPaymentService = class StudentPaymentService {
             throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
         }
         return student;
+    }
+    normalizeSessionName(name) {
+        const raw = String(name || '')
+            .trim()
+            .toUpperCase()
+            .replace(/[–—]/g, '-')
+            .replace(/\s+/g, '');
+        const short = raw.match(/^(20\d{2})-(\d{2})$/);
+        if (short)
+            return `${short[1]}-20${short[2]}`;
+        return raw;
+    }
+    async resolveAdmissionSessionIdForFee(student) {
+        if (student.admissionSessionId)
+            return Number(student.admissionSessionId);
+        const academicName = student.academicSession?.academicSessionName ||
+            (await this.prisma.academicSession.findFirst({
+                where: { academicSessionId: student.academicSessionId || 0, IsDeleted: false },
+                select: { academicSessionName: true },
+            }))?.academicSessionName ||
+            (await this.prisma.academicSession.findFirst({
+                where: { isCurrent: true, IsDeleted: false, IsActive: true },
+                select: { academicSessionName: true },
+            }))?.academicSessionName;
+        const admissions = await this.prisma.admissionSession.findMany({
+            where: { IsDeleted: false },
+            select: { admissionSessionId: true, admissionSessionName: true, IsActive: true },
+        });
+        if (academicName) {
+            const exact = admissions.find((s) => String(s.admissionSessionName || '').trim() === String(academicName).trim());
+            if (exact)
+                return exact.admissionSessionId;
+            const normalized = this.normalizeSessionName(academicName);
+            const fuzzy = admissions.find((s) => this.normalizeSessionName(s.admissionSessionName) === normalized);
+            if (fuzzy)
+                return fuzzy.admissionSessionId;
+        }
+        if (student.programId) {
+            const fee = await this.prisma.programFeeConfig.findFirst({
+                where: {
+                    programId: student.programId,
+                    IsDeleted: false,
+                    IsActive: true,
+                },
+                orderBy: { CreatedOn: 'desc' },
+                select: { admissionSessionId: true },
+            });
+            if (fee?.admissionSessionId)
+                return fee.admissionSessionId;
+        }
+        const active = admissions.find((s) => s.IsActive);
+        return active?.admissionSessionId ?? admissions[0]?.admissionSessionId ?? null;
     }
     async resolvePaymentEnrollNo(studentId, student, preferred) {
         const fromEnrollment = (student.studentEnrollments || [])
@@ -3101,7 +3194,12 @@ let StudentPaymentService = class StudentPaymentService {
                 IsDeleted: false,
             },
             include: {
-                student: true,
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
                 year: true,
                 semester: true,
                 feeTypeMaster: true,
@@ -3114,19 +3212,26 @@ let StudentPaymentService = class StudentPaymentService {
         const studentId = Number(data.studentId);
         const feeType = (data.feeType || 'REGISTRATION').toUpperCase();
         const student = await this.loadStudentForPaymentSnapshot(studentId);
-        if (!student.programId || !student.admissionSessionId) {
-            throw new common_1.BadRequestException('Student program and admission session must be saved before payment');
+        const admissionSessionId = await this.resolveAdmissionSessionIdForFee(student);
+        if (!student.programId || !admissionSessionId) {
+            throw new common_1.BadRequestException('Student program and academic session must be saved before payment');
+        }
+        if (!student.admissionSessionId) {
+            await this.prisma.student.update({
+                where: { StudentRegistrationId: studentId },
+                data: { admissionSessionId },
+            });
         }
         const feeConfig = await this.prisma.programFeeConfig.findFirst({
             where: {
                 programId: student.programId,
-                admissionSessionId: student.admissionSessionId,
+                admissionSessionId,
                 IsDeleted: false,
                 IsActive: true,
             },
         });
         if (!feeConfig) {
-            throw new common_1.NotFoundException(`Fee configuration not found for program ${student.programId} and session ${student.admissionSessionId}`);
+            throw new common_1.NotFoundException(`Fee configuration not found for program ${student.programId} and session ${admissionSessionId}`);
         }
         const amount = feeType === 'EXAMINATION'
             ? Number(feeConfig.examinationFinal)
@@ -3297,7 +3402,12 @@ let StudentPaymentService = class StudentPaymentService {
                 Remarks: 'Payment verified successfully via Razorpay',
             },
             include: {
-                student: true,
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
                 year: true,
                 semester: true,
                 feeTypeMaster: true,
@@ -3310,7 +3420,12 @@ let StudentPaymentService = class StudentPaymentService {
         return this.prisma.studentPayment.findMany({
             where: { IsDeleted: false },
             include: {
-                student: true,
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
                 year: true,
                 semester: true,
                 feeTypeMaster: true,
@@ -3322,7 +3437,12 @@ let StudentPaymentService = class StudentPaymentService {
         const payment = await this.prisma.studentPayment.findFirst({
             where: { paymentId, IsDeleted: false },
             include: {
-                student: true,
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
                 year: true,
                 semester: true,
                 feeTypeMaster: true,
@@ -3337,7 +3457,12 @@ let StudentPaymentService = class StudentPaymentService {
         return this.prisma.studentPayment.findMany({
             where: { studentId, IsDeleted: false },
             include: {
-                student: true,
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
                 year: true,
                 semester: true,
                 feeTypeMaster: true,
@@ -3349,7 +3474,12 @@ let StudentPaymentService = class StudentPaymentService {
         const payment = await this.prisma.studentPayment.findFirst({
             where: { razorpayOrderId, IsDeleted: false },
             include: {
-                student: true,
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
                 year: true,
                 semester: true,
                 feeTypeMaster: true,
@@ -3379,7 +3509,12 @@ let StudentPaymentService = class StudentPaymentService {
                 Remarks: data.Remarks,
             },
             include: {
-                student: true,
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
                 year: true,
                 semester: true,
                 feeTypeMaster: true,
@@ -3941,6 +4076,7 @@ const enrollmentInclude = {
             loginMaster: true,
             program: { include: { programCategory: true } },
             admissionSession: true,
+            academicSession: true,
             year: true,
             semester: true,
         },
@@ -4089,6 +4225,7 @@ let StudentEnrollmentService = class StudentEnrollmentService {
                 loginMaster: true,
                 program: true,
                 admissionSession: true,
+                academicSession: true,
             },
         });
         if (!student) {
@@ -4109,7 +4246,7 @@ let StudentEnrollmentService = class StudentEnrollmentService {
             throw new common_1.BadRequestException('Enrollment number can be generated only after successful payment.');
         }
         const snapshot = this.snapshotFromStudent(student);
-        const year = this.resolveEnrollmentYear(student.admissionSession?.admissionSessionName);
+        const year = this.resolveEnrollmentYear(student.academicSession?.academicSessionName || student.admissionSession?.admissionSessionName);
         const programCode = this.resolveProgramCode(student.program);
         let lastError = null;
         for (let attempt = 0; attempt < 8; attempt++) {
@@ -4454,6 +4591,7 @@ let ExamLoginService = class ExamLoginService {
                 year: true,
                 semester: true,
                 admissionSession: true,
+                academicSession: true,
                 studentEnrollments: {
                     include: {
                         program: { include: { programCategory: true } },
@@ -4519,7 +4657,17 @@ let ExamLoginService = class ExamLoginService {
         const examTypeId = await this.resolveExamTypeId(examType);
         let feeConfig = null;
         const programId = student?.programId || enrollment?.programId || program?.programId || null;
-        const sessionId = student?.admissionSessionId || enrollment?.sessionId || null;
+        let sessionId = student?.admissionSessionId || enrollment?.sessionId || null;
+        if (!sessionId && student?.academicSessionId) {
+            const academicName = student?.academicSession?.academicSessionName;
+            if (academicName) {
+                const admission = await this.prisma.admissionSession.findFirst({
+                    where: { admissionSessionName: academicName, IsDeleted: false },
+                    select: { admissionSessionId: true },
+                });
+                sessionId = admission?.admissionSessionId || null;
+            }
+        }
         if (programId && sessionId) {
             feeConfig = await this.prisma.programFeeConfig.findFirst({
                 where: {
@@ -4771,6 +4919,7 @@ let ExamLoginService = class ExamLoginService {
                         year: true,
                         semester: true,
                         admissionSession: true,
+                        academicSession: true,
                     },
                 },
                 program: true,
@@ -4795,6 +4944,7 @@ let ExamLoginService = class ExamLoginService {
                     year: true,
                     semester: true,
                     admissionSession: true,
+                    academicSession: true,
                     studentEnrollments: true,
                 },
             });
@@ -5540,6 +5690,29 @@ let StudentRollNumberService = class StudentRollNumberService {
         const m = String(sessionName || '').match(/(20\d{2})/);
         return m ? m[1] : '';
     }
+    async resolveRollYear(filters) {
+        const academicSessionId = this.toNum(filters.academicSessionId);
+        if (academicSessionId != null) {
+            const academic = await this.prisma.academicSession.findFirst({
+                where: { academicSessionId, IsDeleted: false },
+            });
+            if (!academic)
+                throw new common_1.BadRequestException('Academic session not found');
+            const year = this.extractAdmissionYear(academic.academicSessionName) ||
+                (academic.startYear ? String(academic.startYear) : '');
+            if (year && year.length === 4)
+                return year;
+            throw new common_1.BadRequestException('Academic session name must include year (e.g. 2026-27)');
+        }
+        const sessionId = this.toNum(filters.sessionId);
+        if (sessionId != null) {
+            const session = await this.prisma.admissionSession.findFirst({
+                where: { admissionSessionId: sessionId, IsDeleted: false },
+            });
+            return this.extractAdmissionYear(session?.admissionSessionName);
+        }
+        return '';
+    }
     normalizeCollegeCode(code) {
         const digits = String(code || '').replace(/\D/g, '');
         if (!digits)
@@ -5576,6 +5749,7 @@ let StudentRollNumberService = class StudentRollNumberService {
     }
     async loadEnrollments(filters) {
         const sessionId = this.toNum(filters.sessionId);
+        const academicSessionId = this.toNum(filters.academicSessionId);
         const programId = this.toNum(filters.programId);
         const programCategoryId = this.toNum(filters.programCategoryId);
         const yearId = this.toNum(filters.yearId);
@@ -5587,8 +5761,12 @@ let StudentRollNumberService = class StudentRollNumberService {
             IsDeleted: false,
             enrollmentNo: { not: null },
         };
-        if (sessionId != null)
+        if (academicSessionId != null) {
+            where.student = { academicSessionId, IsDeleted: false };
+        }
+        else if (sessionId != null) {
             where.sessionId = sessionId;
+        }
         if (programId != null)
             where.programId = programId;
         if (yearId != null)
@@ -5604,6 +5782,7 @@ let StudentRollNumberService = class StudentRollNumberService {
                     include: {
                         studentProfile: true,
                         program: { include: { programCategory: true } },
+                        academicSession: true,
                     },
                 },
                 program: { include: { programCategory: true } },
@@ -5681,14 +5860,7 @@ let StudentRollNumberService = class StudentRollNumberService {
         };
     }
     async list(filters = {}) {
-        const sessionId = this.toNum(filters.sessionId);
-        let admissionYear = '';
-        if (sessionId != null) {
-            const session = await this.prisma.admissionSession.findFirst({
-                where: { admissionSessionId: sessionId, IsDeleted: false },
-            });
-            admissionYear = this.extractAdmissionYear(session?.admissionSessionName);
-        }
+        const admissionYear = await this.resolveRollYear(filters);
         const enrollments = await this.loadEnrollments(filters);
         const studentIds = Array.from(new Set(enrollments.map((e) => Number(e.studentId)).filter(Boolean)));
         const rolls = studentIds.length
@@ -5738,18 +5910,23 @@ let StudentRollNumberService = class StudentRollNumberService {
     }
     async generate(payload) {
         const sessionId = this.toNum(payload.sessionId);
-        if (sessionId == null) {
-            throw new common_1.BadRequestException('sessionId is required');
+        const academicSessionId = this.toNum(payload.academicSessionId);
+        if (sessionId == null && academicSessionId == null) {
+            throw new common_1.BadRequestException('academicSessionId or sessionId is required');
         }
-        const session = await this.prisma.admissionSession.findFirst({
-            where: { admissionSessionId: sessionId, IsDeleted: false },
-        });
-        if (!session) {
-            throw new common_1.BadRequestException('Admission session not found');
+        if (sessionId != null) {
+            const session = await this.prisma.admissionSession.findFirst({
+                where: { admissionSessionId: sessionId, IsDeleted: false },
+            });
+            if (!session) {
+                throw new common_1.BadRequestException('Admission session not found');
+            }
         }
-        const admissionYear = this.extractAdmissionYear(session.admissionSessionName);
+        const admissionYear = await this.resolveRollYear(payload);
         if (!admissionYear || admissionYear.length !== 4) {
-            throw new common_1.BadRequestException('Session name must include admission year (e.g. 2025-26)');
+            throw new common_1.BadRequestException(academicSessionId != null
+                ? 'Academic session name must include year (e.g. 2026-27)'
+                : 'Session name must include admission year (e.g. 2025-26)');
         }
         const CreatedBy = String(payload.CreatedBy || 'Admin User').trim() || 'Admin User';
         const collegeCode = await this.resolveCollegeCode();
@@ -10296,6 +10473,36 @@ let AcademicSessionService = class AcademicSessionService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    toBool(value, fallback = false) {
+        if (value === undefined || value === null || value === '')
+            return fallback;
+        if (typeof value === 'boolean')
+            return value;
+        const s = String(value).trim().toLowerCase();
+        return s === 'true' || s === '1' || s === 'yes';
+    }
+    async setOnlyCurrent(academicSessionId) {
+        await this.prisma.academicSession.updateMany({
+            where: { IsDeleted: false, NOT: { academicSessionId } },
+            data: { isCurrent: false },
+        });
+    }
+    async findCurrent() {
+        return this.prisma.academicSession.findFirst({
+            where: { isCurrent: true, IsDeleted: false, IsActive: true },
+            include: {
+                college: {
+                    select: {
+                        collegeId: true,
+                        collegeName: true,
+                        shortName: true,
+                        collegeCode: true,
+                    },
+                },
+            },
+            orderBy: { startYear: 'desc' },
+        });
+    }
     async assertCollege(collegeId) {
         const college = await this.prisma.collegeMaster.findFirst({
             where: { collegeId, IsDeleted: false },
@@ -10318,7 +10525,8 @@ let AcademicSessionService = class AcademicSessionService {
         if (existing) {
             throw new common_1.ConflictException('Academic session name already exists for this college');
         }
-        return this.prisma.academicSession.create({
+        const isCurrent = this.toBool(data.isCurrent, false);
+        const created = await this.prisma.academicSession.create({
             data: {
                 collegeId: Number(data.collegeId),
                 academicSessionName,
@@ -10326,12 +10534,17 @@ let AcademicSessionService = class AcademicSessionService {
                 startYear: Number(data.startYear),
                 endMonth: Number(data.endMonth),
                 endYear: Number(data.endYear),
+                isCurrent,
                 CreatedBy: data.CreatedBy,
                 Remarks: data.Remarks || null,
                 IsActive: true,
                 IsDeleted: false,
             },
         });
+        if (created.isCurrent) {
+            await this.setOnlyCurrent(created.academicSessionId);
+        }
+        return this.findOne(created.academicSessionId);
     }
     async findAll(collegeId) {
         return this.prisma.academicSession.findMany({
@@ -10391,7 +10604,8 @@ let AcademicSessionService = class AcademicSessionService {
         if (existing) {
             throw new common_1.ConflictException('Academic session name already exists for this college');
         }
-        return this.prisma.academicSession.update({
+        const isCurrent = data.isCurrent !== undefined ? this.toBool(data.isCurrent) : undefined;
+        const updated = await this.prisma.academicSession.update({
             where: { academicSessionId },
             data: {
                 collegeId: data.collegeId !== undefined ? collegeId : undefined,
@@ -10400,11 +10614,16 @@ let AcademicSessionService = class AcademicSessionService {
                 startYear: data.startYear !== undefined ? Number(data.startYear) : undefined,
                 endMonth: data.endMonth !== undefined ? Number(data.endMonth) : undefined,
                 endYear: data.endYear !== undefined ? Number(data.endYear) : undefined,
+                isCurrent,
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
                 Remarks: data.Remarks,
             },
         });
+        if (updated.isCurrent) {
+            await this.setOnlyCurrent(updated.academicSessionId);
+        }
+        return this.findOne(updated.academicSessionId);
     }
     async updateStatus(academicSessionId, IsActive, UpdatedBy) {
         await this.findOne(academicSessionId);
@@ -10480,6 +10699,18 @@ let AcademicSessionController = class AcademicSessionController {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
+    async findCurrent() {
+        try {
+            const session = await this.academicSessionService.findCurrent();
+            if (!session) {
+                return { status: 'error', message: 'No current academic session is set' };
+            }
+            return session;
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
     async findOne(data) {
         try {
             return await this.academicSessionService.findOne(data.academicSessionId);
@@ -10529,6 +10760,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AcademicSessionController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_current_academic_session' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AcademicSessionController.prototype, "findCurrent", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'find_one_academic_session' }),
     __param(0, (0, microservices_1.Payload)()),
@@ -12752,6 +12989,30 @@ let ExaminationDetailsService = class ExaminationDetailsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    examInclude() {
+        return {
+            academicSession: {
+                select: {
+                    academicSessionId: true,
+                    academicSessionName: true,
+                    collegeId: true,
+                },
+            },
+            program: {
+                select: {
+                    programId: true,
+                    programName: true,
+                    programShortName: true,
+                },
+            },
+        };
+    }
+    toNullableNumber(value) {
+        if (value === undefined || value === null || value === '')
+            return null;
+        const n = Number(value);
+        return Number.isFinite(n) ? n : null;
+    }
     async assertAcademicSession(academicId) {
         const academicSession = await this.prisma.academicSession.findFirst({
             where: { academicSessionId: academicId, IsDeleted: false },
@@ -12761,8 +13022,25 @@ let ExaminationDetailsService = class ExaminationDetailsService {
         }
         return academicSession;
     }
+    async resolveProgram(programId, programName) {
+        const id = this.toNullableNumber(programId);
+        if (id == null) {
+            return { programId: null, programName: programName ? String(programName).trim() || null : null };
+        }
+        const program = await this.prisma.program.findFirst({
+            where: { programId: id, IsDeleted: false },
+        });
+        if (!program) {
+            throw new common_1.NotFoundException(`Program with ID ${id} not found`);
+        }
+        return {
+            programId: program.programId,
+            programName: String(programName || program.programName || '').trim() || program.programName,
+        };
+    }
     async create(data) {
         await this.assertAcademicSession(Number(data.academicId));
+        const program = await this.resolveProgram(data.programId, data.programName);
         const examinationName = String(data.examinationName || '').trim();
         const examType = data.examType ? String(data.examType).trim() : null;
         const existing = await this.prisma.examinationDetails.findFirst({
@@ -12778,6 +13056,8 @@ let ExaminationDetailsService = class ExaminationDetailsService {
         return this.prisma.examinationDetails.create({
             data: {
                 academicId: Number(data.academicId),
+                programId: program.programId,
+                programName: program.programName,
                 examinationName,
                 examType,
                 CreatedBy: data.CreatedBy,
@@ -12785,6 +13065,7 @@ let ExaminationDetailsService = class ExaminationDetailsService {
                 IsActive: true,
                 IsDeleted: false,
             },
+            include: this.examInclude(),
         });
     }
     async findAll(academicId) {
@@ -12793,30 +13074,14 @@ let ExaminationDetailsService = class ExaminationDetailsService {
                 IsDeleted: false,
                 ...(academicId ? { academicId: Number(academicId) } : {}),
             },
-            include: {
-                academicSession: {
-                    select: {
-                        academicSessionId: true,
-                        academicSessionName: true,
-                        collegeId: true,
-                    },
-                },
-            },
+            include: this.examInclude(),
             orderBy: [{ academicId: 'asc' }, { examinationName: 'asc' }],
         });
     }
     async findOne(examinationId) {
         const examination = await this.prisma.examinationDetails.findFirst({
             where: { examinationId, IsDeleted: false },
-            include: {
-                academicSession: {
-                    select: {
-                        academicSessionId: true,
-                        academicSessionName: true,
-                        collegeId: true,
-                    },
-                },
-            },
+            include: this.examInclude(),
         });
         if (!examination) {
             throw new common_1.NotFoundException(`Examination details with ID ${examinationId} not found`);
@@ -12843,16 +13108,23 @@ let ExaminationDetailsService = class ExaminationDetailsService {
         if (existing) {
             throw new common_1.ConflictException('Examination name already exists for this academic session');
         }
+        const program = data.programId !== undefined || data.programName !== undefined
+            ? await this.resolveProgram(data.programId === undefined ? current.programId : data.programId, data.programName === undefined ? current.programName : data.programName)
+            : null;
         return this.prisma.examinationDetails.update({
             where: { examinationId },
             data: {
                 academicId: data.academicId !== undefined ? academicId : undefined,
+                ...(program
+                    ? { programId: program.programId, programName: program.programName }
+                    : {}),
                 examinationName: data.examinationName !== undefined ? examinationName : undefined,
                 examType: data.examType !== undefined ? String(data.examType).trim() || null : undefined,
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
                 Remarks: data.Remarks,
             },
+            include: this.examInclude(),
         });
     }
     async updateStatus(examinationId, IsActive, UpdatedBy) {

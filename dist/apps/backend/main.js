@@ -1711,7 +1711,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         example: 5,
-        description: 'Selected Program ID (admissionSessionId is auto-assigned from active AdmissionSession)',
+        description: 'Selected Program ID (academic session is auto-assigned from the Current Academic Session)',
     }),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -4805,8 +4805,8 @@ let StudentRollNumberController = class StudentRollNumberController {
     constructor(studentClient) {
         this.studentClient = studentClient;
     }
-    list(sessionId, programCategoryId, programId, yearId, semId, search) {
-        return this.studentClient.send({ cmd: 'list_student_roll_numbers' }, { sessionId, programCategoryId, programId, yearId, semId, search });
+    list(sessionId, academicSessionId, programCategoryId, programId, yearId, semId, search) {
+        return this.studentClient.send({ cmd: 'list_student_roll_numbers' }, { sessionId, academicSessionId, programCategoryId, programId, yearId, semId, search });
     }
     generate(dto) {
         return this.studentClient.send({ cmd: 'generate_student_roll_numbers' }, dto);
@@ -4823,6 +4823,7 @@ __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'List enrolled students with roll numbers for filters' }),
     (0, swagger_1.ApiQuery)({ name: 'sessionId', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'academicSessionId', required: false }),
     (0, swagger_1.ApiQuery)({ name: 'programCategoryId', required: false }),
     (0, swagger_1.ApiQuery)({ name: 'programId', required: false }),
     (0, swagger_1.ApiQuery)({ name: 'yearId', required: false }),
@@ -4830,13 +4831,14 @@ __decorate([
     (0, swagger_1.ApiQuery)({ name: 'search', required: false }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return roll number list rows' }),
     __param(0, (0, common_1.Query)('sessionId')),
-    __param(1, (0, common_1.Query)('programCategoryId')),
-    __param(2, (0, common_1.Query)('programId')),
-    __param(3, (0, common_1.Query)('yearId')),
-    __param(4, (0, common_1.Query)('semId')),
-    __param(5, (0, common_1.Query)('search')),
+    __param(1, (0, common_1.Query)('academicSessionId')),
+    __param(2, (0, common_1.Query)('programCategoryId')),
+    __param(3, (0, common_1.Query)('programId')),
+    __param(4, (0, common_1.Query)('yearId')),
+    __param(5, (0, common_1.Query)('semId')),
+    __param(6, (0, common_1.Query)('search')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String]),
     __metadata("design:returntype", typeof (_b = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _b : Object)
 ], StudentRollNumberController.prototype, "list", null);
 __decorate([
@@ -4903,12 +4905,19 @@ class GenerateStudentRollNumberDto {
 }
 exports.GenerateStudentRollNumberDto = GenerateStudentRollNumberDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 1, description: 'Admission session ID' }),
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Admission session ID', required: false }),
     (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], GenerateStudentRollNumberDto.prototype, "sessionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false, description: 'Academic session ID used for roll year and student filter' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], GenerateStudentRollNumberDto.prototype, "academicSessionId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ required: false }),
     (0, class_transformer_1.Type)(() => Number),
@@ -8598,7 +8607,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionController = void 0;
 const common_1 = __webpack_require__(2);
@@ -8620,6 +8629,9 @@ let AcademicSessionController = class AcademicSessionController {
             ? { collegeId: Number(collegeId) }
             : {};
         return this.studentClient.send({ cmd: 'find_all_academic_sessions' }, payload);
+    }
+    findCurrent() {
+        return this.studentClient.send({ cmd: 'find_current_academic_session' }, {});
     }
     findOne(id) {
         return this.studentClient.send({ cmd: 'find_one_academic_session' }, { academicSessionId: id });
@@ -8655,13 +8667,21 @@ __decorate([
     __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
 ], AcademicSessionController.prototype, "findAll", null);
 __decorate([
+    (0, common_1.Get)('current'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get the current academic session used for student registration' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return current academic session' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], AcademicSessionController.prototype, "findCurrent", null);
+__decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get academic session details by academicSessionId' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return academic session details' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+    __metadata("design:returntype", typeof (_f = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _f : Object)
 ], AcademicSessionController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Put)(':id'),
@@ -8670,8 +8690,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_academic_session_dto_1.UpdateAcademicSessionDto !== "undefined" && update_academic_session_dto_1.UpdateAcademicSessionDto) === "function" ? _f : Object]),
-    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+    __metadata("design:paramtypes", [Number, typeof (_g = typeof update_academic_session_dto_1.UpdateAcademicSessionDto !== "undefined" && update_academic_session_dto_1.UpdateAcademicSessionDto) === "function" ? _g : Object]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
 ], AcademicSessionController.prototype, "update", null);
 __decorate([
     (0, common_1.Patch)(':id/status'),
@@ -8680,8 +8700,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_h = typeof update_status_dto_1.UpdateStatusDto !== "undefined" && update_status_dto_1.UpdateStatusDto) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [Number, typeof (_j = typeof update_status_dto_1.UpdateStatusDto !== "undefined" && update_status_dto_1.UpdateStatusDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
 ], AcademicSessionController.prototype, "updateStatus", null);
 __decorate([
     (0, common_1.Delete)(':id'),
@@ -8694,7 +8714,7 @@ __decorate([
     __param(2, (0, common_1.Query)('DeletedRemarks')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, String, String]),
-    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
+    __metadata("design:returntype", typeof (_l = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _l : Object)
 ], AcademicSessionController.prototype, "remove", null);
 exports.AcademicSessionController = AcademicSessionController = __decorate([
     (0, swagger_1.ApiTags)('Master - Academic Sessions'),
@@ -8773,6 +8793,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateAcademicSessionDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Mark as current session for student registration', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateAcademicSessionDto.prototype, "isCurrent", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Academic session master entry', required: false }),
     (0, class_validator_1.IsString)(),
@@ -8860,6 +8886,12 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], UpdateAcademicSessionDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Mark as current session for student registration', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateAcademicSessionDto.prototype, "isCurrent", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ required: false }),
     (0, class_validator_1.IsString)(),
@@ -11201,6 +11233,19 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateExaminationDetailsDto.prototype, "academicId", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Optional program ID', required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateExaminationDetailsDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'B.Ed.', description: 'Optional program name snapshot', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminationDetailsDto.prototype, "programName", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Mid Term', description: 'Examination name' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -11255,6 +11300,19 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], UpdateExaminationDetailsDto.prototype, "academicId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], UpdateExaminationDetailsDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'B.Ed.', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], UpdateExaminationDetailsDto.prototype, "programName", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Mid Term', required: false }),
     (0, class_validator_1.IsString)(),

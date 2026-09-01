@@ -13,11 +13,13 @@ model Student {
   email                 String                  @unique @db.VarChar(255)
   mobileNo              String                  @db.VarChar(20)
   registrationNo        String                  @unique @db.VarChar(100)
-  // Selected admission program + auto-assigned active admission session
+  // Selected program + current academic session (isCurrent in academic session master)
   programId             Int?
   program               Program?                @relation(fields: [programId], references: [programId])
   admissionSessionId    Int?
   admissionSession      AdmissionSession?       @relation(fields: [admissionSessionId], references: [admissionSessionId])
+  academicSessionId     Int?
+  academicSession       AcademicSession?        @relation(fields: [academicSessionId], references: [academicSessionId])
   // Current college year / semester (register → Year 1 + Sem 1; promote updates these)
   yearId                Int?
   year                  YearMaster?             @relation(fields: [yearId], references: [yearId])
@@ -51,6 +53,7 @@ model Student {
 
   @@index([yearId])
   @@index([semId])
+  @@index([academicSessionId])
   @@map("students")
 }
 
@@ -283,6 +286,7 @@ model Program {
   examSchemes        ExamScheme[]
   examAttendances    ExamAttendance[]
   examMarks          ExamMarks[]
+  examinationDetails ExaminationDetails[]
 
   @@map("programs")
 }
@@ -1007,10 +1011,12 @@ model AcademicSession {
   startYear           Int
   endMonth            Int
   endYear             Int
+  isCurrent           Boolean              @default(false)
   examinationDetails  ExaminationDetails[]
   examSchemes         ExamScheme[]
   examAttendances     ExamAttendance[]
   examMarks           ExamMarks[]
+  students            Student[]
   CreatedOn           DateTime             @default(now())
   CreatedBy           String               @db.VarChar(255)
   UpdatedOn           DateTime?            @updatedAt
@@ -1030,6 +1036,9 @@ model ExaminationDetails {
   examinationId   Int             @id @default(autoincrement())
   academicId      Int
   academicSession AcademicSession @relation(fields: [academicId], references: [academicSessionId], onDelete: Cascade)
+  programId       Int?
+  program         Program?        @relation(fields: [programId], references: [programId], onDelete: SetNull)
+  programName     String?         @db.VarChar(255)
   examinationName String          @db.VarChar(100)
   examType        String?         @db.VarChar(50)
   CreatedOn       DateTime        @default(now())
@@ -1049,6 +1058,7 @@ model ExaminationDetails {
   examMarks       ExamMarks[]
 
   @@index([academicId])
+  @@index([programId])
   @@map("examinationDetails")
 }
 

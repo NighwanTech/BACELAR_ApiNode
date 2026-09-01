@@ -169,6 +169,7 @@ export class StudentPaymentService {
         semester: true,
         program: true,
         admissionSession: true,
+        academicSession: true,
         studentEnrollments: {
           orderBy: { CreatedOn: 'desc' },
         },
@@ -178,6 +179,75 @@ export class StudentPaymentService {
       throw new NotFoundException(`Student with ID ${studentId} not found`);
     }
     return student;
+  }
+
+  private normalizeSessionName(name?: string | null): string {
+    const raw = String(name || '')
+      .trim()
+      .toUpperCase()
+      .replace(/[–—]/g, '-')
+      .replace(/\s+/g, '');
+    const short = raw.match(/^(20\d{2})-(\d{2})$/);
+    if (short) return `${short[1]}-20${short[2]}`;
+    return raw;
+  }
+
+  private async resolveAdmissionSessionIdForFee(student: {
+    programId?: number | null;
+    admissionSessionId?: number | null;
+    academicSessionId?: number | null;
+    academicSession?: { academicSessionName?: string | null } | null;
+  }): Promise<number | null> {
+    if (student.admissionSessionId) return Number(student.admissionSessionId);
+
+    const academicName =
+      student.academicSession?.academicSessionName ||
+      (
+        await this.prisma.academicSession.findFirst({
+          where: { academicSessionId: student.academicSessionId || 0, IsDeleted: false },
+          select: { academicSessionName: true },
+        })
+      )?.academicSessionName ||
+      (
+        await this.prisma.academicSession.findFirst({
+          where: { isCurrent: true, IsDeleted: false, IsActive: true },
+          select: { academicSessionName: true },
+        })
+      )?.academicSessionName;
+
+    const admissions = await this.prisma.admissionSession.findMany({
+      where: { IsDeleted: false },
+      select: { admissionSessionId: true, admissionSessionName: true, IsActive: true },
+    });
+
+    if (academicName) {
+      const exact = admissions.find(
+        (s) => String(s.admissionSessionName || '').trim() === String(academicName).trim(),
+      );
+      if (exact) return exact.admissionSessionId;
+
+      const normalized = this.normalizeSessionName(academicName);
+      const fuzzy = admissions.find(
+        (s) => this.normalizeSessionName(s.admissionSessionName) === normalized,
+      );
+      if (fuzzy) return fuzzy.admissionSessionId;
+    }
+
+    if (student.programId) {
+      const fee = await this.prisma.programFeeConfig.findFirst({
+        where: {
+          programId: student.programId,
+          IsDeleted: false,
+          IsActive: true,
+        },
+        orderBy: { CreatedOn: 'desc' },
+        select: { admissionSessionId: true },
+      });
+      if (fee?.admissionSessionId) return fee.admissionSessionId;
+    }
+
+    const active = admissions.find((s) => s.IsActive);
+    return active?.admissionSessionId ?? admissions[0]?.admissionSessionId ?? null;
   }
 
   private async resolvePaymentEnrollNo(
@@ -379,7 +449,12 @@ export class StudentPaymentService {
         IsDeleted: false,
       },
       include: {
-        student: true,
+        student: {
+          include: {
+            academicSession: true,
+            admissionSession: true,
+          },
+        },
         year: true,
         semester: true,
         feeTypeMaster: true,
@@ -400,23 +475,31 @@ export class StudentPaymentService {
     const feeType = (data.feeType || 'REGISTRATION').toUpperCase();
 
     const student = await this.loadStudentForPaymentSnapshot(studentId);
-    if (!student.programId || !student.admissionSessionId) {
+    const admissionSessionId = await this.resolveAdmissionSessionIdForFee(student);
+    if (!student.programId || !admissionSessionId) {
       throw new BadRequestException(
-        'Student program and admission session must be saved before payment',
+        'Student program and academic session must be saved before payment',
       );
+    }
+
+    if (!student.admissionSessionId) {
+      await this.prisma.student.update({
+        where: { StudentRegistrationId: studentId },
+        data: { admissionSessionId },
+      });
     }
 
     const feeConfig = await this.prisma.programFeeConfig.findFirst({
       where: {
         programId: student.programId,
-        admissionSessionId: student.admissionSessionId,
+        admissionSessionId,
         IsDeleted: false,
         IsActive: true,
       },
     });
     if (!feeConfig) {
       throw new NotFoundException(
-        `Fee configuration not found for program ${student.programId} and session ${student.admissionSessionId}`,
+        `Fee configuration not found for program ${student.programId} and session ${admissionSessionId}`,
       );
     }
 
@@ -628,7 +711,12 @@ export class StudentPaymentService {
         Remarks: 'Payment verified successfully via Razorpay',
       },
       include: {
-        student: true,
+        student: {
+          include: {
+            academicSession: true,
+            admissionSession: true,
+          },
+        },
         year: true,
         semester: true,
         feeTypeMaster: true,
@@ -643,7 +731,12 @@ export class StudentPaymentService {
     return this.prisma.studentPayment.findMany({
       where: { IsDeleted: false },
       include: {
-        student: true,
+        student: {
+          include: {
+            academicSession: true,
+            admissionSession: true,
+          },
+        },
         year: true,
         semester: true,
         feeTypeMaster: true,
@@ -656,7 +749,12 @@ export class StudentPaymentService {
     const payment = await this.prisma.studentPayment.findFirst({
       where: { paymentId, IsDeleted: false },
       include: {
-        student: true,
+        student: {
+          include: {
+            academicSession: true,
+            admissionSession: true,
+          },
+        },
         year: true,
         semester: true,
         feeTypeMaster: true,
@@ -672,7 +770,12 @@ export class StudentPaymentService {
     return this.prisma.studentPayment.findMany({
       where: { studentId, IsDeleted: false },
       include: {
-        student: true,
+        student: {
+          include: {
+            academicSession: true,
+            admissionSession: true,
+          },
+        },
         year: true,
         semester: true,
         feeTypeMaster: true,
@@ -685,7 +788,12 @@ export class StudentPaymentService {
     const payment = await this.prisma.studentPayment.findFirst({
       where: { razorpayOrderId, IsDeleted: false },
       include: {
-        student: true,
+        student: {
+          include: {
+            academicSession: true,
+            admissionSession: true,
+          },
+        },
         year: true,
         semester: true,
         feeTypeMaster: true,
@@ -719,7 +827,12 @@ export class StudentPaymentService {
         Remarks: data.Remarks,
       },
       include: {
-        student: true,
+        student: {
+          include: {
+            academicSession: true,
+            admissionSession: true,
+          },
+        },
         year: true,
         semester: true,
         feeTypeMaster: true,

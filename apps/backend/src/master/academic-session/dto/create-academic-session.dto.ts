@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -42,6 +42,11 @@ export class CreateAcademicSessionDto {
   @IsString()
   @IsNotEmpty()
   CreatedBy: string;
+
+  @ApiProperty({ example: true, description: 'Mark as current session for student registration', required: false })
+  @IsBoolean()
+  @IsOptional()
+  isCurrent?: boolean;
 
   @ApiProperty({ example: 'Academic session master entry', required: false })
   @IsString()
