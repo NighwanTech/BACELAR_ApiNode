@@ -1886,3 +1886,43 @@ model MarksTypeMaster {
   @@map("marksTypeMaster")
 }
 
+model ExaminerRegistration {
+  examinerId            Int       @id @default(autoincrement())
+  institutionName       String?   @db.VarChar(255)
+  examSessionYear       String?   @db.VarChar(100)
+  registrationType      String?   @db.VarChar(100)
+  fullName              String    @db.VarChar(255)
+  fatherSpouseName      String?   @db.VarChar(255)
+  dateOfBirth           DateTime?
+  gender                String?   @db.VarChar(50)
+  mobileNo              String    @db.VarChar(20)
+  alternateMobile       String?   @db.VarChar(20)
+  emailId               String?   @db.VarChar(255)
+  address               String?   @db.Text
+  highestQualification  String?   @db.VarChar(255)
+  specialization        String?   @db.VarChar(255)
+  designation           String?   @db.VarChar(255)
+  presentInstitution    String?   @db.VarChar(255)
+  teachingExperience    String?   @db.VarChar(100)
+  universityAffiliation String?   @db.VarChar(255)
+  accountHolderName     String?   @db.VarChar(255)
+  bankName              String?   @db.VarChar(255)
+  branch                String?   @db.VarChar(255)
+  accountNumber         String?   @db.VarChar(100)
+  ifscCode              String?   @db.VarChar(50)
+
+  // Common Audit Fields
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@map("examinerRegistrations")
+}
+
