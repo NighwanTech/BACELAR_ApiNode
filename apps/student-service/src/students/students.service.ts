@@ -7,6 +7,18 @@ import { resolveFirstYearAndSemester } from './resolve-first-year-semester';
 /** Student role in loginMaster */
 const STUDENT_ROLE_ID = 1;
 
+function parseOptionalCreatedOn(value?: string | Date | null): Date | undefined {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+  const s = String(value ?? '').trim();
+  if (!s) return undefined;
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+  if (m) {
+    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12, 0, 0, 0);
+  }
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? undefined : d;
+}
+
 @Injectable()
 export class StudentsService {
   constructor(
@@ -49,10 +61,10 @@ export class StudentsService {
     return pwd;
   }
 
-  private async generateRegistrationNumber(): Promise<string> {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
+  private async generateRegistrationNumber(forDate?: Date): Promise<string> {
+    const base = forDate && !Number.isNaN(forDate.getTime()) ? forDate : new Date();
+    const year = base.getFullYear();
+    const month = base.getMonth();
 
     const cycleStartYear = month >= 3 ? year : year - 1;
     const cycleStartDate = new Date(cycleStartYear, 3, 1, 0, 0, 0, 0);
@@ -67,7 +79,7 @@ export class StudentsService {
 
     const yyyy = year.toString();
     const mm = (month + 1).toString().padStart(2, '0');
-    const dd = now.getDate().toString().padStart(2, '0');
+    const dd = base.getDate().toString().padStart(2, '0');
 
     let serial = count + 1;
     let regNo = `${yyyy}${mm}${dd}${serial.toString().padStart(4, '0')}`;
@@ -137,9 +149,13 @@ export class StudentsService {
       throw new ConflictException('Phone number already registered');
     }
 
+    const createdBy = data.CreatedBy || 'System';
+    const createdOn = parseOptionalCreatedOn(data.CreatedOn);
+    const source = String(data.source ?? '').trim().slice(0, 20) || null;
+
     let regNo = data.registrationNo;
     if (!regNo) {
-      regNo = await this.generateRegistrationNumber();
+      regNo = await this.generateRegistrationNumber(createdOn);
     } else {
       const existingReg = await this.prisma.student.findUnique({
         where: { registrationNo: regNo },
@@ -151,7 +167,6 @@ export class StudentsService {
 
     const plainTextPassword = this.generateRandomPassword();
     const hashedPassword = await bcrypt.hash(plainTextPassword, 10);
-    const createdBy = data.CreatedBy || 'System';
 
     const newStudent = await this.prisma.$transaction(async (tx) => {
       // Register → always start in Year 1 + Sem 1
@@ -170,6 +185,8 @@ export class StudentsService {
           Remarks: data.Remarks,
           IsActive: true,
           IsDeleted: false,
+          ...(createdOn ? { CreatedOn: createdOn } : {}),
+          ...(source ? { source } : {}),
         },
       });
 
@@ -369,6 +386,12 @@ export class StudentsService {
       }
     }
 
+    const createdOn = parseOptionalCreatedOn(data.CreatedOn);
+    const source =
+      data.source !== undefined
+        ? String(data.source ?? '').trim().slice(0, 20) || null
+        : undefined;
+
     const updated = await this.prisma.$transaction(async (tx) => {
       const student = await tx.student.update({
         where: { StudentRegistrationId },
@@ -383,6 +406,8 @@ export class StudentsService {
           ...(data.hasSportCertificate !== undefined
             ? { hasSportCertificate: Boolean(data.hasSportCertificate) }
             : {}),
+          ...(createdOn ? { CreatedOn: createdOn } : {}),
+          ...(source !== undefined ? { source } : {}),
           UpdatedBy: data.UpdatedBy,
           IsActive: data.IsActive,
           Remarks: data.Remarks,

@@ -36,4 +36,14 @@ export class CreateStudentDto {
   @IsString()
   @IsOptional()
   Remarks?: string;
+
+  @ApiProperty({ example: '2026-09-03', description: 'Registration date (saves to CreatedOn)', required: false })
+  @IsString()
+  @IsOptional()
+  CreatedOn?: string;
+
+  @ApiProperty({ example: 'ADMIN', description: 'WEBSITE or ADMIN', required: false })
+  @IsString()
+  @IsOptional()
+  source?: string;
 }

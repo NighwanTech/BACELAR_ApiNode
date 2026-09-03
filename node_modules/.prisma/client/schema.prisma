@@ -37,6 +37,8 @@ model Student {
   DeletedOn             DateTime?
   DeletedBy             String?                 @db.VarChar(255)
   Remarks               String?                 @db.VarChar(255)
+  /// WEBSITE | ADMIN — null for older records
+  source                String?                 @db.VarChar(20)
   studentProfile        StudentProfile?
   academicDetails       StudentAcademicDetail[]
   programSubjects       StudentProgramSubject[]

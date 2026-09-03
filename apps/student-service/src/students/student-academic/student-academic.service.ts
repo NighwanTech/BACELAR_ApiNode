@@ -19,13 +19,8 @@ export function computeAcademicResult(input: {
 
   if (!Number.isFinite(percentage)) {
     if (marksType.includes('CGPA')) {
-      // treat obtained as CGPA on scale max (usually 10)
-      percentage =
-        Number.isFinite(obtained) && Number.isFinite(max) && max > 0
-          ? (obtained / max) * 100
-          : Number.isFinite(obtained)
-            ? obtained * 10
-            : 0;
+      // CBSE-style: Equivalent % = 9.5 × CGPA
+      percentage = Number.isFinite(obtained) ? obtained * 9.5 : 0;
     } else if (Number.isFinite(obtained) && Number.isFinite(max) && max > 0) {
       percentage = (obtained / max) * 100;
     } else {
