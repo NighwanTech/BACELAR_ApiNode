@@ -123,7 +123,7 @@ const config_1 = __webpack_require__(7);
 const students_module_1 = __webpack_require__(8);
 const master_module_1 = __webpack_require__(85);
 const website_module_1 = __webpack_require__(197);
-const admin_module_1 = __webpack_require__(260);
+const admin_module_1 = __webpack_require__(264);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -480,6 +480,18 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateStudentDto.prototype, "Remarks", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-09-03', description: 'Registration date (saves to CreatedOn)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStudentDto.prototype, "CreatedOn", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'ADMIN', description: 'WEBSITE or ADMIN', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateStudentDto.prototype, "source", void 0);
 
 
 /***/ }),
@@ -567,6 +579,18 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], UpdateStudentDto.prototype, "hasSportCertificate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-09-03', description: 'Registration date (saves to CreatedOn)', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentDto.prototype, "CreatedOn", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'ADMIN', description: 'WEBSITE or ADMIN', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentDto.prototype, "source", void 0);
 
 
 /***/ }),
@@ -13733,13 +13757,14 @@ const testimonial_module_1 = __webpack_require__(244);
 const header_button_module_1 = __webpack_require__(248);
 const committee_module_1 = __webpack_require__(252);
 const committee_submenu_module_1 = __webpack_require__(256);
+const examiner_registration_module_1 = __webpack_require__(260);
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
 exports.WebsiteModule = WebsiteModule = __decorate([
     (0, common_1.Module)({
-        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule, committee_module_1.CommitteeModule, committee_submenu_module_1.CommitteeSubmenuModule],
-        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule, committee_module_1.CommitteeModule, committee_submenu_module_1.CommitteeSubmenuModule],
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule, committee_module_1.CommitteeModule, committee_submenu_module_1.CommitteeSubmenuModule, examiner_registration_module_1.ExaminerRegistrationModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, upload_module_1.UploadModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule, committee_module_1.CommitteeModule, committee_submenu_module_1.CommitteeSubmenuModule, examiner_registration_module_1.ExaminerRegistrationModule],
     })
 ], WebsiteModule);
 
@@ -18727,18 +18752,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminModule = void 0;
+exports.ExaminerRegistrationModule = void 0;
 const common_1 = __webpack_require__(2);
-const admin_login_module_1 = __webpack_require__(261);
-let AdminModule = class AdminModule {
+const microservices_1 = __webpack_require__(9);
+const examiner_registration_controller_1 = __webpack_require__(261);
+let ExaminerRegistrationModule = class ExaminerRegistrationModule {
 };
-exports.AdminModule = AdminModule;
-exports.AdminModule = AdminModule = __decorate([
+exports.ExaminerRegistrationModule = ExaminerRegistrationModule;
+exports.ExaminerRegistrationModule = ExaminerRegistrationModule = __decorate([
     (0, common_1.Module)({
-        imports: [admin_login_module_1.AdminLoginModule],
-        exports: [admin_login_module_1.AdminLoginModule],
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [examiner_registration_controller_1.ExaminerRegistrationController],
     })
-], AdminModule);
+], ExaminerRegistrationModule);
 
 
 /***/ }),
@@ -18752,11 +18789,501 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExaminerRegistrationController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const update_status_dto_1 = __webpack_require__(19);
+const rxjs_1 = __webpack_require__(11);
+const create_examiner_registration_dto_1 = __webpack_require__(262);
+const update_examiner_registration_dto_1 = __webpack_require__(263);
+let ExaminerRegistrationController = class ExaminerRegistrationController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    create(createDto) {
+        return this.studentClient.send({ cmd: 'create_examiner_registration' }, createDto);
+    }
+    findAll() {
+        return this.studentClient.send({ cmd: 'find_all_examiner_registrations' }, {});
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_examiner_registration' }, { examinerId: id });
+    }
+    update(id, updateDto) {
+        return this.studentClient.send({ cmd: 'update_examiner_registration' }, { examinerId: id, ...updateDto });
+    }
+    updateStatus(id, statusDto) {
+        return this.studentClient.send({ cmd: 'update_status_examiner_registration' }, { examinerId: id, ...statusDto });
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient.send({ cmd: 'delete_examiner_registration' }, { examinerId: id, DeletedBy, DeletedRemarks });
+    }
+};
+exports.ExaminerRegistrationController = ExaminerRegistrationController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Submit / Create a new examiner registration' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Examiner registration created successfully' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_examiner_registration_dto_1.CreateExaminerRegistrationDto !== "undefined" && create_examiner_registration_dto_1.CreateExaminerRegistrationDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], ExaminerRegistrationController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all active examiner registrations (where IsDeleted is false)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all examiner registrations' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], ExaminerRegistrationController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get examiner registration details by examinerId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return examiner registration details' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], ExaminerRegistrationController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update examiner registration details by examinerId' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Examiner registration updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_f = typeof update_examiner_registration_dto_1.UpdateExaminerRegistrationDto !== "undefined" && update_examiner_registration_dto_1.UpdateExaminerRegistrationDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], ExaminerRegistrationController.prototype, "update", null);
+__decorate([
+    (0, common_1.Patch)(':id/status'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update active/inactive status' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Status updated successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_h = typeof update_status_dto_1.UpdateStatusDto !== "undefined" && update_status_dto_1.UpdateStatusDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+], ExaminerRegistrationController.prototype, "updateStatus", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Soft delete an examiner registration by examinerId' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedBy', required: true, example: 'Admin User' }),
+    (0, swagger_1.ApiQuery)({ name: 'DeletedRemarks', required: false, example: 'Duplicate entry' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Examiner registration soft deleted successfully' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
+], ExaminerRegistrationController.prototype, "remove", null);
+exports.ExaminerRegistrationController = ExaminerRegistrationController = __decorate([
+    (0, swagger_1.ApiTags)('Website - Examiner Registrations'),
+    (0, common_1.Controller)('website/examiner-registration'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], ExaminerRegistrationController);
+
+
+/***/ }),
+/* 262 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateExaminerRegistrationDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class CreateExaminerRegistrationDto {
+}
+exports.CreateExaminerRegistrationDto = CreateExaminerRegistrationDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bacelar Institute of Technology', description: 'Institution Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "institutionName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-2027', description: 'Exam Session Year', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "examSessionYear", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Internal Examiner', description: 'Registration Type', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "registrationType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Dr. Rajesh Kumar', description: 'Full Name of the Examiner' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "fullName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Shri Rameshwar Prasad', description: 'Father / Spouse Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "fatherSpouseName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '1985-05-15T00:00:00.000Z', description: 'Date of Birth (ISO String)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Male', description: 'Gender', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9876543210', description: 'Primary Mobile Number' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "mobileNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9123456789', description: 'Alternate Mobile Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "alternateMobile", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'rajesh.kumar@example.com', description: 'Email ID', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "emailId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Flat 402, Green Park Apartments, Patna, Bihar', description: 'Address', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "address", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Ph.D. in Computer Science', description: 'Highest Qualification', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "highestQualification", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Artificial Intelligence & Machine Learning', description: 'Specialization Field', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "specialization", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Associate Professor', description: 'Designation', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "designation", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Patna University', description: 'Present Institution', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "presentInstitution", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '12 Years', description: 'Teaching Experience', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "teachingExperience", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Aryabhatta Knowledge University', description: 'University Affiliation', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "universityAffiliation", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Rajesh Kumar', description: 'Bank Account Holder Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "accountHolderName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'State Bank of India', description: 'Bank Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "bankName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Main Branch, Patna', description: 'Bank Branch Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "branch", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123456789012', description: 'Bank Account Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "accountNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'SBIN0001234', description: 'IFSC Code', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "ifscCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is examiner active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateExaminerRegistrationDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'System / Website', description: 'Creator identifier', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Submitted via examiner registration portal', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExaminerRegistrationDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 263 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateExaminerRegistrationDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class UpdateExaminerRegistrationDto {
+}
+exports.UpdateExaminerRegistrationDto = UpdateExaminerRegistrationDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Bacelar Institute of Technology', description: 'Institution Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "institutionName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2026-2027', description: 'Exam Session Year', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "examSessionYear", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Internal Examiner', description: 'Registration Type', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "registrationType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Dr. Rajesh Kumar', description: 'Full Name of the Examiner', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "fullName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Shri Rameshwar Prasad', description: 'Father / Spouse Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "fatherSpouseName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '1985-05-15T00:00:00.000Z', description: 'Date of Birth (ISO String)', required: false }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Male', description: 'Gender', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9876543210', description: 'Primary Mobile Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "mobileNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '9123456789', description: 'Alternate Mobile Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "alternateMobile", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'rajesh.kumar@example.com', description: 'Email ID', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "emailId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Flat 402, Green Park Apartments, Patna, Bihar', description: 'Address', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "address", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Ph.D. in Computer Science', description: 'Highest Qualification', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "highestQualification", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Artificial Intelligence & Machine Learning', description: 'Specialization Field', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "specialization", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Professor', description: 'Designation', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "designation", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Patna University', description: 'Present Institution', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "presentInstitution", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '15 Years', description: 'Teaching Experience', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "teachingExperience", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Aryabhatta Knowledge University', description: 'University Affiliation', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "universityAffiliation", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Rajesh Kumar', description: 'Bank Account Holder Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "accountHolderName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'State Bank of India', description: 'Bank Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "bankName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Main Branch, Patna', description: 'Bank Branch Name', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "branch", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '123456789012', description: 'Bank Account Number', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "accountNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'SBIN0001234', description: 'IFSC Code', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "ifscCode", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', description: 'Username of editor' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true, description: 'Is examiner active?', required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateExaminerRegistrationDto.prototype, "IsActive", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Updated designation and teaching experience', description: 'Optional remarks', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExaminerRegistrationDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 264 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminModule = void 0;
+const common_1 = __webpack_require__(2);
+const admin_login_module_1 = __webpack_require__(265);
+let AdminModule = class AdminModule {
+};
+exports.AdminModule = AdminModule;
+exports.AdminModule = AdminModule = __decorate([
+    (0, common_1.Module)({
+        imports: [admin_login_module_1.AdminLoginModule],
+        exports: [admin_login_module_1.AdminLoginModule],
+    })
+], AdminModule);
+
+
+/***/ }),
+/* 265 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminLoginModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const admin_login_controller_1 = __webpack_require__(262);
+const admin_login_controller_1 = __webpack_require__(266);
 let AdminLoginModule = class AdminLoginModule {
 };
 exports.AdminLoginModule = AdminLoginModule;
@@ -18780,7 +19307,7 @@ exports.AdminLoginModule = AdminLoginModule = __decorate([
 
 
 /***/ }),
-/* 262 */
+/* 266 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18803,12 +19330,12 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_admin_login_dto_1 = __webpack_require__(263);
-const update_admin_login_dto_1 = __webpack_require__(264);
-const bulk_delete_admin_logins_dto_1 = __webpack_require__(265);
-const admin_login_auth_dto_1 = __webpack_require__(266);
-const change_admin_password_dto_1 = __webpack_require__(267);
-const update_admin_profile_dto_1 = __webpack_require__(268);
+const create_admin_login_dto_1 = __webpack_require__(267);
+const update_admin_login_dto_1 = __webpack_require__(268);
+const bulk_delete_admin_logins_dto_1 = __webpack_require__(269);
+const admin_login_auth_dto_1 = __webpack_require__(270);
+const change_admin_password_dto_1 = __webpack_require__(271);
+const update_admin_profile_dto_1 = __webpack_require__(272);
 const update_status_dto_1 = __webpack_require__(19);
 let AdminLoginController = class AdminLoginController {
     constructor(studentClient) {
@@ -18945,7 +19472,7 @@ exports.AdminLoginController = AdminLoginController = __decorate([
 
 
 /***/ }),
-/* 263 */
+/* 267 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19025,7 +19552,7 @@ __decorate([
 
 
 /***/ }),
-/* 264 */
+/* 268 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19111,7 +19638,7 @@ __decorate([
 
 
 /***/ }),
-/* 265 */
+/* 269 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19153,7 +19680,7 @@ __decorate([
 
 
 /***/ }),
-/* 266 */
+/* 270 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19191,7 +19718,7 @@ __decorate([
 
 
 /***/ }),
-/* 267 */
+/* 271 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19233,7 +19760,7 @@ __decorate([
 
 
 /***/ }),
-/* 268 */
+/* 272 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
