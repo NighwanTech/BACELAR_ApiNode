@@ -6,6 +6,7 @@ import { CreateQualificationDto } from './dto/create-qualification.dto';
 import { UpdateQualificationDto } from './dto/update-qualification.dto';
 import { BulkDeleteQualificationsDto } from './dto/bulk-delete-qualifications.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Qualifications')
 @Controller('master/qualifications')
@@ -24,8 +25,9 @@ export class QualificationController {
   @Get()
   @ApiOperation({ summary: 'Get all active qualifications (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all qualifications' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_qualifications' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_qualifications' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

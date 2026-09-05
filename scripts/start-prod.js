@@ -1,15 +1,17 @@
 /**
  * Production starter for Render / single-host deploy.
- * Runs student-service (TCP) then backend (HTTP) in one process group.
+ * Runs student-service (TCP), exam-result-service (TCP), then backend (HTTP).
  */
 const { spawn } = require('child_process');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
 const studentEntry = path.join(root, 'dist/apps/student-service/main.js');
+const examResultEntry = path.join(root, 'dist/apps/exam-result-service/main.js');
 const backendEntry = path.join(root, 'dist/apps/backend/main.js');
 
 const children = [];
+const ready = { STUDENT: false, EXAM: false };
 
 function start(name, entry) {
   const child = spawn(process.execPath, [entry], {
@@ -47,26 +49,36 @@ process.on('SIGINT', () => shutdown(0));
 process.on('SIGTERM', () => shutdown(0));
 
 const student = start('STUDENT', studentEntry);
+const examResult = start('EXAM', examResultEntry);
 
+let startedBackend = false;
 function startBackend() {
+  if (startedBackend) return;
+  startedBackend = true;
   start('BACKEND', backendEntry);
 }
 
-// Wait until student microservice logs that it is listening (max 15s)
-let startedBackend = false;
 const readyTimer = setTimeout(() => {
-  if (!startedBackend) {
-    console.warn('[BOOT] Student ready timeout — starting backend anyway');
-    startedBackend = true;
-    startBackend();
-  }
+  console.warn('[BOOT] Microservice ready timeout — starting backend anyway');
+  startBackend();
 }, 15000);
 
-student.stdout.on('data', (buf) => {
-  const text = buf.toString();
-  if (!startedBackend && /listening on port/i.test(text)) {
+function markReady(name) {
+  ready[name] = true;
+  if (ready.STUDENT && ready.EXAM) {
     clearTimeout(readyTimer);
-    startedBackend = true;
     startBackend();
+  }
+}
+
+student.stdout.on('data', (buf) => {
+  if (/listening on port/i.test(buf.toString())) {
+    markReady('STUDENT');
+  }
+});
+
+examResult.stdout.on('data', (buf) => {
+  if (/listening on port/i.test(buf.toString())) {
+    markReady('EXAM');
   }
 });

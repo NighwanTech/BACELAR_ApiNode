@@ -21,14 +21,30 @@ export class AcademicSessionController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all active academic sessions (optional filter by collegeId)' })
+  @ApiOperation({
+    summary:
+      'List academic sessions. Master table: omit activeOnly. Dropdowns: activeOnly=true (hides inactive).',
+  })
   @ApiQuery({ name: 'collegeId', required: false, example: 1 })
-  @ApiResponse({ status: 200, description: 'Return all academic sessions' })
-  findAll(@Query('collegeId') collegeId?: string): Observable<any> {
-    const payload =
-      collegeId !== undefined && collegeId !== null && String(collegeId).trim() !== ''
-        ? { collegeId: Number(collegeId) }
-        : {};
+  @ApiQuery({
+    name: 'activeOnly',
+    required: false,
+    example: true,
+    description: 'If true, return only IsActive sessions (use this for dropdowns)',
+  })
+  @ApiResponse({ status: 200, description: 'Return academic sessions' })
+  findAll(
+    @Query('collegeId') collegeId?: string,
+    @Query('activeOnly') activeOnly?: string,
+  ): Observable<any> {
+    const payload: { collegeId?: number; activeOnly?: boolean } = {};
+    if (collegeId !== undefined && collegeId !== null && String(collegeId).trim() !== '') {
+      payload.collegeId = Number(collegeId);
+    }
+    const flag = String(activeOnly ?? '').trim().toLowerCase();
+    if (flag === 'true' || flag === '1' || flag === 'yes') {
+      payload.activeOnly = true;
+    }
     return this.studentClient.send({ cmd: 'find_all_academic_sessions' }, payload);
   }
 

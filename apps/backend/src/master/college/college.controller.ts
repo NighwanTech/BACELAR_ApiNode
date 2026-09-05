@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CreateCollegeDto } from './dto/create-college.dto';
 import { UpdateCollegeDto } from './dto/update-college.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Colleges')
 @Controller('master/colleges')
@@ -23,8 +24,9 @@ export class CollegeController {
   @Get()
   @ApiOperation({ summary: 'Get all active colleges (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all colleges' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_colleges' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_colleges' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

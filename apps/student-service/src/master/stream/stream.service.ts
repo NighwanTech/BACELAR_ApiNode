@@ -1,5 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class StreamService {
@@ -44,10 +45,11 @@ export class StreamService {
     });
   }
 
-  async findAll(programId?: number) {
+  async findAll(programId?: number, activeOnly = false) {
     return this.prisma.streamMaster.findMany({
       where: {
         IsDeleted: false,
+        ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}),
         ...(programId ? { programId: Number(programId) } : {}),
       },
       include: {

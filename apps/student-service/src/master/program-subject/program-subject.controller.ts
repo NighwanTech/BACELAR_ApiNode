@@ -16,9 +16,9 @@ export class ProgramSubjectController {
   }
 
   @MessagePattern({ cmd: 'find_all_program_subjects' })
-  async findAll(@Payload() data?: { programId?: number }) {
+  async findAll(@Payload() data?: { programId?: number; activeOnly?: boolean }) {
     try {
-      return await this.programSubjectService.findAll(data?.programId);
+      return await this.programSubjectService.findAll(data?.programId, data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

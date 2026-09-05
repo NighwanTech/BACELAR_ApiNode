@@ -16,9 +16,9 @@ export class FeeTypeController {
   }
 
   @MessagePattern({ cmd: 'find_all_fee_types' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.feeTypeService.findAll();
+      return await this.feeTypeService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

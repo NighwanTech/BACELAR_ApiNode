@@ -16,9 +16,9 @@ export class ExamSubjectController {
   }
 
   @MessagePattern({ cmd: 'find_all_exam_subjects' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.examSubjectService.findAll();
+      return await this.examSubjectService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

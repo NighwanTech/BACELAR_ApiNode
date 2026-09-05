@@ -4,6 +4,7 @@ import { StudentsModule } from './students/students.module';
 import { MasterModule } from './master/master.module';
 import { WebsiteModule } from './website/website.module';
 import { AdminModule } from './admin/admin.module';
+import { ExamResultModule } from './exam-result/exam-result.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AdminModule } from './admin/admin.module';
     MasterModule,
     WebsiteModule,
     AdminModule,
+    ExamResultModule,
   ],
   controllers: [],
 })

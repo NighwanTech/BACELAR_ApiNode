@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class SubjectService {
@@ -20,8 +21,11 @@ export class SubjectService {
     });
   }
 
-  async findAll(filters?: { classType?: string; stream?: string }) {
-    const whereClause: any = { IsDeleted: false };
+  async findAll(filters?: { classType?: string; stream?: string; activeOnly?: boolean }) {
+    const whereClause: any = {
+      IsDeleted: false,
+      ...(isActiveOnly(filters?.activeOnly) ? { IsActive: true } : {}),
+    };
 
     if (filters?.classType) {
       whereClause.classType = filters.classType;

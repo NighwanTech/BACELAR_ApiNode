@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Cities')
 @Controller('master/cities')
@@ -24,11 +25,17 @@ export class CityController {
   @ApiOperation({ summary: 'Get all active cities (optional filter by stateId)' })
   @ApiQuery({ name: 'stateId', required: false, example: 1, description: 'Filter cities by stateId' })
   @ApiResponse({ status: 200, description: 'Return all cities' })
-  findAll(@Query('stateId') stateId?: string): Observable<any> {
-    const payload =
-      stateId !== undefined && stateId !== null && String(stateId).trim() !== ''
-        ? { stateId: Number(stateId) }
-        : {};
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(
+    @Query('stateId') stateId?: string,
+    @Query('activeOnly') activeOnly?: string,
+  ): Observable<any> {
+    const payload: { stateId?: number; activeOnly?: boolean } = {
+      activeOnly: parseActiveOnlyFlag(activeOnly),
+    };
+    if (stateId !== undefined && stateId !== null && String(stateId).trim() !== '') {
+      payload.stateId = Number(stateId);
+    }
     return this.studentClient.send({ cmd: 'find_all_cities' }, payload);
   }
 

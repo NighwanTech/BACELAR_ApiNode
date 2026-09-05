@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CreateZipcodeDto } from './dto/create-zipcode.dto';
 import { UpdateZipcodeDto } from './dto/update-zipcode.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Zipcodes')
 @Controller('master/zipcodes')
@@ -30,8 +31,11 @@ export class ZipcodeController {
     @Query('stateId') stateId?: string,
     @Query('cityId') cityId?: string,
     @Query('zipCode') zipCode?: string,
+    @Query('activeOnly') activeOnly?: string,
   ): Observable<any> {
-    const payload: { stateId?: number; cityId?: number; zipCode?: string } = {};
+    const payload: { stateId?: number; cityId?: number; zipCode?: string; activeOnly?: boolean } = {
+      activeOnly: parseActiveOnlyFlag(activeOnly),
+    };
     if (stateId !== undefined && stateId !== null && String(stateId).trim() !== '') {
       payload.stateId = Number(stateId);
     }

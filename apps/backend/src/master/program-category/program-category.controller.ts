@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CreateProgramCategoryDto } from './dto/create-program-category.dto';
 import { UpdateProgramCategoryDto } from './dto/update-program-category.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Program Categories')
 @Controller('master/program-categories')
@@ -23,8 +24,9 @@ export class ProgramCategoryController {
   @Get()
   @ApiOperation({ summary: 'Get all active program categories (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all program categories' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_program_categories' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_program_categories' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

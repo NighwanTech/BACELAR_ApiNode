@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - States')
 @Controller('master/states')
@@ -23,8 +24,9 @@ export class StateController {
   @Get()
   @ApiOperation({ summary: 'Get all active states (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all states' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_states' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_states' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

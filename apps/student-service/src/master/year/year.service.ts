@@ -1,5 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class YearService {
@@ -47,9 +48,9 @@ export class YearService {
     });
   }
 
-  async findAll() {
+  async findAll(activeOnly = false) {
     return this.prisma.yearMaster.findMany({
-      where: { IsDeleted: false },
+      where: { IsDeleted: false, ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}) },
       include: {
         examType: true,
       },

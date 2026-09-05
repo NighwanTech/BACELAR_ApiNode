@@ -4,6 +4,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateMarksTypeDto } from './dto/create-marks-type.dto';
 import { UpdateMarksTypeDto } from './dto/update-marks-type.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Marks Types')
 @Controller('master/marks-types')
@@ -22,8 +23,9 @@ export class MarksTypeController {
   @Get()
   @ApiOperation({ summary: 'Get all active marks types (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all marks types' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_marks_types' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_marks_types' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

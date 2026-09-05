@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CreateProgramSubjectDto } from './dto/create-program-subject.dto';
 import { UpdateProgramSubjectDto } from './dto/update-program-subject.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Program Subjects')
 @Controller('master/program-subjects')
@@ -27,11 +28,16 @@ export class ProgramSubjectController {
   @ApiOperation({ summary: 'Get all active program subjects (optional filter by programId)' })
   @ApiQuery({ name: 'programId', required: false, example: 5 })
   @ApiResponse({ status: 200, description: 'Return all program subjects' })
-  findAll(@Query('programId') programId?: string): Observable<any> {
-    const payload =
-      programId !== undefined && programId !== null && String(programId).trim() !== ''
-        ? { programId: Number(programId) }
-        : {};
+  findAll(
+    @Query('programId') programId?: string,
+    @Query('activeOnly') activeOnly?: string,
+  ): Observable<any> {
+    const payload: { programId?: number; activeOnly?: boolean } = {
+      activeOnly: parseActiveOnlyFlag(activeOnly),
+    };
+    if (programId !== undefined && programId !== null && String(programId).trim() !== '') {
+      payload.programId = Number(programId);
+    }
     return this.studentClient.send({ cmd: 'find_all_program_subjects' }, payload);
   }
 

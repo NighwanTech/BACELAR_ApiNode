@@ -16,9 +16,9 @@ export class RoleController {
   }
 
   @MessagePattern({ cmd: 'find_all_roles' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.roleService.findAll();
+      return await this.roleService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

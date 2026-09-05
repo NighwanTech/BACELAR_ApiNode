@@ -6,6 +6,7 @@ import { CreateAdmissionSessionDto } from './dto/create-admission-session.dto';
 import { UpdateAdmissionSessionDto } from './dto/update-admission-session.dto';
 import { BulkDeleteAdmissionSessionsDto } from './dto/bulk-delete-admission-sessions.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Admission Sessions')
 @Controller('master/admission-sessions')
@@ -24,8 +25,9 @@ export class AdmissionSessionController {
   @Get()
   @ApiOperation({ summary: 'Get all active admission sessions' })
   @ApiResponse({ status: 200, description: 'Return all sessions' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_admission_sessions' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_admission_sessions' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

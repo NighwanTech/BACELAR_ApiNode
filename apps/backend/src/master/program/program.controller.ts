@@ -6,6 +6,7 @@ import { CreateProgramDto } from './dto/create-program.dto';
 import { UpdateProgramDto } from './dto/update-program.dto';
 import { BulkDeleteProgramsDto } from './dto/bulk-delete-programs.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Programs')
 @Controller('master/programs')
@@ -22,11 +23,17 @@ export class ProgramController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all active programs (filterable by categoryId)' })
+  @ApiOperation({ summary: 'Get all programs (filterable by categoryId). Dropdowns: activeOnly=true' })
   @ApiQuery({ name: 'categoryId', required: false, type: Number, description: 'Filter by ProgramCategory ID' })
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
   @ApiResponse({ status: 200, description: 'Return all programs' })
-  findAll(@Query('categoryId') categoryId?: string): Observable<any> {
-    const filter: any = {};
+  findAll(
+    @Query('categoryId') categoryId?: string,
+    @Query('activeOnly') activeOnly?: string,
+  ): Observable<any> {
+    const filter: { categoryId?: number; activeOnly?: boolean } = {
+      activeOnly: parseActiveOnlyFlag(activeOnly),
+    };
     if (categoryId) {
       filter.categoryId = Number(categoryId);
     }

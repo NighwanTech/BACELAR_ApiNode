@@ -6,6 +6,7 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BulkDeleteBoardsDto } from './dto/bulk-delete-boards.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Boards')
 @Controller('master/boards')
@@ -24,8 +25,9 @@ export class BoardController {
   @Get()
   @ApiOperation({ summary: 'Get all active boards (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all boards' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_boards' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_boards' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

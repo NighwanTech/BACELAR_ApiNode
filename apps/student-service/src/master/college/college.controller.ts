@@ -16,9 +16,9 @@ export class CollegeController {
   }
 
   @MessagePattern({ cmd: 'find_all_colleges' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.collegeService.findAll();
+      return await this.collegeService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

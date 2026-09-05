@@ -16,9 +16,9 @@ export class BoardController {
   }
 
   @MessagePattern({ cmd: 'find_all_boards' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.boardService.findAll();
+      return await this.boardService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

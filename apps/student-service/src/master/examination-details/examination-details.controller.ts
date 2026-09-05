@@ -18,9 +18,9 @@ export class ExaminationDetailsController {
   }
 
   @MessagePattern({ cmd: 'find_all_examination_details' })
-  async findAll(@Payload() data?: { academicId?: number }) {
+  async findAll(@Payload() data?: { academicId?: number; activeOnly?: boolean }) {
     try {
-      return await this.examinationDetailsService.findAll(data?.academicId);
+      return await this.examinationDetailsService.findAll(data?.academicId, data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

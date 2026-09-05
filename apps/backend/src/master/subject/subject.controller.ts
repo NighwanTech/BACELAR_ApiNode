@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Subjects')
 @Controller('master/subjects')
@@ -28,8 +29,12 @@ export class SubjectController {
   findAll(
     @Query('classType') classType?: string,
     @Query('stream') stream?: string,
+    @Query('activeOnly') activeOnly?: string,
   ): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_subjects' }, { classType, stream });
+    return this.studentClient.send(
+      { cmd: 'find_all_subjects' },
+      { classType, stream, activeOnly: parseActiveOnlyFlag(activeOnly) },
+    );
   }
 
   @Get(':id')

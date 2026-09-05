@@ -17,7 +17,7 @@ export class ZipcodeController {
 
   @MessagePattern({ cmd: 'find_all_zipcodes' })
   async findAll(
-    @Payload() data?: { stateId?: number; cityId?: number; zipCode?: string },
+    @Payload() data?: { stateId?: number; cityId?: number; zipCode?: string; activeOnly?: boolean },
   ) {
     try {
       return await this.zipcodeService.findAll(data);

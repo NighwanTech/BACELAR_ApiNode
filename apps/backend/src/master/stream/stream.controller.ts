@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { CreateStreamDto } from './dto/create-stream.dto';
 import { UpdateStreamDto } from './dto/update-stream.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Streams')
 @Controller('master/streams')
@@ -24,11 +25,16 @@ export class StreamController {
   @ApiOperation({ summary: 'Get all active streams (optional filter by programId)' })
   @ApiQuery({ name: 'programId', required: false, example: 5 })
   @ApiResponse({ status: 200, description: 'Return all streams' })
-  findAll(@Query('programId') programId?: string): Observable<any> {
-    const payload =
-      programId !== undefined && programId !== null && String(programId).trim() !== ''
-        ? { programId: Number(programId) }
-        : {};
+  findAll(
+    @Query('programId') programId?: string,
+    @Query('activeOnly') activeOnly?: string,
+  ): Observable<any> {
+    const payload: { programId?: number; activeOnly?: boolean } = {
+      activeOnly: parseActiveOnlyFlag(activeOnly),
+    };
+    if (programId !== undefined && programId !== null && String(programId).trim() !== '') {
+      payload.programId = Number(programId);
+    }
     return this.studentClient.send({ cmd: 'find_all_streams' }, payload);
   }
 

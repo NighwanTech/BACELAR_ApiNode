@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class BoardService {
@@ -17,9 +18,9 @@ export class BoardService {
     });
   }
 
-  async findAll() {
+  async findAll(activeOnly = false) {
     return this.prisma.boardMaster.findMany({
-      where: { IsDeleted: false },
+      where: { IsDeleted: false, ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}) },
       orderBy: { boardName: 'asc' },
     });
   }

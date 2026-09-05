@@ -16,9 +16,9 @@ export class CityController {
   }
 
   @MessagePattern({ cmd: 'find_all_cities' })
-  async findAll(@Payload() data?: { stateId?: number }) {
+  async findAll(@Payload() data?: { stateId?: number; activeOnly?: boolean }) {
     try {
-      return await this.cityService.findAll(data?.stateId);
+      return await this.cityService.findAll(data?.stateId, data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

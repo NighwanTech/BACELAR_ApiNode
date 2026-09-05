@@ -88,10 +88,12 @@ export class AcademicSessionService {
     return this.findOne(created.academicSessionId);
   }
 
-  async findAll(collegeId?: number) {
+  async findAll(collegeId?: number, activeOnly: any = false) {
+    const onlyActive = this.toBool(activeOnly, false);
     return this.prisma.academicSession.findMany({
       where: {
         IsDeleted: false,
+        ...(onlyActive ? { IsActive: true } : {}),
         ...(collegeId ? { collegeId: Number(collegeId) } : {}),
       },
       include: {

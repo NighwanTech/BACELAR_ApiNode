@@ -6,6 +6,7 @@ import { CreateFeeTypeDto } from './dto/create-fee-type.dto';
 import { UpdateFeeTypeDto } from './dto/update-fee-type.dto';
 import { BulkDeleteFeeTypesDto } from './dto/bulk-delete-fee-types.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Fee Types')
 @Controller('master/fee-types')
@@ -24,8 +25,9 @@ export class FeeTypeController {
   @Get()
   @ApiOperation({ summary: 'Get all active fee types (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all fee types' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_fee_types' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_fee_types' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

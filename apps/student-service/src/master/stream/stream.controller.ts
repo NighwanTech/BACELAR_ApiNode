@@ -16,9 +16,9 @@ export class StreamController {
   }
 
   @MessagePattern({ cmd: 'find_all_streams' })
-  async findAll(@Payload() data?: { programId?: number }) {
+  async findAll(@Payload() data?: { programId?: number; activeOnly?: boolean }) {
     try {
-      return await this.streamService.findAll(data?.programId);
+      return await this.streamService.findAll(data?.programId, data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

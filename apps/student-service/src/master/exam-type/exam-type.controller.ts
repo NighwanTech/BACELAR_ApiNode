@@ -16,9 +16,9 @@ export class ExamTypeController {
   }
 
   @MessagePattern({ cmd: 'find_all_exam_types' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.examTypeService.findAll();
+      return await this.examTypeService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

@@ -16,9 +16,9 @@ export class AdmissionSessionController {
   }
 
   @MessagePattern({ cmd: 'find_all_admission_sessions' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.sessionService.findAll();
+      return await this.sessionService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

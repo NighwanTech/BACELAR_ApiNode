@@ -6,6 +6,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { BulkDeleteRolesDto } from './dto/bulk-delete-roles.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Roles')
 @Controller('master/roles')
@@ -22,8 +23,9 @@ export class RoleController {
 
   @Get()
   @ApiOperation({ summary: 'Get all active roles' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_roles' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_roles' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

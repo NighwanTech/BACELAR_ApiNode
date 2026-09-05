@@ -4,6 +4,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateExamSubjectDto } from './dto/create-exam-subject.dto';
 import { UpdateExamSubjectDto } from './dto/update-exam-subject.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Exam Subject')
 @Controller('master/exam-subjects')
@@ -22,8 +23,9 @@ export class ExamSubjectController {
   @Get()
   @ApiOperation({ summary: 'Get all active exam subjects (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all exam subjects' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_exam_subjects' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_exam_subjects' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

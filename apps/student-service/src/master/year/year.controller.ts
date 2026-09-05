@@ -16,9 +16,9 @@ export class YearController {
   }
 
   @MessagePattern({ cmd: 'find_all_years' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.yearService.findAll();
+      return await this.yearService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

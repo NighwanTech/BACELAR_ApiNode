@@ -1,13 +1,19 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class PaperDetailService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private paperDb() {
+    return this.prisma.paperDetailMaster as any;
+  }
+
   private getIncludeRelations() {
     return {
       paperTypeRelation: true,
+      marksTypeRelation: true,
       examTypeRelation: true,
       program: {
         include: {
@@ -28,6 +34,25 @@ export class PaperDetailService {
           },
         },
       },
+    };
+  }
+
+  private async resolveMarksType(marksTypeId?: number | null, marksTypeName?: string | null) {
+    if (!marksTypeId) {
+      return {
+        marksTypeId: null as number | null,
+        marksTypeName: marksTypeName ? String(marksTypeName).trim() || null : null,
+      };
+    }
+    const marksTypeObj = await this.prisma.marksTypeMaster.findFirst({
+      where: { marksTypeId: Number(marksTypeId), IsDeleted: false },
+    });
+    if (!marksTypeObj) {
+      throw new NotFoundException(`Marks type with ID ${marksTypeId} not found`);
+    }
+    return {
+      marksTypeId: marksTypeObj.marksTypeId,
+      marksTypeName: marksTypeObj.marksTypeName,
     };
   }
 
@@ -77,22 +102,26 @@ export class PaperDetailService {
       }
     }
 
+    const marksType = await this.resolveMarksType(data.marksTypeId, data.marksTypeName);
+
     if (data.paperCode) {
-      const existingCode = await this.prisma.paperDetailMaster.findFirst({
-        where: { paperCode: data.paperCode, IsDeleted: false },
+    const existingCode = await this.paperDb().findFirst({
+      where: { paperCode: data.paperCode, IsDeleted: false },
       });
       if (existingCode) {
         throw new ConflictException(`Paper code '${data.paperCode}' already exists`);
       }
     }
 
-    return this.prisma.paperDetailMaster.create({
+    return this.paperDb().create({
       data: {
         paperTypeId: data.paperTypeId || null,
         examTypeId: data.examTypeId || null,
         programId: data.programId || null,
         yearId: data.yearId || null,
         semId: data.semId || null,
+        marksTypeId: marksType.marksTypeId,
+        marksTypeName: marksType.marksTypeName,
 
         subjectName: data.subjectName || null,
         paperType: data.paperType || null,
@@ -124,16 +153,16 @@ export class PaperDetailService {
     });
   }
 
-  async findAll() {
-    return this.prisma.paperDetailMaster.findMany({
-      where: { IsDeleted: false },
+  async findAll(activeOnly = false) {
+    return this.paperDb().findMany({
+      where: { IsDeleted: false, ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}) },
       include: this.getIncludeRelations(),
       orderBy: { paperName: 'asc' },
     });
   }
 
   async findOne(paperId: number) {
-    const paper = await this.prisma.paperDetailMaster.findFirst({
+    const paper = await this.paperDb().findFirst({
       where: { paperId, IsDeleted: false },
       include: this.getIncludeRelations(),
     });
@@ -191,8 +220,13 @@ export class PaperDetailService {
       }
     }
 
+    const marksType =
+      data.marksTypeId !== undefined || data.marksTypeName !== undefined
+        ? await this.resolveMarksType(data.marksTypeId, data.marksTypeName)
+        : null;
+
     if (data.paperCode) {
-      const existingCode = await this.prisma.paperDetailMaster.findFirst({
+      const existingCode = await this.paperDb().findFirst({
         where: {
           paperCode: data.paperCode,
           IsDeleted: false,
@@ -204,7 +238,7 @@ export class PaperDetailService {
       }
     }
 
-    return this.prisma.paperDetailMaster.update({
+    return this.paperDb().update({
       where: { paperId },
       data: {
         paperTypeId: data.paperTypeId !== undefined ? (data.paperTypeId || null) : undefined,
@@ -212,6 +246,8 @@ export class PaperDetailService {
         programId: data.programId !== undefined ? (data.programId || null) : undefined,
         yearId: data.yearId !== undefined ? (data.yearId || null) : undefined,
         semId: data.semId !== undefined ? (data.semId || null) : undefined,
+        marksTypeId: marksType ? marksType.marksTypeId : undefined,
+        marksTypeName: marksType ? marksType.marksTypeName : undefined,
 
         subjectName: data.subjectName,
         paperType: data.paperType,
@@ -245,7 +281,7 @@ export class PaperDetailService {
   async softDelete(paperId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(paperId);
 
-    return this.prisma.paperDetailMaster.update({
+    return this.paperDb().update({
       where: { paperId },
       data: {
         IsDeleted: true,

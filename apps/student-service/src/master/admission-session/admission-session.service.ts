@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class AdmissionSessionService {
@@ -17,9 +18,9 @@ export class AdmissionSessionService {
     });
   }
 
-  async findAll() {
+  async findAll(activeOnly = false) {
     return this.prisma.admissionSession.findMany({
-      where: { IsDeleted: false },
+      where: { IsDeleted: false, ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}) },
       orderBy: { admissionSessionName: 'asc' },
     });
   }

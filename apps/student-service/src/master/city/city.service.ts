@@ -1,5 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class CityService {
@@ -33,10 +34,11 @@ export class CityService {
     });
   }
 
-  async findAll(stateId?: number) {
+  async findAll(stateId?: number, activeOnly = false) {
     return this.prisma.cityMaster.findMany({
       where: {
         IsDeleted: false,
+        ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}),
         ...(stateId ? { stateId: Number(stateId) } : {}),
       },
       orderBy: { cityName: 'asc' },

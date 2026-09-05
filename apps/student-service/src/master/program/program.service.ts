@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class ProgramService {
@@ -24,8 +25,11 @@ export class ProgramService {
     });
   }
 
-  async findAll(categoryId?: number) {
-    const whereClause: any = { IsDeleted: false };
+  async findAll(categoryId?: number, activeOnly = false) {
+    const whereClause: any = {
+      IsDeleted: false,
+      ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}),
+    };
     if (categoryId) {
       whereClause.programCategoryId = categoryId;
     }

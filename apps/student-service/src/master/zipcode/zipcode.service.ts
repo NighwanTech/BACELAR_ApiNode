@@ -1,5 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
 export class ZipcodeService {
@@ -34,10 +35,11 @@ export class ZipcodeService {
     });
   }
 
-  async findAll(filters?: { stateId?: number; cityId?: number; zipCode?: string }) {
+  async findAll(filters?: { stateId?: number; cityId?: number; zipCode?: string; activeOnly?: boolean }) {
     return this.prisma.zipcodeMaster.findMany({
       where: {
         IsDeleted: false,
+        ...(isActiveOnly(filters?.activeOnly) ? { IsActive: true } : {}),
         ...(filters?.stateId ? { stateId: Number(filters.stateId) } : {}),
         ...(filters?.cityId ? { cityId: Number(filters.cityId) } : {}),
         ...(filters?.zipCode

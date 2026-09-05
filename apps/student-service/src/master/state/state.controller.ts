@@ -16,9 +16,9 @@ export class StateController {
   }
 
   @MessagePattern({ cmd: 'find_all_states' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.stateService.findAll();
+      return await this.stateService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

@@ -4,6 +4,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateYearDto } from './dto/create-year.dto';
 import { UpdateYearDto } from './dto/update-year.dto';
+import { parseActiveOnlyFlag } from '../../common/parse-active-only';
 
 @ApiTags('Master - Years')
 @Controller('master/years')
@@ -22,8 +23,9 @@ export class YearController {
   @Get()
   @ApiOperation({ summary: 'Get all active years (where IsDeleted is false)' })
   @ApiResponse({ status: 200, description: 'Return all years' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_years' }, {});
+  @ApiQuery({ name: 'activeOnly', required: false, example: true, description: 'If true, return only IsActive records (dropdowns)' })
+  findAll(@Query('activeOnly') activeOnly?: string): Observable<any> {
+    return this.studentClient.send({ cmd: 'find_all_years' }, { activeOnly: parseActiveOnlyFlag(activeOnly) });
   }
 
   @Get(':id')

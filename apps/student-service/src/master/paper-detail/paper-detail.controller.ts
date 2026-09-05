@@ -16,9 +16,9 @@ export class PaperDetailController {
   }
 
   @MessagePattern({ cmd: 'find_all_paper_details' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.paperDetailService.findAll();
+      return await this.paperDetailService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

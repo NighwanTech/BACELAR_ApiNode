@@ -16,9 +16,9 @@ export class ProgramCategoryController {
   }
 
   @MessagePattern({ cmd: 'find_all_program_categories' })
-  async findAll() {
+  async findAll(@Payload() data?: { activeOnly?: boolean }) {
     try {
-      return await this.programCategoryService.findAll();
+      return await this.programCategoryService.findAll(data?.activeOnly);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };
     }

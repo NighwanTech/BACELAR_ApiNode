@@ -29,6 +29,15 @@
         "tsConfigPath": "apps/student-service/tsconfig.app.json"
       }
     },
+    "exam-result-service": {
+      "type": "application",
+      "root": "apps/exam-result-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/exam-result-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/exam-result-service/tsconfig.app.json"
+      }
+    },
     "prisma": {
       "type": "library",
       "root": "libs/prisma",

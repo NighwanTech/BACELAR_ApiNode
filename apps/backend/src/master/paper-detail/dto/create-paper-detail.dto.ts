@@ -1,5 +1,6 @@
 import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreatePaperDetailDto {
   @ApiProperty({ example: 1, description: 'ID of the associated paper type (PaperTypeMaster)', required: false })
@@ -26,6 +27,17 @@ export class CreatePaperDetailDto {
   @IsInt()
   @IsOptional()
   semId?: number;
+
+  @ApiProperty({ example: 1, description: 'ID of the associated marks type (MarksTypeMaster)', required: false })
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  marksTypeId?: number;
+
+  @ApiProperty({ example: 'THEORY', description: 'Marks type name (saved from MarksTypeMaster)', required: false })
+  @IsString()
+  @IsOptional()
+  marksTypeName?: string;
 
   @ApiProperty({ example: 'Mathematics', description: 'Subject Name', required: false })
   @IsString()
