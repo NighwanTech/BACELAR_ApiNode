@@ -40,7 +40,7 @@ backend (ExamResultController)
     │  validates CreateExamResultDto
     │  ClientProxy.send({ cmd: 'create_exam_result' }, body)
     ▼
-TCP  →  EXAM_RESULT_TCP_PORT (default 4002)
+TCP  →  EXAM_RESULT_TCP_PORT (default 4001)
     │
     ▼
 exam-result-service (@MessagePattern)
@@ -73,7 +73,7 @@ BACELAR_ApiNode/
 │   │
 │   └── exam-result-service/              # Microservice (DB + logic)
 │       ├── src/
-│       │   ├── main.ts                   # TCP bootstrap (port 4002)
+│       │   ├── main.ts                   # TCP bootstrap (port 4001)
 │       │   ├── exam-result-service.module.ts
 │       │   ├── common/active-only.ts
 │       │   └── exam-result/
@@ -152,7 +152,7 @@ Gateway `cmd` and microservice `@MessagePattern` **must match exactly**.
 ```env
 PORT=3000
 TCP_PORT=4001
-EXAM_RESULT_TCP_PORT=4002
+EXAM_RESULT_TCP_PORT=4001
 DATABASE_URL=...
 ```
 
@@ -547,7 +547,7 @@ Always keep the split:
 | Problem | Check |
 |---------|--------|
 | API hangs / connection error | Is `exam-result-service` running on `EXAM_RESULT_TCP_PORT`? |
-| Wrong port | Backend client and microservice must use the **same** env port (`4002` by default) |
+| Wrong port | Backend client and microservice must use the **same** env port (`4001` by default) |
 | Validation error (400) | Required fields / types in DTO (e.g. missing `CreatedBy` or `studentId`) |
 | “already exists” | Same unique combination already present and not deleted |
 | Student not found | `studentId` must exist in `students` and not be soft-deleted |
@@ -586,7 +586,7 @@ Bulk del   POST   /api/v1/exam-results/bulk-delete
 Run:
 
 ```bash
-npm run start:exam-result   # TCP :4002
+npm run start:exam-result   # TCP :4001
 npm run start:backend       # HTTP :3000
 ```
 

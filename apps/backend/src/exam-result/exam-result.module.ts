@@ -17,4 +17,4 @@ import { ExamResultController } from './exam-result.controller';
   ],
   controllers: [ExamResultController],
 })
-export class ExamResultModule {}
+export class ExamResultModule { }

@@ -23,7 +23,7 @@ export class ExamResultService {
   }
 
   private async snapshotStudent(studentId: number) {
-    const student = await this.prisma.student.findFirst({
+    let student = await this.prisma.student.findFirst({
       where: { StudentRegistrationId: studentId, IsDeleted: false },
       include: {
         studentProfile: true,
@@ -40,7 +40,36 @@ export class ExamResultService {
       },
     });
     if (!student) {
-      throw new NotFoundException(`Student with ID ${studentId} not found`);
+      student = await this.prisma.student.findFirst({
+        where: { StudentRegistrationId: studentId },
+        include: {
+          studentProfile: true,
+          studentEnrollments: {
+            orderBy: { enrollmentId: 'desc' },
+            take: 1,
+          },
+          studentRollNumbers: {
+            orderBy: { rollId: 'desc' },
+            take: 1,
+          },
+        },
+      });
+    }
+    if (!student) {
+      return {
+        studentId,
+        enrolmentNo: null,
+        rollNo: null,
+        studentName: null,
+        fatherName: null,
+        motherName: null,
+        gender: null,
+        castCategory: null,
+        dob: null,
+        mobileNo: null,
+        fatherMobileNo: null,
+        emailId: null,
+      };
     }
     const profile = student.studentProfile;
     const enrollment = student.studentEnrollments?.[0];
@@ -68,44 +97,32 @@ export class ExamResultService {
       const session = await this.prisma.academicSession.findFirst({
         where: { academicSessionId: Number(data.academicSessionId), IsDeleted: false },
       });
-      if (!session) {
-        throw new NotFoundException(`Academic session with ID ${data.academicSessionId} not found`);
-      }
-      snapshot.academicSessionId = session.academicSessionId;
-      snapshot.sessionalName = session.academicSessionName;
+      snapshot.academicSessionId = Number(data.academicSessionId);
+      if (session) snapshot.sessionalName = session.academicSessionName;
     }
 
     if (data.examinationDetailId) {
       const exam = await this.prisma.examinationDetails.findFirst({
         where: { examinationId: Number(data.examinationDetailId), IsDeleted: false },
       });
-      if (!exam) {
-        throw new NotFoundException(`Examination with ID ${data.examinationDetailId} not found`);
-      }
-      snapshot.examinationDetailId = exam.examinationId;
-      snapshot.examinationName = exam.examinationName;
+      snapshot.examinationDetailId = Number(data.examinationDetailId);
+      if (exam) snapshot.examinationName = exam.examinationName;
     }
 
     if (data.yearId) {
       const year = await this.prisma.yearMaster.findFirst({
         where: { yearId: Number(data.yearId), IsDeleted: false },
       });
-      if (!year) {
-        throw new NotFoundException(`Year with ID ${data.yearId} not found`);
-      }
-      snapshot.yearId = year.yearId;
-      snapshot.yearName = year.yearName;
+      snapshot.yearId = Number(data.yearId);
+      if (year) snapshot.yearName = year.yearName;
     }
 
     if (data.semId) {
       const sem = await this.prisma.semesterMaster.findFirst({
         where: { semId: Number(data.semId), IsDeleted: false },
       });
-      if (!sem) {
-        throw new NotFoundException(`Semester with ID ${data.semId} not found`);
-      }
-      snapshot.semId = sem.semId;
-      snapshot.semesterName = sem.semesterName;
+      snapshot.semId = Number(data.semId);
+      if (sem) snapshot.semesterName = sem.semesterName;
     }
 
     if (data.programId) {
@@ -113,56 +130,58 @@ export class ExamResultService {
         where: { programId: Number(data.programId), IsDeleted: false },
         include: { programCategory: true },
       });
-      if (!program) {
-        throw new NotFoundException(`Program with ID ${data.programId} not found`);
+      snapshot.programId = Number(data.programId);
+      if (program) {
+        snapshot.programName = program.programName;
+        snapshot.programCategoryId = program.programCategoryId;
+        snapshot.programCategoryName = program.programCategory?.programCategoryName || null;
       }
-      snapshot.programId = program.programId;
-      snapshot.programName = program.programName;
-      snapshot.programCategoryId = program.programCategoryId;
-      snapshot.programCategoryName = program.programCategory?.programCategoryName || null;
     } else if (data.programCategoryId) {
       const category = await this.prisma.programCategory.findFirst({
         where: { programCategoryId: Number(data.programCategoryId), IsDeleted: false },
       });
-      if (!category) {
-        throw new NotFoundException(`Program category with ID ${data.programCategoryId} not found`);
-      }
-      snapshot.programCategoryId = category.programCategoryId;
-      snapshot.programCategoryName = category.programCategoryName;
+      snapshot.programCategoryId = Number(data.programCategoryId);
+      if (category) snapshot.programCategoryName = category.programCategoryName;
     }
 
     if (data.examTypeId) {
       const examType = await this.prisma.examTypeMaster.findFirst({
         where: { examTypeId: Number(data.examTypeId), IsDeleted: false },
       });
-      if (!examType) {
-        throw new NotFoundException(`Exam type with ID ${data.examTypeId} not found`);
-      }
-      snapshot.examTypeId = examType.examTypeId;
-      snapshot.examTypeName = examType.examTypeName;
+      snapshot.examTypeId = Number(data.examTypeId);
+      if (examType) snapshot.examTypeName = examType.examTypeName;
     }
 
     if (data.paperId) {
-      const paper = await this.prisma.paperDetailMaster.findFirst({
+      let paper = await this.prisma.paperDetailMaster.findFirst({
         where: { paperId: Number(data.paperId), IsDeleted: false },
       });
-      if (!paper) {
-        throw new NotFoundException(`Paper with ID ${data.paperId} not found`);
+      if (!paper && data.paperCode) {
+        paper = await this.prisma.paperDetailMaster.findFirst({
+          where: { paperCode: String(data.paperCode), IsDeleted: false },
+        });
       }
-      snapshot.paperId = paper.paperId;
-      snapshot.paperCode = paper.paperCode;
-      snapshot.subjectName = paper.subjectName;
-      snapshot.paperName = paper.paperName;
-      snapshot.paperType = paper.paperType;
-      snapshot.totalMax = paper.totalMarksMax;
-      snapshot.totalMin = paper.totalMarksMin;
-      snapshot.theoryExternalMax = paper.theoryMarksMax;
-      snapshot.theoryExternalMin = paper.theoryMarksMin;
-      snapshot.sessionalInternalMax = paper.sessionalMarksMax;
-      snapshot.sessionalInternalMin = paper.sessionalMarksMin;
-      snapshot.practicalMax = paper.externalPracticalMarksMax ?? paper.internalPracticalMarksMax;
-      snapshot.practicalMin = paper.externalPracticalMarksMin ?? paper.internalPracticalMarksMin;
-      snapshot.creditMax = paper.creditMax;
+      snapshot.paperId = Number(data.paperId);
+      if (paper) {
+        snapshot.paperCode = paper.paperCode;
+        snapshot.subjectName = paper.subjectName;
+        snapshot.paperName = paper.paperName;
+        snapshot.paperType = paper.paperType;
+        snapshot.totalMax = paper.totalMarksMax;
+        snapshot.totalMin = paper.totalMarksMin;
+        snapshot.theoryExternalMax = paper.theoryMarksMax;
+        snapshot.theoryExternalMin = paper.theoryMarksMin;
+        snapshot.sessionalInternalMax = paper.sessionalMarksMax;
+        snapshot.sessionalInternalMin = paper.sessionalMarksMin;
+        snapshot.practicalMax = paper.externalPracticalMarksMax ?? paper.internalPracticalMarksMax;
+        snapshot.practicalMin = paper.externalPracticalMarksMin ?? paper.internalPracticalMarksMin;
+        snapshot.creditMax = paper.creditMax;
+      } else {
+        if (data.paperCode) snapshot.paperCode = data.paperCode;
+        if (data.subjectName) snapshot.subjectName = data.subjectName;
+        if (data.paperName) snapshot.paperName = data.paperName;
+        if (data.paperType) snapshot.paperType = data.paperType;
+      }
     }
 
     return snapshot;
