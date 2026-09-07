@@ -961,6 +961,26 @@ __decorate([
     __metadata("design:type", String)
 ], CreateExamResultDto.prototype, "paperType", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, required: false, description: 'ExamAttendance.attendanceId' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateExamResultDto.prototype, "examAttendanceId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, required: false, description: 'ExamAttendanceDetail.attendanceDetailId' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateExamResultDto.prototype, "examAttendanceDetailId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'P', required: false, description: 'P = Present, A = Absent' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExamResultDto.prototype, "attendanceStatus", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ required: false }),
     (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
@@ -1344,6 +1364,26 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateExamResultDto.prototype, "paperType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, required: false, description: 'ExamAttendance.attendanceId' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateExamResultDto.prototype, "examAttendanceId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, required: false, description: 'ExamAttendanceDetail.attendanceDetailId' }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateExamResultDto.prototype, "examAttendanceDetailId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'P', required: false, description: 'P = Present, A = Absent' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExamResultDto.prototype, "attendanceStatus", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ required: false }),
     (0, class_transformer_1.Type)(() => Number),
