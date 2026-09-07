@@ -1761,6 +1761,7 @@ model ExamAttendance {
   totalAbsent          Int                    @default(0)
 
   details              ExamAttendanceDetail[]
+  examResults          ExamResult[]
 
   CreatedOn            DateTime               @default(now())
   CreatedBy            String?                @db.VarChar(255)
@@ -1792,6 +1793,8 @@ model ExamAttendanceDetail {
   attendanceStatus   String         @default("P") @db.VarChar(10)
   answerBookletNo    String?        @db.VarChar(100)
   remarks            String?        @db.VarChar(255)
+
+  examResults        ExamResult[]
 
   CreatedOn            DateTime               @default(now())
   CreatedBy            String?                @db.VarChar(255)
@@ -1855,6 +1858,15 @@ model ExamResult {
   paperName   String?            @db.VarChar(255)
   paperType   String?            @db.VarChar(100)
 
+  examAttendanceId Int?
+  examAttendance   ExamAttendance? @relation(fields: [examAttendanceId], references: [attendanceId], onDelete: SetNull)
+
+  examAttendanceDetailId Int?
+  examAttendanceDetail   ExamAttendanceDetail? @relation(fields: [examAttendanceDetailId], references: [attendanceDetailId], onDelete: SetNull)
+
+  /// P = Present, A = Absent (copied from attendance when result is created)
+  attendanceStatus String? @db.VarChar(10)
+
   totalMax Float?
   totalMin Float?
 
@@ -1902,6 +1914,8 @@ model ExamResult {
   @@index([semId])
   @@index([studentId])
   @@index([paperId])
+  @@index([examAttendanceId])
+  @@index([examAttendanceDetailId])
   @@index([enrolmentNo])
   @@index([rollNo])
   @@map("examResult")

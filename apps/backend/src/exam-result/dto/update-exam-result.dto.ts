@@ -166,6 +166,23 @@ export class UpdateExamResultDto {
   @IsOptional()
   paperType?: string;
 
+  @ApiProperty({ example: 1, required: false, description: 'ExamAttendance.attendanceId' })
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  examAttendanceId?: number;
+
+  @ApiProperty({ example: 1, required: false, description: 'ExamAttendanceDetail.attendanceDetailId' })
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  examAttendanceDetailId?: number;
+
+  @ApiProperty({ example: 'P', required: false, description: 'P = Present, A = Absent' })
+  @IsString()
+  @IsOptional()
+  attendanceStatus?: string;
+
   @ApiProperty({ required: false })
   @Type(() => Number)
   @IsNumber()
