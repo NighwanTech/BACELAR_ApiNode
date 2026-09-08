@@ -5,6 +5,7 @@ import { MasterModule } from './master/master.module';
 import { WebsiteModule } from './website/website.module';
 import { AdminModule } from './admin/admin.module';
 import { ExamResultModule } from './exam-result/exam-result.module';
+import { ResultDeclarationModule } from './result-declaration/result-declaration.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ExamResultModule } from './exam-result/exam-result.module';
     WebsiteModule,
     AdminModule,
     ExamResultModule,
+    ResultDeclarationModule,
   ],
   controllers: [],
 })
