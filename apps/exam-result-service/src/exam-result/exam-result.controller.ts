@@ -43,6 +43,15 @@ export class ExamResultController {
     }
   }
 
+  @MessagePattern({ cmd: 'get_exam_result_tabulation' })
+  async getTabulation(@Payload() data?: any) {
+    try {
+      return await this.examResultService.getTabulation(data);
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'update_exam_result' })
   async update(@Payload() data: any) {
     try {

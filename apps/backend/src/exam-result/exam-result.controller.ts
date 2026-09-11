@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, Param, ParseIntPipe, Patch, Post, Put, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { CreateExamResultDto } from './dto/create-exam-result.dto';
 import { UpdateExamResultDto } from './dto/update-exam-result.dto';
 import { BulkDeleteExamResultsDto } from './dto/bulk-delete-exam-results.dto';
@@ -14,6 +14,18 @@ export class ExamResultController {
   constructor(
     @Inject('EXAM_RESULT_SERVICE') private readonly examResultClient: ClientProxy,
   ) {}
+
+  private unwrapTabulation<T = any>() {
+    return map((res: any) => {
+      if (res && typeof res === 'object' && res.status === 'error') {
+        throw new HttpException(
+          res.message || 'Request failed',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      return res as T;
+    });
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new exam result row (student + paper)' })
@@ -73,6 +85,63 @@ export class ExamResultController {
     if (enrolmentNo) payload.enrolmentNo = enrolmentNo;
     if (rollNo) payload.rollNo = rollNo;
     return this.examResultClient.send({ cmd: 'find_all_exam_results' }, payload);
+  }
+
+  @Get('tabulation')
+  @ApiOperation({
+    summary:
+      'Class tabulation chart data. Filter by selected IDs; PDF fields come back dynamically.',
+  })
+  @ApiQuery({ name: 'programId', required: true })
+  @ApiQuery({ name: 'programCategoryId', required: true })
+  @ApiQuery({ name: 'academicSessionId', required: false })
+  @ApiQuery({ name: 'examinationDetailId', required: false })
+  @ApiQuery({ name: 'yearId', required: false })
+  @ApiQuery({ name: 'semId', required: false })
+  @ApiQuery({ name: 'examTypeId', required: false })
+  @ApiQuery({ name: 'resultDeclarationId', required: false })
+  @ApiQuery({ name: 'activeOnly', required: false, example: true })
+  @ApiResponse({ status: 200, description: 'Return pivoted tabulation header, papers and students' })
+  getTabulation(
+    @Query('programId') programId?: string,
+    @Query('programCategoryId') programCategoryId?: string,
+    @Query('academicSessionId') academicSessionId?: string,
+    @Query('examinationDetailId') examinationDetailId?: string,
+    @Query('yearId') yearId?: string,
+    @Query('semId') semId?: string,
+    @Query('examTypeId') examTypeId?: string,
+    @Query('resultDeclarationId') resultDeclarationId?: string,
+    @Query('activeOnly') activeOnly?: string,
+  ): Observable<any> {
+    const payload: Record<string, any> = {
+      activeOnly: activeOnly === undefined ? true : parseActiveOnlyFlag(activeOnly),
+    };
+    const ids: Record<string, string | undefined> = {
+      programId,
+      programCategoryId,
+      academicSessionId,
+      examinationDetailId,
+      yearId,
+      semId,
+      examTypeId,
+      resultDeclarationId,
+    };
+    for (const [key, value] of Object.entries(ids)) {
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        payload[key] = Number(value);
+      }
+    }
+    return this.examResultClient.send({ cmd: 'get_exam_result_tabulation' }, payload).pipe(
+      this.unwrapTabulation(),
+      catchError((error) => {
+        if (error instanceof HttpException) {
+          return throwError(() => error);
+        }
+        return throwError(
+          () => new HttpException(error?.message || 'Request failed', HttpStatus.BAD_REQUEST),
+        );
+      }),
+    );
   }
 
   @Post('bulk-delete')
