@@ -5,6 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
+    "webpackConfigPath": "webpack.config.js",
     "tsConfigPath": "apps/backend/tsconfig.app.json"
   },
   "monorepo": true,
@@ -17,6 +18,8 @@
       "entryFile": "main",
       "sourceRoot": "apps/backend/src",
       "compilerOptions": {
+        "webpack": true,
+        "webpackConfigPath": "webpack.config.js",
         "tsConfigPath": "apps/backend/tsconfig.app.json"
       }
     },
@@ -26,6 +29,8 @@
       "entryFile": "main",
       "sourceRoot": "apps/student-service/src",
       "compilerOptions": {
+        "webpack": true,
+        "webpackConfigPath": "webpack.config.js",
         "tsConfigPath": "apps/student-service/tsconfig.app.json"
       }
     },
@@ -35,6 +40,8 @@
       "entryFile": "main",
       "sourceRoot": "apps/exam-result-service/src",
       "compilerOptions": {
+        "webpack": true,
+        "webpackConfigPath": "webpack.config.js",
         "tsConfigPath": "apps/exam-result-service/tsconfig.app.json"
       }
     },

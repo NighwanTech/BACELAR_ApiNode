@@ -3,7 +3,11 @@
   "compilerOptions": {
     "declaration": false,
     "outDir": "../../dist/apps/exam-result-service",
-    "rootDir": "../.."
+    "rootDir": "../..",
+    "paths": {
+      "@app/prisma": ["../../libs/prisma/src"],
+      "@app/prisma/*": ["../../libs/prisma/src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
