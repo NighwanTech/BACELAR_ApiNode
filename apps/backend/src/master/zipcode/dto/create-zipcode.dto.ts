@@ -19,7 +19,7 @@ export class CreateZipcodeDto {
 
   @ApiProperty({ example: 'Hazratganj', description: 'Locality / area name' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   locality: string;
 
   @ApiProperty({ example: 'Admin User', description: 'Username of creator' })

@@ -52,6 +52,7 @@ model Student {
   studentRollNumbers    StudentRollNumber[]
   examAttendanceDetails ExamAttendanceDetail[]
   examResults           ExamResult[]
+  promotionDetails      PromotionDetail[]
 
   @@index([yearId])
   @@index([semId])
@@ -173,6 +174,8 @@ model ProgramCategory {
   examSubjects        ExamSubjectMaster[]
   studentExams        StudentExam[]
   examSchemes         ExamScheme[]
+  promotionsFrom      Promotion[] @relation("PromotionCourseCategoryFrom")
+  promotionsTo        Promotion[] @relation("PromotionCourseCategoryTo")
 
   @@map("programCategory")
 }
@@ -249,6 +252,8 @@ model SubjectMaster {
   DeletedBy        String?                  @db.VarChar(255)
   Remarks          String?                  @db.VarChar(255)
   academicSubjects StudentAcademicSubject[]
+  promotionsFrom   Promotion[]              @relation("PromotionSubjectFrom")
+  promotionsTo     Promotion[]              @relation("PromotionSubjectTo")
 
   @@map("subjectMaster")
 }
@@ -291,6 +296,8 @@ model Program {
   examinationDetails ExaminationDetails[]
   examResults        ExamResult[]
   resultDeclarations ResultDeclaration[]
+  promotionsFrom     Promotion[] @relation("PromotionCourseFrom")
+  promotionsTo       Promotion[] @relation("PromotionCourseTo")
 
   @@map("programs")
 }
@@ -1022,6 +1029,8 @@ model AcademicSession {
   examResults         ExamResult[]
   resultDeclarations  ResultDeclaration[]
   students            Student[]
+  promotionsFrom      Promotion[]          @relation("PromotionSessionFrom")
+  promotionsTo        Promotion[]          @relation("PromotionSessionTo")
   CreatedOn           DateTime             @default(now())
   CreatedBy           String               @db.VarChar(255)
   UpdatedOn           DateTime?            @updatedAt
@@ -1251,6 +1260,8 @@ model YearMaster {
   examSchemes        ExamScheme[]
   examResults        ExamResult[]
   resultDeclarations ResultDeclaration[]
+  promotionsFrom     Promotion[] @relation("PromotionYearFrom")
+  promotionsTo       Promotion[] @relation("PromotionYearTo")
 
   @@index([typeId])
   @@map("yearMaster")
@@ -1279,6 +1290,8 @@ model SemesterMaster {
   examSchemes        ExamScheme[]
   examResults        ExamResult[]
   resultDeclarations ResultDeclaration[]
+  promotionsFrom     Promotion[] @relation("PromotionSemFrom")
+  promotionsTo       Promotion[] @relation("PromotionSemTo")
 
   @@index([yearId])
   @@map("semesterMaster")
@@ -2038,5 +2051,86 @@ model ResultDeclaration {
   @@index([semId])
   @@index([programId, yearId, semId, status])
   @@map("resultDeclaration")
+}
+
+/// Student promotion batch: From (current) → To (next session/year/sem/course)
+model Promotion {
+  promotionId Int @id @default(autoincrement())
+
+  sessionIdFrom Int
+  sessionFrom   AcademicSession @relation("PromotionSessionFrom", fields: [sessionIdFrom], references: [academicSessionId], onDelete: Cascade)
+  yearIdFrom    Int
+  yearFrom      YearMaster      @relation("PromotionYearFrom", fields: [yearIdFrom], references: [yearId], onDelete: Cascade)
+  semIdFrom     Int?
+  semFrom       SemesterMaster? @relation("PromotionSemFrom", fields: [semIdFrom], references: [semId], onDelete: SetNull)
+  courseCategoryIdFrom Int
+  courseCategoryFrom   ProgramCategory @relation("PromotionCourseCategoryFrom", fields: [courseCategoryIdFrom], references: [programCategoryId], onDelete: Cascade)
+  courseIdFrom  Int
+  courseFrom    Program @relation("PromotionCourseFrom", fields: [courseIdFrom], references: [programId], onDelete: Cascade)
+  subjectIdFrom Int?
+  subjectFrom   SubjectMaster? @relation("PromotionSubjectFrom", fields: [subjectIdFrom], references: [subjectId], onDelete: SetNull)
+
+  sessionIdTo Int
+  sessionTo   AcademicSession @relation("PromotionSessionTo", fields: [sessionIdTo], references: [academicSessionId], onDelete: Cascade)
+  yearIdTo    Int
+  yearTo      YearMaster      @relation("PromotionYearTo", fields: [yearIdTo], references: [yearId], onDelete: Cascade)
+  semIdTo     Int?
+  semTo       SemesterMaster? @relation("PromotionSemTo", fields: [semIdTo], references: [semId], onDelete: SetNull)
+  courseCategoryIdTo Int
+  courseCategoryTo   ProgramCategory @relation("PromotionCourseCategoryTo", fields: [courseCategoryIdTo], references: [programCategoryId], onDelete: Cascade)
+  courseIdTo  Int
+  courseTo    Program @relation("PromotionCourseTo", fields: [courseIdTo], references: [programId], onDelete: Cascade)
+  subjectIdTo Int?
+  subjectTo   SubjectMaster? @relation("PromotionSubjectTo", fields: [subjectIdTo], references: [subjectId], onDelete: SetNull)
+
+  details PromotionDetail[]
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([sessionIdFrom, yearIdFrom, semIdFrom, courseIdFrom])
+  @@index([sessionIdTo, yearIdTo, semIdTo, courseIdTo])
+  @@map("promotion")
+}
+
+model PromotionDetail {
+  promotionDetailId Int @id @default(autoincrement())
+
+  promotionId Int
+  promotion   Promotion @relation(fields: [promotionId], references: [promotionId], onDelete: Cascade)
+
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: Cascade)
+
+  regNo         String?  @db.VarChar(100)
+  enrollmentNo  String?  @db.VarChar(100)
+  rollNo        String?  @db.VarChar(100)
+  examMode      String?  @db.VarChar(100)
+  examResult    String?  @db.VarChar(100)
+  isPromoted    Boolean  @default(true)
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([promotionId])
+  @@index([studentId])
+  @@index([rollNo])
+  @@map("promotionDetail")
 }
 

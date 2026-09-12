@@ -2660,6 +2660,15 @@ let StudentPaymentController = class StudentPaymentController {
             return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
         }
     }
+    async createIciciCheckout(data) {
+        try {
+            return await this.paymentService.createIciciCheckout(data);
+        }
+        catch (error) {
+            console.error('[create_icici_checkout]', error);
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
     async verifyRazorpayPayment(data) {
         try {
             return await this.paymentService.verifyRazorpayPayment(data);
@@ -2710,6 +2719,24 @@ let StudentPaymentController = class StudentPaymentController {
             return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
         }
     }
+    async markPaymentFailed(data) {
+        try {
+            return await this.paymentService.markPaymentFailed(data);
+        }
+        catch (error) {
+            console.error('[mark_payment_failed]', error);
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
+    async syncRazorpayPaymentStatus(data) {
+        try {
+            return await this.paymentService.syncRazorpayPaymentStatus(data);
+        }
+        catch (error) {
+            console.error('[sync_razorpay_payment_status]', error);
+            return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
+        }
+    }
     async softDelete(data) {
         try {
             return await this.paymentService.softDelete(data.paymentId, data.DeletedBy, data.DeletedRemarks);
@@ -2742,6 +2769,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StudentPaymentController.prototype, "createRazorpayOrder", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_icici_checkout' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "createIciciCheckout", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'verify_razorpay_payment' }),
     __param(0, (0, microservices_1.Payload)()),
@@ -2783,6 +2817,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StudentPaymentController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'mark_payment_failed' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "markPaymentFailed", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'sync_razorpay_payment_status' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentPaymentController.prototype, "syncRazorpayPaymentStatus", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'delete_student_payment' }),
     __param(0, (0, microservices_1.Payload)()),
@@ -3361,6 +3409,134 @@ let StudentPaymentService = class StudentPaymentService {
             student: payment.student,
         };
     }
+    async createIciciCheckout(data) {
+        const baseUrl = String(process.env.ICICI_PAYMENT_URL || '').trim();
+        if (!baseUrl) {
+            throw new common_1.BadRequestException('ICICI payment URL is not configured. Set ICICI_PAYMENT_URL in the API .env');
+        }
+        const studentId = Number(data.studentId);
+        const feeType = (data.feeType || 'REGISTRATION').toUpperCase();
+        const student = await this.loadStudentForPaymentSnapshot(studentId);
+        const admissionSessionId = await this.resolveAdmissionSessionIdForFee(student);
+        if (!student.programId || !admissionSessionId) {
+            throw new common_1.BadRequestException('Student program and academic session must be saved before payment');
+        }
+        if (!student.admissionSessionId) {
+            await this.prisma.student.update({
+                where: { StudentRegistrationId: studentId },
+                data: { admissionSessionId },
+            });
+        }
+        const feeConfig = await this.prisma.programFeeConfig.findFirst({
+            where: {
+                programId: student.programId,
+                admissionSessionId,
+                IsDeleted: false,
+                IsActive: true,
+            },
+        });
+        if (!feeConfig) {
+            throw new common_1.NotFoundException(`Fee configuration not found for program ${student.programId} and session ${admissionSessionId}`);
+        }
+        const amount = feeType === 'EXAMINATION'
+            ? Number(feeConfig.examinationFinal)
+            : Number(feeConfig.registrationFinal);
+        if (!amount || amount <= 0) {
+            throw new common_1.BadRequestException('Payable fee amount is zero. Use exemption flow instead of ICICI checkout.');
+        }
+        const existingSuccess = await this.prisma.studentPayment.findFirst({
+            where: {
+                studentId,
+                feeType,
+                paymentStatus: 'SUCCESS',
+                IsDeleted: false,
+            },
+        });
+        if (existingSuccess) {
+            throw new common_1.BadRequestException(`A successful ${feeType} payment already exists for this student`);
+        }
+        const existingPending = await this.prisma.studentPayment.findFirst({
+            where: {
+                studentId,
+                feeType,
+                paymentStatus: 'PENDING',
+                IsDeleted: false,
+            },
+            orderBy: { CreatedOn: 'desc' },
+        });
+        const merchantOrderId = `ICICI_${studentId}_${Date.now()}`.slice(0, 40);
+        const snapshot = this.buildPaymentSnapshot(student, {
+            enrollNo: await this.resolvePaymentEnrollNo(studentId, student, data.enrollNo),
+            merchantOrderId,
+            paymentDateTime: null,
+        });
+        const feeTypeId = await this.resolveFeeTypeId(feeType);
+        const paymentInclude = {
+            student: {
+                include: {
+                    program: { include: { programCategory: true } },
+                    admissionSession: true,
+                    year: true,
+                    semester: true,
+                },
+            },
+            year: true,
+            semester: true,
+            feeTypeMaster: true,
+        };
+        const payment = existingPending
+            ? await this.prisma.studentPayment.update({
+                where: { paymentId: existingPending.paymentId },
+                data: {
+                    feeType,
+                    feeTypeId,
+                    amountPaid: amount,
+                    paymentStatus: 'PENDING',
+                    ...snapshot,
+                    razorpayOrderId: null,
+                    razorpayPaymentId: null,
+                    razorpaySignature: null,
+                    gatewayResponse: null,
+                    UpdatedBy: data.CreatedBy,
+                    Remarks: `${feeType} fee ICICI checkout created`,
+                },
+                include: paymentInclude,
+            })
+            : await this.prisma.studentPayment.create({
+                data: {
+                    studentId,
+                    feeType,
+                    feeTypeId,
+                    amountPaid: amount,
+                    paymentStatus: 'PENDING',
+                    ...snapshot,
+                    CreatedBy: data.CreatedBy,
+                    Remarks: `${feeType} fee ICICI checkout created`,
+                    IsActive: true,
+                    IsDeleted: false,
+                },
+                include: paymentInclude,
+            });
+        await this.syncStudentExamPayment(payment);
+        const redirect = new URL(baseUrl);
+        redirect.searchParams.set('amount', String(amount));
+        redirect.searchParams.set('orderId', merchantOrderId);
+        redirect.searchParams.set('paymentId', String(payment.paymentId));
+        redirect.searchParams.set('studentId', String(studentId));
+        redirect.searchParams.set('regNo', String(student.registrationNo || payment.registrationNo || ''));
+        redirect.searchParams.set('feeType', feeType);
+        return {
+            paymentId: payment.paymentId,
+            merchantOrderId,
+            amount,
+            amountInPaise: Math.round(amount * 100),
+            currency: 'INR',
+            feeType,
+            gateway: 'ICICI',
+            redirectUrl: redirect.toString(),
+            student: payment.student,
+        };
+    }
     async verifyRazorpayPayment(data) {
         const keySecret = process.env.RAZORPAY_KEY_SECRET;
         if (!keySecret) {
@@ -3538,6 +3714,162 @@ let StudentPaymentService = class StudentPaymentService {
         });
         await this.syncStudentExamPayment(updated);
         return updated;
+    }
+    async markPaymentFailed(data) {
+        const payment = await this.findOne(Number(data.paymentId));
+        const status = String(payment.paymentStatus || '').toUpperCase();
+        if (status === 'SUCCESS') {
+            throw new common_1.BadRequestException('Cannot mark a successful payment as failed');
+        }
+        const reason = String(data.reason || '').trim() || 'Payment failed';
+        const gateway = String(data.gateway || '').trim().toUpperCase();
+        const remarks = gateway
+            ? `PAYMENT FAILED (${gateway}): ${reason}`
+            : `PAYMENT FAILED: ${reason}`;
+        const updated = await this.prisma.studentPayment.update({
+            where: { paymentId: payment.paymentId },
+            data: {
+                paymentStatus: 'FAILED',
+                gatewayResponse: data.gatewayResponse || payment.gatewayResponse || null,
+                UpdatedBy: data.UpdatedBy,
+                Remarks: remarks.slice(0, 500),
+            },
+            include: {
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
+                year: true,
+                semester: true,
+                feeTypeMaster: true,
+            },
+        });
+        await this.syncStudentExamPayment(updated);
+        return updated;
+    }
+    async syncRazorpayPaymentStatus(data) {
+        const studentId = Number(data.studentId);
+        const feeType = (data.feeType || 'REGISTRATION').toUpperCase();
+        const existingSuccess = await this.prisma.studentPayment.findFirst({
+            where: {
+                studentId,
+                feeType,
+                paymentStatus: 'SUCCESS',
+                IsDeleted: false,
+            },
+            orderBy: { CreatedOn: 'desc' },
+            include: {
+                student: {
+                    include: {
+                        academicSession: true,
+                        admissionSession: true,
+                    },
+                },
+                year: true,
+                semester: true,
+                feeTypeMaster: true,
+            },
+        });
+        if (existingSuccess) {
+            return {
+                syncStatus: 'SUCCESS',
+                message: 'Payment already marked successful.',
+                payment: existingSuccess,
+            };
+        }
+        const payment = await this.prisma.studentPayment.findFirst({
+            where: {
+                studentId,
+                feeType,
+                IsDeleted: false,
+                razorpayOrderId: { not: null },
+                paymentStatus: { in: ['PENDING', 'FAILED'] },
+            },
+            orderBy: { CreatedOn: 'desc' },
+        });
+        if (!payment?.razorpayOrderId) {
+            return {
+                syncStatus: 'NOT_FOUND',
+                message: 'No Razorpay payment attempt found. Please proceed to payment first.',
+                payment: null,
+            };
+        }
+        const { client } = this.getRazorpayClient();
+        let items = [];
+        try {
+            const list = await client.orders.fetchPayments(payment.razorpayOrderId);
+            items = Array.isArray(list?.items) ? list.items : [];
+        }
+        catch (err) {
+            throw new common_1.BadRequestException(`Unable to fetch Razorpay status: ${extractErrorMessage(err)}`);
+        }
+        const paid = items.find((p) => {
+            const st = String(p?.status || '').toLowerCase();
+            return st === 'captured' || st === 'authorized';
+        });
+        if (paid?.id) {
+            const student = await this.loadStudentForPaymentSnapshot(studentId);
+            const snapshot = this.buildPaymentSnapshot(student, {
+                enrollNo: await this.resolvePaymentEnrollNo(studentId, student, payment.enrollNo),
+                bankRrnNo: extractBankRrnNo(null, paid) || payment.bankRrnNo || null,
+                merchantOrderId: payment.merchantOrderId || payment.razorpayOrderId,
+                paymentDateTime: new Date(),
+            });
+            const feeTypeId = payment.feeTypeId || (await this.resolveFeeTypeId(payment.feeType));
+            const updated = await this.prisma.studentPayment.update({
+                where: { paymentId: payment.paymentId },
+                data: {
+                    paymentStatus: 'SUCCESS',
+                    feeTypeId,
+                    razorpayPaymentId: String(paid.id),
+                    gatewayResponse: JSON.stringify(paid),
+                    ...snapshot,
+                    UpdatedBy: data.UpdatedBy,
+                    Remarks: 'Payment synced from Razorpay (Check Status)',
+                },
+                include: {
+                    student: {
+                        include: {
+                            academicSession: true,
+                            admissionSession: true,
+                        },
+                    },
+                    year: true,
+                    semester: true,
+                    feeTypeMaster: true,
+                },
+            });
+            await this.syncStudentExamPayment(updated);
+            return {
+                syncStatus: 'SUCCESS',
+                message: 'Payment confirmed with Razorpay and updated successfully.',
+                payment: updated,
+            };
+        }
+        const failed = items.find((p) => String(p?.status || '').toLowerCase() === 'failed');
+        if (failed) {
+            const reason = String(failed?.error_description || failed?.error_reason || '').trim() ||
+                'Payment failed at Razorpay';
+            const updated = await this.markPaymentFailed({
+                paymentId: payment.paymentId,
+                reason,
+                gateway: 'RAZORPAY',
+                gatewayResponse: JSON.stringify(failed),
+                UpdatedBy: data.UpdatedBy,
+            });
+            return {
+                syncStatus: 'FAILED',
+                message: reason,
+                payment: updated,
+            };
+        }
+        return {
+            syncStatus: 'PENDING',
+            message: 'Payment is still pending at Razorpay. If amount was deducted, wait a few minutes and check again — do not pay twice.',
+            payment,
+        };
     }
     async softDelete(paymentId, DeletedBy, DeletedRemarks) {
         await this.findOne(paymentId);
@@ -8248,7 +8580,19 @@ let SubjectService = class SubjectService {
             ...((0, active_only_1.isActiveOnly)(filters?.activeOnly) ? { IsActive: true } : {}),
         };
         if (filters?.classType) {
-            whereClause.classType = filters.classType;
+            const raw = String(filters.classType).trim().toLowerCase();
+            if (raw === '10th' || raw === '10') {
+                whereClause.classType = { in: ['10th', '10TH', 'BOTH', 'Both', 'both'] };
+            }
+            else if (raw === '12th' || raw === '12') {
+                whereClause.classType = { in: ['12th', '12TH', 'BOTH', 'Both', 'both'] };
+            }
+            else if (raw === 'both') {
+                whereClause.classType = { in: ['BOTH', 'Both', 'both'] };
+            }
+            else {
+                whereClause.classType = filters.classType;
+            }
         }
         if (filters?.stream) {
             whereClause.OR = [

@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ResultDeclarationController } from './result-declaration.controller';
-import { StorageModule } from '../shared/storage/storage.module';
+import { PromotionController } from './promotion.controller';
 
 @Module({
   imports: [
-    StorageModule,
     ClientsModule.register([
       {
         name: 'EXAM_RESULT_SERVICE',
@@ -17,6 +15,6 @@ import { StorageModule } from '../shared/storage/storage.module';
       },
     ]),
   ],
-  controllers: [ResultDeclarationController],
+  controllers: [PromotionController],
 })
-export class ResultDeclarationModule {}
+export class PromotionModule {}

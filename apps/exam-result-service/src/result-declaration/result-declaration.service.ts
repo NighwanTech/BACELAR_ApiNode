@@ -63,7 +63,9 @@ export class ResultDeclarationService {
 
     let label = program;
     if (shortName && program && !program.includes(`[${shortName}]`)) {
-      label = `${program} [${shortName}]`;
+      // label = `${program} ${shortName}`;
+      label = `${shortName}`;
+      console.log('label', label);
     }
     if (sem) label = `${label} ${sem}`.trim();
     else if (year) label = `${label} ${year}`.trim();
@@ -459,6 +461,15 @@ export class ResultDeclarationService {
         yearName: declaration.yearName || first.yearName,
       });
 
+    const lastUpdateDate =
+      rows
+        .map((r) => r.UpdatedOn || r.CreatedOn || null)
+        .filter(Boolean)
+        .sort((a: any, b: any) => new Date(b).getTime() - new Date(a).getTime())[0] ||
+      declaration.UpdatedOn ||
+      declaration.publishedAt ||
+      null;
+
     return {
       college: {
         collegeId: college?.collegeId ?? null,
@@ -471,6 +482,7 @@ export class ResultDeclarationService {
       title: 'Provisional Statement of Marks',
       examinationName: declaration.examinationName || first.examinationName || null,
       declareDate: declaration.declareDate,
+      lastUpdateDate,
       status: declaration.status,
       resultDeclarationId: declaration.resultDeclarationId,
       student: {

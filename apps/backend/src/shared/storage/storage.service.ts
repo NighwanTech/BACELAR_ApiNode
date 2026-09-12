@@ -9,8 +9,11 @@ import {
   PutObjectCommandInput,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import * as fs from 'fs';
+import * as http from 'http';
+import * as https from 'https';
 import * as path from 'path';
 import { Readable } from 'stream';
 
@@ -87,10 +90,25 @@ export class StorageService {
 
   extractS3KeyFromUrl(url: string): string | null {
     try {
+      const trimmed = String(url || '').trim();
+      if (!trimmed) return null;
+
+      const fromStoragePath = trimmed.match(
+        /(?:\/api\/v1)?\/storage\/object\/(.+?)(?:\?|$)/i,
+      );
+      if (fromStoragePath?.[1]) {
+        return decodeURIComponent(fromStoragePath[1].replace(/^\/+/, ''));
+      }
+
+      // Already a bare object key (e.g. photo/xyz.jpg)
+      if (!/^https?:/i.test(trimmed) && trimmed.includes('/') && !trimmed.startsWith('/')) {
+        return trimmed.replace(/^\/+/, '');
+      }
+
       const { bucketName, publicBaseUrl, endpoint } = this.getS3Config();
       if (!bucketName) return null;
 
-      const u = new URL(url);
+      const u = new URL(trimmed);
       const pathname = decodeURIComponent(u.pathname).replace(/^\/+/, '');
 
       // path-style: /{bucket}/{key}
@@ -115,6 +133,36 @@ export class StorageService {
       }
 
       return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Presigned GET URL for private buckets. Signing is local (no S3 round-trip).
+   */
+  async getPresignedGetUrl(
+    keyOrUrl: string,
+    expiresInSeconds = 3600,
+  ): Promise<string | null> {
+    if (this.storageProvider !== 's3') return null;
+
+    const key =
+      this.extractS3KeyFromUrl(keyOrUrl) ||
+      String(keyOrUrl || '')
+        .trim()
+        .replace(/^\/+/, '');
+    if (!key || key.includes('..')) return null;
+
+    const { bucketName } = this.getS3Config();
+    if (!bucketName) return null;
+
+    try {
+      return await getSignedUrl(
+        this.getS3Client(),
+        new GetObjectCommand({ Bucket: bucketName, Key: key }),
+        { expiresIn: expiresInSeconds },
+      );
     } catch {
       return null;
     }
@@ -183,6 +231,10 @@ export class StorageService {
       );
     }
 
+    // Prefer IPv4 — some hosts resolve AAAA first and hang until connectionTimeout.
+    const httpAgent = new http.Agent({ keepAlive: true, family: 4 });
+    const httpsAgent = new https.Agent({ keepAlive: true, family: 4 });
+
     this.s3Client = new S3Client({
       region,
       credentials: {
@@ -190,8 +242,10 @@ export class StorageService {
         secretAccessKey,
       },
       requestHandler: new NodeHttpHandler({
-        connectionTimeout: 10_000,
-        requestTimeout: 30_000,
+        connectionTimeout: 15_000,
+        requestTimeout: 45_000,
+        httpAgent,
+        httpsAgent,
       }),
       ...(endpoint
         ? {
@@ -225,10 +279,25 @@ export class StorageService {
       throw new NotFoundException(`Object not found: ${key}`);
     }
 
+    // Buffer the body so Nest can respond reliably (stream pipe often hangs).
+    const bodyAny = result.Body as any;
+    let buffer: Buffer;
+    if (typeof bodyAny.transformToByteArray === 'function') {
+      buffer = Buffer.from(await bodyAny.transformToByteArray());
+    } else if (Buffer.isBuffer(bodyAny)) {
+      buffer = bodyAny;
+    } else {
+      const chunks: Buffer[] = [];
+      for await (const chunk of bodyAny as Readable) {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      }
+      buffer = Buffer.concat(chunks);
+    }
+
     return {
-      body: result.Body as Readable,
+      body: buffer,
       contentType: result.ContentType,
-      contentLength: result.ContentLength,
+      contentLength: buffer.length,
     };
   }
 

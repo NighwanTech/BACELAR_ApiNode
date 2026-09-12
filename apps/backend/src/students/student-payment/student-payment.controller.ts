@@ -4,6 +4,9 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { CreateStudentPaymentDto } from './dto/create-student-payment.dto';
 import { CreateRazorpayOrderDto } from './dto/create-razorpay-order.dto';
+import { CreateIciciCheckoutDto } from './dto/create-icici-checkout.dto';
+import { MarkPaymentFailedDto } from './dto/mark-payment-failed.dto';
+import { SyncRazorpayPaymentStatusDto } from './dto/sync-razorpay-payment-status.dto';
 import { VerifyRazorpayPaymentDto } from './dto/verify-razorpay-payment.dto';
 import { UpdateStudentPaymentDto } from './dto/update-student-payment.dto';
 import { BulkDeleteStudentPaymentsDto } from './dto/bulk-delete-student-payments.dto';
@@ -29,11 +32,37 @@ export class StudentPaymentController {
     return this.studentClient.send({ cmd: 'create_razorpay_order' }, createDto);
   }
 
+  @Post('create-icici-checkout')
+  @ApiOperation({
+    summary: 'Create PENDING payment + ICICI redirect URL (from API ICICI_PAYMENT_URL)',
+  })
+  @ApiResponse({ status: 201, description: 'ICICI checkout created successfully' })
+  createIciciCheckout(@Body() createDto: CreateIciciCheckoutDto): Observable<any> {
+    return this.studentClient.send({ cmd: 'create_icici_checkout' }, createDto);
+  }
+
   @Post('verify')
   @ApiOperation({ summary: 'Verify Razorpay payment signature and mark SUCCESS' })
   @ApiResponse({ status: 200, description: 'Payment verified successfully' })
   verify(@Body() verifyDto: VerifyRazorpayPaymentDto): Observable<any> {
     return this.studentClient.send({ cmd: 'verify_razorpay_payment' }, verifyDto);
+  }
+
+  @Post('mark-failed')
+  @ApiOperation({ summary: 'Mark payment as FAILED and save failure reason' })
+  @ApiResponse({ status: 200, description: 'Payment marked as failed' })
+  markFailed(@Body() dto: MarkPaymentFailedDto): Observable<any> {
+    return this.studentClient.send({ cmd: 'mark_payment_failed' }, dto);
+  }
+
+  @Post('sync-razorpay-status')
+  @ApiOperation({
+    summary:
+      'Re-check Razorpay for pending/failed payment (money deducted but site not updated)',
+  })
+  @ApiResponse({ status: 200, description: 'Sync result with payment status' })
+  syncRazorpayStatus(@Body() dto: SyncRazorpayPaymentStatusDto): Observable<any> {
+    return this.studentClient.send({ cmd: 'sync_razorpay_payment_status' }, dto);
   }
 
   @Get()

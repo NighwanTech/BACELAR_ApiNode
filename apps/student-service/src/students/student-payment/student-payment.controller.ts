@@ -28,6 +28,16 @@ export class StudentPaymentController {
     }
   }
 
+  @MessagePattern({ cmd: 'create_icici_checkout' })
+  async createIciciCheckout(@Payload() data: any) {
+    try {
+      return await this.paymentService.createIciciCheckout(data);
+    } catch (error: unknown) {
+      console.error('[create_icici_checkout]', error);
+      return { status: 'error', message: extractErrorMessage(error) };
+    }
+  }
+
   @MessagePattern({ cmd: 'verify_razorpay_payment' })
   async verifyRazorpayPayment(@Payload() data: any) {
     try {
@@ -80,6 +90,26 @@ export class StudentPaymentController {
       const { paymentId, ...updateData } = data;
       return await this.paymentService.update(paymentId, updateData);
     } catch (error: unknown) {
+      return { status: 'error', message: extractErrorMessage(error) };
+    }
+  }
+
+  @MessagePattern({ cmd: 'mark_payment_failed' })
+  async markPaymentFailed(@Payload() data: any) {
+    try {
+      return await this.paymentService.markPaymentFailed(data);
+    } catch (error: unknown) {
+      console.error('[mark_payment_failed]', error);
+      return { status: 'error', message: extractErrorMessage(error) };
+    }
+  }
+
+  @MessagePattern({ cmd: 'sync_razorpay_payment_status' })
+  async syncRazorpayPaymentStatus(@Payload() data: any) {
+    try {
+      return await this.paymentService.syncRazorpayPaymentStatus(data);
+    } catch (error: unknown) {
+      console.error('[sync_razorpay_payment_status]', error);
       return { status: 'error', message: extractErrorMessage(error) };
     }
   }

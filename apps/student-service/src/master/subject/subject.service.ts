@@ -28,7 +28,17 @@ export class SubjectService {
     };
 
     if (filters?.classType) {
-      whereClause.classType = filters.classType;
+      // Admin may save 10th / 10TH / BOTH — exact "10th" alone hid shared subjects
+      const raw = String(filters.classType).trim().toLowerCase();
+      if (raw === '10th' || raw === '10') {
+        whereClause.classType = { in: ['10th', '10TH', 'BOTH', 'Both', 'both'] };
+      } else if (raw === '12th' || raw === '12') {
+        whereClause.classType = { in: ['12th', '12TH', 'BOTH', 'Both', 'both'] };
+      } else if (raw === 'both') {
+        whereClause.classType = { in: ['BOTH', 'Both', 'both'] };
+      } else {
+        whereClause.classType = filters.classType;
+      }
     }
 
     if (filters?.stream) {

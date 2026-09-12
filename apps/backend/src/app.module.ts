@@ -6,6 +6,7 @@ import { WebsiteModule } from './website/website.module';
 import { AdminModule } from './admin/admin.module';
 import { ExamResultModule } from './exam-result/exam-result.module';
 import { ResultDeclarationModule } from './result-declaration/result-declaration.module';
+import { PromotionModule } from './promotion/promotion.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ResultDeclarationModule } from './result-declaration/result-declaration
     AdminModule,
     ExamResultModule,
     ResultDeclarationModule,
+    PromotionModule,
   ],
   controllers: [],
 })

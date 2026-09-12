@@ -13,15 +13,17 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, from, map, switchMap, throwError } from 'rxjs';
 import { DeclareResultDto } from './dto/declare-result.dto';
 import { parseActiveOnlyFlag } from '../common/parse-active-only';
+import { StorageService } from '../shared/storage/storage.service';
 
 @ApiTags('Result Declarations')
 @Controller()
 export class ResultDeclarationController {
   constructor(
     @Inject('EXAM_RESULT_SERVICE') private readonly examResultClient: ClientProxy,
+    private readonly storageService: StorageService,
   ) {}
 
   private handleError(error: any) {
@@ -189,6 +191,27 @@ export class ResultDeclarationController {
           resultDeclarationId: Number(resultDeclarationId),
         },
       )
-      .pipe(this.unwrap(), catchError((error) => this.handleError(error)));
+      .pipe(
+        this.unwrap(),
+        switchMap((marksheet: any) =>
+          from(this.attachPresignedPhoto(marksheet)),
+        ),
+        catchError((error) => this.handleError(error)),
+      );
+  }
+
+  /** Private S3: return time-limited signed URL so the browser can load the photo. */
+  private async attachPresignedPhoto(marksheet: any) {
+    const photoUrl = marksheet?.student?.photoUrl;
+    if (!photoUrl || !marksheet?.student) return marksheet;
+
+    const signed = await this.storageService.getPresignedGetUrl(
+      String(photoUrl),
+      60 * 60,
+    );
+    if (signed) {
+      marksheet.student.photoUrl = signed;
+    }
+    return marksheet;
   }
 }
