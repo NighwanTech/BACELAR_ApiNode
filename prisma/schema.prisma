@@ -176,6 +176,7 @@ model ProgramCategory {
   examSchemes         ExamScheme[]
   promotionsFrom      Promotion[] @relation("PromotionCourseCategoryFrom")
   promotionsTo        Promotion[] @relation("PromotionCourseCategoryTo")
+  examGreviancePrices ExamGreviancePriceMaster[]
 
   @@map("programCategory")
 }
@@ -296,8 +297,9 @@ model Program {
   examinationDetails ExaminationDetails[]
   examResults        ExamResult[]
   resultDeclarations ResultDeclaration[]
-  promotionsFrom     Promotion[] @relation("PromotionCourseFrom")
-  promotionsTo       Promotion[] @relation("PromotionCourseTo")
+  promotionsFrom      Promotion[] @relation("PromotionCourseFrom")
+  promotionsTo        Promotion[] @relation("PromotionCourseTo")
+  examGreviancePrices ExamGreviancePriceMaster[]
 
   @@map("programs")
 }
@@ -444,6 +446,23 @@ model FeeTypeMaster {
   @@map("feeTypeMaster")
 }
 
+model GrevianceTypeMaster {
+  grevianceTypeId   Int       @id @default(autoincrement())
+  grevianceTypeName String    @unique @db.VarChar(100)
+  CreatedOn         DateTime  @default(now())
+  CreatedBy         String    @db.VarChar(255)
+  UpdatedOn         DateTime? @updatedAt
+  UpdatedBy         String?   @db.VarChar(255)
+  IsActive          Boolean   @default(true)
+  IsDeleted         Boolean   @default(false)
+  DeletedRemarks    String?   @db.VarChar(255)
+  DeletedOn         DateTime?
+  DeletedBy         String?   @db.VarChar(255)
+  Remarks           String?   @db.VarChar(255)
+
+  @@map("grevianceTypeMaster")
+}
+
 model QualificationMaster {
   qualificationId   Int       @id @default(autoincrement())
   qualificationName String    @unique @db.VarChar(100)
@@ -586,6 +605,37 @@ model ProgramFeeConfig {
 
   @@unique([programId, admissionSessionId])
   @@map("programFeeConfigs")
+}
+
+model ExamGreviancePriceMaster {
+  examGreviancePriceMasterId Int             @id @default(autoincrement())
+  programCategoryId          Int
+  programCategory            ProgramCategory @relation(fields: [programCategoryId], references: [programCategoryId], onDelete: Cascade)
+  programCategoryName        String          @db.VarChar(100)
+  programId                  Int
+  program                    Program         @relation(fields: [programId], references: [programId], onDelete: Cascade)
+  programName                String          @db.VarChar(100)
+  /// Amount that should land in college account (before PG cut)
+  price                      Float           @default(0.0)
+  pgRate                     Float           @default(2.0)
+  gstRate                    Float           @default(18.0)
+  /// Amount student pays after grossing up PG + GST
+  finalPrice                 Float           @default(0.0)
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@unique([programId])
+  @@index([programCategoryId])
+  @@map("examGreviancePriceMaster")
 }
 
 model StudentPayment {

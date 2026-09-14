@@ -25,6 +25,8 @@ import { PaperDetailModule } from './paper-detail/paper-detail.module';
 import { ExamSubjectModule } from './exam-subject/exam-subject.module';
 import { RoleModule } from './role/role.module';
 import { MarksTypeModule } from './marks-type/marks-type.module';
+import { ExamGreviancePriceModule } from './exam-greviance-price/exam-greviance-price.module';
+import { GrevianceTypeModule } from './greviance-type/greviance-type.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { MarksTypeModule } from './marks-type/marks-type.module';
     ExaminationDetailsModule,
     ExamSchemeModule,
     ProgramFeeConfigModule,
+    ExamGreviancePriceModule,
+    GrevianceTypeModule,
     CollegeModule,
     PaperTypeModule,
     ExamTypeModule,
@@ -73,6 +77,8 @@ import { MarksTypeModule } from './marks-type/marks-type.module';
     ExaminationDetailsModule,
     ExamSchemeModule,
     ProgramFeeConfigModule,
+    ExamGreviancePriceModule,
+    GrevianceTypeModule,
     CollegeModule,
     PaperTypeModule,
     ExamTypeModule,
