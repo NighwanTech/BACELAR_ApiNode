@@ -81,26 +81,36 @@ export class ExamSchemeService {
     const counts = new Map<number, number>();
     if (!params.paperIds.length) return counts;
 
-    const examWhere: any = {
+    const baseWhere: any = {
       IsDeleted: false,
       courseId: params.programId,
+    };
+    const withYear: any = {
+      ...baseWhere,
       yearId: params.yearId,
       ...(params.semId ? { semId: params.semId } : {}),
     };
 
-    const byExamination = await this.prisma.studentExam.findMany({
-      where: { ...examWhere, examinationDetailId: params.examinationDetailId },
+    // Prefer exact examination + year, then year only, then program-wide
+    // (papers/scheme year master can differ from studentExam.yearId).
+    let exams = await this.prisma.studentExam.findMany({
+      where: { ...withYear, examinationDetailId: params.examinationDetailId },
       select: { studentExamId: true },
     });
-    const examIds = (
-      byExamination.length
-        ? byExamination
-        : await this.prisma.studentExam.findMany({
-            where: examWhere,
-            select: { studentExamId: true },
-          })
-    ).map((row) => row.studentExamId);
+    if (!exams.length) {
+      exams = await this.prisma.studentExam.findMany({
+        where: withYear,
+        select: { studentExamId: true },
+      });
+    }
+    if (!exams.length) {
+      exams = await this.prisma.studentExam.findMany({
+        where: baseWhere,
+        select: { studentExamId: true },
+      });
+    }
 
+    const examIds = exams.map((row) => row.studentExamId);
     if (!examIds.length) return counts;
 
     const grouped = await this.prisma.studentExamPaper.groupBy({

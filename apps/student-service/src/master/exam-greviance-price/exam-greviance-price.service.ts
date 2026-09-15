@@ -17,45 +17,34 @@ function calculateFinalFee(base: number, pgRate = 2.0, gstRate = 18.0): number {
 export class ExamGreviancePriceMasterService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private async resolveProgramNames(programId: number, programCategoryId?: number) {
-    const program = await this.prisma.program.findFirst({
-      where: { programId, IsDeleted: false },
-      include: { programCategory: true },
+  private async resolveGrevianceType(grevianceTypeId: number) {
+    const grevianceType = await this.prisma.grevianceTypeMaster.findFirst({
+      where: { grevianceTypeId, IsDeleted: false },
     });
-    if (!program) {
-      throw new BadRequestException(`Program with ID ${programId} not found`);
-    }
-
-    const resolvedCategoryId = programCategoryId ?? program.programCategoryId;
-    if (resolvedCategoryId !== program.programCategoryId) {
-      throw new BadRequestException('programCategoryId does not match the selected program');
+    if (!grevianceType) {
+      throw new BadRequestException(`Greviance type with ID ${grevianceTypeId} not found`);
     }
 
     return {
-      programCategoryId: program.programCategoryId,
-      programCategoryName: program.programCategory?.programCategoryName || '',
-      programId: program.programId,
-      programName: program.programName,
+      grevianceTypeId: grevianceType.grevianceTypeId,
+      grevianceTypeName: grevianceType.grevianceTypeName,
     };
   }
 
   async create(data: any) {
-    const programId = Number(data.programId);
-    if (!Number.isFinite(programId) || programId <= 0) {
-      throw new BadRequestException('programId is required');
+    const grevianceTypeId = Number(data.grevianceTypeId);
+    if (!Number.isFinite(grevianceTypeId) || grevianceTypeId <= 0) {
+      throw new BadRequestException('grevianceTypeId is required');
     }
 
-    const names = await this.resolveProgramNames(
-      programId,
-      data.programCategoryId !== undefined ? Number(data.programCategoryId) : undefined,
-    );
+    const names = await this.resolveGrevianceType(grevianceTypeId);
 
     const duplicate = await this.prisma.examGreviancePriceMaster.findFirst({
-      where: { programId: names.programId, IsDeleted: false },
+      where: { grevianceTypeId: names.grevianceTypeId, IsDeleted: false },
     });
     if (duplicate) {
       throw new ConflictException(
-        'Exam grievance price already exists for this program. Please edit the existing entry.',
+        'Exam grievance price already exists for this greviance type. Please edit the existing entry.',
       );
     }
 
@@ -77,8 +66,7 @@ export class ExamGreviancePriceMasterService {
         IsDeleted: false,
       },
       include: {
-        program: true,
-        programCategory: true,
+        grevianceType: true,
       },
     });
   }
@@ -90,8 +78,7 @@ export class ExamGreviancePriceMasterService {
         ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}),
       },
       include: {
-        program: true,
-        programCategory: true,
+        grevianceType: true,
       },
       orderBy: { CreatedOn: 'desc' },
     });
@@ -101,8 +88,7 @@ export class ExamGreviancePriceMasterService {
     const row = await this.prisma.examGreviancePriceMaster.findFirst({
       where: { examGreviancePriceMasterId, IsDeleted: false },
       include: {
-        program: true,
-        programCategory: true,
+        grevianceType: true,
       },
     });
     if (!row) {
@@ -117,42 +103,28 @@ export class ExamGreviancePriceMasterService {
     const current = await this.findOne(examGreviancePriceMasterId);
 
     let names = {
-      programCategoryId: current.programCategoryId,
-      programCategoryName: current.programCategoryName,
-      programId: current.programId,
-      programName: current.programName,
+      grevianceTypeId: current.grevianceTypeId,
+      grevianceTypeName: current.grevianceTypeName,
     };
 
-    if (data.programId !== undefined) {
-      const programId = Number(data.programId);
-      names = await this.resolveProgramNames(
-        programId,
-        data.programCategoryId !== undefined ? Number(data.programCategoryId) : undefined,
-      );
+    if (data.grevianceTypeId !== undefined) {
+      const grevianceTypeId = Number(data.grevianceTypeId);
+      names = await this.resolveGrevianceType(grevianceTypeId);
 
       const duplicate = await this.prisma.examGreviancePriceMaster.findFirst({
         where: {
-          programId: names.programId,
+          grevianceTypeId: names.grevianceTypeId,
           IsDeleted: false,
           NOT: { examGreviancePriceMasterId },
         },
       });
       if (duplicate) {
         throw new ConflictException(
-          'Exam grievance price already exists for this program. Please edit the existing entry.',
+          'Exam grievance price already exists for this greviance type. Please edit the existing entry.',
         );
       }
-    } else if (data.programCategoryId !== undefined || data.programCategoryName !== undefined || data.programName !== undefined) {
-      // Keep snapshot names in sync if only names/category passed without program change
-      if (data.programCategoryId !== undefined) {
-        names.programCategoryId = Number(data.programCategoryId);
-      }
-      if (data.programCategoryName !== undefined) {
-        names.programCategoryName = String(data.programCategoryName);
-      }
-      if (data.programName !== undefined) {
-        names.programName = String(data.programName);
-      }
+    } else if (data.grevianceTypeName !== undefined) {
+      names.grevianceTypeName = String(data.grevianceTypeName);
     }
 
     const price = data.price !== undefined ? Number(data.price) : current.price;
@@ -173,8 +145,7 @@ export class ExamGreviancePriceMasterService {
         ...(data.Remarks !== undefined ? { Remarks: data.Remarks } : {}),
       },
       include: {
-        program: true,
-        programCategory: true,
+        grevianceType: true,
       },
     });
   }

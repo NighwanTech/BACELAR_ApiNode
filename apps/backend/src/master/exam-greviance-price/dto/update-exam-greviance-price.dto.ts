@@ -7,23 +7,12 @@ export class UpdateExamGreviancePriceDto {
   @Type(() => Number)
   @IsNumber()
   @IsOptional()
-  programCategoryId?: number;
+  grevianceTypeId?: number;
 
-  @ApiProperty({ example: 'Undergraduate', required: false })
+  @ApiProperty({ example: 'REVALUATION', required: false })
   @IsString()
   @IsOptional()
-  programCategoryName?: string;
-
-  @ApiProperty({ example: 5, required: false })
-  @Type(() => Number)
-  @IsNumber()
-  @IsOptional()
-  programId?: number;
-
-  @ApiProperty({ example: 'B.Ed.', required: false })
-  @IsString()
-  @IsOptional()
-  programName?: string;
+  grevianceTypeName?: string;
 
   @ApiProperty({ example: 100, required: false })
   @Type(() => Number)

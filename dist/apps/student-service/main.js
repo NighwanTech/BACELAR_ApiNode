@@ -7630,6 +7630,14 @@ let ExamGrevianceController = class ExamGrevianceController {
             return { status: 'error', message: error?.message || 'Create failed' };
         }
     }
+    async track(data) {
+        try {
+            return await this.examGrevianceService.trackByNo(data?.trackNo || '');
+        }
+        catch (error) {
+            return { status: 'error', message: error?.message || 'Track failed' };
+        }
+    }
     async findAll(data) {
         try {
             return await this.examGrevianceService.findAll(data || {});
@@ -7673,6 +7681,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ExamGrevianceController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'track_exam_greviance_by_no' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ExamGrevianceController.prototype, "track", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'find_all_exam_greviances' }),
     __param(0, (0, microservices_1.Payload)()),
@@ -7757,6 +7772,38 @@ let ExamGrevianceService = class ExamGrevianceService {
         const mm = String(d.getMonth() + 1).padStart(2, '0');
         return `${dd}-${mm}-${d.getFullYear()}`;
     }
+    normalizeShortcode(shortcode) {
+        const cleaned = String(shortcode || '')
+            .trim()
+            .toUpperCase()
+            .replace(/[^A-Z0-9]/g, '');
+        return cleaned || '00';
+    }
+    async nextTrackNo(shortcode) {
+        const year = new Date().getFullYear();
+        const code = this.normalizeShortcode(shortcode);
+        const prefix = `${year}${code}`;
+        const existing = await this.prisma.examGrevianceApplication.findMany({
+            where: {
+                IsDeleted: false,
+                NOT: { trackNo: null },
+            },
+            select: { trackNo: true },
+            orderBy: { examGrevianceApplicationId: 'desc' },
+            take: 500,
+        });
+        let maxSeq = 0;
+        for (const row of existing) {
+            const trackNo = String(row.trackNo || '');
+            if (!trackNo.startsWith(prefix))
+                continue;
+            const suffix = trackNo.slice(prefix.length);
+            const n = Number.parseInt(suffix, 10);
+            if (Number.isFinite(n) && n > maxSeq)
+                maxSeq = n;
+        }
+        return `${prefix}${String(maxSeq + 1).padStart(2, '0')}`;
+    }
     async lookupByRoll(rollNoRaw) {
         const rollNo = this.normalizeRoll(rollNoRaw);
         if (!rollNo)
@@ -7767,6 +7814,7 @@ let ExamGrevianceService = class ExamGrevianceService {
                 IsActive: true,
                 OR: [{ rollNo }, { rollNo: String(rollNoRaw).trim() }],
             },
+            include: { paper: { include: { paperTypeRelation: true } } },
             orderBy: [{ examinationDetailId: 'desc' }, { paperId: 'asc' }],
         });
         if (!results.length) {
@@ -7800,26 +7848,58 @@ let ExamGrevianceService = class ExamGrevianceService {
             semId: first.semId || null,
             semesterName: first.semesterName || null,
         };
-        const papers = results.map((r) => ({
-            examResultId: r.examResultId,
-            paperId: r.paperId,
-            paperCode: r.paperCode,
-            subjectName: r.subjectName,
-            paperName: r.paperName,
-            paperType: r.paperType,
-            totalMax: r.totalMax,
-            totalMin: r.totalMin,
-            theoryExternalMax: r.theoryExternalMax,
-            theoryExternalObt: r.theoryExternalObt,
-            sessionalInternalMax: r.sessionalInternalMax,
-            sessionalInternalObt: r.sessionalInternalObt,
-            practicalMax: r.practicalMax,
-            practicalObt: r.practicalObt,
-            totalMarks: r.totalMarks,
-            grade: r.grade,
-            result: r.result,
-            attendanceStatus: r.attendanceStatus,
-        }));
+        const sumNums = (values) => {
+            const nums = values.filter((v) => v != null && !Number.isNaN(Number(v)));
+            return nums.length ? nums.reduce((a, b) => a + Number(b), 0) : null;
+        };
+        const papers = results.map((r) => {
+            const obtained = sumNums([
+                r.theoryExternalObt,
+                r.sessionalInternalObt,
+                r.practicalObt,
+            ]);
+            const maxTotal = sumNums([r.theoryExternalMax, r.sessionalInternalMax, r.practicalMax]) ??
+                r.totalMax;
+            const minRequired = sumNums([
+                r.theoryExternalMin,
+                r.sessionalInternalMin,
+                r.practicalMin,
+            ]);
+            const absent = String(r.attendanceStatus || '').toUpperCase() === 'A';
+            const derivedResult = absent
+                ? 'ABSENT'
+                : obtained != null && minRequired != null
+                    ? obtained >= minRequired
+                        ? 'PASS'
+                        : 'FAIL'
+                    : null;
+            return {
+                examResultId: r.examResultId,
+                paperId: r.paperId,
+                paperCode: r.paperCode,
+                subjectName: r.subjectName,
+                paperName: r.paperName,
+                paperType: r.paperType ||
+                    r.paper?.paperType ||
+                    r.paper?.paperTypeRelation?.name ||
+                    null,
+                totalMax: maxTotal,
+                totalMin: minRequired ?? r.totalMin,
+                theoryExternalMax: r.theoryExternalMax,
+                theoryExternalMin: r.theoryExternalMin,
+                theoryExternalObt: r.theoryExternalObt,
+                sessionalInternalMax: r.sessionalInternalMax,
+                sessionalInternalMin: r.sessionalInternalMin,
+                sessionalInternalObt: r.sessionalInternalObt,
+                practicalMax: r.practicalMax,
+                practicalMin: r.practicalMin,
+                practicalObt: r.practicalObt,
+                totalMarks: r.totalMarks ?? obtained,
+                grade: r.grade,
+                result: r.result || derivedResult,
+                attendanceStatus: r.attendanceStatus,
+            };
+        });
         const applications = await this.prisma.examGrevianceApplication.findMany({
             where: {
                 IsDeleted: false,
@@ -7853,6 +7933,7 @@ let ExamGrevianceService = class ExamGrevianceService {
         let grevianceTypeId = data.grevianceTypeId !== undefined && data.grevianceTypeId !== null && data.grevianceTypeId !== ''
             ? Number(data.grevianceTypeId)
             : null;
+        let grevianceShortcode = null;
         if (grevianceTypeId) {
             const typeRow = await this.prisma.grevianceTypeMaster.findFirst({
                 where: { grevianceTypeId, IsDeleted: false, IsActive: true },
@@ -7860,9 +7941,17 @@ let ExamGrevianceService = class ExamGrevianceService {
             if (!typeRow)
                 throw new common_1.NotFoundException('Greviance type not found');
             grevianceTypeName = typeRow.grevianceTypeName;
+            grevianceShortcode = typeRow.shortcode;
         }
         else if (!grevianceTypeName) {
             throw new common_1.BadRequestException('Apply For (greviance type) is required');
+        }
+        else {
+            const typeRow = await this.prisma.grevianceTypeMaster.findFirst({
+                where: { grevianceTypeName, IsDeleted: false, IsActive: true },
+            });
+            grevianceShortcode = typeRow?.shortcode || null;
+            grevianceTypeId = typeRow?.grevianceTypeId || null;
         }
         const results = await this.prisma.examResult.findMany({
             where: {
@@ -7877,6 +7966,7 @@ let ExamGrevianceService = class ExamGrevianceService {
         const first = results[0];
         const feePerPaper = this.resolveFee(grevianceTypeName);
         const feeAmount = feePerPaper * results.length;
+        const trackNo = await this.nextTrackNo(grevianceShortcode);
         const created = await this.prisma.examGrevianceApplication.create({
             data: {
                 studentId: first.studentId,
@@ -7905,6 +7995,7 @@ let ExamGrevianceService = class ExamGrevianceService {
                 semesterName: first.semesterName || null,
                 grevianceTypeId,
                 grevianceTypeName,
+                trackNo,
                 status: 'SUBMITTED',
                 feeAmount,
                 paymentStatus: 'PENDING',
@@ -7924,6 +8015,42 @@ let ExamGrevianceService = class ExamGrevianceService {
             include: { papers: true },
         });
         return created;
+    }
+    async trackByNo(trackNoRaw) {
+        const trackNo = String(trackNoRaw || '').trim().toUpperCase();
+        if (!trackNo)
+            throw new common_1.BadRequestException('Track status number is required');
+        const application = await this.prisma.examGrevianceApplication.findFirst({
+            where: {
+                IsDeleted: false,
+                OR: [{ trackNo }, { trackNo: String(trackNoRaw).trim() }],
+            },
+            include: { papers: true },
+        });
+        if (!application) {
+            throw new common_1.NotFoundException(`No application found for track number ${trackNo}. Please check and try again.`);
+        }
+        return {
+            application,
+            statusLabel: application.status,
+            student: {
+                studentId: application.studentId,
+                rollNo: application.rollNo,
+                enrolmentNo: application.enrolmentNo,
+                studentName: application.studentName,
+                fatherName: application.fatherName,
+                motherName: application.motherName,
+                programName: application.programName,
+                programCategoryName: application.programCategoryName,
+                examTypeName: application.examTypeName,
+                dob: this.formatDob(application.dob),
+                castCategory: application.castCategory,
+                gender: application.gender,
+                examinationName: application.examinationName,
+                yearName: application.yearName,
+                semesterName: application.semesterName,
+            },
+        };
     }
     async findAll(filters = {}) {
         const where = { IsDeleted: false };
@@ -13772,22 +13899,32 @@ let ExamSchemeService = class ExamSchemeService {
         const counts = new Map();
         if (!params.paperIds.length)
             return counts;
-        const examWhere = {
+        const baseWhere = {
             IsDeleted: false,
             courseId: params.programId,
+        };
+        const withYear = {
+            ...baseWhere,
             yearId: params.yearId,
             ...(params.semId ? { semId: params.semId } : {}),
         };
-        const byExamination = await this.prisma.studentExam.findMany({
-            where: { ...examWhere, examinationDetailId: params.examinationDetailId },
+        let exams = await this.prisma.studentExam.findMany({
+            where: { ...withYear, examinationDetailId: params.examinationDetailId },
             select: { studentExamId: true },
         });
-        const examIds = (byExamination.length
-            ? byExamination
-            : await this.prisma.studentExam.findMany({
-                where: examWhere,
+        if (!exams.length) {
+            exams = await this.prisma.studentExam.findMany({
+                where: withYear,
                 select: { studentExamId: true },
-            })).map((row) => row.studentExamId);
+            });
+        }
+        if (!exams.length) {
+            exams = await this.prisma.studentExam.findMany({
+                where: baseWhere,
+                select: { studentExamId: true },
+            });
+        }
+        const examIds = exams.map((row) => row.studentExamId);
         if (!examIds.length)
             return counts;
         const grouped = await this.prisma.studentExamPaper.groupBy({
@@ -16643,36 +16780,29 @@ let ExamGreviancePriceMasterService = class ExamGreviancePriceMasterService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async resolveProgramNames(programId, programCategoryId) {
-        const program = await this.prisma.program.findFirst({
-            where: { programId, IsDeleted: false },
-            include: { programCategory: true },
+    async resolveGrevianceType(grevianceTypeId) {
+        const grevianceType = await this.prisma.grevianceTypeMaster.findFirst({
+            where: { grevianceTypeId, IsDeleted: false },
         });
-        if (!program) {
-            throw new common_1.BadRequestException(`Program with ID ${programId} not found`);
-        }
-        const resolvedCategoryId = programCategoryId ?? program.programCategoryId;
-        if (resolvedCategoryId !== program.programCategoryId) {
-            throw new common_1.BadRequestException('programCategoryId does not match the selected program');
+        if (!grevianceType) {
+            throw new common_1.BadRequestException(`Greviance type with ID ${grevianceTypeId} not found`);
         }
         return {
-            programCategoryId: program.programCategoryId,
-            programCategoryName: program.programCategory?.programCategoryName || '',
-            programId: program.programId,
-            programName: program.programName,
+            grevianceTypeId: grevianceType.grevianceTypeId,
+            grevianceTypeName: grevianceType.grevianceTypeName,
         };
     }
     async create(data) {
-        const programId = Number(data.programId);
-        if (!Number.isFinite(programId) || programId <= 0) {
-            throw new common_1.BadRequestException('programId is required');
+        const grevianceTypeId = Number(data.grevianceTypeId);
+        if (!Number.isFinite(grevianceTypeId) || grevianceTypeId <= 0) {
+            throw new common_1.BadRequestException('grevianceTypeId is required');
         }
-        const names = await this.resolveProgramNames(programId, data.programCategoryId !== undefined ? Number(data.programCategoryId) : undefined);
+        const names = await this.resolveGrevianceType(grevianceTypeId);
         const duplicate = await this.prisma.examGreviancePriceMaster.findFirst({
-            where: { programId: names.programId, IsDeleted: false },
+            where: { grevianceTypeId: names.grevianceTypeId, IsDeleted: false },
         });
         if (duplicate) {
-            throw new common_1.ConflictException('Exam grievance price already exists for this program. Please edit the existing entry.');
+            throw new common_1.ConflictException('Exam grievance price already exists for this greviance type. Please edit the existing entry.');
         }
         const price = Number(data.price ?? 0);
         const pgRate = Number(data.pgRate ?? 2.0);
@@ -16691,8 +16821,7 @@ let ExamGreviancePriceMasterService = class ExamGreviancePriceMasterService {
                 IsDeleted: false,
             },
             include: {
-                program: true,
-                programCategory: true,
+                grevianceType: true,
             },
         });
     }
@@ -16703,8 +16832,7 @@ let ExamGreviancePriceMasterService = class ExamGreviancePriceMasterService {
                 ...((0, active_only_1.isActiveOnly)(activeOnly) ? { IsActive: true } : {}),
             },
             include: {
-                program: true,
-                programCategory: true,
+                grevianceType: true,
             },
             orderBy: { CreatedOn: 'desc' },
         });
@@ -16713,8 +16841,7 @@ let ExamGreviancePriceMasterService = class ExamGreviancePriceMasterService {
         const row = await this.prisma.examGreviancePriceMaster.findFirst({
             where: { examGreviancePriceMasterId, IsDeleted: false },
             include: {
-                program: true,
-                programCategory: true,
+                grevianceType: true,
             },
         });
         if (!row) {
@@ -16725,35 +16852,25 @@ let ExamGreviancePriceMasterService = class ExamGreviancePriceMasterService {
     async update(examGreviancePriceMasterId, data) {
         const current = await this.findOne(examGreviancePriceMasterId);
         let names = {
-            programCategoryId: current.programCategoryId,
-            programCategoryName: current.programCategoryName,
-            programId: current.programId,
-            programName: current.programName,
+            grevianceTypeId: current.grevianceTypeId,
+            grevianceTypeName: current.grevianceTypeName,
         };
-        if (data.programId !== undefined) {
-            const programId = Number(data.programId);
-            names = await this.resolveProgramNames(programId, data.programCategoryId !== undefined ? Number(data.programCategoryId) : undefined);
+        if (data.grevianceTypeId !== undefined) {
+            const grevianceTypeId = Number(data.grevianceTypeId);
+            names = await this.resolveGrevianceType(grevianceTypeId);
             const duplicate = await this.prisma.examGreviancePriceMaster.findFirst({
                 where: {
-                    programId: names.programId,
+                    grevianceTypeId: names.grevianceTypeId,
                     IsDeleted: false,
                     NOT: { examGreviancePriceMasterId },
                 },
             });
             if (duplicate) {
-                throw new common_1.ConflictException('Exam grievance price already exists for this program. Please edit the existing entry.');
+                throw new common_1.ConflictException('Exam grievance price already exists for this greviance type. Please edit the existing entry.');
             }
         }
-        else if (data.programCategoryId !== undefined || data.programCategoryName !== undefined || data.programName !== undefined) {
-            if (data.programCategoryId !== undefined) {
-                names.programCategoryId = Number(data.programCategoryId);
-            }
-            if (data.programCategoryName !== undefined) {
-                names.programCategoryName = String(data.programCategoryName);
-            }
-            if (data.programName !== undefined) {
-                names.programName = String(data.programName);
-            }
+        else if (data.grevianceTypeName !== undefined) {
+            names.grevianceTypeName = String(data.grevianceTypeName);
         }
         const price = data.price !== undefined ? Number(data.price) : current.price;
         const pgRate = data.pgRate !== undefined ? Number(data.pgRate) : current.pgRate;
@@ -16772,8 +16889,7 @@ let ExamGreviancePriceMasterService = class ExamGreviancePriceMasterService {
                 ...(data.Remarks !== undefined ? { Remarks: data.Remarks } : {}),
             },
             include: {
-                program: true,
-                programCategory: true,
+                grevianceType: true,
             },
         });
     }
@@ -17018,18 +17134,29 @@ let GrevianceTypeService = class GrevianceTypeService {
     }
     async create(data) {
         const grevianceTypeName = String(data.grevianceTypeName || '').trim();
+        const shortcode = String(data.shortcode || '').trim();
         if (!grevianceTypeName) {
             throw new common_1.BadRequestException('grevianceTypeName is required');
         }
-        const duplicate = await this.prisma.grevianceTypeMaster.findFirst({
+        if (!shortcode) {
+            throw new common_1.BadRequestException('shortcode is required');
+        }
+        const duplicateName = await this.prisma.grevianceTypeMaster.findFirst({
             where: { grevianceTypeName, IsDeleted: false },
         });
-        if (duplicate) {
+        if (duplicateName) {
             throw new common_1.ConflictException('Greviance type already exists with this name');
+        }
+        const duplicateShortcode = await this.prisma.grevianceTypeMaster.findFirst({
+            where: { shortcode, IsDeleted: false },
+        });
+        if (duplicateShortcode) {
+            throw new common_1.ConflictException('Greviance type already exists with this shortcode');
         }
         return this.prisma.grevianceTypeMaster.create({
             data: {
                 grevianceTypeName,
+                shortcode,
                 CreatedBy: data.CreatedBy,
                 Remarks: data.Remarks || null,
                 IsActive: true,
@@ -17070,12 +17197,29 @@ let GrevianceTypeService = class GrevianceTypeService {
                 throw new common_1.ConflictException('Greviance type already exists with this name');
             }
         }
+        if (data.shortcode !== undefined) {
+            const shortcode = String(data.shortcode || '').trim();
+            if (!shortcode) {
+                throw new common_1.BadRequestException('shortcode is required');
+            }
+            const duplicate = await this.prisma.grevianceTypeMaster.findFirst({
+                where: {
+                    shortcode,
+                    IsDeleted: false,
+                    NOT: { grevianceTypeId },
+                },
+            });
+            if (duplicate) {
+                throw new common_1.ConflictException('Greviance type already exists with this shortcode');
+            }
+        }
         return this.prisma.grevianceTypeMaster.update({
             where: { grevianceTypeId },
             data: {
                 grevianceTypeName: data.grevianceTypeName !== undefined
                     ? String(data.grevianceTypeName).trim()
                     : undefined,
+                shortcode: data.shortcode !== undefined ? String(data.shortcode).trim() : undefined,
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
                 Remarks: data.Remarks,

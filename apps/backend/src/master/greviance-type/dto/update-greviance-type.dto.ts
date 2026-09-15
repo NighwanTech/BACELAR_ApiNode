@@ -7,6 +7,11 @@ export class UpdateGrevianceTypeDto {
   @IsOptional()
   grevianceTypeName?: string;
 
+  @ApiProperty({ example: 'REV', required: false })
+  @IsString()
+  @IsOptional()
+  shortcode?: string;
+
   @ApiProperty({ example: 'Admin User' })
   @IsString()
   @IsNotEmpty()

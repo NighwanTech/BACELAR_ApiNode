@@ -24,6 +24,15 @@ export class ExamGrevianceController {
     }
   }
 
+  @MessagePattern({ cmd: 'track_exam_greviance_by_no' })
+  async track(@Payload() data: { trackNo?: string }) {
+    try {
+      return await this.examGrevianceService.trackByNo(data?.trackNo || '');
+    } catch (error: any) {
+      return { status: 'error', message: error?.message || 'Track failed' };
+    }
+  }
+
   @MessagePattern({ cmd: 'find_all_exam_greviances' })
   async findAll(@Payload() data: any) {
     try {
