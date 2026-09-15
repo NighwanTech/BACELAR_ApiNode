@@ -14001,31 +14001,18 @@ class CreateExamGreviancePriceDto {
 }
 exports.CreateExamGreviancePriceDto = CreateExamGreviancePriceDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 1, description: 'Program Category ID', required: false }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], CreateExamGreviancePriceDto.prototype, "programCategoryId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Undergraduate', required: false }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateExamGreviancePriceDto.prototype, "programCategoryName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 5, description: 'Program ID' }),
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'Greviance Type ID' }),
     (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
-], CreateExamGreviancePriceDto.prototype, "programId", void 0);
+], CreateExamGreviancePriceDto.prototype, "grevianceTypeId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'B.Ed.', required: false }),
+    (0, swagger_1.ApiProperty)({ example: 'REVALUATION', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CreateExamGreviancePriceDto.prototype, "programName", void 0);
+], CreateExamGreviancePriceDto.prototype, "grevianceTypeName", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 100, description: 'Net amount that should land in college account' }),
     (0, class_transformer_1.Type)(() => Number),
@@ -14089,26 +14076,13 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
-], UpdateExamGreviancePriceDto.prototype, "programCategoryId", void 0);
+], UpdateExamGreviancePriceDto.prototype, "grevianceTypeId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Undergraduate', required: false }),
+    (0, swagger_1.ApiProperty)({ example: 'REVALUATION', required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], UpdateExamGreviancePriceDto.prototype, "programCategoryName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 5, required: false }),
-    (0, class_transformer_1.Type)(() => Number),
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
-], UpdateExamGreviancePriceDto.prototype, "programId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 'B.Ed.', required: false }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateExamGreviancePriceDto.prototype, "programName", void 0);
+], UpdateExamGreviancePriceDto.prototype, "grevianceTypeName", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 100, required: false }),
     (0, class_transformer_1.Type)(() => Number),
@@ -14387,6 +14361,12 @@ __decorate([
     __metadata("design:type", String)
 ], CreateGrevianceTypeDto.prototype, "grevianceTypeName", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: 'REV', description: 'Short code of the greviance type' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateGrevianceTypeDto.prototype, "shortcode", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -14427,6 +14407,12 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateGrevianceTypeDto.prototype, "grevianceTypeName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'REV', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateGrevianceTypeDto.prototype, "shortcode", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
     (0, class_validator_1.IsString)(),
@@ -24591,7 +24577,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamGrevianceController = void 0;
 const common_1 = __webpack_require__(2);
@@ -24625,6 +24611,20 @@ let ExamGrevianceController = class ExamGrevianceController {
             return (0, rxjs_1.throwError)(() => new common_1.HttpException(message, common_1.HttpStatus.BAD_REQUEST));
         }));
     }
+    track(trackNo) {
+        return this.studentClient
+            .send({ cmd: 'track_exam_greviance_by_no' }, { trackNo })
+            .pipe(this.unwrap(), (0, rxjs_1.catchError)((error) => {
+            if (error instanceof common_1.HttpException)
+                return (0, rxjs_1.throwError)(() => error);
+            const message = (typeof error === 'string' && error) ||
+                error?.message ||
+                error?.error?.message ||
+                (typeof error?.error === 'string' && error.error) ||
+                'Track failed';
+            return (0, rxjs_1.throwError)(() => new common_1.HttpException(message, common_1.HttpStatus.BAD_REQUEST));
+        }));
+    }
     create(dto) {
         return this.studentClient.send({ cmd: 'create_exam_greviance' }, dto).pipe(this.unwrap(), (0, rxjs_1.catchError)((error) => {
             if (error instanceof common_1.HttpException)
@@ -24644,12 +24644,21 @@ __decorate([
     __metadata("design:returntype", typeof (_b = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _b : Object)
 ], ExamGrevianceController.prototype, "lookup", null);
 __decorate([
+    (0, common_1.Get)('track'),
+    (0, swagger_1.ApiOperation)({ summary: 'Track exam greviance application by track number' }),
+    (0, swagger_1.ApiQuery)({ name: 'trackNo', required: true }),
+    __param(0, (0, common_1.Query)('trackNo')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], ExamGrevianceController.prototype, "track", null);
+__decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Submit exam greviance application' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof create_exam_greviance_dto_1.CreateExamGrevianceDto !== "undefined" && create_exam_greviance_dto_1.CreateExamGrevianceDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+    __metadata("design:paramtypes", [typeof (_d = typeof create_exam_greviance_dto_1.CreateExamGrevianceDto !== "undefined" && create_exam_greviance_dto_1.CreateExamGrevianceDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
 ], ExamGrevianceController.prototype, "create", null);
 exports.ExamGrevianceController = ExamGrevianceController = __decorate([
     (0, swagger_1.ApiTags)('Public - Exam Greviance'),

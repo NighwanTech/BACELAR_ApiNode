@@ -3,27 +3,16 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateExamGreviancePriceDto {
-  @ApiProperty({ example: 1, description: 'Program Category ID', required: false })
-  @Type(() => Number)
-  @IsNumber()
-  @IsOptional()
-  programCategoryId?: number;
-
-  @ApiProperty({ example: 'Undergraduate', required: false })
-  @IsString()
-  @IsOptional()
-  programCategoryName?: string;
-
-  @ApiProperty({ example: 5, description: 'Program ID' })
+  @ApiProperty({ example: 1, description: 'Greviance Type ID' })
   @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
-  programId: number;
+  grevianceTypeId: number;
 
-  @ApiProperty({ example: 'B.Ed.', required: false })
+  @ApiProperty({ example: 'REVALUATION', required: false })
   @IsString()
   @IsOptional()
-  programName?: string;
+  grevianceTypeName?: string;
 
   @ApiProperty({ example: 100, description: 'Net amount that should land in college account' })
   @Type(() => Number)

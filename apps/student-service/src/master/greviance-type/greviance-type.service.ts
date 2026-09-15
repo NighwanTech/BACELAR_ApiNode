@@ -8,20 +8,32 @@ export class GrevianceTypeService {
 
   async create(data: any) {
     const grevianceTypeName = String(data.grevianceTypeName || '').trim();
+    const shortcode = String(data.shortcode || '').trim();
     if (!grevianceTypeName) {
       throw new BadRequestException('grevianceTypeName is required');
     }
+    if (!shortcode) {
+      throw new BadRequestException('shortcode is required');
+    }
 
-    const duplicate = await this.prisma.grevianceTypeMaster.findFirst({
+    const duplicateName = await this.prisma.grevianceTypeMaster.findFirst({
       where: { grevianceTypeName, IsDeleted: false },
     });
-    if (duplicate) {
+    if (duplicateName) {
       throw new ConflictException('Greviance type already exists with this name');
+    }
+
+    const duplicateShortcode = await this.prisma.grevianceTypeMaster.findFirst({
+      where: { shortcode, IsDeleted: false },
+    });
+    if (duplicateShortcode) {
+      throw new ConflictException('Greviance type already exists with this shortcode');
     }
 
     return this.prisma.grevianceTypeMaster.create({
       data: {
         grevianceTypeName,
+        shortcode,
         CreatedBy: data.CreatedBy,
         Remarks: data.Remarks || null,
         IsActive: true,
@@ -67,6 +79,23 @@ export class GrevianceTypeService {
       }
     }
 
+    if (data.shortcode !== undefined) {
+      const shortcode = String(data.shortcode || '').trim();
+      if (!shortcode) {
+        throw new BadRequestException('shortcode is required');
+      }
+      const duplicate = await this.prisma.grevianceTypeMaster.findFirst({
+        where: {
+          shortcode,
+          IsDeleted: false,
+          NOT: { grevianceTypeId },
+        },
+      });
+      if (duplicate) {
+        throw new ConflictException('Greviance type already exists with this shortcode');
+      }
+    }
+
     return this.prisma.grevianceTypeMaster.update({
       where: { grevianceTypeId },
       data: {
@@ -74,6 +103,8 @@ export class GrevianceTypeService {
           data.grevianceTypeName !== undefined
             ? String(data.grevianceTypeName).trim()
             : undefined,
+        shortcode:
+          data.shortcode !== undefined ? String(data.shortcode).trim() : undefined,
         UpdatedBy: data.UpdatedBy,
         IsActive: data.IsActive,
         Remarks: data.Remarks,

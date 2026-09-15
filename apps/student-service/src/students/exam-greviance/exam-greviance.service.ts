@@ -45,6 +45,42 @@ export class ExamGrevianceService {
     return `${dd}-${mm}-${d.getFullYear()}`;
   }
 
+  private normalizeShortcode(shortcode?: string | null): string {
+    const cleaned = String(shortcode || '')
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '');
+    return cleaned || '00';
+  }
+
+  private async nextTrackNo(shortcode?: string | null): Promise<string> {
+    const year = new Date().getFullYear();
+    const code = this.normalizeShortcode(shortcode);
+    const prefix = `${year}${code}`;
+
+    // Avoid Prisma `startsWith` / MySQL LIKE collation clash (utf8mb4_unicode_ci vs utf8mb4_bin)
+    const existing = await this.prisma.examGrevianceApplication.findMany({
+      where: {
+        IsDeleted: false,
+        NOT: { trackNo: null },
+      },
+      select: { trackNo: true },
+      orderBy: { examGrevianceApplicationId: 'desc' },
+      take: 500,
+    });
+
+    let maxSeq = 0;
+    for (const row of existing) {
+      const trackNo = String(row.trackNo || '');
+      if (!trackNo.startsWith(prefix)) continue;
+      const suffix = trackNo.slice(prefix.length);
+      const n = Number.parseInt(suffix, 10);
+      if (Number.isFinite(n) && n > maxSeq) maxSeq = n;
+    }
+
+    return `${prefix}${String(maxSeq + 1).padStart(2, '0')}`;
+  }
+
   async lookupByRoll(rollNoRaw: string) {
     const rollNo = this.normalizeRoll(rollNoRaw);
     if (!rollNo) throw new BadRequestException('Roll number is required');
@@ -55,6 +91,7 @@ export class ExamGrevianceService {
         IsActive: true,
         OR: [{ rollNo }, { rollNo: String(rollNoRaw).trim() }],
       },
+      include: { paper: { include: { paperTypeRelation: true } } },
       orderBy: [{ examinationDetailId: 'desc' }, { paperId: 'asc' }],
     });
 
@@ -93,26 +130,62 @@ export class ExamGrevianceService {
       semesterName: first.semesterName || null,
     };
 
-    const papers = results.map((r) => ({
-      examResultId: r.examResultId,
-      paperId: r.paperId,
-      paperCode: r.paperCode,
-      subjectName: r.subjectName,
-      paperName: r.paperName,
-      paperType: r.paperType,
-      totalMax: r.totalMax,
-      totalMin: r.totalMin,
-      theoryExternalMax: r.theoryExternalMax,
-      theoryExternalObt: r.theoryExternalObt,
-      sessionalInternalMax: r.sessionalInternalMax,
-      sessionalInternalObt: r.sessionalInternalObt,
-      practicalMax: r.practicalMax,
-      practicalObt: r.practicalObt,
-      totalMarks: r.totalMarks,
-      grade: r.grade,
-      result: r.result,
-      attendanceStatus: r.attendanceStatus,
-    }));
+    const sumNums = (values: Array<number | null | undefined>) => {
+      const nums = values.filter((v): v is number => v != null && !Number.isNaN(Number(v)));
+      return nums.length ? nums.reduce((a, b) => a + Number(b), 0) : null;
+    };
+
+    const papers = results.map((r) => {
+      const obtained = sumNums([
+        r.theoryExternalObt,
+        r.sessionalInternalObt,
+        r.practicalObt,
+      ]);
+      const maxTotal =
+        sumNums([r.theoryExternalMax, r.sessionalInternalMax, r.practicalMax]) ??
+        r.totalMax;
+      const minRequired = sumNums([
+        r.theoryExternalMin,
+        r.sessionalInternalMin,
+        r.practicalMin,
+      ]);
+      const absent = String(r.attendanceStatus || '').toUpperCase() === 'A';
+      const derivedResult = absent
+        ? 'ABSENT'
+        : obtained != null && minRequired != null
+          ? obtained >= minRequired
+            ? 'PASS'
+            : 'FAIL'
+          : null;
+
+      return {
+        examResultId: r.examResultId,
+        paperId: r.paperId,
+        paperCode: r.paperCode,
+        subjectName: r.subjectName,
+        paperName: r.paperName,
+        paperType:
+          r.paperType ||
+          r.paper?.paperType ||
+          r.paper?.paperTypeRelation?.name ||
+          null,
+        totalMax: maxTotal,
+        totalMin: minRequired ?? r.totalMin,
+        theoryExternalMax: r.theoryExternalMax,
+        theoryExternalMin: r.theoryExternalMin,
+        theoryExternalObt: r.theoryExternalObt,
+        sessionalInternalMax: r.sessionalInternalMax,
+        sessionalInternalMin: r.sessionalInternalMin,
+        sessionalInternalObt: r.sessionalInternalObt,
+        practicalMax: r.practicalMax,
+        practicalMin: r.practicalMin,
+        practicalObt: r.practicalObt,
+        totalMarks: r.totalMarks ?? obtained,
+        grade: r.grade,
+        result: r.result || derivedResult,
+        attendanceStatus: r.attendanceStatus,
+      };
+    });
 
     const applications = await this.prisma.examGrevianceApplication.findMany({
       where: {
@@ -153,6 +226,7 @@ export class ExamGrevianceService {
       data.grevianceTypeId !== undefined && data.grevianceTypeId !== null && data.grevianceTypeId !== ''
         ? Number(data.grevianceTypeId)
         : null;
+    let grevianceShortcode: string | null = null;
 
     if (grevianceTypeId) {
       const typeRow = await this.prisma.grevianceTypeMaster.findFirst({
@@ -160,8 +234,15 @@ export class ExamGrevianceService {
       });
       if (!typeRow) throw new NotFoundException('Greviance type not found');
       grevianceTypeName = typeRow.grevianceTypeName;
+      grevianceShortcode = typeRow.shortcode;
     } else if (!grevianceTypeName) {
       throw new BadRequestException('Apply For (greviance type) is required');
+    } else {
+      const typeRow = await this.prisma.grevianceTypeMaster.findFirst({
+        where: { grevianceTypeName, IsDeleted: false, IsActive: true },
+      });
+      grevianceShortcode = typeRow?.shortcode || null;
+      grevianceTypeId = typeRow?.grevianceTypeId || null;
     }
 
     const results = await this.prisma.examResult.findMany({
@@ -178,6 +259,7 @@ export class ExamGrevianceService {
     const first = results[0];
     const feePerPaper = this.resolveFee(grevianceTypeName);
     const feeAmount = feePerPaper * results.length;
+    const trackNo = await this.nextTrackNo(grevianceShortcode);
 
     const created = await this.prisma.examGrevianceApplication.create({
       data: {
@@ -207,6 +289,7 @@ export class ExamGrevianceService {
         semesterName: first.semesterName || null,
         grevianceTypeId,
         grevianceTypeName,
+        trackNo,
         status: 'SUBMITTED',
         feeAmount,
         paymentStatus: 'PENDING',
@@ -227,6 +310,46 @@ export class ExamGrevianceService {
     });
 
     return created;
+  }
+
+  async trackByNo(trackNoRaw: string) {
+    const trackNo = String(trackNoRaw || '').trim().toUpperCase();
+    if (!trackNo) throw new BadRequestException('Track status number is required');
+
+    const application = await this.prisma.examGrevianceApplication.findFirst({
+      where: {
+        IsDeleted: false,
+        OR: [{ trackNo }, { trackNo: String(trackNoRaw).trim() }],
+      },
+      include: { papers: true },
+    });
+    if (!application) {
+      throw new NotFoundException(
+        `No application found for track number ${trackNo}. Please check and try again.`,
+      );
+    }
+
+    return {
+      application,
+      statusLabel: application.status,
+      student: {
+        studentId: application.studentId,
+        rollNo: application.rollNo,
+        enrolmentNo: application.enrolmentNo,
+        studentName: application.studentName,
+        fatherName: application.fatherName,
+        motherName: application.motherName,
+        programName: application.programName,
+        programCategoryName: application.programCategoryName,
+        examTypeName: application.examTypeName,
+        dob: this.formatDob(application.dob),
+        castCategory: application.castCategory,
+        gender: application.gender,
+        examinationName: application.examinationName,
+        yearName: application.yearName,
+        semesterName: application.semesterName,
+      },
+    };
   }
 
   async findAll(filters: {

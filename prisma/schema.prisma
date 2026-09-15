@@ -177,7 +177,6 @@ model ProgramCategory {
   examSchemes         ExamScheme[]
   promotionsFrom      Promotion[] @relation("PromotionCourseCategoryFrom")
   promotionsTo        Promotion[] @relation("PromotionCourseCategoryTo")
-  examGreviancePrices ExamGreviancePriceMaster[]
 
   @@map("programCategory")
 }
@@ -300,7 +299,6 @@ model Program {
   resultDeclarations ResultDeclaration[]
   promotionsFrom      Promotion[] @relation("PromotionCourseFrom")
   promotionsTo        Promotion[] @relation("PromotionCourseTo")
-  examGreviancePrices ExamGreviancePriceMaster[]
 
   @@map("programs")
 }
@@ -450,6 +448,7 @@ model FeeTypeMaster {
 model GrevianceTypeMaster {
   grevianceTypeId   Int       @id @default(autoincrement())
   grevianceTypeName String    @unique @db.VarChar(100)
+  shortcode         String    @unique @db.VarChar(20)
   CreatedOn         DateTime  @default(now())
   CreatedBy         String    @db.VarChar(255)
   UpdatedOn         DateTime? @updatedAt
@@ -462,6 +461,7 @@ model GrevianceTypeMaster {
   Remarks           String?   @db.VarChar(255)
 
   examGrevianceApplications ExamGrevianceApplication[]
+  examGreviancePrices       ExamGreviancePriceMaster[]
 
   @@map("grevianceTypeMaster")
 }
@@ -753,19 +753,20 @@ model ProgramFeeConfig {
 }
 
 model ExamGreviancePriceMaster {
-  examGreviancePriceMasterId Int              @id @default(autoincrement())
+  examGreviancePriceMasterId Int                 @id @default(autoincrement())
+  grevianceTypeId            Int
+  grevianceType              GrevianceTypeMaster @relation(fields: [grevianceTypeId], references: [grevianceTypeId], onDelete: Cascade)
+  grevianceTypeName          String              @db.VarChar(100)
   programCategoryId          Int?
-  programCategory            ProgramCategory? @relation(fields: [programCategoryId], references: [programCategoryId], onDelete: Cascade)
-  programCategoryName        String?          @db.VarChar(100)
+  programCategoryName        String?             @db.VarChar(100)
   programId                  Int?
-  program                    Program?         @relation(fields: [programId], references: [programId], onDelete: Cascade)
-  programName                String?          @db.VarChar(100)
+  programName                String?             @db.VarChar(100)
   /// Amount that should land in college account (before PG cut)
-  price                      Float           @default(0.0)
-  pgRate                     Float           @default(2.0)
-  gstRate                    Float           @default(18.0)
+  price                      Float               @default(0.0)
+  pgRate                     Float               @default(2.0)
+  gstRate                    Float               @default(18.0)
   /// Amount student pays after grossing up PG + GST
-  finalPrice                 Float           @default(0.0)
+  finalPrice                 Float               @default(0.0)
 
   CreatedOn      DateTime  @default(now())
   CreatedBy      String    @db.VarChar(255)
@@ -778,8 +779,8 @@ model ExamGreviancePriceMaster {
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
 
-  @@unique([programId])
-  @@index([programCategoryId])
+  @@unique([grevianceTypeId])
+  @@index([grevianceTypeId])
   @@map("examGreviancePriceMaster")
 }
 
@@ -2368,6 +2369,9 @@ model ExamGrevianceApplication {
   grevianceType     GrevianceTypeMaster? @relation(fields: [grevianceTypeId], references: [grevianceTypeId], onDelete: SetNull)
   grevianceTypeName String               @db.VarChar(100)
 
+  /// Year + greviance shortcode + seq (e.g. 20260101)
+  trackNo String? @unique @db.VarChar(50)
+
   /// SUBMITTED | PROCESSING | MAIL_SENT | NO_CHANGE | MARKS_INCREASED | RESULT_UPGRADED
   status String @default("SUBMITTED") @db.VarChar(50)
 
@@ -2393,6 +2397,7 @@ model ExamGrevianceApplication {
   @@index([grevianceTypeId])
   @@index([status])
   @@index([programId])
+  @@index([trackNo])
   @@map("examGrevianceApplication")
 }
 

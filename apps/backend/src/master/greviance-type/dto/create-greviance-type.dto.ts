@@ -7,6 +7,11 @@ export class CreateGrevianceTypeDto {
   @IsNotEmpty()
   grevianceTypeName: string;
 
+  @ApiProperty({ example: 'REV', description: 'Short code of the greviance type' })
+  @IsString()
+  @IsNotEmpty()
+  shortcode: string;
+
   @ApiProperty({ example: 'Admin User' })
   @IsString()
   @IsNotEmpty()
