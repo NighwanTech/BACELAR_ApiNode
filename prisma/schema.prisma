@@ -466,6 +466,148 @@ model GrevianceTypeMaster {
   @@map("grevianceTypeMaster")
 }
 
+model MonthMaster {
+  monthId        Int       @id @default(autoincrement())
+  monthName      String    @unique @db.VarChar(100)
+  monthShortCode String    @unique @db.VarChar(10)
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@map("monthMaster")
+}
+
+model PramanMaster {
+  pramanId       Int       @id @default(autoincrement())
+  pramanName     String    @unique @db.VarChar(100)
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  subParameters  PramanSubParameterMaster[]
+  pramanDetails  PramanDetailsMaster[]
+
+  @@map("pramanMaster")
+}
+
+model PramanSubParameterMaster {
+  subPramanParameterId   Int          @id @default(autoincrement())
+  pramanId               Int
+  praman                 PramanMaster @relation(fields: [pramanId], references: [pramanId], onDelete: Cascade)
+  pramanName             String?      @db.VarChar(255)
+  subPramanParameterName String       @db.VarChar(255)
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  pramanDetails  PramanDetailsMaster[]
+
+  @@index([pramanId])
+  @@map("pramanSubParameterMaster")
+}
+
+model PramanResponseMaster {
+  pramanResponseId   Int       @id @default(autoincrement())
+  pramanResponseName String    @unique @db.VarChar(255)
+  CreatedOn          DateTime  @default(now())
+  CreatedBy          String    @db.VarChar(255)
+  UpdatedOn          DateTime? @updatedAt
+  UpdatedBy          String?   @db.VarChar(255)
+  IsActive           Boolean   @default(true)
+  IsDeleted          Boolean   @default(false)
+  DeletedRemarks     String?   @db.VarChar(255)
+  DeletedOn          DateTime?
+  DeletedBy          String?   @db.VarChar(255)
+  Remarks            String?   @db.VarChar(255)
+
+  pramanDetails      PramanDetailsMaster[]
+
+  @@map("pramanResponseMaster")
+}
+
+model AcademicYearMaster {
+  academicYearId   Int       @id @default(autoincrement())
+  academicYearName String    @unique @db.VarChar(100)
+  CreatedOn        DateTime  @default(now())
+  CreatedBy        String    @db.VarChar(255)
+  UpdatedOn        DateTime? @updatedAt
+  UpdatedBy        String?   @db.VarChar(255)
+  IsActive         Boolean   @default(true)
+  IsDeleted        Boolean   @default(false)
+  DeletedRemarks   String?   @db.VarChar(255)
+  DeletedOn        DateTime?
+  DeletedBy        String?   @db.VarChar(255)
+  Remarks          String?   @db.VarChar(255)
+
+  pramanDetails    PramanDetailsMaster[]
+
+  @@map("academicYearMaster")
+}
+
+model PramanDetailsMaster {
+  pramanDetailsId       Int                       @id @default(autoincrement())
+  pramanId              Int?
+  praman                PramanMaster?             @relation(fields: [pramanId], references: [pramanId], onDelete: SetNull)
+  pramanName            String?                   @db.VarChar(255)
+  subParameterId        Int?
+  subParameter          PramanSubParameterMaster? @relation(fields: [subParameterId], references: [subPramanParameterId], onDelete: SetNull)
+  subParameterName      String?                   @db.VarChar(255)
+  monthId               Int?
+  monthName             String?                   @db.VarChar(100)
+  academicYearId        Int?
+  academicYear          AcademicYearMaster?       @relation(fields: [academicYearId], references: [academicYearId], onDelete: SetNull)
+  academicYearName      String?                   @db.VarChar(100)
+  attachment            String?                   @db.VarChar(2000)
+  pramanResId           Int?
+  pramanResponse        PramanResponseMaster?     @relation(fields: [pramanResId], references: [pramanResponseId], onDelete: SetNull)
+  responseName          String?                   @db.VarChar(255)
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([pramanId])
+  @@index([subParameterId])
+  @@index([academicYearId])
+  @@index([pramanResId])
+  @@map("pramanDetailsMaster")
+}
+
+
+
+
+
+
+
 model QualificationMaster {
   qualificationId   Int       @id @default(autoincrement())
   qualificationName String    @unique @db.VarChar(100)
@@ -611,13 +753,13 @@ model ProgramFeeConfig {
 }
 
 model ExamGreviancePriceMaster {
-  examGreviancePriceMasterId Int             @id @default(autoincrement())
-  programCategoryId          Int
-  programCategory            ProgramCategory @relation(fields: [programCategoryId], references: [programCategoryId], onDelete: Cascade)
-  programCategoryName        String          @db.VarChar(100)
-  programId                  Int
-  program                    Program         @relation(fields: [programId], references: [programId], onDelete: Cascade)
-  programName                String          @db.VarChar(100)
+  examGreviancePriceMasterId Int              @id @default(autoincrement())
+  programCategoryId          Int?
+  programCategory            ProgramCategory? @relation(fields: [programCategoryId], references: [programCategoryId], onDelete: Cascade)
+  programCategoryName        String?          @db.VarChar(100)
+  programId                  Int?
+  program                    Program?         @relation(fields: [programId], references: [programId], onDelete: Cascade)
+  programName                String?          @db.VarChar(100)
   /// Amount that should land in college account (before PG cut)
   price                      Float           @default(0.0)
   pgRate                     Float           @default(2.0)

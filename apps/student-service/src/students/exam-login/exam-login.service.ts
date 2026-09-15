@@ -888,16 +888,7 @@ export class ExamLoginService {
       const paper = masterById.get(paperId);
       const pCode = saved?.paperCode || paper?.paperCode || `${paperId}`;
       const pName = saved?.paperName || paper?.paperName || 'SUBJECT / PAPER';
-      let pType = saved?.paperType || paper?.paperTypeRelation?.name || paper?.paperType || 'THEORY';
-
-      if (
-        isBEdCourse &&
-        (String(pType).toUpperCase().includes('COMPULS') ||
-          String(pType).toUpperCase().includes('MANDATORY') ||
-          index === 0)
-      ) {
-        pType = 'MAJOR (COMPULSORY)';
-      }
+      let pType = saved?.paperType || paper?.paperTypeRelation?.name || paper?.paperType || 'Compulsory';
 
       const isChosen =
         selectedPaperIds.length === 0 ? true : selectedPaperIds.includes(paperId);
@@ -917,10 +908,18 @@ export class ExamLoginService {
     // Dynamic Master & Student Exam Queries for Exam Forms
     let masterExams: any[] = [];
     try {
-      masterExams = await (this.prisma as any).examinationDetails.findMany({
+      const studentExamType = String(examForm.examType || examLoginRecord.examType || student?.examType || 'REGULAR').toUpperCase();
+      const allExams = await (this.prisma as any).examinationDetails.findMany({
         where: { IsDeleted: false, IsActive: true },
         orderBy: { examinationId: 'asc' },
       });
+      masterExams = allExams.filter((me: any) => {
+        const meType = String(me.examType || me.examinationType || '').toUpperCase();
+        return meType === studentExamType || meType.includes(studentExamType) || studentExamType.includes(meType);
+      });
+      if (masterExams.length === 0 && allExams.length > 0) {
+        masterExams = [allExams[0]];
+      }
     } catch {
       masterExams = [];
     }
@@ -946,6 +945,8 @@ export class ExamLoginService {
           studentExamId: se.studentExamId,
           enrollmentNo: se.enrollmentNo || examForm.enrollmentNo || student?.registrationNo || 'N/A',
           studentName: se.studentNameEng || examForm.studentNameEng || student?.candidateName || 'N/A',
+          courseName: se.courseShortName || examForm.courseShortName || student?.program?.programName || 'N/A',
+          yearSemester: se.yearName || se.semName || examForm.yearName || examForm.semName || student?.year?.yearName || '1st Year',
           examType: (se.examType || se.examinationDetail?.examType || 'REGULAR').toUpperCase(),
           examName: se.examinationName || se.examinationDetail?.examinationName || examForm.examinationName || 'Jan 2026',
           isFormSubmitted: Boolean(se.isExamFormFinalSubmit),
@@ -962,6 +963,8 @@ export class ExamLoginService {
           studentExamId: examForm.studentExamId || null,
           enrollmentNo: examForm.enrollmentNo || examLoginRecord.enrollmentNo || student?.registrationNo || 'N/A',
           studentName: examForm.studentNameEng || examLoginRecord.studentName || student?.candidateName || 'N/A',
+          courseName: me.program?.programName || examForm.courseShortName || student?.program?.programName || 'N/A',
+          yearSemester: me.year?.yearName || me.semester?.semesterName || examForm.yearName || examForm.semName || student?.year?.yearName || '1st Year',
           examType: (me.examType || 'REGULAR').toUpperCase(),
           examName: me.examinationName || examForm.examinationName || 'Jan 2026',
           isFormSubmitted: Boolean(examForm.isExamFormFinalSubmit),
@@ -978,6 +981,8 @@ export class ExamLoginService {
           studentExamId: examForm.studentExamId || null,
           enrollmentNo: examForm.enrollmentNo || examLoginRecord.enrollmentNo || student?.registrationNo || 'N/A',
           studentName: examForm.studentNameEng || examLoginRecord.studentName || student?.candidateName || 'N/A',
+          courseName: examForm.courseShortName || student?.program?.programName || 'N/A',
+          yearSemester: examForm.yearName || examForm.semName || student?.year?.yearName || '1st Year',
           examType: (examForm.examType || examLoginRecord.examType || 'REGULAR').toUpperCase(),
           examName: examForm.examinationName || 'Jan 2026',
           isFormSubmitted: Boolean(examForm.isExamFormFinalSubmit),

@@ -15,10 +15,12 @@ import { HeaderButtonModule } from './header-button/header-button.module';
 import { CommitteeModule } from './committee/committee.module';
 import { CommitteeSubmenuModule } from './committee-submenu/committee-submenu.module';
 import { ExaminerRegistrationModule } from './examiner-registration/examiner-registration.module';
+import { AcademicYearModule } from './academic-year/academic-year.module';
+import { PramanDetailsModule } from './praman-details/praman-details.module';
 
 @Module({
-  imports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule, ExaminerRegistrationModule],
-  exports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule, ExaminerRegistrationModule],
+  imports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule, ExaminerRegistrationModule, AcademicYearModule, PramanDetailsModule],
+  exports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule, ExaminerRegistrationModule, AcademicYearModule, PramanDetailsModule],
 })
 export class WebsiteModule {}
 

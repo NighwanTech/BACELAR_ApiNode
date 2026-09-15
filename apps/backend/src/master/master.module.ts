@@ -27,6 +27,10 @@ import { RoleModule } from './role/role.module';
 import { MarksTypeModule } from './marks-type/marks-type.module';
 import { ExamGreviancePriceModule } from './exam-greviance-price/exam-greviance-price.module';
 import { GrevianceTypeModule } from './greviance-type/greviance-type.module';
+import { MonthModule } from './month/month.module';
+import { PramanModule } from './praman/praman.module';
+import { PramanSubParameterModule } from './praman-sub-parameter/praman-sub-parameter.module';
+import { PramanResponseModule } from './praman-response/praman-response.module';
 
 @Module({
   imports: [
@@ -49,6 +53,10 @@ import { GrevianceTypeModule } from './greviance-type/greviance-type.module';
     ProgramFeeConfigModule,
     ExamGreviancePriceModule,
     GrevianceTypeModule,
+    MonthModule,
+    PramanModule,
+    PramanSubParameterModule,
+    PramanResponseModule,
     CollegeModule,
     PaperTypeModule,
     ExamTypeModule,
@@ -79,6 +87,10 @@ import { GrevianceTypeModule } from './greviance-type/greviance-type.module';
     ProgramFeeConfigModule,
     ExamGreviancePriceModule,
     GrevianceTypeModule,
+    MonthModule,
+    PramanModule,
+    PramanSubParameterModule,
+    PramanResponseModule,
     CollegeModule,
     PaperTypeModule,
     ExamTypeModule,
@@ -91,4 +103,6 @@ import { GrevianceTypeModule } from './greviance-type/greviance-type.module';
   ],
 })
 export class MasterModule {}
+
+
 
