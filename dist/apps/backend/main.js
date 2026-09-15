@@ -127,6 +127,7 @@ const admin_module_1 = __webpack_require__(278);
 const exam_result_module_1 = __webpack_require__(287);
 const result_declaration_module_1 = __webpack_require__(292);
 const promotion_module_1 = __webpack_require__(295);
+const exam_greviance_module_1 = __webpack_require__(298);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -141,6 +142,7 @@ exports.AppModule = AppModule = __decorate([
             exam_result_module_1.ExamResultModule,
             result_declaration_module_1.ResultDeclarationModule,
             promotion_module_1.PromotionModule,
+            exam_greviance_module_1.ExamGrevianceModule,
         ],
         controllers: [],
     })
@@ -22442,6 +22444,373 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], SavePromotionDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 298 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExamGrevianceModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const exam_greviance_controller_1 = __webpack_require__(299);
+const admin_exam_greviance_controller_1 = __webpack_require__(301);
+let ExamGrevianceModule = class ExamGrevianceModule {
+};
+exports.ExamGrevianceModule = ExamGrevianceModule;
+exports.ExamGrevianceModule = ExamGrevianceModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT) || 4001,
+                    },
+                },
+            ]),
+        ],
+        controllers: [exam_greviance_controller_1.ExamGrevianceController, admin_exam_greviance_controller_1.AdminExamGrevianceController],
+    })
+], ExamGrevianceModule);
+
+
+/***/ }),
+/* 299 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExamGrevianceController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_exam_greviance_dto_1 = __webpack_require__(300);
+let ExamGrevianceController = class ExamGrevianceController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    unwrap() {
+        return (0, rxjs_1.map)((res) => {
+            if (res && typeof res === 'object' && res.status === 'error') {
+                throw new common_1.HttpException(res.message || 'Request failed', common_1.HttpStatus.BAD_REQUEST);
+            }
+            return res;
+        });
+    }
+    lookup(rollNo) {
+        return this.studentClient
+            .send({ cmd: 'lookup_exam_greviance_by_roll' }, { rollNo })
+            .pipe(this.unwrap(), (0, rxjs_1.catchError)((error) => {
+            if (error instanceof common_1.HttpException)
+                return (0, rxjs_1.throwError)(() => error);
+            const message = (typeof error === 'string' && error) ||
+                error?.message ||
+                error?.error?.message ||
+                (typeof error?.error === 'string' && error.error) ||
+                'Lookup failed';
+            return (0, rxjs_1.throwError)(() => new common_1.HttpException(message, common_1.HttpStatus.BAD_REQUEST));
+        }));
+    }
+    create(dto) {
+        return this.studentClient.send({ cmd: 'create_exam_greviance' }, dto).pipe(this.unwrap(), (0, rxjs_1.catchError)((error) => {
+            if (error instanceof common_1.HttpException)
+                return (0, rxjs_1.throwError)(() => error);
+            return (0, rxjs_1.throwError)(() => new common_1.HttpException(error?.message || 'Create failed', common_1.HttpStatus.BAD_REQUEST));
+        }));
+    }
+};
+exports.ExamGrevianceController = ExamGrevianceController;
+__decorate([
+    (0, common_1.Get)('lookup'),
+    (0, swagger_1.ApiOperation)({ summary: 'Lookup student + exam papers by roll number for greviance' }),
+    (0, swagger_1.ApiQuery)({ name: 'rollNo', required: true }),
+    __param(0, (0, common_1.Query)('rollNo')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_b = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _b : Object)
+], ExamGrevianceController.prototype, "lookup", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Submit exam greviance application' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof create_exam_greviance_dto_1.CreateExamGrevianceDto !== "undefined" && create_exam_greviance_dto_1.CreateExamGrevianceDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], ExamGrevianceController.prototype, "create", null);
+exports.ExamGrevianceController = ExamGrevianceController = __decorate([
+    (0, swagger_1.ApiTags)('Public - Exam Greviance'),
+    (0, common_1.Controller)('public/exam-greviances'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], ExamGrevianceController);
+
+
+/***/ }),
+/* 300 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateExamGrevianceDto = void 0;
+const swagger_1 = __webpack_require__(4);
+const class_transformer_1 = __webpack_require__(27);
+const class_validator_1 = __webpack_require__(13);
+class CreateExamGrevianceDto {
+}
+exports.CreateExamGrevianceDto = CreateExamGrevianceDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '26001001' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateExamGrevianceDto.prototype, "rollNo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 1, required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateExamGrevianceDto.prototype, "grevianceTypeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Photocopy of Answersheet', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExamGrevianceDto.prototype, "grevianceTypeName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: [1, 2, 3], description: 'examResultId list' }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ArrayMinSize)(1),
+    (0, class_validator_1.IsInt)({ each: true }),
+    (0, class_transformer_1.Type)(() => Number),
+    __metadata("design:type", Array)
+], CreateExamGrevianceDto.prototype, "examResultIds", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Website', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExamGrevianceDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExamGrevianceDto.prototype, "Remarks", void 0);
+
+
+/***/ }),
+/* 301 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminExamGrevianceController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const parse_active_only_1 = __webpack_require__(93);
+const update_exam_greviance_application_status_dto_1 = __webpack_require__(302);
+let AdminExamGrevianceController = class AdminExamGrevianceController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    unwrap() {
+        return (0, rxjs_1.map)((res) => {
+            if (res && typeof res === 'object' && res.status === 'error') {
+                throw new common_1.HttpException(res.message || 'Request failed', common_1.HttpStatus.BAD_REQUEST);
+            }
+            return res;
+        });
+    }
+    handleError(fallback) {
+        return (0, rxjs_1.catchError)((error) => {
+            if (error instanceof common_1.HttpException)
+                return (0, rxjs_1.throwError)(() => error);
+            const message = (typeof error === 'string' && error) ||
+                error?.message ||
+                error?.error?.message ||
+                (typeof error?.error === 'string' && error.error) ||
+                fallback;
+            return (0, rxjs_1.throwError)(() => new common_1.HttpException(message, common_1.HttpStatus.BAD_REQUEST));
+        });
+    }
+    findAll(status, grevianceTypeId, rollNo, programId, examinationDetailId, activeOnly) {
+        const payload = {
+            activeOnly: (0, parse_active_only_1.parseActiveOnlyFlag)(activeOnly),
+        };
+        if (status)
+            payload.status = status;
+        if (rollNo)
+            payload.rollNo = rollNo;
+        if (grevianceTypeId)
+            payload.grevianceTypeId = Number(grevianceTypeId);
+        if (programId)
+            payload.programId = Number(programId);
+        if (examinationDetailId) {
+            payload.examinationDetailId = Number(examinationDetailId);
+        }
+        return this.studentClient
+            .send({ cmd: 'find_all_exam_greviances' }, payload)
+            .pipe(this.unwrap(), this.handleError('Failed to list exam greviances'));
+    }
+    findOne(id) {
+        return this.studentClient
+            .send({ cmd: 'find_one_exam_greviance' }, { examGrevianceApplicationId: id })
+            .pipe(this.unwrap(), this.handleError('Failed to get exam greviance'));
+    }
+    updateApplicationStatus(id, dto) {
+        return this.studentClient
+            .send({ cmd: 'update_application_status_exam_greviance' }, { examGrevianceApplicationId: id, ...dto })
+            .pipe(this.unwrap(), this.handleError('Failed to update application status'));
+    }
+};
+exports.AdminExamGrevianceController = AdminExamGrevianceController;
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'List exam greviance applications (admin)' }),
+    (0, swagger_1.ApiQuery)({ name: 'status', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'grevianceTypeId', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'rollNo', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'programId', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'examinationDetailId', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'activeOnly', required: false, example: true }),
+    __param(0, (0, common_1.Query)('status')),
+    __param(1, (0, common_1.Query)('grevianceTypeId')),
+    __param(2, (0, common_1.Query)('rollNo')),
+    __param(3, (0, common_1.Query)('programId')),
+    __param(4, (0, common_1.Query)('examinationDetailId')),
+    __param(5, (0, common_1.Query)('activeOnly')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, String]),
+    __metadata("design:returntype", typeof (_b = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _b : Object)
+], AdminExamGrevianceController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get one exam greviance application' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], AdminExamGrevianceController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id/application-status'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Update workflow status (SUBMITTED / PROCESSING / MAIL_SENT / NO_CHANGE / MARKS_INCREASED / RESULT_UPGRADED). Saves UpdatedBy + UpdatedOn.',
+    }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_d = typeof update_exam_greviance_application_status_dto_1.UpdateExamGrevianceApplicationStatusDto !== "undefined" && update_exam_greviance_application_status_dto_1.UpdateExamGrevianceApplicationStatusDto) === "function" ? _d : Object]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], AdminExamGrevianceController.prototype, "updateApplicationStatus", null);
+exports.AdminExamGrevianceController = AdminExamGrevianceController = __decorate([
+    (0, swagger_1.ApiTags)('Exam Greviances (Admin)'),
+    (0, common_1.Controller)('exam-greviances'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], AdminExamGrevianceController);
+
+
+/***/ }),
+/* 302 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateExamGrevianceApplicationStatusDto = exports.EXAM_GREVIANCE_STATUSES = void 0;
+const swagger_1 = __webpack_require__(4);
+const class_validator_1 = __webpack_require__(13);
+exports.EXAM_GREVIANCE_STATUSES = [
+    'SUBMITTED',
+    'PROCESSING',
+    'MAIL_SENT',
+    'NO_CHANGE',
+    'MARKS_INCREASED',
+    'RESULT_UPGRADED',
+];
+class UpdateExamGrevianceApplicationStatusDto {
+}
+exports.UpdateExamGrevianceApplicationStatusDto = UpdateExamGrevianceApplicationStatusDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'PROCESSING',
+        enum: exports.EXAM_GREVIANCE_STATUSES,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsIn)([...exports.EXAM_GREVIANCE_STATUSES]),
+    __metadata("design:type", String)
+], UpdateExamGrevianceApplicationStatusDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateExamGrevianceApplicationStatusDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false, example: 'Photocopy mail sent to student' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateExamGrevianceApplicationStatusDto.prototype, "Remarks", void 0);
 
 
 /***/ })

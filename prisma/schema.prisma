@@ -53,6 +53,7 @@ model Student {
   examAttendanceDetails ExamAttendanceDetail[]
   examResults           ExamResult[]
   promotionDetails      PromotionDetail[]
+  examGrevianceApplications ExamGrevianceApplication[]
 
   @@index([yearId])
   @@index([semId])
@@ -459,6 +460,8 @@ model GrevianceTypeMaster {
   DeletedOn         DateTime?
   DeletedBy         String?   @db.VarChar(255)
   Remarks           String?   @db.VarChar(255)
+
+  examGrevianceApplications ExamGrevianceApplication[]
 
   @@map("grevianceTypeMaster")
 }
@@ -2182,5 +2185,93 @@ model PromotionDetail {
   @@index([studentId])
   @@index([rollNo])
   @@map("promotionDetail")
+}
+
+/// Student exam grievance application (Photocopy / Scrutiny / Revaluation)
+model ExamGrevianceApplication {
+  examGrevianceApplicationId Int @id @default(autoincrement())
+
+  studentId Int?
+  student   Student? @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: SetNull)
+
+  rollNo      String  @db.VarChar(100)
+  enrolmentNo String? @db.VarChar(100)
+
+  examTypeId   Int?
+  examTypeName String? @db.VarChar(100)
+
+  programCategoryId   Int?
+  programCategoryName String? @db.VarChar(255)
+  programId           Int?
+  programName         String? @db.VarChar(255)
+
+  studentName  String?   @db.VarChar(255)
+  fatherName   String?   @db.VarChar(255)
+  motherName   String?   @db.VarChar(255)
+  dob          DateTime?
+  castCategory String?   @db.VarChar(100)
+  gender       String?   @db.VarChar(50)
+  emailId      String?   @db.VarChar(255)
+  mobileNo     String?   @db.VarChar(20)
+
+  academicSessionId   Int?
+  examinationDetailId Int?
+  examinationName     String? @db.VarChar(100)
+  yearId              Int?
+  yearName            String? @db.VarChar(100)
+  semId               Int?
+  semesterName        String? @db.VarChar(100)
+
+  grevianceTypeId   Int?
+  grevianceType     GrevianceTypeMaster? @relation(fields: [grevianceTypeId], references: [grevianceTypeId], onDelete: SetNull)
+  grevianceTypeName String               @db.VarChar(100)
+
+  /// SUBMITTED | PROCESSING | MAIL_SENT | NO_CHANGE | MARKS_INCREASED | RESULT_UPGRADED
+  status String @default("SUBMITTED") @db.VarChar(50)
+
+  feeAmount     Float?  @default(0)
+  paymentStatus String? @default("PENDING") @db.VarChar(50)
+  paymentRef    String? @db.VarChar(100)
+
+  papers ExamGrevianceApplicationPaper[]
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String?   @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([rollNo])
+  @@index([studentId])
+  @@index([grevianceTypeId])
+  @@index([status])
+  @@index([programId])
+  @@map("examGrevianceApplication")
+}
+
+model ExamGrevianceApplicationPaper {
+  examGrevianceApplicationPaperId Int @id @default(autoincrement())
+
+  examGrevianceApplicationId Int
+  application                ExamGrevianceApplication @relation(fields: [examGrevianceApplicationId], references: [examGrevianceApplicationId], onDelete: Cascade)
+
+  examResultId Int?
+  paperId      Int?
+  paperCode    String? @db.VarChar(100)
+  subjectName  String? @db.VarChar(255)
+  paperName    String? @db.VarChar(255)
+  paperType    String? @db.VarChar(100)
+
+  CreatedOn DateTime @default(now())
+
+  @@index([examGrevianceApplicationId])
+  @@index([examResultId])
+  @@index([paperId])
+  @@map("examGrevianceApplicationPaper")
 }
 

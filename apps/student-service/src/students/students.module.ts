@@ -14,6 +14,7 @@ import { ExamLoginModule } from './exam-login/exam-login.module';
 import { StudentRollNumberModule } from './student-roll-number/student-roll-number.module';
 import { ExamAdmitCardModule } from './exam-admit-card/exam-admit-card.module';
 import { StudentAttendanceModule } from './student-attendance/student-attendance.module';
+import { ExamGrevianceModule } from './exam-greviance/exam-greviance.module';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { StudentAttendanceModule } from './student-attendance/student-attendance
     StudentRollNumberModule,
     ExamAdmitCardModule,
     StudentAttendanceModule,
-    
+    ExamGrevianceModule,
   ],
   controllers: [StudentsController],
   providers: [StudentsService],

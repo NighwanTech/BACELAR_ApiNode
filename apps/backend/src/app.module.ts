@@ -7,6 +7,7 @@ import { AdminModule } from './admin/admin.module';
 import { ExamResultModule } from './exam-result/exam-result.module';
 import { ResultDeclarationModule } from './result-declaration/result-declaration.module';
 import { PromotionModule } from './promotion/promotion.module';
+import { ExamGrevianceModule } from './exam-greviance/exam-greviance.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PromotionModule } from './promotion/promotion.module';
     ExamResultModule,
     ResultDeclarationModule,
     PromotionModule,
+    ExamGrevianceModule,
   ],
   controllers: [],
 })
