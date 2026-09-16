@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `examGrevianceApplication` (
     `semesterName` VARCHAR(100) NULL,
     `grevianceTypeId` INTEGER NULL,
     `grevianceTypeName` VARCHAR(100) NOT NULL,
+    `trackNo` VARCHAR(50) NULL,
     `status` VARCHAR(50) NOT NULL DEFAULT 'SUBMITTED',
     `feeAmount` DOUBLE NULL DEFAULT 0,
     `paymentStatus` VARCHAR(50) NULL DEFAULT 'PENDING',
@@ -47,6 +48,8 @@ CREATE TABLE IF NOT EXISTS `examGrevianceApplication` (
     INDEX `examGrevianceApplication_grevianceTypeId_idx`(`grevianceTypeId`),
     INDEX `examGrevianceApplication_status_idx`(`status`),
     INDEX `examGrevianceApplication_programId_idx`(`programId`),
+    UNIQUE INDEX `examGrevianceApplication_trackNo_key`(`trackNo`),
+    INDEX `examGrevianceApplication_trackNo_idx`(`trackNo`),
     PRIMARY KEY (`examGrevianceApplicationId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

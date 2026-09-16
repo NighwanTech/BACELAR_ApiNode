@@ -222,11 +222,23 @@ export class StudentRollNumberService {
     return rows;
   }
 
+  private findRoll(rollMap: Map<string, any>, studentId: number, admissionYear?: string) {
+    if (admissionYear) {
+      const hit = rollMap.get(`${studentId}:${admissionYear}`);
+      if (hit) return hit;
+    }
+    for (const [key, value] of rollMap.entries()) {
+      if (key.startsWith(`${studentId}:`)) return value;
+    }
+    return null;
+  }
+
   private mapListRow(e: any, rollMap: Map<string, any>, admissionYearFallback?: string) {
     const studentId = Number(e.studentId);
-    const sessionName = e.session?.admissionSessionName || '';
-    const admissionYear = this.extractAdmissionYear(sessionName) || admissionYearFallback || '';
-    const roll = admissionYear ? rollMap.get(`${studentId}:${admissionYear}`) : null;
+    const sessionName =
+      e.student?.academicSession?.academicSessionName || e.session?.admissionSessionName || '';
+    const admissionYear = admissionYearFallback || this.extractAdmissionYear(sessionName) || '';
+    const roll = this.findRoll(rollMap, studentId, admissionYear);
     const program = e.program || e.student?.program || null;
     const category = program?.programCategory || null;
 
@@ -335,6 +347,15 @@ export class StudentRollNumberService {
       }
     }
 
+    if (academicSessionId != null) {
+      const academic = await this.prisma.academicSession.findFirst({
+        where: { academicSessionId, IsDeleted: false },
+      });
+      if (!academic) {
+        throw new BadRequestException('Academic session not found');
+      }
+    }
+
     const admissionYear = await this.resolveRollYear(payload);
     if (!admissionYear || admissionYear.length !== 4) {
       throw new BadRequestException(
@@ -431,7 +452,9 @@ export class StudentRollNumberService {
           data: {
             studentId: row.studentId,
             enrollmentId: row.enrollmentId,
-            sessionId,
+            sessionId: sessionId ?? row.enrollment?.sessionId ?? row.enrollment?.student?.admissionSessionId ?? null,
+            academicSessionId:
+              academicSessionId ?? row.enrollment?.student?.academicSessionId ?? null,
             programId: row.programId,
             admissionYear,
             collegeCode,

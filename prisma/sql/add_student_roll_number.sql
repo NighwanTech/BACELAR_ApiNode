@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `studentRollNumber` (
   `studentId` INT NOT NULL,
   `enrollmentId` INT NULL,
   `sessionId` INT NULL,
+  `academicSessionId` INT NULL,
   `programId` INT NULL,
   `admissionYear` VARCHAR(4) NOT NULL,
   `collegeCode` VARCHAR(3) NOT NULL,
@@ -26,10 +27,12 @@ CREATE TABLE IF NOT EXISTS `studentRollNumber` (
   KEY `studentRollNumber_studentId_idx` (`studentId`),
   KEY `studentRollNumber_enrollmentId_idx` (`enrollmentId`),
   KEY `studentRollNumber_sessionId_idx` (`sessionId`),
+  KEY `studentRollNumber_academicSessionId_idx` (`academicSessionId`),
   KEY `studentRollNumber_programId_idx` (`programId`),
   KEY `studentRollNumber_admissionYear_idx` (`admissionYear`),
   CONSTRAINT `studentRollNumber_studentId_fkey` FOREIGN KEY (`studentId`) REFERENCES `students` (`StudentRegistrationId`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `studentRollNumber_enrollmentId_fkey` FOREIGN KEY (`enrollmentId`) REFERENCES `studentEnrollment` (`enrollmentId`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `studentRollNumber_sessionId_fkey` FOREIGN KEY (`sessionId`) REFERENCES `admissionSessions` (`admissionSessionId`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `studentRollNumber_academicSessionId_fkey` FOREIGN KEY (`academicSessionId`) REFERENCES `academicSessionMaster` (`academicSessionId`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `studentRollNumber_programId_fkey` FOREIGN KEY (`programId`) REFERENCES `programs` (`programId`) ON DELETE SET NULL ON UPDATE CASCADE
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

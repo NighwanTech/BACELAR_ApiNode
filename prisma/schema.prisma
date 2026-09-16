@@ -1225,6 +1225,7 @@ model AcademicSession {
   examResults         ExamResult[]
   resultDeclarations  ResultDeclaration[]
   students            Student[]
+  studentRollNumbers  StudentRollNumber[]
   promotionsFrom      Promotion[]          @relation("PromotionSessionFrom")
   promotionsTo        Promotion[]          @relation("PromotionSessionTo")
   CreatedOn           DateTime             @default(now())
@@ -1917,6 +1918,8 @@ model StudentRollNumber {
   enrollment     StudentEnrollment? @relation(fields: [enrollmentId], references: [enrollmentId], onDelete: SetNull)
   sessionId      Int?
   session        AdmissionSession? @relation(fields: [sessionId], references: [admissionSessionId], onDelete: SetNull)
+  academicSessionId Int?
+  academicSession   AcademicSession? @relation(fields: [academicSessionId], references: [academicSessionId], onDelete: SetNull)
   programId      Int?
   program        Program? @relation(fields: [programId], references: [programId], onDelete: SetNull)
 
@@ -1941,6 +1944,7 @@ model StudentRollNumber {
   @@index([studentId])
   @@index([enrollmentId])
   @@index([sessionId])
+  @@index([academicSessionId])
   @@index([programId])
   @@index([admissionYear])
   @@map("studentRollNumber")
