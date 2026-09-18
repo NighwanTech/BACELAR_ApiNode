@@ -71,6 +71,27 @@ export class ExamSchemeService {
     };
   }
 
+  private async attachStudentCounts(scheme: any) {
+    const mapped = this.mapScheme(scheme);
+    if (!mapped) return mapped;
+    const papers = mapped.papers || [];
+    const paperIds = papers
+      .map((paper: any) => Number(paper.paperId))
+      .filter((id: number) => Number.isFinite(id) && id > 0);
+    const counts = await this.countStudentsByPaper({
+      paperIds,
+      examinationDetailId: Number(mapped.examinationDetailId),
+      programId: Number(mapped.programId),
+      yearId: Number(mapped.yearId),
+      semId: mapped.semId ? Number(mapped.semId) : null,
+    });
+    mapped.papers = papers.map((paper: any) => ({
+      ...paper,
+      noOfStudent: counts.get(Number(paper.paperId)) || Number(paper.noOfStudent) || 0,
+    }));
+    return mapped;
+  }
+
   private async countStudentsByPaper(params: {
     paperIds: number[];
     examinationDetailId: number;
@@ -430,7 +451,7 @@ export class ExamSchemeService {
       include: this.schemeInclude(),
       orderBy: { examSchemeId: 'desc' },
     });
-    return rows.map((row: any) => this.mapScheme(row));
+    return Promise.all(rows.map((row: any) => this.attachStudentCounts(row)));
   }
 
   async findOne(examSchemeId: number) {
@@ -439,7 +460,7 @@ export class ExamSchemeService {
       include: this.schemeInclude(),
     });
     if (!row) throw new NotFoundException('Exam scheme not found');
-    return this.mapScheme(row);
+    return this.attachStudentCounts(row);
   }
 
   async updateStatus(examSchemeId: number, IsActive: boolean, UpdatedBy: string) {

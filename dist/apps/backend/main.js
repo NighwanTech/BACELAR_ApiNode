@@ -122,12 +122,12 @@ const common_1 = __webpack_require__(2);
 const config_1 = __webpack_require__(7);
 const students_module_1 = __webpack_require__(8);
 const master_module_1 = __webpack_require__(88);
-const website_module_1 = __webpack_require__(231);
-const admin_module_1 = __webpack_require__(308);
-const exam_result_module_1 = __webpack_require__(317);
-const result_declaration_module_1 = __webpack_require__(322);
-const promotion_module_1 = __webpack_require__(325);
-const exam_greviance_module_1 = __webpack_require__(328);
+const website_module_1 = __webpack_require__(241);
+const admin_module_1 = __webpack_require__(318);
+const exam_result_module_1 = __webpack_require__(327);
+const result_declaration_module_1 = __webpack_require__(332);
+const promotion_module_1 = __webpack_require__(335);
+const exam_greviance_module_1 = __webpack_require__(338);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -5772,12 +5772,14 @@ const paper_detail_module_1 = __webpack_require__(184);
 const exam_subject_module_1 = __webpack_require__(188);
 const role_module_1 = __webpack_require__(192);
 const marks_type_module_1 = __webpack_require__(197);
-const exam_greviance_price_module_1 = __webpack_require__(201);
-const greviance_type_module_1 = __webpack_require__(206);
-const month_module_1 = __webpack_require__(211);
-const praman_module_1 = __webpack_require__(216);
-const praman_sub_parameter_module_1 = __webpack_require__(221);
-const praman_response_module_1 = __webpack_require__(226);
+const entrance_paper_module_1 = __webpack_require__(201);
+const entrance_exam_module_1 = __webpack_require__(206);
+const exam_greviance_price_module_1 = __webpack_require__(211);
+const greviance_type_module_1 = __webpack_require__(216);
+const month_module_1 = __webpack_require__(221);
+const praman_module_1 = __webpack_require__(226);
+const praman_sub_parameter_module_1 = __webpack_require__(231);
+const praman_response_module_1 = __webpack_require__(236);
 let MasterModule = class MasterModule {
 };
 exports.MasterModule = MasterModule;
@@ -5816,6 +5818,8 @@ exports.MasterModule = MasterModule = __decorate([
             exam_subject_module_1.ExamSubjectModule,
             role_module_1.RoleModule,
             marks_type_module_1.MarksTypeModule,
+            entrance_paper_module_1.EntrancePaperModule,
+            entrance_exam_module_1.EntranceExamModule,
         ],
         exports: [
             state_module_1.StateModule,
@@ -5850,6 +5854,8 @@ exports.MasterModule = MasterModule = __decorate([
             exam_subject_module_1.ExamSubjectModule,
             role_module_1.RoleModule,
             marks_type_module_1.MarksTypeModule,
+            entrance_paper_module_1.EntrancePaperModule,
+            entrance_exam_module_1.EntranceExamModule,
         ],
     })
 ], MasterModule);
@@ -13804,10 +13810,721 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EntrancePaperModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const entrance_paper_controller_1 = __webpack_require__(202);
+let EntrancePaperModule = class EntrancePaperModule {
+};
+exports.EntrancePaperModule = EntrancePaperModule;
+exports.EntrancePaperModule = EntrancePaperModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [entrance_paper_controller_1.EntrancePaperController],
+    })
+], EntrancePaperModule);
+
+
+/***/ }),
+/* 202 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EntrancePaperController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_entrance_paper_dto_1 = __webpack_require__(203);
+const update_entrance_paper_dto_1 = __webpack_require__(204);
+const bulk_delete_entrance_papers_dto_1 = __webpack_require__(205);
+const update_status_dto_1 = __webpack_require__(19);
+const parse_active_only_1 = __webpack_require__(93);
+let EntrancePaperController = class EntrancePaperController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    unwrap() {
+        return (0, rxjs_1.map)((res) => {
+            if (res && typeof res === 'object' && res.status === 'error') {
+                const message = res.message || 'Request failed';
+                const isConflict = /already exists/i.test(String(message));
+                const isNotFound = /not found/i.test(String(message));
+                throw new common_1.HttpException(message, isNotFound ? common_1.HttpStatus.NOT_FOUND : isConflict ? common_1.HttpStatus.CONFLICT : common_1.HttpStatus.BAD_REQUEST);
+            }
+            return res;
+        });
+    }
+    create(dto) {
+        return this.studentClient.send({ cmd: 'create_entrance_paper' }, dto).pipe(this.unwrap());
+    }
+    findAll(activeOnly) {
+        return this.studentClient
+            .send({ cmd: 'find_all_entrance_papers' }, { activeOnly: (0, parse_active_only_1.parseActiveOnlyFlag)(activeOnly) })
+            .pipe(this.unwrap());
+    }
+    bulkRemove(dto) {
+        return this.studentClient.send({ cmd: 'bulk_delete_entrance_papers' }, dto).pipe(this.unwrap());
+    }
+    findOne(id) {
+        return this.studentClient
+            .send({ cmd: 'find_one_entrance_paper' }, { entrancePaperId: id })
+            .pipe(this.unwrap());
+    }
+    update(id, dto) {
+        return this.studentClient
+            .send({ cmd: 'update_entrance_paper' }, { entrancePaperId: id, ...dto })
+            .pipe(this.unwrap());
+    }
+    updateStatus(id, dto) {
+        return this.studentClient
+            .send({ cmd: 'update_status_entrance_paper' }, { entrancePaperId: id, ...dto })
+            .pipe(this.unwrap());
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient
+            .send({ cmd: 'delete_entrance_paper' }, { entrancePaperId: id, DeletedBy, DeletedRemarks })
+            .pipe(this.unwrap());
+    }
+};
+exports.EntrancePaperController = EntrancePaperController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create entrance paper' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_entrance_paper_dto_1.CreateEntrancePaperDto !== "undefined" && create_entrance_paper_dto_1.CreateEntrancePaperDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], EntrancePaperController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiQuery)({ name: 'activeOnly', required: false }),
+    __param(0, (0, common_1.Query)('activeOnly')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], EntrancePaperController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Post)('bulk-delete'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_e = typeof bulk_delete_entrance_papers_dto_1.BulkDeleteEntrancePapersDto !== "undefined" && bulk_delete_entrance_papers_dto_1.BulkDeleteEntrancePapersDto) === "function" ? _e : Object]),
+    __metadata("design:returntype", typeof (_f = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _f : Object)
+], EntrancePaperController.prototype, "bulkRemove", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], EntrancePaperController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_h = typeof update_entrance_paper_dto_1.UpdateEntrancePaperDto !== "undefined" && update_entrance_paper_dto_1.UpdateEntrancePaperDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+], EntrancePaperController.prototype, "update", null);
+__decorate([
+    (0, common_1.Patch)(':id/status'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_k = typeof update_status_dto_1.UpdateStatusDto !== "undefined" && update_status_dto_1.UpdateStatusDto) === "function" ? _k : Object]),
+    __metadata("design:returntype", typeof (_l = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _l : Object)
+], EntrancePaperController.prototype, "updateStatus", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
+], EntrancePaperController.prototype, "remove", null);
+exports.EntrancePaperController = EntrancePaperController = __decorate([
+    (0, swagger_1.ApiTags)('Master - Entrance Papers'),
+    (0, common_1.Controller)('master/entrance-papers'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], EntrancePaperController);
+
+
+/***/ }),
+/* 203 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateEntrancePaperDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class CreateEntrancePaperDto {
+}
+exports.CreateEntrancePaperDto = CreateEntrancePaperDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Paper I' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateEntrancePaperDto.prototype, "entrancePaperName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateEntrancePaperDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateEntrancePaperDto.prototype, "Remarks", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateEntrancePaperDto.prototype, "IsActive", void 0);
+
+
+/***/ }),
+/* 204 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateEntrancePaperDto = void 0;
+const swagger_1 = __webpack_require__(4);
+const create_entrance_paper_dto_1 = __webpack_require__(203);
+const swagger_2 = __webpack_require__(4);
+const class_validator_1 = __webpack_require__(13);
+class UpdateEntrancePaperDto extends (0, swagger_1.PartialType)(create_entrance_paper_dto_1.CreateEntrancePaperDto) {
+}
+exports.UpdateEntrancePaperDto = UpdateEntrancePaperDto;
+__decorate([
+    (0, swagger_2.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateEntrancePaperDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_2.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateEntrancePaperDto.prototype, "IsActive", void 0);
+
+
+/***/ }),
+/* 205 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BulkDeleteEntrancePapersDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+class BulkDeleteEntrancePapersDto {
+}
+exports.BulkDeleteEntrancePapersDto = BulkDeleteEntrancePapersDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: [1, 2] }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNumber)({}, { each: true }),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Array)
+], BulkDeleteEntrancePapersDto.prototype, "ids", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], BulkDeleteEntrancePapersDto.prototype, "DeletedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], BulkDeleteEntrancePapersDto.prototype, "DeletedRemarks", void 0);
+
+
+/***/ }),
+/* 206 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EntranceExamModule = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const entrance_exam_controller_1 = __webpack_require__(207);
+let EntranceExamModule = class EntranceExamModule {
+};
+exports.EntranceExamModule = EntranceExamModule;
+exports.EntranceExamModule = EntranceExamModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'STUDENT_SERVICE',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        host: '127.0.0.1',
+                        port: Number(process.env.TCP_PORT ?? 4001),
+                    },
+                },
+            ]),
+        ],
+        controllers: [entrance_exam_controller_1.EntranceExamController],
+    })
+], EntranceExamModule);
+
+
+/***/ }),
+/* 207 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EntranceExamController = void 0;
+const common_1 = __webpack_require__(2);
+const microservices_1 = __webpack_require__(9);
+const swagger_1 = __webpack_require__(4);
+const rxjs_1 = __webpack_require__(11);
+const create_entrance_exam_dto_1 = __webpack_require__(208);
+const update_entrance_exam_dto_1 = __webpack_require__(209);
+const generate_entrance_rolls_dto_1 = __webpack_require__(210);
+const update_status_dto_1 = __webpack_require__(19);
+const parse_active_only_1 = __webpack_require__(93);
+let EntranceExamController = class EntranceExamController {
+    constructor(studentClient) {
+        this.studentClient = studentClient;
+    }
+    unwrap() {
+        return (0, rxjs_1.map)((res) => {
+            if (res && typeof res === 'object' && res.status === 'error') {
+                const message = res.message || 'Request failed';
+                const isConflict = /already/i.test(String(message));
+                const isNotFound = /not found/i.test(String(message));
+                throw new common_1.HttpException(message, isNotFound ? common_1.HttpStatus.NOT_FOUND : isConflict ? common_1.HttpStatus.CONFLICT : common_1.HttpStatus.BAD_REQUEST);
+            }
+            return res;
+        });
+    }
+    create(dto) {
+        return this.studentClient.send({ cmd: 'create_entrance_exam' }, dto).pipe(this.unwrap());
+    }
+    findAll(activeOnly, academicSessionId, programCategoryId, programId) {
+        return this.studentClient
+            .send({ cmd: 'find_all_entrance_exams' }, {
+            activeOnly: (0, parse_active_only_1.parseActiveOnlyFlag)(activeOnly),
+            academicSessionId: academicSessionId ? Number(academicSessionId) : undefined,
+            programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+            programId: programId ? Number(programId) : undefined,
+        })
+            .pipe(this.unwrap());
+    }
+    getAdmitCard(entranceRollnumber, studentId) {
+        return this.studentClient
+            .send({ cmd: 'get_entrance_admit_card' }, {
+            entranceRollnumber,
+            studentId: studentId ? Number(studentId) : undefined,
+        })
+            .pipe(this.unwrap());
+    }
+    generateRolls(dto) {
+        return this.studentClient.send({ cmd: 'generate_entrance_rolls' }, dto).pipe(this.unwrap());
+    }
+    bulkRemove(dto) {
+        return this.studentClient.send({ cmd: 'bulk_delete_entrance_exams' }, dto).pipe(this.unwrap());
+    }
+    findOne(id) {
+        return this.studentClient.send({ cmd: 'find_one_entrance_exam' }, { entranceExamId: id }).pipe(this.unwrap());
+    }
+    update(id, dto) {
+        return this.studentClient.send({ cmd: 'update_entrance_exam' }, { entranceExamId: id, ...dto }).pipe(this.unwrap());
+    }
+    updateStatus(id, dto) {
+        return this.studentClient
+            .send({ cmd: 'update_status_entrance_exam' }, { entranceExamId: id, ...dto })
+            .pipe(this.unwrap());
+    }
+    remove(id, DeletedBy, DeletedRemarks) {
+        return this.studentClient
+            .send({ cmd: 'delete_entrance_exam' }, { entranceExamId: id, DeletedBy, DeletedRemarks })
+            .pipe(this.unwrap());
+    }
+};
+exports.EntranceExamController = EntranceExamController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create entrance exam paper mapping' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof create_entrance_exam_dto_1.CreateEntranceExamDto !== "undefined" && create_entrance_exam_dto_1.CreateEntranceExamDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", typeof (_c = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _c : Object)
+], EntranceExamController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiQuery)({ name: 'activeOnly', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'academicSessionId', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'programCategoryId', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'programId', required: false }),
+    __param(0, (0, common_1.Query)('activeOnly')),
+    __param(1, (0, common_1.Query)('academicSessionId')),
+    __param(2, (0, common_1.Query)('programCategoryId')),
+    __param(3, (0, common_1.Query)('programId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", typeof (_d = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _d : Object)
+], EntranceExamController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('admit-card'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get entrance admit card by roll number or studentId' }),
+    (0, swagger_1.ApiQuery)({ name: 'entranceRollnumber', required: false }),
+    (0, swagger_1.ApiQuery)({ name: 'studentId', required: false }),
+    __param(0, (0, common_1.Query)('entranceRollnumber')),
+    __param(1, (0, common_1.Query)('studentId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", typeof (_e = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _e : Object)
+], EntranceExamController.prototype, "getAdmitCard", null);
+__decorate([
+    (0, common_1.Post)('generate-rolls'),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk generate entrance roll numbers for a program' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_f = typeof generate_entrance_rolls_dto_1.GenerateEntranceRollsDto !== "undefined" && generate_entrance_rolls_dto_1.GenerateEntranceRollsDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
+], EntranceExamController.prototype, "generateRolls", null);
+__decorate([
+    (0, common_1.Post)('bulk-delete'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_h = typeof generate_entrance_rolls_dto_1.BulkDeleteEntranceExamsDto !== "undefined" && generate_entrance_rolls_dto_1.BulkDeleteEntranceExamsDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+], EntranceExamController.prototype, "bulkRemove", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
+], EntranceExamController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_l = typeof update_entrance_exam_dto_1.UpdateEntranceExamDto !== "undefined" && update_entrance_exam_dto_1.UpdateEntranceExamDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
+], EntranceExamController.prototype, "update", null);
+__decorate([
+    (0, common_1.Patch)(':id/status'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_o = typeof update_status_dto_1.UpdateStatusDto !== "undefined" && update_status_dto_1.UpdateStatusDto) === "function" ? _o : Object]),
+    __metadata("design:returntype", typeof (_p = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _p : Object)
+], EntranceExamController.prototype, "updateStatus", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Query)('DeletedBy')),
+    __param(2, (0, common_1.Query)('DeletedRemarks')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", typeof (_q = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _q : Object)
+], EntranceExamController.prototype, "remove", null);
+exports.EntranceExamController = EntranceExamController = __decorate([
+    (0, swagger_1.ApiTags)('Master - Entrance Exams'),
+    (0, common_1.Controller)('master/entrance-exams'),
+    __param(0, (0, common_1.Inject)('STUDENT_SERVICE')),
+    __metadata("design:paramtypes", [typeof (_a = typeof microservices_1.ClientProxy !== "undefined" && microservices_1.ClientProxy) === "function" ? _a : Object])
+], EntranceExamController);
+
+
+/***/ }),
+/* 208 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateEntranceExamDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+const class_transformer_1 = __webpack_require__(27);
+class CreateEntranceExamDto {
+}
+exports.CreateEntranceExamDto = CreateEntranceExamDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], CreateEntranceExamDto.prototype, "academicSessionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], CreateEntranceExamDto.prototype, "programCategoryId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], CreateEntranceExamDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], CreateEntranceExamDto.prototype, "entrancePaperId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '22 Sep 2026', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateEntranceExamDto.prototype, "examDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '11:00 AM', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateEntranceExamDto.prototype, "fromTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '01:00 PM', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateEntranceExamDto.prototype, "toTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateEntranceExamDto.prototype, "CreatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateEntranceExamDto.prototype, "Remarks", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateEntranceExamDto.prototype, "IsActive", void 0);
+
+
+/***/ }),
+/* 209 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateEntranceExamDto = void 0;
+const swagger_1 = __webpack_require__(4);
+const create_entrance_exam_dto_1 = __webpack_require__(208);
+const swagger_2 = __webpack_require__(4);
+const class_validator_1 = __webpack_require__(13);
+class UpdateEntranceExamDto extends (0, swagger_1.PartialType)(create_entrance_exam_dto_1.CreateEntranceExamDto) {
+}
+exports.UpdateEntranceExamDto = UpdateEntranceExamDto;
+__decorate([
+    (0, swagger_2.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateEntranceExamDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_2.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdateEntranceExamDto.prototype, "IsActive", void 0);
+
+
+/***/ }),
+/* 210 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GenerateEntranceRollsDto = exports.BulkDeleteEntranceExamsDto = void 0;
+const class_validator_1 = __webpack_require__(13);
+const swagger_1 = __webpack_require__(4);
+const class_transformer_1 = __webpack_require__(27);
+class BulkDeleteEntranceExamsDto {
+}
+exports.BulkDeleteEntranceExamsDto = BulkDeleteEntranceExamsDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: [1, 2] }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNumber)({}, { each: true }),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Array)
+], BulkDeleteEntranceExamsDto.prototype, "ids", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], BulkDeleteEntranceExamsDto.prototype, "DeletedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], BulkDeleteEntranceExamsDto.prototype, "DeletedRemarks", void 0);
+class GenerateEntranceRollsDto {
+}
+exports.GenerateEntranceRollsDto = GenerateEntranceRollsDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], GenerateEntranceRollsDto.prototype, "academicSessionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], GenerateEntranceRollsDto.prototype, "programCategoryId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], GenerateEntranceRollsDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], GenerateEntranceRollsDto.prototype, "UpdatedBy", void 0);
+
+
+/***/ }),
+/* 211 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamGreviancePriceModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const exam_greviance_price_controller_1 = __webpack_require__(202);
+const exam_greviance_price_controller_1 = __webpack_require__(212);
 let ExamGreviancePriceModule = class ExamGreviancePriceModule {
 };
 exports.ExamGreviancePriceModule = ExamGreviancePriceModule;
@@ -13831,7 +14548,7 @@ exports.ExamGreviancePriceModule = ExamGreviancePriceModule = __decorate([
 
 
 /***/ }),
-/* 202 */
+/* 212 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13854,9 +14571,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_exam_greviance_price_dto_1 = __webpack_require__(203);
-const update_exam_greviance_price_dto_1 = __webpack_require__(204);
-const bulk_delete_exam_greviance_prices_dto_1 = __webpack_require__(205);
+const create_exam_greviance_price_dto_1 = __webpack_require__(213);
+const update_exam_greviance_price_dto_1 = __webpack_require__(214);
+const bulk_delete_exam_greviance_prices_dto_1 = __webpack_require__(215);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 let ExamGreviancePriceController = class ExamGreviancePriceController {
@@ -13979,7 +14696,7 @@ exports.ExamGreviancePriceController = ExamGreviancePriceController = __decorate
 
 
 /***/ }),
-/* 203 */
+/* 213 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14049,7 +14766,7 @@ __decorate([
 
 
 /***/ }),
-/* 204 */
+/* 214 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14125,7 +14842,7 @@ __decorate([
 
 
 /***/ }),
-/* 205 */
+/* 215 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14167,7 +14884,7 @@ __decorate([
 
 
 /***/ }),
-/* 206 */
+/* 216 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14181,7 +14898,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GrevianceTypeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const greviance_type_controller_1 = __webpack_require__(207);
+const greviance_type_controller_1 = __webpack_require__(217);
 let GrevianceTypeModule = class GrevianceTypeModule {
 };
 exports.GrevianceTypeModule = GrevianceTypeModule;
@@ -14205,7 +14922,7 @@ exports.GrevianceTypeModule = GrevianceTypeModule = __decorate([
 
 
 /***/ }),
-/* 207 */
+/* 217 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14228,9 +14945,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_greviance_type_dto_1 = __webpack_require__(208);
-const update_greviance_type_dto_1 = __webpack_require__(209);
-const bulk_delete_greviance_types_dto_1 = __webpack_require__(210);
+const create_greviance_type_dto_1 = __webpack_require__(218);
+const update_greviance_type_dto_1 = __webpack_require__(219);
+const bulk_delete_greviance_types_dto_1 = __webpack_require__(220);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 let GrevianceTypeController = class GrevianceTypeController {
@@ -14334,7 +15051,7 @@ exports.GrevianceTypeController = GrevianceTypeController = __decorate([
 
 
 /***/ }),
-/* 208 */
+/* 218 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14381,7 +15098,7 @@ __decorate([
 
 
 /***/ }),
-/* 209 */
+/* 219 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14434,7 +15151,7 @@ __decorate([
 
 
 /***/ }),
-/* 210 */
+/* 220 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14476,7 +15193,7 @@ __decorate([
 
 
 /***/ }),
-/* 211 */
+/* 221 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14490,7 +15207,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MonthModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const month_controller_1 = __webpack_require__(212);
+const month_controller_1 = __webpack_require__(222);
 let MonthModule = class MonthModule {
 };
 exports.MonthModule = MonthModule;
@@ -14514,7 +15231,7 @@ exports.MonthModule = MonthModule = __decorate([
 
 
 /***/ }),
-/* 212 */
+/* 222 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14537,9 +15254,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_month_dto_1 = __webpack_require__(213);
-const update_month_dto_1 = __webpack_require__(214);
-const bulk_delete_months_dto_1 = __webpack_require__(215);
+const create_month_dto_1 = __webpack_require__(223);
+const update_month_dto_1 = __webpack_require__(224);
+const bulk_delete_months_dto_1 = __webpack_require__(225);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 let MonthController = class MonthController {
@@ -14648,7 +15365,7 @@ exports.MonthController = MonthController = __decorate([
 
 
 /***/ }),
-/* 213 */
+/* 223 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14701,7 +15418,7 @@ __decorate([
 
 
 /***/ }),
-/* 214 */
+/* 224 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14754,7 +15471,7 @@ __decorate([
 
 
 /***/ }),
-/* 215 */
+/* 225 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14796,7 +15513,7 @@ __decorate([
 
 
 /***/ }),
-/* 216 */
+/* 226 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14810,7 +15527,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const praman_controller_1 = __webpack_require__(217);
+const praman_controller_1 = __webpack_require__(227);
 let PramanModule = class PramanModule {
 };
 exports.PramanModule = PramanModule;
@@ -14834,7 +15551,7 @@ exports.PramanModule = PramanModule = __decorate([
 
 
 /***/ }),
-/* 217 */
+/* 227 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14857,9 +15574,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_praman_dto_1 = __webpack_require__(218);
-const update_praman_dto_1 = __webpack_require__(219);
-const bulk_delete_pramans_dto_1 = __webpack_require__(220);
+const create_praman_dto_1 = __webpack_require__(228);
+const update_praman_dto_1 = __webpack_require__(229);
+const bulk_delete_pramans_dto_1 = __webpack_require__(230);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 let PramanController = class PramanController {
@@ -14968,7 +15685,7 @@ exports.PramanController = PramanController = __decorate([
 
 
 /***/ }),
-/* 218 */
+/* 228 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15015,7 +15732,7 @@ __decorate([
 
 
 /***/ }),
-/* 219 */
+/* 229 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15062,7 +15779,7 @@ __decorate([
 
 
 /***/ }),
-/* 220 */
+/* 230 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15104,7 +15821,7 @@ __decorate([
 
 
 /***/ }),
-/* 221 */
+/* 231 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15118,7 +15835,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanSubParameterModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const praman_sub_parameter_controller_1 = __webpack_require__(222);
+const praman_sub_parameter_controller_1 = __webpack_require__(232);
 let PramanSubParameterModule = class PramanSubParameterModule {
 };
 exports.PramanSubParameterModule = PramanSubParameterModule;
@@ -15142,7 +15859,7 @@ exports.PramanSubParameterModule = PramanSubParameterModule = __decorate([
 
 
 /***/ }),
-/* 222 */
+/* 232 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15165,9 +15882,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_praman_sub_parameter_dto_1 = __webpack_require__(223);
-const update_praman_sub_parameter_dto_1 = __webpack_require__(224);
-const bulk_delete_praman_sub_parameters_dto_1 = __webpack_require__(225);
+const create_praman_sub_parameter_dto_1 = __webpack_require__(233);
+const update_praman_sub_parameter_dto_1 = __webpack_require__(234);
+const bulk_delete_praman_sub_parameters_dto_1 = __webpack_require__(235);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 let PramanSubParameterController = class PramanSubParameterController {
@@ -15281,7 +15998,7 @@ exports.PramanSubParameterController = PramanSubParameterController = __decorate
 
 
 /***/ }),
-/* 223 */
+/* 233 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15340,7 +16057,7 @@ __decorate([
 
 
 /***/ }),
-/* 224 */
+/* 234 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15399,7 +16116,7 @@ __decorate([
 
 
 /***/ }),
-/* 225 */
+/* 235 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15441,7 +16158,7 @@ __decorate([
 
 
 /***/ }),
-/* 226 */
+/* 236 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15455,7 +16172,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanResponseModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const praman_response_controller_1 = __webpack_require__(227);
+const praman_response_controller_1 = __webpack_require__(237);
 let PramanResponseModule = class PramanResponseModule {
 };
 exports.PramanResponseModule = PramanResponseModule;
@@ -15479,7 +16196,7 @@ exports.PramanResponseModule = PramanResponseModule = __decorate([
 
 
 /***/ }),
-/* 227 */
+/* 237 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15502,9 +16219,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_praman_response_dto_1 = __webpack_require__(228);
-const update_praman_response_dto_1 = __webpack_require__(229);
-const bulk_delete_praman_responses_dto_1 = __webpack_require__(230);
+const create_praman_response_dto_1 = __webpack_require__(238);
+const update_praman_response_dto_1 = __webpack_require__(239);
+const bulk_delete_praman_responses_dto_1 = __webpack_require__(240);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 let PramanResponseController = class PramanResponseController {
@@ -15613,7 +16330,7 @@ exports.PramanResponseController = PramanResponseController = __decorate([
 
 
 /***/ }),
-/* 228 */
+/* 238 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15660,7 +16377,7 @@ __decorate([
 
 
 /***/ }),
-/* 229 */
+/* 239 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15707,7 +16424,7 @@ __decorate([
 
 
 /***/ }),
-/* 230 */
+/* 240 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15749,7 +16466,7 @@ __decorate([
 
 
 /***/ }),
-/* 231 */
+/* 241 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15762,25 +16479,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.WebsiteModule = void 0;
 const common_1 = __webpack_require__(2);
-const campus_quick_link_module_1 = __webpack_require__(232);
-const latest_update_module_1 = __webpack_require__(236);
-const admission_enquiry_module_1 = __webpack_require__(240);
-const hero_section_module_1 = __webpack_require__(244);
-const upload_module_1 = __webpack_require__(248);
-const notice_board_module_1 = __webpack_require__(250);
-const accreditation_slider_module_1 = __webpack_require__(254);
-const top_achiever_module_1 = __webpack_require__(258);
-const image_gallery_module_1 = __webpack_require__(262);
-const video_gallery_module_1 = __webpack_require__(266);
-const contact_enquiry_module_1 = __webpack_require__(270);
-const stats_counter_module_1 = __webpack_require__(274);
-const testimonial_module_1 = __webpack_require__(278);
-const header_button_module_1 = __webpack_require__(282);
-const committee_module_1 = __webpack_require__(286);
-const committee_submenu_module_1 = __webpack_require__(290);
-const examiner_registration_module_1 = __webpack_require__(294);
-const academic_year_module_1 = __webpack_require__(298);
-const praman_details_module_1 = __webpack_require__(303);
+const campus_quick_link_module_1 = __webpack_require__(242);
+const latest_update_module_1 = __webpack_require__(246);
+const admission_enquiry_module_1 = __webpack_require__(250);
+const hero_section_module_1 = __webpack_require__(254);
+const upload_module_1 = __webpack_require__(258);
+const notice_board_module_1 = __webpack_require__(260);
+const accreditation_slider_module_1 = __webpack_require__(264);
+const top_achiever_module_1 = __webpack_require__(268);
+const image_gallery_module_1 = __webpack_require__(272);
+const video_gallery_module_1 = __webpack_require__(276);
+const contact_enquiry_module_1 = __webpack_require__(280);
+const stats_counter_module_1 = __webpack_require__(284);
+const testimonial_module_1 = __webpack_require__(288);
+const header_button_module_1 = __webpack_require__(292);
+const committee_module_1 = __webpack_require__(296);
+const committee_submenu_module_1 = __webpack_require__(300);
+const examiner_registration_module_1 = __webpack_require__(304);
+const academic_year_module_1 = __webpack_require__(308);
+const praman_details_module_1 = __webpack_require__(313);
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
@@ -15793,7 +16510,7 @@ exports.WebsiteModule = WebsiteModule = __decorate([
 
 
 /***/ }),
-/* 232 */
+/* 242 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15807,7 +16524,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CampusQuickLinkModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const campus_quick_link_controller_1 = __webpack_require__(233);
+const campus_quick_link_controller_1 = __webpack_require__(243);
 let CampusQuickLinkModule = class CampusQuickLinkModule {
 };
 exports.CampusQuickLinkModule = CampusQuickLinkModule;
@@ -15831,7 +16548,7 @@ exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
 
 
 /***/ }),
-/* 233 */
+/* 243 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15855,8 +16572,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_campus_quick_link_dto_1 = __webpack_require__(234);
-const update_campus_quick_link_dto_1 = __webpack_require__(235);
+const create_campus_quick_link_dto_1 = __webpack_require__(244);
+const update_campus_quick_link_dto_1 = __webpack_require__(245);
 let CampusQuickLinkController = class CampusQuickLinkController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -15949,7 +16666,7 @@ exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
 
 
 /***/ }),
-/* 234 */
+/* 244 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16008,7 +16725,7 @@ __decorate([
 
 
 /***/ }),
-/* 235 */
+/* 245 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16067,7 +16784,7 @@ __decorate([
 
 
 /***/ }),
-/* 236 */
+/* 246 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16081,7 +16798,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LatestUpdateModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const latest_update_controller_1 = __webpack_require__(237);
+const latest_update_controller_1 = __webpack_require__(247);
 let LatestUpdateModule = class LatestUpdateModule {
 };
 exports.LatestUpdateModule = LatestUpdateModule;
@@ -16105,7 +16822,7 @@ exports.LatestUpdateModule = LatestUpdateModule = __decorate([
 
 
 /***/ }),
-/* 237 */
+/* 247 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16129,8 +16846,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_latest_update_dto_1 = __webpack_require__(238);
-const update_latest_update_dto_1 = __webpack_require__(239);
+const create_latest_update_dto_1 = __webpack_require__(248);
+const update_latest_update_dto_1 = __webpack_require__(249);
 let LatestUpdateController = class LatestUpdateController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -16223,7 +16940,7 @@ exports.LatestUpdateController = LatestUpdateController = __decorate([
 
 
 /***/ }),
-/* 238 */
+/* 248 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16318,7 +17035,7 @@ __decorate([
 
 
 /***/ }),
-/* 239 */
+/* 249 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16413,7 +17130,7 @@ __decorate([
 
 
 /***/ }),
-/* 240 */
+/* 250 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16427,7 +17144,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const admission_enquiry_controller_1 = __webpack_require__(241);
+const admission_enquiry_controller_1 = __webpack_require__(251);
 let AdmissionEnquiryModule = class AdmissionEnquiryModule {
 };
 exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
@@ -16451,7 +17168,7 @@ exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 241 */
+/* 251 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16475,8 +17192,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_admission_enquiry_dto_1 = __webpack_require__(242);
-const update_admission_enquiry_dto_1 = __webpack_require__(243);
+const create_admission_enquiry_dto_1 = __webpack_require__(252);
+const update_admission_enquiry_dto_1 = __webpack_require__(253);
 let AdmissionEnquiryController = class AdmissionEnquiryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -16569,7 +17286,7 @@ exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
 
 
 /***/ }),
-/* 242 */
+/* 252 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16712,7 +17429,7 @@ __decorate([
 
 
 /***/ }),
-/* 243 */
+/* 253 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16849,7 +17566,7 @@ __decorate([
 
 
 /***/ }),
-/* 244 */
+/* 254 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16863,7 +17580,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const hero_section_controller_1 = __webpack_require__(245);
+const hero_section_controller_1 = __webpack_require__(255);
 let HeroSectionModule = class HeroSectionModule {
 };
 exports.HeroSectionModule = HeroSectionModule;
@@ -16887,7 +17604,7 @@ exports.HeroSectionModule = HeroSectionModule = __decorate([
 
 
 /***/ }),
-/* 245 */
+/* 255 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16911,8 +17628,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_hero_section_dto_1 = __webpack_require__(246);
-const update_hero_section_dto_1 = __webpack_require__(247);
+const create_hero_section_dto_1 = __webpack_require__(256);
+const update_hero_section_dto_1 = __webpack_require__(257);
 let HeroSectionController = class HeroSectionController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -17005,7 +17722,7 @@ exports.HeroSectionController = HeroSectionController = __decorate([
 
 
 /***/ }),
-/* 246 */
+/* 256 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17106,7 +17823,7 @@ __decorate([
 
 
 /***/ }),
-/* 247 */
+/* 257 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17207,7 +17924,7 @@ __decorate([
 
 
 /***/ }),
-/* 248 */
+/* 258 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17220,7 +17937,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UploadModule = void 0;
 const common_1 = __webpack_require__(2);
-const upload_controller_1 = __webpack_require__(249);
+const upload_controller_1 = __webpack_require__(259);
 const storage_module_1 = __webpack_require__(64);
 let UploadModule = class UploadModule {
 };
@@ -17234,7 +17951,7 @@ exports.UploadModule = UploadModule = __decorate([
 
 
 /***/ }),
-/* 249 */
+/* 259 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17334,7 +18051,7 @@ exports.UploadController = UploadController = __decorate([
 
 
 /***/ }),
-/* 250 */
+/* 260 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17348,7 +18065,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const notice_board_controller_1 = __webpack_require__(251);
+const notice_board_controller_1 = __webpack_require__(261);
 let NoticeBoardModule = class NoticeBoardModule {
 };
 exports.NoticeBoardModule = NoticeBoardModule;
@@ -17372,7 +18089,7 @@ exports.NoticeBoardModule = NoticeBoardModule = __decorate([
 
 
 /***/ }),
-/* 251 */
+/* 261 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17396,8 +18113,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_notice_board_dto_1 = __webpack_require__(252);
-const update_notice_board_dto_1 = __webpack_require__(253);
+const create_notice_board_dto_1 = __webpack_require__(262);
+const update_notice_board_dto_1 = __webpack_require__(263);
 let NoticeBoardController = class NoticeBoardController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -17490,7 +18207,7 @@ exports.NoticeBoardController = NoticeBoardController = __decorate([
 
 
 /***/ }),
-/* 252 */
+/* 262 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17591,7 +18308,7 @@ __decorate([
 
 
 /***/ }),
-/* 253 */
+/* 263 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17692,7 +18409,7 @@ __decorate([
 
 
 /***/ }),
-/* 254 */
+/* 264 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17706,7 +18423,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AccreditationSliderModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const accreditation_slider_controller_1 = __webpack_require__(255);
+const accreditation_slider_controller_1 = __webpack_require__(265);
 let AccreditationSliderModule = class AccreditationSliderModule {
 };
 exports.AccreditationSliderModule = AccreditationSliderModule;
@@ -17730,7 +18447,7 @@ exports.AccreditationSliderModule = AccreditationSliderModule = __decorate([
 
 
 /***/ }),
-/* 255 */
+/* 265 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17754,8 +18471,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_accreditation_slider_dto_1 = __webpack_require__(256);
-const update_accreditation_slider_dto_1 = __webpack_require__(257);
+const create_accreditation_slider_dto_1 = __webpack_require__(266);
+const update_accreditation_slider_dto_1 = __webpack_require__(267);
 let AccreditationSliderController = class AccreditationSliderController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -17848,7 +18565,7 @@ exports.AccreditationSliderController = AccreditationSliderController = __decora
 
 
 /***/ }),
-/* 256 */
+/* 266 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17913,7 +18630,7 @@ __decorate([
 
 
 /***/ }),
-/* 257 */
+/* 267 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17978,7 +18695,7 @@ __decorate([
 
 
 /***/ }),
-/* 258 */
+/* 268 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17992,7 +18709,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const top_achiever_controller_1 = __webpack_require__(259);
+const top_achiever_controller_1 = __webpack_require__(269);
 let TopAchieverModule = class TopAchieverModule {
 };
 exports.TopAchieverModule = TopAchieverModule;
@@ -18016,7 +18733,7 @@ exports.TopAchieverModule = TopAchieverModule = __decorate([
 
 
 /***/ }),
-/* 259 */
+/* 269 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18040,8 +18757,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_top_achiever_dto_1 = __webpack_require__(260);
-const update_top_achiever_dto_1 = __webpack_require__(261);
+const create_top_achiever_dto_1 = __webpack_require__(270);
+const update_top_achiever_dto_1 = __webpack_require__(271);
 let TopAchieverController = class TopAchieverController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -18134,7 +18851,7 @@ exports.TopAchieverController = TopAchieverController = __decorate([
 
 
 /***/ }),
-/* 260 */
+/* 270 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18229,7 +18946,7 @@ __decorate([
 
 
 /***/ }),
-/* 261 */
+/* 271 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18324,7 +19041,7 @@ __decorate([
 
 
 /***/ }),
-/* 262 */
+/* 272 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18338,7 +19055,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageGalleryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const image_gallery_controller_1 = __webpack_require__(263);
+const image_gallery_controller_1 = __webpack_require__(273);
 let ImageGalleryModule = class ImageGalleryModule {
 };
 exports.ImageGalleryModule = ImageGalleryModule;
@@ -18362,7 +19079,7 @@ exports.ImageGalleryModule = ImageGalleryModule = __decorate([
 
 
 /***/ }),
-/* 263 */
+/* 273 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18386,8 +19103,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_image_gallery_dto_1 = __webpack_require__(264);
-const update_image_gallery_dto_1 = __webpack_require__(265);
+const create_image_gallery_dto_1 = __webpack_require__(274);
+const update_image_gallery_dto_1 = __webpack_require__(275);
 let ImageGalleryController = class ImageGalleryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -18480,7 +19197,7 @@ exports.ImageGalleryController = ImageGalleryController = __decorate([
 
 
 /***/ }),
-/* 264 */
+/* 274 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18560,7 +19277,7 @@ __decorate([
 
 
 /***/ }),
-/* 265 */
+/* 275 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18640,7 +19357,7 @@ __decorate([
 
 
 /***/ }),
-/* 266 */
+/* 276 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18654,7 +19371,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const video_gallery_controller_1 = __webpack_require__(267);
+const video_gallery_controller_1 = __webpack_require__(277);
 let VideoGalleryModule = class VideoGalleryModule {
 };
 exports.VideoGalleryModule = VideoGalleryModule;
@@ -18678,7 +19395,7 @@ exports.VideoGalleryModule = VideoGalleryModule = __decorate([
 
 
 /***/ }),
-/* 267 */
+/* 277 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18702,8 +19419,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_video_gallery_dto_1 = __webpack_require__(268);
-const update_video_gallery_dto_1 = __webpack_require__(269);
+const create_video_gallery_dto_1 = __webpack_require__(278);
+const update_video_gallery_dto_1 = __webpack_require__(279);
 let VideoGalleryController = class VideoGalleryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -18796,7 +19513,7 @@ exports.VideoGalleryController = VideoGalleryController = __decorate([
 
 
 /***/ }),
-/* 268 */
+/* 278 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18885,7 +19602,7 @@ __decorate([
 
 
 /***/ }),
-/* 269 */
+/* 279 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18974,7 +19691,7 @@ __decorate([
 
 
 /***/ }),
-/* 270 */
+/* 280 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18988,7 +19705,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ContactEnquiryModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const contact_enquiry_controller_1 = __webpack_require__(271);
+const contact_enquiry_controller_1 = __webpack_require__(281);
 let ContactEnquiryModule = class ContactEnquiryModule {
 };
 exports.ContactEnquiryModule = ContactEnquiryModule;
@@ -19012,7 +19729,7 @@ exports.ContactEnquiryModule = ContactEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 271 */
+/* 281 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19036,8 +19753,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_contact_enquiry_dto_1 = __webpack_require__(272);
-const update_contact_enquiry_dto_1 = __webpack_require__(273);
+const create_contact_enquiry_dto_1 = __webpack_require__(282);
+const update_contact_enquiry_dto_1 = __webpack_require__(283);
 let ContactEnquiryController = class ContactEnquiryController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -19130,7 +19847,7 @@ exports.ContactEnquiryController = ContactEnquiryController = __decorate([
 
 
 /***/ }),
-/* 272 */
+/* 282 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19213,7 +19930,7 @@ __decorate([
 
 
 /***/ }),
-/* 273 */
+/* 283 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19296,7 +20013,7 @@ __decorate([
 
 
 /***/ }),
-/* 274 */
+/* 284 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19310,7 +20027,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatsCounterModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const stats_counter_controller_1 = __webpack_require__(275);
+const stats_counter_controller_1 = __webpack_require__(285);
 let StatsCounterModule = class StatsCounterModule {
 };
 exports.StatsCounterModule = StatsCounterModule;
@@ -19334,7 +20051,7 @@ exports.StatsCounterModule = StatsCounterModule = __decorate([
 
 
 /***/ }),
-/* 275 */
+/* 285 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19358,8 +20075,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_stats_counter_dto_1 = __webpack_require__(276);
-const update_stats_counter_dto_1 = __webpack_require__(277);
+const create_stats_counter_dto_1 = __webpack_require__(286);
+const update_stats_counter_dto_1 = __webpack_require__(287);
 let StatsCounterController = class StatsCounterController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -19452,7 +20169,7 @@ exports.StatsCounterController = StatsCounterController = __decorate([
 
 
 /***/ }),
-/* 276 */
+/* 286 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19529,7 +20246,7 @@ __decorate([
 
 
 /***/ }),
-/* 277 */
+/* 287 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19606,7 +20323,7 @@ __decorate([
 
 
 /***/ }),
-/* 278 */
+/* 288 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19620,7 +20337,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestimonialModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const testimonial_controller_1 = __webpack_require__(279);
+const testimonial_controller_1 = __webpack_require__(289);
 let TestimonialModule = class TestimonialModule {
 };
 exports.TestimonialModule = TestimonialModule;
@@ -19644,7 +20361,7 @@ exports.TestimonialModule = TestimonialModule = __decorate([
 
 
 /***/ }),
-/* 279 */
+/* 289 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19668,8 +20385,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_testimonial_dto_1 = __webpack_require__(280);
-const update_testimonial_dto_1 = __webpack_require__(281);
+const create_testimonial_dto_1 = __webpack_require__(290);
+const update_testimonial_dto_1 = __webpack_require__(291);
 let TestimonialController = class TestimonialController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -19762,7 +20479,7 @@ exports.TestimonialController = TestimonialController = __decorate([
 
 
 /***/ }),
-/* 280 */
+/* 290 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19841,7 +20558,7 @@ __decorate([
 
 
 /***/ }),
-/* 281 */
+/* 291 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19920,7 +20637,7 @@ __decorate([
 
 
 /***/ }),
-/* 282 */
+/* 292 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19934,7 +20651,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderButtonModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const header_button_controller_1 = __webpack_require__(283);
+const header_button_controller_1 = __webpack_require__(293);
 let HeaderButtonModule = class HeaderButtonModule {
 };
 exports.HeaderButtonModule = HeaderButtonModule;
@@ -19958,7 +20675,7 @@ exports.HeaderButtonModule = HeaderButtonModule = __decorate([
 
 
 /***/ }),
-/* 283 */
+/* 293 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19982,8 +20699,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_header_button_dto_1 = __webpack_require__(284);
-const update_header_button_dto_1 = __webpack_require__(285);
+const create_header_button_dto_1 = __webpack_require__(294);
+const update_header_button_dto_1 = __webpack_require__(295);
 let HeaderButtonController = class HeaderButtonController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -20076,7 +20793,7 @@ exports.HeaderButtonController = HeaderButtonController = __decorate([
 
 
 /***/ }),
-/* 284 */
+/* 294 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20147,7 +20864,7 @@ __decorate([
 
 
 /***/ }),
-/* 285 */
+/* 295 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20218,7 +20935,7 @@ __decorate([
 
 
 /***/ }),
-/* 286 */
+/* 296 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20232,7 +20949,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const committee_controller_1 = __webpack_require__(287);
+const committee_controller_1 = __webpack_require__(297);
 let CommitteeModule = class CommitteeModule {
 };
 exports.CommitteeModule = CommitteeModule;
@@ -20256,7 +20973,7 @@ exports.CommitteeModule = CommitteeModule = __decorate([
 
 
 /***/ }),
-/* 287 */
+/* 297 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20279,8 +20996,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_committee_dto_1 = __webpack_require__(288);
-const update_committee_dto_1 = __webpack_require__(289);
+const create_committee_dto_1 = __webpack_require__(298);
+const update_committee_dto_1 = __webpack_require__(299);
 let CommitteeController = class CommitteeController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -20360,7 +21077,7 @@ exports.CommitteeController = CommitteeController = __decorate([
 
 
 /***/ }),
-/* 288 */
+/* 298 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20419,7 +21136,7 @@ __decorate([
 
 
 /***/ }),
-/* 289 */
+/* 299 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20478,7 +21195,7 @@ __decorate([
 
 
 /***/ }),
-/* 290 */
+/* 300 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20492,7 +21209,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeSubmenuModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const committee_submenu_controller_1 = __webpack_require__(291);
+const committee_submenu_controller_1 = __webpack_require__(301);
 let CommitteeSubmenuModule = class CommitteeSubmenuModule {
 };
 exports.CommitteeSubmenuModule = CommitteeSubmenuModule;
@@ -20516,7 +21233,7 @@ exports.CommitteeSubmenuModule = CommitteeSubmenuModule = __decorate([
 
 
 /***/ }),
-/* 291 */
+/* 301 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20539,8 +21256,8 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_committee_submenu_dto_1 = __webpack_require__(292);
-const update_committee_submenu_dto_1 = __webpack_require__(293);
+const create_committee_submenu_dto_1 = __webpack_require__(302);
+const update_committee_submenu_dto_1 = __webpack_require__(303);
 let CommitteeSubmenuController = class CommitteeSubmenuController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -20634,7 +21351,7 @@ exports.CommitteeSubmenuController = CommitteeSubmenuController = __decorate([
 
 
 /***/ }),
-/* 292 */
+/* 302 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20699,7 +21416,7 @@ __decorate([
 
 
 /***/ }),
-/* 293 */
+/* 303 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20764,7 +21481,7 @@ __decorate([
 
 
 /***/ }),
-/* 294 */
+/* 304 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20778,7 +21495,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExaminerRegistrationModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const examiner_registration_controller_1 = __webpack_require__(295);
+const examiner_registration_controller_1 = __webpack_require__(305);
 let ExaminerRegistrationModule = class ExaminerRegistrationModule {
 };
 exports.ExaminerRegistrationModule = ExaminerRegistrationModule;
@@ -20802,7 +21519,7 @@ exports.ExaminerRegistrationModule = ExaminerRegistrationModule = __decorate([
 
 
 /***/ }),
-/* 295 */
+/* 305 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20826,8 +21543,8 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const update_status_dto_1 = __webpack_require__(19);
 const rxjs_1 = __webpack_require__(11);
-const create_examiner_registration_dto_1 = __webpack_require__(296);
-const update_examiner_registration_dto_1 = __webpack_require__(297);
+const create_examiner_registration_dto_1 = __webpack_require__(306);
+const update_examiner_registration_dto_1 = __webpack_require__(307);
 let ExaminerRegistrationController = class ExaminerRegistrationController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -20920,7 +21637,7 @@ exports.ExaminerRegistrationController = ExaminerRegistrationController = __deco
 
 
 /***/ }),
-/* 296 */
+/* 306 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21093,7 +21810,7 @@ __decorate([
 
 
 /***/ }),
-/* 297 */
+/* 307 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21266,7 +21983,7 @@ __decorate([
 
 
 /***/ }),
-/* 298 */
+/* 308 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21280,7 +21997,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicYearModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const academic_year_controller_1 = __webpack_require__(299);
+const academic_year_controller_1 = __webpack_require__(309);
 let AcademicYearModule = class AcademicYearModule {
 };
 exports.AcademicYearModule = AcademicYearModule;
@@ -21304,7 +22021,7 @@ exports.AcademicYearModule = AcademicYearModule = __decorate([
 
 
 /***/ }),
-/* 299 */
+/* 309 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21327,9 +22044,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_academic_year_dto_1 = __webpack_require__(300);
-const update_academic_year_dto_1 = __webpack_require__(301);
-const bulk_delete_academic_years_dto_1 = __webpack_require__(302);
+const create_academic_year_dto_1 = __webpack_require__(310);
+const update_academic_year_dto_1 = __webpack_require__(311);
+const bulk_delete_academic_years_dto_1 = __webpack_require__(312);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 let AcademicYearController = class AcademicYearController {
@@ -21438,7 +22155,7 @@ exports.AcademicYearController = AcademicYearController = __decorate([
 
 
 /***/ }),
-/* 300 */
+/* 310 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21485,7 +22202,7 @@ __decorate([
 
 
 /***/ }),
-/* 301 */
+/* 311 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21532,7 +22249,7 @@ __decorate([
 
 
 /***/ }),
-/* 302 */
+/* 312 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21574,7 +22291,7 @@ __decorate([
 
 
 /***/ }),
-/* 303 */
+/* 313 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21588,7 +22305,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanDetailsModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const praman_details_controller_1 = __webpack_require__(304);
+const praman_details_controller_1 = __webpack_require__(314);
 const storage_module_1 = __webpack_require__(64);
 let PramanDetailsModule = class PramanDetailsModule {
 };
@@ -21614,7 +22331,7 @@ exports.PramanDetailsModule = PramanDetailsModule = __decorate([
 
 
 /***/ }),
-/* 304 */
+/* 314 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21639,9 +22356,9 @@ const platform_express_1 = __webpack_require__(50);
 const multer_1 = __webpack_require__(51);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_praman_details_dto_1 = __webpack_require__(305);
-const update_praman_details_dto_1 = __webpack_require__(306);
-const bulk_delete_praman_details_dto_1 = __webpack_require__(307);
+const create_praman_details_dto_1 = __webpack_require__(315);
+const update_praman_details_dto_1 = __webpack_require__(316);
+const bulk_delete_praman_details_dto_1 = __webpack_require__(317);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 const storage_service_1 = __webpack_require__(57);
@@ -21812,7 +22529,7 @@ exports.PramanDetailsController = PramanDetailsController = __decorate([
 
 
 /***/ }),
-/* 305 */
+/* 315 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21919,7 +22636,7 @@ __decorate([
 
 
 /***/ }),
-/* 306 */
+/* 316 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22026,7 +22743,7 @@ __decorate([
 
 
 /***/ }),
-/* 307 */
+/* 317 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22068,7 +22785,7 @@ __decorate([
 
 
 /***/ }),
-/* 308 */
+/* 318 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22081,7 +22798,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminModule = void 0;
 const common_1 = __webpack_require__(2);
-const admin_login_module_1 = __webpack_require__(309);
+const admin_login_module_1 = __webpack_require__(319);
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -22094,7 +22811,7 @@ exports.AdminModule = AdminModule = __decorate([
 
 
 /***/ }),
-/* 309 */
+/* 319 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22108,7 +22825,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminLoginModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const admin_login_controller_1 = __webpack_require__(310);
+const admin_login_controller_1 = __webpack_require__(320);
 let AdminLoginModule = class AdminLoginModule {
 };
 exports.AdminLoginModule = AdminLoginModule;
@@ -22132,7 +22849,7 @@ exports.AdminLoginModule = AdminLoginModule = __decorate([
 
 
 /***/ }),
-/* 310 */
+/* 320 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22155,12 +22872,12 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_admin_login_dto_1 = __webpack_require__(311);
-const update_admin_login_dto_1 = __webpack_require__(312);
-const bulk_delete_admin_logins_dto_1 = __webpack_require__(313);
-const admin_login_auth_dto_1 = __webpack_require__(314);
-const change_admin_password_dto_1 = __webpack_require__(315);
-const update_admin_profile_dto_1 = __webpack_require__(316);
+const create_admin_login_dto_1 = __webpack_require__(321);
+const update_admin_login_dto_1 = __webpack_require__(322);
+const bulk_delete_admin_logins_dto_1 = __webpack_require__(323);
+const admin_login_auth_dto_1 = __webpack_require__(324);
+const change_admin_password_dto_1 = __webpack_require__(325);
+const update_admin_profile_dto_1 = __webpack_require__(326);
 const update_status_dto_1 = __webpack_require__(19);
 let AdminLoginController = class AdminLoginController {
     constructor(studentClient) {
@@ -22297,7 +23014,7 @@ exports.AdminLoginController = AdminLoginController = __decorate([
 
 
 /***/ }),
-/* 311 */
+/* 321 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22377,7 +23094,7 @@ __decorate([
 
 
 /***/ }),
-/* 312 */
+/* 322 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22463,7 +23180,7 @@ __decorate([
 
 
 /***/ }),
-/* 313 */
+/* 323 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22505,7 +23222,7 @@ __decorate([
 
 
 /***/ }),
-/* 314 */
+/* 324 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22543,7 +23260,7 @@ __decorate([
 
 
 /***/ }),
-/* 315 */
+/* 325 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22585,7 +23302,7 @@ __decorate([
 
 
 /***/ }),
-/* 316 */
+/* 326 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22626,7 +23343,7 @@ __decorate([
 
 
 /***/ }),
-/* 317 */
+/* 327 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22640,7 +23357,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamResultModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const exam_result_controller_1 = __webpack_require__(318);
+const exam_result_controller_1 = __webpack_require__(328);
 let ExamResultModule = class ExamResultModule {
 };
 exports.ExamResultModule = ExamResultModule;
@@ -22664,7 +23381,7 @@ exports.ExamResultModule = ExamResultModule = __decorate([
 
 
 /***/ }),
-/* 318 */
+/* 328 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22687,9 +23404,9 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_exam_result_dto_1 = __webpack_require__(319);
-const update_exam_result_dto_1 = __webpack_require__(320);
-const bulk_delete_exam_results_dto_1 = __webpack_require__(321);
+const create_exam_result_dto_1 = __webpack_require__(329);
+const update_exam_result_dto_1 = __webpack_require__(330);
+const bulk_delete_exam_results_dto_1 = __webpack_require__(331);
 const update_status_dto_1 = __webpack_require__(19);
 const parse_active_only_1 = __webpack_require__(93);
 let ExamResultController = class ExamResultController {
@@ -22940,7 +23657,7 @@ exports.ExamResultController = ExamResultController = __decorate([
 
 
 /***/ }),
-/* 319 */
+/* 329 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23340,7 +24057,7 @@ __decorate([
 
 
 /***/ }),
-/* 320 */
+/* 330 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23746,7 +24463,7 @@ __decorate([
 
 
 /***/ }),
-/* 321 */
+/* 331 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23788,7 +24505,7 @@ __decorate([
 
 
 /***/ }),
-/* 322 */
+/* 332 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23802,7 +24519,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ResultDeclarationModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const result_declaration_controller_1 = __webpack_require__(323);
+const result_declaration_controller_1 = __webpack_require__(333);
 const storage_module_1 = __webpack_require__(64);
 let ResultDeclarationModule = class ResultDeclarationModule {
 };
@@ -23828,7 +24545,7 @@ exports.ResultDeclarationModule = ResultDeclarationModule = __decorate([
 
 
 /***/ }),
-/* 323 */
+/* 333 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23851,7 +24568,7 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const declare_result_dto_1 = __webpack_require__(324);
+const declare_result_dto_1 = __webpack_require__(334);
 const parse_active_only_1 = __webpack_require__(93);
 const storage_service_1 = __webpack_require__(57);
 let ResultDeclarationController = class ResultDeclarationController {
@@ -24053,7 +24770,7 @@ exports.ResultDeclarationController = ResultDeclarationController = __decorate([
 
 
 /***/ }),
-/* 324 */
+/* 334 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24136,7 +24853,7 @@ __decorate([
 
 
 /***/ }),
-/* 325 */
+/* 335 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24150,7 +24867,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PromotionModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const promotion_controller_1 = __webpack_require__(326);
+const promotion_controller_1 = __webpack_require__(336);
 let PromotionModule = class PromotionModule {
 };
 exports.PromotionModule = PromotionModule;
@@ -24174,7 +24891,7 @@ exports.PromotionModule = PromotionModule = __decorate([
 
 
 /***/ }),
-/* 326 */
+/* 336 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24197,7 +24914,7 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const save_promotion_dto_1 = __webpack_require__(327);
+const save_promotion_dto_1 = __webpack_require__(337);
 const parse_active_only_1 = __webpack_require__(93);
 let PromotionController = class PromotionController {
     constructor(examResultClient) {
@@ -24349,7 +25066,7 @@ exports.PromotionController = PromotionController = __decorate([
 
 
 /***/ }),
-/* 327 */
+/* 337 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24522,7 +25239,7 @@ __decorate([
 
 
 /***/ }),
-/* 328 */
+/* 338 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24536,8 +25253,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamGrevianceModule = void 0;
 const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
-const exam_greviance_controller_1 = __webpack_require__(329);
-const admin_exam_greviance_controller_1 = __webpack_require__(331);
+const exam_greviance_controller_1 = __webpack_require__(339);
+const admin_exam_greviance_controller_1 = __webpack_require__(341);
 let ExamGrevianceModule = class ExamGrevianceModule {
 };
 exports.ExamGrevianceModule = ExamGrevianceModule;
@@ -24561,7 +25278,7 @@ exports.ExamGrevianceModule = ExamGrevianceModule = __decorate([
 
 
 /***/ }),
-/* 329 */
+/* 339 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24584,7 +25301,7 @@ const common_1 = __webpack_require__(2);
 const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
-const create_exam_greviance_dto_1 = __webpack_require__(330);
+const create_exam_greviance_dto_1 = __webpack_require__(340);
 let ExamGrevianceController = class ExamGrevianceController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -24669,7 +25386,7 @@ exports.ExamGrevianceController = ExamGrevianceController = __decorate([
 
 
 /***/ }),
-/* 330 */
+/* 340 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24732,7 +25449,7 @@ __decorate([
 
 
 /***/ }),
-/* 331 */
+/* 341 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24756,7 +25473,7 @@ const microservices_1 = __webpack_require__(9);
 const swagger_1 = __webpack_require__(4);
 const rxjs_1 = __webpack_require__(11);
 const parse_active_only_1 = __webpack_require__(93);
-const update_exam_greviance_application_status_dto_1 = __webpack_require__(332);
+const update_exam_greviance_application_status_dto_1 = __webpack_require__(342);
 let AdminExamGrevianceController = class AdminExamGrevianceController {
     constructor(studentClient) {
         this.studentClient = studentClient;
@@ -24859,7 +25576,7 @@ exports.AdminExamGrevianceController = AdminExamGrevianceController = __decorate
 
 
 /***/ }),
-/* 332 */
+/* 342 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 

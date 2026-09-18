@@ -25,6 +25,8 @@ import { PaperDetailModule } from './paper-detail/paper-detail.module';
 import { ExamSubjectModule } from './exam-subject/exam-subject.module';
 import { RoleModule } from './role/role.module';
 import { MarksTypeModule } from './marks-type/marks-type.module';
+import { EntrancePaperModule } from './entrance-paper/entrance-paper.module';
+import { EntranceExamModule } from './entrance-exam/entrance-exam.module';
 import { ExamGreviancePriceModule } from './exam-greviance-price/exam-greviance-price.module';
 import { GrevianceTypeModule } from './greviance-type/greviance-type.module';
 import { MonthModule } from './month/month.module';
@@ -66,6 +68,8 @@ import { PramanResponseModule } from './praman-response/praman-response.module';
     ExamSubjectModule,
     RoleModule,
     MarksTypeModule,
+    EntrancePaperModule,
+    EntranceExamModule,
   ],
   exports: [
     StateModule,
@@ -100,6 +104,8 @@ import { PramanResponseModule } from './praman-response/praman-response.module';
     ExamSubjectModule,
     RoleModule,
     MarksTypeModule,
+    EntrancePaperModule,
+    EntranceExamModule,
   ],
 })
 export class MasterModule {}
