@@ -17059,6 +17059,22 @@ let EntranceExamController = class EntranceExamController {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
+    async listStudents(data) {
+        try {
+            return await this.service.listStudents(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async saveMarks(data) {
+        try {
+            return await this.service.saveMarks(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
     async getAdmitCard(data) {
         try {
             return await this.service.getAdmitCard(data);
@@ -17125,6 +17141,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], EntranceExamController.prototype, "generateRolls", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'list_entrance_students' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EntranceExamController.prototype, "listStudents", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'save_entrance_marks' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EntranceExamController.prototype, "saveMarks", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'get_entrance_admit_card' }),
     __param(0, (0, microservices_1.Payload)()),
@@ -17353,27 +17383,8 @@ let EntranceExamService = class EntranceExamService {
         if (!programCategoryId || !programId) {
             throw new common_1.BadRequestException('programCategoryId and programId are required');
         }
-        try {
-            const rows = await this.prisma.$queryRaw `
-        CALL sp_bulk_generate_entrance_roll(
-          ${academicSessionId},
-          ${programCategoryId},
-          ${programId},
-          ${updatedBy}
-        )
-      `;
-            const flat = (Array.isArray(rows) ? rows : [rows]).flat(3);
-            const first = flat.find((row) => row && typeof row === 'object' && (row.generated !== undefined || row.GENERATED !== undefined));
-            if (first) {
-                return {
-                    generated: Number(first.generated ?? first.GENERATED ?? 0),
-                    skipped: Number(first.skipped ?? first.SKIPPED ?? 0),
-                    total: Number(first.total ?? first.TOTAL ?? 0),
-                    prefix: first.prefix ?? first.PREFIX ?? null,
-                };
-            }
-        }
-        catch {
+        if (!academicSessionId) {
+            throw new common_1.BadRequestException('academicSessionId is required');
         }
         return this.generateRollsFallback(academicSessionId, programCategoryId, programId, updatedBy);
     }
@@ -17383,36 +17394,105 @@ let EntranceExamService = class EntranceExamService {
     pad3(n) {
         return String(n).padStart(3, '0').slice(-3);
     }
+    studentDb() {
+        return this.prisma.entranceStudent;
+    }
+    studentPaperDb() {
+        return this.prisma.entranceStudentPaper;
+    }
+    mappedPapers(academicSessionId, programId) {
+        return this.db().findMany({
+            where: {
+                IsDeleted: false,
+                IsActive: true,
+                academicSessionId,
+                programId,
+            },
+            orderBy: [{ examDate: 'asc' }, { entranceExamId: 'asc' }],
+        });
+    }
+    latestAttachment(attachments, type) {
+        const hit = (attachments || []).find((a) => String(a.documentType || '').toUpperCase() === type);
+        return hit?.fileUrl || null;
+    }
+    streamLabel(raw) {
+        const streamMap = {
+            SCIENCE: 'Science',
+            COMMERCE: 'Commerce',
+            ARTS: 'Art',
+            ART: 'Art',
+        };
+        const key = String(raw || '').toUpperCase();
+        return streamMap[key] || raw || 'Art/Science/Commerce';
+    }
+    paperResult(obtained, minMarks) {
+        if (obtained == null || minMarks == null)
+            return null;
+        return obtained >= minMarks ? 'PASS' : 'FAIL';
+    }
+    async ensurePaperRows(row, papers, createdBy) {
+        const existing = await this.studentPaperDb().findMany({
+            where: { entranceStudentId: row.entranceStudentId, IsDeleted: false },
+        });
+        const have = new Set(existing.map((p) => Number(p.entrancePaperId)));
+        for (const paper of papers) {
+            if (have.has(Number(paper.entrancePaperId)))
+                continue;
+            await this.studentPaperDb().create({
+                data: {
+                    entranceStudentId: row.entranceStudentId,
+                    studentId: row.studentId,
+                    entranceExamId: paper.entranceExamId,
+                    entrancePaperId: paper.entrancePaperId,
+                    entrancePaperName: paper.entrancePaperName,
+                    examDate: paper.examDate,
+                    fromTime: paper.fromTime,
+                    toTime: paper.toTime,
+                    maxMarks: 100,
+                    minMarks: 33,
+                    CreatedBy: createdBy,
+                    IsDeleted: false,
+                    IsActive: true,
+                },
+            });
+        }
+    }
     async generateRollsFallback(academicSessionId, programCategoryId, programId, updatedBy) {
         await this.prisma.$executeRawUnsafe(`SELECT GET_LOCK('sp_bulk_generate_entrance_roll', 15)`);
         try {
-            const session = academicSessionId
-                ? await this.prisma.academicSession.findFirst({
-                    where: { academicSessionId, IsDeleted: false },
-                })
-                : null;
+            const session = await this.prisma.academicSession.findFirst({
+                where: { academicSessionId, IsDeleted: false },
+            });
+            const category = await this.prisma.programCategory.findFirst({
+                where: { programCategoryId, IsDeleted: false },
+            });
             const program = await this.prisma.program.findFirst({
                 where: { programId, IsDeleted: false },
             });
+            if (!session)
+                throw new common_1.NotFoundException('Academic session not found');
+            if (!category)
+                throw new common_1.NotFoundException('Program category not found');
             if (!program)
                 throw new common_1.NotFoundException('Program not found');
             if (program.programCategoryId !== programCategoryId) {
                 throw new common_1.BadRequestException('Program does not belong to selected category');
             }
-            const year = String(session?.startYear || new Date().getFullYear());
+            const papers = await this.mappedPapers(academicSessionId, programId);
+            if (!papers.length) {
+                throw new common_1.BadRequestException('Map at least one entrance paper for this program and session first');
+            }
+            const year = String(session.startYear || new Date().getFullYear());
             const numericCode = String(program.programCode || '').match(/^\d+$/)
                 ? Number(program.programCode)
                 : program.programId;
             const prefix = `${year}686${this.pad2(numericCode)}`;
-            const existing = await this.prisma.student.findMany({
-                where: {
-                    IsDeleted: false,
-                    NOT: { entranceRollnumber: null },
-                },
+            const existingRolls = await this.studentDb().findMany({
+                where: { IsDeleted: false, NOT: { entranceRollnumber: null } },
                 select: { entranceRollnumber: true },
             });
             let maxSerial = 0;
-            for (const row of existing) {
+            for (const row of existingRolls) {
                 const raw = String(row.entranceRollnumber || '');
                 if (!raw.startsWith(prefix) || raw.length !== prefix.length + 3)
                     continue;
@@ -17420,28 +17500,75 @@ let EntranceExamService = class EntranceExamService {
                 if (Number.isFinite(n) && n > maxSerial)
                     maxSerial = n;
             }
+            const already = await this.studentDb().findMany({
+                where: {
+                    IsDeleted: false,
+                    academicSessionId,
+                    programId,
+                },
+                select: { studentId: true },
+            });
+            const alreadyIds = new Set(already.map((r) => Number(r.studentId)));
             const candidates = await this.prisma.student.findMany({
                 where: {
                     IsDeleted: false,
                     programId,
                     program: { programCategoryId },
-                    ...(academicSessionId ? { academicSessionId } : {}),
+                    academicSessionId,
                 },
-                select: { StudentRegistrationId: true, entranceRollnumber: true },
+                include: {
+                    studentProfile: true,
+                    academicDetails: {
+                        where: { IsDeleted: false },
+                        orderBy: { academicDetailId: 'desc' },
+                        take: 1,
+                    },
+                    studentAttachments: {
+                        where: { IsDeleted: false },
+                        orderBy: { attachmentId: 'desc' },
+                    },
+                },
                 orderBy: { StudentRegistrationId: 'asc' },
             });
-            const pending = candidates.filter((s) => !String(s.entranceRollnumber || '').trim());
+            const pending = candidates.filter((s) => !alreadyIds.has(Number(s.StudentRegistrationId)));
             const skipped = candidates.length - pending.length;
             let serial = maxSerial;
             for (const student of pending) {
                 serial += 1;
-                await this.prisma.student.update({
-                    where: { StudentRegistrationId: student.StudentRegistrationId },
+                const created = await this.studentDb().create({
                     data: {
+                        studentId: student.StudentRegistrationId,
+                        academicSessionId,
+                        academicSessionName: session.academicSessionName,
+                        programCategoryId,
+                        programCategoryName: category.programCategoryName,
+                        programId,
+                        programName: program.programName,
+                        programShortName: program.programShortName,
                         entranceRollnumber: `${prefix}${this.pad3(serial)}`,
-                        UpdatedBy: updatedBy,
+                        registrationNo: student.registrationNo,
+                        candidateName: student.candidateName,
+                        fatherName: student.fatherName,
+                        motherName: student.studentProfile?.motherName || null,
+                        mobileNo: student.mobileNo,
+                        email: student.email,
+                        stream: this.streamLabel(student.academicDetails?.[0]?.stream),
+                        photoUrl: this.latestAttachment(student.studentAttachments, 'PHOTO') ||
+                            this.latestAttachment(student.studentAttachments, 'CANDIDATE PHOTO'),
+                        signatureUrl: this.latestAttachment(student.studentAttachments, 'SIGNATURE') ||
+                            this.latestAttachment(student.studentAttachments, 'SIGN'),
+                        CreatedBy: updatedBy,
+                        IsDeleted: false,
+                        IsActive: true,
                     },
                 });
+                await this.ensurePaperRows(created, papers, updatedBy);
+            }
+            const existingRows = await this.studentDb().findMany({
+                where: { IsDeleted: false, academicSessionId, programId },
+            });
+            for (const row of existingRows) {
+                await this.ensurePaperRows(row, papers, updatedBy);
             }
             return {
                 generated: pending.length,
@@ -17454,84 +17581,185 @@ let EntranceExamService = class EntranceExamService {
             await this.prisma.$executeRawUnsafe(`SELECT RELEASE_LOCK('sp_bulk_generate_entrance_roll')`);
         }
     }
+    async listStudents(filters) {
+        const academicSessionId = Number(filters.academicSessionId || 0);
+        const programCategoryId = Number(filters.programCategoryId || 0);
+        const programId = Number(filters.programId || 0);
+        if (!academicSessionId || !programCategoryId || !programId) {
+            throw new common_1.BadRequestException('Session, category and program are required');
+        }
+        const papers = await this.mappedPapers(academicSessionId, programId);
+        const rows = await this.studentDb().findMany({
+            where: {
+                IsDeleted: false,
+                academicSessionId,
+                programCategoryId,
+                programId,
+            },
+            include: {
+                papers: {
+                    where: { IsDeleted: false },
+                    orderBy: { entranceStudentPaperId: 'asc' },
+                },
+            },
+            orderBy: { entranceRollnumber: 'asc' },
+        });
+        for (const row of rows) {
+            await this.ensurePaperRows(row, papers, 'Admin User');
+        }
+        const fresh = await this.studentDb().findMany({
+            where: {
+                IsDeleted: false,
+                academicSessionId,
+                programCategoryId,
+                programId,
+            },
+            include: {
+                papers: {
+                    where: { IsDeleted: false },
+                    orderBy: { entranceStudentPaperId: 'asc' },
+                },
+            },
+            orderBy: { entranceRollnumber: 'asc' },
+        });
+        return {
+            papers: papers.map((p) => ({
+                entranceExamId: p.entranceExamId,
+                entrancePaperId: p.entrancePaperId,
+                entrancePaperName: p.entrancePaperName,
+                examDate: p.examDate,
+                fromTime: p.fromTime,
+                toTime: p.toTime,
+            })),
+            students: fresh.map((row) => ({
+                entranceStudentId: row.entranceStudentId,
+                studentId: row.studentId,
+                entranceRollnumber: row.entranceRollnumber,
+                registrationNo: row.registrationNo,
+                candidateName: row.candidateName,
+                fatherName: row.fatherName,
+                motherName: row.motherName,
+                stream: row.stream,
+                papers: (row.papers || []).map((p) => ({
+                    entranceStudentPaperId: p.entranceStudentPaperId,
+                    entranceExamId: p.entranceExamId,
+                    entrancePaperId: p.entrancePaperId,
+                    entrancePaperName: p.entrancePaperName,
+                    examDate: p.examDate,
+                    fromTime: p.fromTime,
+                    toTime: p.toTime,
+                    maxMarks: p.maxMarks,
+                    minMarks: p.minMarks,
+                    obtainedMarks: p.obtainedMarks,
+                    attendanceStatus: p.attendanceStatus,
+                    result: p.result,
+                })),
+            })),
+        };
+    }
+    async saveMarks(data) {
+        const academicSessionId = Number(data.academicSessionId);
+        const programCategoryId = Number(data.programCategoryId);
+        const programId = Number(data.programId);
+        const updatedBy = String(data.UpdatedBy || 'Admin User');
+        if (!academicSessionId || !programCategoryId || !programId) {
+            throw new common_1.BadRequestException('Session, category and program are required');
+        }
+        const items = Array.isArray(data.students) ? data.students : [];
+        if (!items.length)
+            throw new common_1.BadRequestException('No student marks to save');
+        let updated = 0;
+        for (const item of items) {
+            const entranceStudentId = Number(item.entranceStudentId);
+            const row = await this.studentDb().findFirst({
+                where: {
+                    entranceStudentId,
+                    academicSessionId,
+                    programCategoryId,
+                    programId,
+                    IsDeleted: false,
+                },
+            });
+            if (!row)
+                continue;
+            for (const paper of item.papers || []) {
+                const paperId = Number(paper.entrancePaperId);
+                const paperRowId = Number(paper.entranceStudentPaperId || 0);
+                const raw = paper.obtainedMarks;
+                const obtained = raw === '' || raw == null || raw === undefined ? null : Number(raw);
+                if (obtained != null && !Number.isFinite(obtained)) {
+                    throw new common_1.BadRequestException('Marks must be a number');
+                }
+                const existing = await this.studentPaperDb().findFirst({
+                    where: {
+                        IsDeleted: false,
+                        entranceStudentId,
+                        ...(paperRowId ? { entranceStudentPaperId: paperRowId } : { entrancePaperId: paperId }),
+                    },
+                });
+                if (!existing)
+                    continue;
+                if (obtained != null && existing.maxMarks != null && obtained > Number(existing.maxMarks)) {
+                    throw new common_1.BadRequestException(`Marks for ${existing.entrancePaperName || 'paper'} cannot be more than ${existing.maxMarks}`);
+                }
+                if (obtained != null && obtained < 0) {
+                    throw new common_1.BadRequestException('Marks cannot be negative');
+                }
+                await this.studentPaperDb().update({
+                    where: { entranceStudentPaperId: existing.entranceStudentPaperId },
+                    data: {
+                        obtainedMarks: obtained,
+                        attendanceStatus: paper.attendanceStatus
+                            ? String(paper.attendanceStatus).trim() || null
+                            : existing.attendanceStatus,
+                        result: this.paperResult(obtained, existing.minMarks == null ? null : Number(existing.minMarks)),
+                        UpdatedBy: updatedBy,
+                    },
+                });
+                updated += 1;
+            }
+        }
+        return { message: 'Entrance marks saved', updated };
+    }
     async getAdmitCard(query) {
         const roll = String(query.entranceRollnumber || '').trim();
         const studentId = query.studentId ? Number(query.studentId) : 0;
         if (!roll && !studentId) {
             throw new common_1.BadRequestException('entranceRollnumber or studentId is required');
         }
-        const student = await this.prisma.student.findFirst({
+        const row = await this.studentDb().findFirst({
             where: {
                 IsDeleted: false,
-                ...(roll ? { entranceRollnumber: roll } : { StudentRegistrationId: studentId }),
+                ...(roll ? { entranceRollnumber: roll } : { studentId }),
             },
             include: {
-                program: { include: { programCategory: true } },
-                academicSession: true,
-                studentProfile: true,
-                academicDetails: {
+                papers: {
                     where: { IsDeleted: false },
-                    orderBy: { academicDetailId: 'desc' },
-                    take: 1,
-                },
-                studentAttachments: {
-                    where: { IsDeleted: false },
-                    orderBy: { attachmentId: 'desc' },
+                    orderBy: [{ examDate: 'asc' }, { entranceStudentPaperId: 'asc' }],
                 },
             },
         });
-        if (!student)
-            throw new common_1.NotFoundException('Student not found for entrance admit card');
-        if (!student.entranceRollnumber) {
-            throw new common_1.BadRequestException('Entrance roll number is not generated for this student. Run bulk generate first.');
+        if (!row) {
+            throw new common_1.NotFoundException('Entrance roll number is not generated for this student. Run bulk generate first.');
         }
-        const allPapers = student.programId
-            ? await this.db().findMany({
-                where: {
-                    IsDeleted: false,
-                    IsActive: true,
-                    programId: student.programId,
-                },
-                orderBy: [{ examDate: 'asc' }, { entranceExamId: 'asc' }],
-            })
-            : [];
-        const sessionId = student.academicSessionId ? Number(student.academicSessionId) : 0;
-        const sessionPapers = sessionId
-            ? allPapers.filter((p) => Number(p.academicSessionId) === sessionId)
-            : allPapers;
-        const papers = sessionPapers.length ? sessionPapers : allPapers;
-        const latestByType = (type) => {
-            const hit = (student.studentAttachments || []).find((a) => String(a.documentType || '').toUpperCase() === type);
-            return hit?.fileUrl || null;
-        };
-        const streamRaw = student.academicDetails?.[0]?.stream || '';
-        const streamMap = {
-            SCIENCE: 'Science',
-            COMMERCE: 'Commerce',
-            ARTS: 'Art',
-            ART: 'Art',
-        };
-        const stream = streamMap[String(streamRaw).toUpperCase()] || streamRaw || 'Art/Science/Commerce';
         return {
-            studentId: student.StudentRegistrationId,
-            entranceRollnumber: student.entranceRollnumber,
-            studentName: student.candidateName,
-            fatherName: student.fatherName,
-            motherName: student.studentProfile?.motherName || null,
-            programId: student.programId,
-            programName: student.program?.programShortName || student.program?.programName || '',
-            programFullName: student.program?.programName || '',
-            programShortName: student.program?.programShortName || '',
-            programCategoryName: student.program?.programCategory?.pcShortName ||
-                student.program?.programCategory?.programCategoryName ||
-                '',
-            academicSessionId: student.academicSessionId,
-            academicSessionName: student.academicSession?.academicSessionName || '',
-            stream,
-            photoUrl: latestByType('PHOTO') || latestByType('CANDIDATE PHOTO'),
-            signatureUrl: latestByType('SIGNATURE') || latestByType('SIGN'),
-            examDate: papers[0]?.examDate || null,
-            papers: papers.map((p) => ({
+            studentId: row.studentId,
+            entranceRollnumber: row.entranceRollnumber,
+            studentName: row.candidateName,
+            fatherName: row.fatherName,
+            motherName: row.motherName,
+            programId: row.programId,
+            programName: row.programShortName || row.programName || '',
+            programFullName: row.programName || '',
+            programShortName: row.programShortName || '',
+            programCategoryName: row.programCategoryName || '',
+            academicSessionId: row.academicSessionId,
+            academicSessionName: row.academicSessionName || '',
+            stream: row.stream,
+            photoUrl: row.photoUrl,
+            signatureUrl: row.signatureUrl,
+            examDate: row.papers?.[0]?.examDate || null,
+            papers: (row.papers || []).map((p) => ({
                 entranceExamId: p.entranceExamId,
                 entrancePaperId: p.entrancePaperId,
                 entrancePaperName: p.entrancePaperName,

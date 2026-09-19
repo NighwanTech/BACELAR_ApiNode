@@ -7,6 +7,7 @@ import { UpdateEntranceExamDto } from './dto/update-entrance-exam.dto';
 import {
   BulkDeleteEntranceExamsDto,
   GenerateEntranceRollsDto,
+  SaveEntranceMarksDto,
 } from './dto/generate-entrance-rolls.dto';
 import { UpdateStatusDto } from '../../common/dto/update-status.dto';
 import { parseActiveOnlyFlag } from '../../common/parse-active-only';
@@ -86,6 +87,34 @@ export class EntranceExamController {
   @ApiOperation({ summary: 'Bulk generate entrance roll numbers for a program' })
   generateRolls(@Body() dto: GenerateEntranceRollsDto): Observable<any> {
     return this.studentClient.send({ cmd: 'generate_entrance_rolls' }, dto).pipe(this.unwrap());
+  }
+
+  @Get('students')
+  @ApiOperation({ summary: 'List generated entrance students with paper marks' })
+  @ApiQuery({ name: 'academicSessionId', required: true })
+  @ApiQuery({ name: 'programCategoryId', required: true })
+  @ApiQuery({ name: 'programId', required: true })
+  listStudents(
+    @Query('academicSessionId') academicSessionId?: string,
+    @Query('programCategoryId') programCategoryId?: string,
+    @Query('programId') programId?: string,
+  ): Observable<any> {
+    return this.studentClient
+      .send(
+        { cmd: 'list_entrance_students' },
+        {
+          academicSessionId: academicSessionId ? Number(academicSessionId) : undefined,
+          programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+          programId: programId ? Number(programId) : undefined,
+        },
+      )
+      .pipe(this.unwrap());
+  }
+
+  @Post('save-marks')
+  @ApiOperation({ summary: 'Save entrance paper marks for students of a program' })
+  saveMarks(@Body() dto: SaveEntranceMarksDto): Observable<any> {
+    return this.studentClient.send({ cmd: 'save_entrance_marks' }, dto).pipe(this.unwrap());
   }
 
   @Post('bulk-delete')

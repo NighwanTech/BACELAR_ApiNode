@@ -14157,7 +14157,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EntranceExamController = void 0;
 const common_1 = __webpack_require__(2);
@@ -14207,6 +14207,18 @@ let EntranceExamController = class EntranceExamController {
     }
     generateRolls(dto) {
         return this.studentClient.send({ cmd: 'generate_entrance_rolls' }, dto).pipe(this.unwrap());
+    }
+    listStudents(academicSessionId, programCategoryId, programId) {
+        return this.studentClient
+            .send({ cmd: 'list_entrance_students' }, {
+            academicSessionId: academicSessionId ? Number(academicSessionId) : undefined,
+            programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+            programId: programId ? Number(programId) : undefined,
+        })
+            .pipe(this.unwrap());
+    }
+    saveMarks(dto) {
+        return this.studentClient.send({ cmd: 'save_entrance_marks' }, dto).pipe(this.unwrap());
     }
     bulkRemove(dto) {
         return this.studentClient.send({ cmd: 'bulk_delete_entrance_exams' }, dto).pipe(this.unwrap());
@@ -14271,34 +14283,55 @@ __decorate([
     __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
 ], EntranceExamController.prototype, "generateRolls", null);
 __decorate([
+    (0, common_1.Get)('students'),
+    (0, swagger_1.ApiOperation)({ summary: 'List generated entrance students with paper marks' }),
+    (0, swagger_1.ApiQuery)({ name: 'academicSessionId', required: true }),
+    (0, swagger_1.ApiQuery)({ name: 'programCategoryId', required: true }),
+    (0, swagger_1.ApiQuery)({ name: 'programId', required: true }),
+    __param(0, (0, common_1.Query)('academicSessionId')),
+    __param(1, (0, common_1.Query)('programCategoryId')),
+    __param(2, (0, common_1.Query)('programId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], EntranceExamController.prototype, "listStudents", null);
+__decorate([
+    (0, common_1.Post)('save-marks'),
+    (0, swagger_1.ApiOperation)({ summary: 'Save entrance paper marks for students of a program' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_j = typeof generate_entrance_rolls_dto_1.SaveEntranceMarksDto !== "undefined" && generate_entrance_rolls_dto_1.SaveEntranceMarksDto) === "function" ? _j : Object]),
+    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
+], EntranceExamController.prototype, "saveMarks", null);
+__decorate([
     (0, common_1.Post)('bulk-delete'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_h = typeof generate_entrance_rolls_dto_1.BulkDeleteEntranceExamsDto !== "undefined" && generate_entrance_rolls_dto_1.BulkDeleteEntranceExamsDto) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [typeof (_l = typeof generate_entrance_rolls_dto_1.BulkDeleteEntranceExamsDto !== "undefined" && generate_entrance_rolls_dto_1.BulkDeleteEntranceExamsDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
 ], EntranceExamController.prototype, "bulkRemove", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
+    __metadata("design:returntype", typeof (_o = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _o : Object)
 ], EntranceExamController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_l = typeof update_entrance_exam_dto_1.UpdateEntranceExamDto !== "undefined" && update_entrance_exam_dto_1.UpdateEntranceExamDto) === "function" ? _l : Object]),
-    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
+    __metadata("design:paramtypes", [Number, typeof (_p = typeof update_entrance_exam_dto_1.UpdateEntranceExamDto !== "undefined" && update_entrance_exam_dto_1.UpdateEntranceExamDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", typeof (_q = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _q : Object)
 ], EntranceExamController.prototype, "update", null);
 __decorate([
     (0, common_1.Patch)(':id/status'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_o = typeof update_status_dto_1.UpdateStatusDto !== "undefined" && update_status_dto_1.UpdateStatusDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [Number, typeof (_r = typeof update_status_dto_1.UpdateStatusDto !== "undefined" && update_status_dto_1.UpdateStatusDto) === "function" ? _r : Object]),
+    __metadata("design:returntype", typeof (_s = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _s : Object)
 ], EntranceExamController.prototype, "updateStatus", null);
 __decorate([
     (0, common_1.Delete)(':id'),
@@ -14307,7 +14340,7 @@ __decorate([
     __param(2, (0, common_1.Query)('DeletedRemarks')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, String, String]),
-    __metadata("design:returntype", typeof (_q = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _q : Object)
+    __metadata("design:returntype", typeof (_t = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _t : Object)
 ], EntranceExamController.prototype, "remove", null);
 exports.EntranceExamController = EntranceExamController = __decorate([
     (0, swagger_1.ApiTags)('Master - Entrance Exams'),
@@ -14453,7 +14486,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GenerateEntranceRollsDto = exports.BulkDeleteEntranceExamsDto = void 0;
+exports.SaveEntranceMarksDto = exports.EntranceStudentMarksDto = exports.EntranceStudentPaperMarksDto = exports.GenerateEntranceRollsDto = exports.BulkDeleteEntranceExamsDto = void 0;
 const class_validator_1 = __webpack_require__(13);
 const swagger_1 = __webpack_require__(4);
 const class_transformer_1 = __webpack_require__(27);
@@ -14483,10 +14516,9 @@ class GenerateEntranceRollsDto {
 }
 exports.GenerateEntranceRollsDto = GenerateEntranceRollsDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, swagger_1.ApiProperty)(),
     (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], GenerateEntranceRollsDto.prototype, "academicSessionId", void 0);
 __decorate([
@@ -14507,6 +14539,79 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], GenerateEntranceRollsDto.prototype, "UpdatedBy", void 0);
+class EntranceStudentPaperMarksDto {
+}
+exports.EntranceStudentPaperMarksDto = EntranceStudentPaperMarksDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], EntranceStudentPaperMarksDto.prototype, "entranceStudentPaperId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], EntranceStudentPaperMarksDto.prototype, "entrancePaperId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], EntranceStudentPaperMarksDto.prototype, "obtainedMarks", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], EntranceStudentPaperMarksDto.prototype, "attendanceStatus", void 0);
+class EntranceStudentMarksDto {
+}
+exports.EntranceStudentMarksDto = EntranceStudentMarksDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], EntranceStudentMarksDto.prototype, "entranceStudentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [EntranceStudentPaperMarksDto] }),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], EntranceStudentMarksDto.prototype, "papers", void 0);
+class SaveEntranceMarksDto {
+}
+exports.SaveEntranceMarksDto = SaveEntranceMarksDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], SaveEntranceMarksDto.prototype, "academicSessionId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], SaveEntranceMarksDto.prototype, "programCategoryId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], SaveEntranceMarksDto.prototype, "programId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Admin User', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SaveEntranceMarksDto.prototype, "UpdatedBy", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [EntranceStudentMarksDto] }),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], SaveEntranceMarksDto.prototype, "students", void 0);
 
 
 /***/ }),

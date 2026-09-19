@@ -79,6 +79,24 @@ export class EntranceExamController {
     }
   }
 
+  @MessagePattern({ cmd: 'list_entrance_students' })
+  async listStudents(@Payload() data: any) {
+    try {
+      return await this.service.listStudents(data);
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
+  @MessagePattern({ cmd: 'save_entrance_marks' })
+  async saveMarks(@Payload() data: any) {
+    try {
+      return await this.service.saveMarks(data);
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
   @MessagePattern({ cmd: 'get_entrance_admit_card' })
   async getAdmitCard(@Payload() data: { entranceRollnumber?: string; studentId?: number }) {
     try {

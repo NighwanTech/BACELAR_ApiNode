@@ -1,10 +1,10 @@
--- Entrance paper + exam masters, student entrance roll, bulk generate SP
+-- Entrance paper + exam masters. Roll is not stored on students.
 
 ALTER TABLE `students`
-  ADD COLUMN IF NOT EXISTS `entranceRollnumber` VARCHAR(50) NULL;
+  DROP INDEX IF EXISTS `students_entranceRollnumber_key`;
 
-CREATE UNIQUE INDEX IF NOT EXISTS `students_entranceRollnumber_key`
-  ON `students` (`entranceRollnumber`);
+ALTER TABLE `students`
+  DROP COLUMN IF EXISTS `entranceRollnumber`;
 
 CREATE TABLE IF NOT EXISTS `entrancePaperMaster` (
   `entrancePaperId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -102,15 +102,7 @@ BEGIN
 
   SET v_prefix = CONCAT(v_year, '686', v_code);
 
-  DROP TEMPORARY TABLE IF EXISTS tmp_ent_roll_students;
-  CREATE TEMPORARY TABLE tmp_ent_roll_students (
-    seq INT NOT NULL AUTO_INCREMENT,
-    studentId INT NOT NULL,
-    PRIMARY KEY (seq)
-  );
-
-  INSERT INTO tmp_ent_roll_students (studentId)
-  SELECT s.StudentRegistrationId
+  SELECT COUNT(*) INTO v_total
   FROM students s
   INNER JOIN programs p ON p.programId = s.programId
   WHERE s.IsDeleted = 0
@@ -120,41 +112,81 @@ BEGIN
       p_academicSessionId IS NULL
       OR p_academicSessionId = 0
       OR s.academicSessionId = p_academicSessionId
-    )
-    AND (s.entranceRollnumber IS NULL OR TRIM(s.entranceRollnumber) = '')
-  ORDER BY s.StudentRegistrationId ASC;
+    );
 
-  SELECT COUNT(*) INTO v_generated FROM tmp_ent_roll_students;
+  SET v_generated = 0;
+  SET v_skipped = v_total;
 
-  SELECT COUNT(*) INTO v_skipped
-  FROM students s
-  INNER JOIN programs p ON p.programId = s.programId
-  WHERE s.IsDeleted = 0
-    AND s.programId = p_programId
-    AND p.programCategoryId = p_programCategoryId
-    AND (
-      p_academicSessionId IS NULL
-      OR p_academicSessionId = 0
-      OR s.academicSessionId = p_academicSessionId
-    )
-    AND s.entranceRollnumber IS NOT NULL AND TRIM(s.entranceRollnumber) <> '';
-
-  SET v_total = v_generated + v_skipped;
-
-  SELECT IFNULL(MAX(CAST(RIGHT(entranceRollnumber, 3) AS UNSIGNED)), 0)
-    INTO v_max
-  FROM students
-  WHERE entranceRollnumber LIKE CONCAT(CONVERT(v_prefix USING utf8mb4) COLLATE utf8mb4_unicode_ci, '%')
-    AND CHAR_LENGTH(entranceRollnumber) = CHAR_LENGTH(CONCAT(v_prefix, '000'));
-
-  UPDATE students s
-  INNER JOIN tmp_ent_roll_students t ON t.studentId = s.StudentRegistrationId
-  SET s.entranceRollnumber = CONCAT(v_prefix, LPAD(v_max + t.seq, 3, '0')),
-      s.UpdatedBy = IFNULL(p_updatedBy, 'Admin User'),
-      s.UpdatedOn = CURRENT_TIMESTAMP(3);
-
-  DROP TEMPORARY TABLE IF EXISTS tmp_ent_roll_students;
   SELECT RELEASE_LOCK('sp_bulk_generate_entrance_roll') INTO @ent_unlock;
 
   SELECT v_generated AS generated, v_skipped AS skipped, v_total AS total, v_prefix AS prefix;
 END;
+
+CREATE TABLE IF NOT EXISTS `entranceStudent` (
+  `entranceStudentId` INTEGER NOT NULL AUTO_INCREMENT,
+  `studentId` INTEGER NOT NULL,
+  `academicSessionId` INTEGER NOT NULL,
+  `academicSessionName` VARCHAR(100) NULL,
+  `programCategoryId` INTEGER NOT NULL,
+  `programCategoryName` VARCHAR(100) NULL,
+  `programId` INTEGER NOT NULL,
+  `programName` VARCHAR(100) NULL,
+  `programShortName` VARCHAR(50) NULL,
+  `entranceRollnumber` VARCHAR(50) NOT NULL,
+  `registrationNo` VARCHAR(100) NULL,
+  `candidateName` VARCHAR(255) NULL,
+  `fatherName` VARCHAR(255) NULL,
+  `motherName` VARCHAR(255) NULL,
+  `mobileNo` VARCHAR(20) NULL,
+  `email` VARCHAR(255) NULL,
+  `stream` VARCHAR(100) NULL,
+  `photoUrl` VARCHAR(500) NULL,
+  `signatureUrl` VARCHAR(500) NULL,
+  `CreatedOn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `CreatedBy` VARCHAR(255) NOT NULL,
+  `UpdatedOn` DATETIME(3) NULL,
+  `UpdatedBy` VARCHAR(255) NULL,
+  `IsActive` BOOLEAN NOT NULL DEFAULT true,
+  `IsDeleted` BOOLEAN NOT NULL DEFAULT false,
+  `DeletedRemarks` VARCHAR(255) NULL,
+  `DeletedOn` DATETIME(3) NULL,
+  `DeletedBy` VARCHAR(255) NULL,
+  `Remarks` VARCHAR(255) NULL,
+  PRIMARY KEY (`entranceStudentId`),
+  UNIQUE INDEX `entranceStudent_entranceRollnumber_key` (`entranceRollnumber`),
+  UNIQUE INDEX `entranceStudent_student_session_program_key` (`studentId`, `academicSessionId`, `programId`),
+  INDEX `entranceStudent_programCategoryId_idx` (`programCategoryId`),
+  INDEX `entranceStudent_programId_idx` (`programId`),
+  INDEX `entranceStudent_academicSessionId_idx` (`academicSessionId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `entranceStudentPaper` (
+  `entranceStudentPaperId` INTEGER NOT NULL AUTO_INCREMENT,
+  `entranceStudentId` INTEGER NOT NULL,
+  `studentId` INTEGER NOT NULL,
+  `entranceExamId` INTEGER NULL,
+  `entrancePaperId` INTEGER NOT NULL,
+  `entrancePaperName` VARCHAR(100) NULL,
+  `examDate` VARCHAR(50) NULL,
+  `fromTime` VARCHAR(50) NULL,
+  `toTime` VARCHAR(50) NULL,
+  `maxMarks` DOUBLE NULL,
+  `minMarks` DOUBLE NULL,
+  `obtainedMarks` DOUBLE NULL,
+  `attendanceStatus` VARCHAR(10) NULL,
+  `result` VARCHAR(20) NULL,
+  `CreatedOn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `CreatedBy` VARCHAR(255) NOT NULL,
+  `UpdatedOn` DATETIME(3) NULL,
+  `UpdatedBy` VARCHAR(255) NULL,
+  `IsActive` BOOLEAN NOT NULL DEFAULT true,
+  `IsDeleted` BOOLEAN NOT NULL DEFAULT false,
+  `DeletedRemarks` VARCHAR(255) NULL,
+  `DeletedOn` DATETIME(3) NULL,
+  `DeletedBy` VARCHAR(255) NULL,
+  `Remarks` VARCHAR(255) NULL,
+  PRIMARY KEY (`entranceStudentPaperId`),
+  UNIQUE INDEX `entranceStudentPaper_student_paper_key` (`entranceStudentId`, `entrancePaperId`),
+  INDEX `entranceStudentPaper_studentId_idx` (`studentId`),
+  INDEX `entranceStudentPaper_entrancePaperId_idx` (`entrancePaperId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

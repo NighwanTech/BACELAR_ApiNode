@@ -21,11 +21,10 @@ export class BulkDeleteEntranceExamsDto {
 }
 
 export class GenerateEntranceRollsDto {
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Type(() => Number)
   @IsInt()
-  @IsOptional()
-  academicSessionId?: number;
+  academicSessionId: number;
 
   @ApiProperty()
   @Type(() => Number)
@@ -41,4 +40,63 @@ export class GenerateEntranceRollsDto {
   @IsString()
   @IsOptional()
   UpdatedBy?: string;
+}
+
+export class EntranceStudentPaperMarksDto {
+  @ApiProperty({ required: false })
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  entranceStudentPaperId?: number;
+
+  @ApiProperty()
+  @Type(() => Number)
+  @IsInt()
+  entrancePaperId: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  obtainedMarks?: number | string | null;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  attendanceStatus?: string;
+}
+
+export class EntranceStudentMarksDto {
+  @ApiProperty()
+  @Type(() => Number)
+  @IsInt()
+  entranceStudentId: number;
+
+  @ApiProperty({ type: [EntranceStudentPaperMarksDto] })
+  @IsArray()
+  papers: EntranceStudentPaperMarksDto[];
+}
+
+export class SaveEntranceMarksDto {
+  @ApiProperty()
+  @Type(() => Number)
+  @IsInt()
+  academicSessionId: number;
+
+  @ApiProperty()
+  @Type(() => Number)
+  @IsInt()
+  programCategoryId: number;
+
+  @ApiProperty()
+  @Type(() => Number)
+  @IsInt()
+  programId: number;
+
+  @ApiProperty({ example: 'Admin User', required: false })
+  @IsString()
+  @IsOptional()
+  UpdatedBy?: string;
+
+  @ApiProperty({ type: [EntranceStudentMarksDto] })
+  @IsArray()
+  students: EntranceStudentMarksDto[];
 }
