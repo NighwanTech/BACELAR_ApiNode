@@ -1,0 +1,114 @@
+import { Module } from '@nestjs/common';
+import { StateModule } from './state/state.module';
+import { CityModule } from './city/city.module';
+import { ProgramCategoryModule } from './program-category/program-category.module';
+import { SubjectModule } from './subject/subject.module';
+import { ProgramModule } from './program/program.module';
+import { BoardModule } from './board/board.module';
+import { FeeTypeModule } from './fee-type/fee-type.module';
+import { QualificationModule } from './qualification/qualification.module';
+import { AdmissionSessionModule } from './admission-session/admission-session.module';
+import { AcademicSessionModule } from './academic-session/academic-session.module';
+import { ProgramFeeConfigModule } from './program-fee-config/program-fee-config.module';
+import { CollegeModule } from './college/college.module';
+import { ZipcodeModule } from './zipcode/zipcode.module';
+import { ProgramEligibilityModule } from './program-eligibility/program-eligibility.module';
+import { StreamModule } from './stream/stream.module';
+import { ProgramSubjectModule } from './program-subject/program-subject.module';
+import { ExaminationDetailsModule } from './examination-details/examination-details.module';
+import { ExamSchemeModule } from './exam-scheme/exam-scheme.module';
+import { PaperTypeModule } from './paper-type/paper-type.module';
+import { ExamTypeModule } from './exam-type/exam-type.module';
+import { YearModule } from './year/year.module';
+import { SemesterModule } from './semester/semester.module';
+import { PaperDetailModule } from './paper-detail/paper-detail.module';
+import { ExamSubjectModule } from './exam-subject/exam-subject.module';
+import { RoleModule } from './role/role.module';
+import { MarksTypeModule } from './marks-type/marks-type.module';
+import { EntrancePaperModule } from './entrance-paper/entrance-paper.module';
+import { EntranceExamModule } from './entrance-exam/entrance-exam.module';
+import { ExamGreviancePriceModule } from './exam-greviance-price/exam-greviance-price.module';
+import { GrevianceTypeModule } from './greviance-type/greviance-type.module';
+import { MonthModule } from './month/month.module';
+import { PramanModule } from './praman/praman.module';
+import { PramanSubParameterModule } from './praman-sub-parameter/praman-sub-parameter.module';
+import { PramanResponseModule } from './praman-response/praman-response.module';
+
+@Module({
+  imports: [
+    StateModule,
+    CityModule,
+    ZipcodeModule,
+    ProgramCategoryModule,
+    SubjectModule,
+    ProgramModule,
+    StreamModule,
+    ProgramSubjectModule,
+    ProgramEligibilityModule,
+    BoardModule,
+    FeeTypeModule,
+    QualificationModule,
+    AdmissionSessionModule,
+    AcademicSessionModule,
+    ExaminationDetailsModule,
+    ExamSchemeModule,
+    ProgramFeeConfigModule,
+    ExamGreviancePriceModule,
+    GrevianceTypeModule,
+    MonthModule,
+    PramanModule,
+    PramanSubParameterModule,
+    PramanResponseModule,
+    CollegeModule,
+    PaperTypeModule,
+    ExamTypeModule,
+    YearModule,
+    SemesterModule,
+    PaperDetailModule,
+    ExamSubjectModule,
+    RoleModule,
+    MarksTypeModule,
+    EntrancePaperModule,
+    EntranceExamModule,
+  ],
+  exports: [
+    StateModule,
+    CityModule,
+    ZipcodeModule,
+    ProgramCategoryModule,
+    SubjectModule,
+    ProgramModule,
+    StreamModule,
+    ProgramSubjectModule,
+    ProgramEligibilityModule,
+    BoardModule,
+    FeeTypeModule,
+    QualificationModule,
+    AdmissionSessionModule,
+    AcademicSessionModule,
+    ExaminationDetailsModule,
+    ExamSchemeModule,
+    ProgramFeeConfigModule,
+    ExamGreviancePriceModule,
+    GrevianceTypeModule,
+    MonthModule,
+    PramanModule,
+    PramanSubParameterModule,
+    PramanResponseModule,
+    CollegeModule,
+    PaperTypeModule,
+    ExamTypeModule,
+    YearModule,
+    SemesterModule,
+    PaperDetailModule,
+    ExamSubjectModule,
+    RoleModule,
+    MarksTypeModule,
+    EntrancePaperModule,
+    EntranceExamModule,
+  ],
+})
+export class MasterModule {}
+
+
+

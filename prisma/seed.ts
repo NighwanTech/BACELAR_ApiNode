@@ -1,0 +1,961 @@
+import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+const databaseUrl = process.env.DATABASE_URL || '';
+let dbConfig: any = {
+  host: '127.0.0.1',
+  port: 3306,
+  user: 'root',
+  password: '',
+  database: 'bacelar',
+};
+
+try {
+  if (databaseUrl) {
+    const url = new URL(databaseUrl);
+    dbConfig = {
+      host: url.hostname,
+      port: url.port ? Number(url.port) : 3306,
+      user: decodeURIComponent(url.username),
+      password: decodeURIComponent(url.password),
+      database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
+      // Hostinger shared MySQL: keep pool tiny to avoid pool timeouts
+      connectionLimit: 2,
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
+      ssl: false,
+      allowPublicKeyRetrieval: true,
+    };
+  } else {
+    dbConfig = {
+      host: '127.0.0.1',
+      port: 3306,
+      user: 'root',
+      password: '',
+      database: 'bacelar',
+      connectionLimit: 2,
+      connectTimeout: 30000,
+      acquireTimeout: 30000,
+      ssl: false,
+      allowPublicKeyRetrieval: true,
+    };
+  }
+} catch (e) {
+  // Use fallback
+}
+
+const adapter = new PrismaMariaDb(dbConfig);
+const prisma = new PrismaClient({ adapter });
+
+// Adapter + PrismaClient generics can confuse IDE until TS server reloads generated types.
+type ProgramEligibilityDb = {
+  findFirst: (args: unknown) => Promise<{ eligibilityId: number } | null>;
+  create: (args: unknown) => Promise<unknown>;
+};
+const programEligibilityDb = (
+  prisma as unknown as { programEligibility: ProgramEligibilityDb }
+).programEligibility;
+
+function calculateFinal(base: number): number {
+  if (!base || base <= 0) return 0;
+  // pgCharge = base * 2%
+  // gstOnPg = pgCharge * 18%
+  // total = base + pgCharge + gstOnPg
+  const pgCharge = base * 0.02;
+  const gstOnPg = pgCharge * 0.18;
+  return Number((base + pgCharge + gstOnPg).toFixed(3)); // Storing up to 3 decimal places as seen in Excel (e.g. 1627.524)
+}
+
+async function main() {
+  console.log('Seeding initial masters...');
+
+  // 1. Seed QualificationMaster
+  const qualifications = [
+    { qualificationName: '10th' },
+    { qualificationName: '12th' },
+    { qualificationName: 'Diploma' },
+    { qualificationName: 'Graduation' },
+    { qualificationName: 'Post Graduation' },
+  ];
+
+  for (const qual of qualifications) {
+    await prisma.qualificationMaster.upsert({
+      where: { qualificationName: qual.qualificationName },
+      update: {},
+      create: {
+        qualificationName: qual.qualificationName,
+        CreatedBy: 'System Seed',
+        IsActive: true,
+        IsDeleted: false,
+      },
+    });
+  }
+  console.log('Seeded QualificationMaster successfully!');
+
+  // 2. Seed BoardMaster
+  const boards = [
+    { boardName: 'CBSE' },
+    { boardName: 'UP Board' },
+    { boardName: 'ICSE' },
+    { boardName: 'Bihar Board' },
+  ];
+
+  for (const board of boards) {
+    await prisma.boardMaster.upsert({
+      where: { boardName: board.boardName },
+      update: {},
+      create: {
+        boardName: board.boardName,
+        CreatedBy: 'System Seed',
+        IsActive: true,
+        IsDeleted: false,
+      },
+    });
+  }
+  console.log('Seeded BoardMaster successfully!');
+
+  // 2.25 Seed StateMaster + CityMaster (for profile address dropdowns)
+  const statesWithCities: Array<{
+    stateName: string;
+    stateShortCode: string;
+    cities: Array<{ cityName: string; cityShortCode: string }>;
+  }> = [
+    {
+      stateName: 'Uttar Pradesh',
+      stateShortCode: 'UP',
+      cities: [
+        { cityName: 'Lucknow', cityShortCode: 'LKO' },
+        { cityName: 'Noida', cityShortCode: 'NOI' },
+        { cityName: 'Kanpur', cityShortCode: 'KNP' },
+        { cityName: 'Varanasi', cityShortCode: 'VNS' },
+        { cityName: 'Ghaziabad', cityShortCode: 'GZB' },
+        { cityName: 'Gorakhpur', cityShortCode: 'GKP' },
+        { cityName: 'Prayagraj', cityShortCode: 'PRY' },
+        { cityName: 'Lalitpur', cityShortCode: 'LTP' },
+      ],
+    },
+    {
+      stateName: 'Bihar',
+      stateShortCode: 'BR',
+      cities: [
+        { cityName: 'Patna', cityShortCode: 'PAT' },
+        { cityName: 'Gaya', cityShortCode: 'GAY' },
+        { cityName: 'Muzaffarpur', cityShortCode: 'MZP' },
+        { cityName: 'Bhagalpur', cityShortCode: 'BGP' },
+        { cityName: 'Darbhanga', cityShortCode: 'DBG' },
+      ],
+    },
+    {
+      stateName: 'Delhi',
+      stateShortCode: 'DL',
+      cities: [
+        { cityName: 'New Delhi', cityShortCode: 'NDL' },
+        { cityName: 'North Delhi', cityShortCode: 'NDN' },
+        { cityName: 'South Delhi', cityShortCode: 'SDL' },
+        { cityName: 'East Delhi', cityShortCode: 'EDL' },
+        { cityName: 'West Delhi', cityShortCode: 'WDL' },
+      ],
+    },
+    {
+      stateName: 'Haryana',
+      stateShortCode: 'HR',
+      cities: [
+        { cityName: 'Gurugram', cityShortCode: 'GGN' },
+        { cityName: 'Faridabad', cityShortCode: 'FBD' },
+        { cityName: 'Panipat', cityShortCode: 'PNP' },
+        { cityName: 'Rohtak', cityShortCode: 'ROH' },
+      ],
+    },
+    {
+      stateName: 'Maharashtra',
+      stateShortCode: 'MH',
+      cities: [
+        { cityName: 'Mumbai', cityShortCode: 'MUM' },
+        { cityName: 'Pune', cityShortCode: 'PUN' },
+        { cityName: 'Nagpur', cityShortCode: 'NAG' },
+        { cityName: 'Thane', cityShortCode: 'THN' },
+        { cityName: 'Nashik', cityShortCode: 'NSK' },
+      ],
+    },
+    {
+      stateName: 'West Bengal',
+      stateShortCode: 'WB',
+      cities: [
+        { cityName: 'Kolkata', cityShortCode: 'KOL' },
+        { cityName: 'Howrah', cityShortCode: 'HWH' },
+        { cityName: 'Darjeeling', cityShortCode: 'DJL' },
+        { cityName: 'Siliguri', cityShortCode: 'SLG' },
+      ],
+    },
+    {
+      stateName: 'Madhya Pradesh',
+      stateShortCode: 'MP',
+      cities: [
+        { cityName: 'Bhopal', cityShortCode: 'BPL' },
+        { cityName: 'Indore', cityShortCode: 'IDR' },
+        { cityName: 'Jabalpur', cityShortCode: 'JBP' },
+        { cityName: 'Gwalior', cityShortCode: 'GWL' },
+      ],
+    },
+    {
+      stateName: 'Rajasthan',
+      stateShortCode: 'RJ',
+      cities: [
+        { cityName: 'Jaipur', cityShortCode: 'JPR' },
+        { cityName: 'Jodhpur', cityShortCode: 'JDH' },
+        { cityName: 'Udaipur', cityShortCode: 'UDR' },
+        { cityName: 'Kota', cityShortCode: 'KOT' },
+      ],
+    },
+  ];
+
+  for (const state of statesWithCities) {
+    const stateRecord = await prisma.stateMaster.upsert({
+      where: { stateName: state.stateName },
+      update: { stateShortCode: state.stateShortCode, IsActive: true, IsDeleted: false },
+      create: {
+        stateName: state.stateName,
+        stateShortCode: state.stateShortCode,
+        CreatedBy: 'System Seed',
+        IsActive: true,
+        IsDeleted: false,
+      },
+    });
+
+    for (const city of state.cities) {
+      const existingCity = await prisma.cityMaster.findFirst({
+        where: {
+          OR: [{ cityName: city.cityName }, { cityShortCode: city.cityShortCode }],
+        },
+      });
+
+      if (existingCity) {
+        await prisma.cityMaster.update({
+          where: { cityId: existingCity.cityId },
+          data: {
+            stateId: stateRecord.stateId,
+            cityName: city.cityName,
+            cityShortCode: city.cityShortCode,
+            IsActive: true,
+            IsDeleted: false,
+          },
+        });
+      } else {
+        await prisma.cityMaster.create({
+          data: {
+            stateId: stateRecord.stateId,
+            cityName: city.cityName,
+            cityShortCode: city.cityShortCode,
+            CreatedBy: 'System Seed',
+            IsActive: true,
+            IsDeleted: false,
+          },
+        });
+      }
+    }
+  }
+  console.log('Seeded StateMaster and CityMaster successfully!');
+
+  // 2.5 Seed SubjectMaster (with streams for 12th)
+  const subjectsToSeed = [
+    // 10th standard subjects
+    { name: 'Mathematics', code: '10MATH', classType: '10th', stream: null },
+    { name: 'Science', code: '10SCI', classType: '10th', stream: null },
+    { name: 'Social Science', code: '10SOC', classType: '10th', stream: null },
+    { name: 'English', code: '10ENG', classType: '10th', stream: null },
+    { name: 'Hindi', code: '10HIN', classType: '10th', stream: null },
+    { name: 'Sanskrit', code: '10SAN', classType: '10th', stream: null },
+
+    // 12th standard common subjects
+    { name: 'English', code: '12ENG', classType: '12th', stream: null },
+    { name: 'Hindi', code: '12HIN', classType: '12th', stream: null },
+
+    // 12th standard Science subjects
+    { name: 'Physics', code: '12PHY', classType: '12th', stream: 'SCIENCE' },
+    { name: 'Chemistry', code: '12CHEM', classType: '12th', stream: 'SCIENCE' },
+    { name: 'Mathematics', code: '12MATH', classType: '12th', stream: 'SCIENCE' },
+    { name: 'Biology', code: '12BIO', classType: '12th', stream: 'SCIENCE' },
+    { name: 'Agriculture', code: '12AGRI', classType: '12th', stream: 'SCIENCE' },
+
+    // 12th standard Commerce subjects
+    { name: 'Accountancy', code: '12ACC', classType: '12th', stream: 'COMMERCE' },
+    { name: 'Business Studies', code: '12BST', classType: '12th', stream: 'COMMERCE' },
+    { name: 'Economics', code: '12ECO', classType: '12th', stream: 'COMMERCE' },
+
+    // 12th standard Arts subjects
+    { name: 'History', code: '12HIS', classType: '12th', stream: 'ARTS' },
+    { name: 'Geography', code: '12GEO', classType: '12th', stream: 'ARTS' },
+    { name: 'Political Science', code: '12POL', classType: '12th', stream: 'ARTS' },
+    { name: 'Sociology', code: '12SOC', classType: '12th', stream: 'ARTS' },
+    { name: 'Psychology', code: '12PSY', classType: '12th', stream: 'ARTS' },
+  ];
+
+  for (const sub of subjectsToSeed) {
+    const existing = await prisma.subjectMaster.findFirst({
+      where: { subjectCode: sub.code },
+    });
+
+    if (existing) {
+      await prisma.subjectMaster.update({
+        where: { subjectId: existing.subjectId },
+        data: { stream: sub.stream },
+      });
+    } else {
+      await prisma.subjectMaster.create({
+        data: {
+          subjectName: sub.name,
+          subjectCode: sub.code,
+          classType: sub.classType,
+          stream: sub.stream,
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    }
+  }
+  console.log('Seeded SubjectMaster successfully!');
+
+  // 3. Seed Program Categories
+  const categories = [
+    { programCategoryName: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', pcShortName: 'UG', sequenceNo: 1 },
+    { programCategoryName: 'MASTER (POST-GRADIATION) PROGRAMMES', pcShortName: 'PG', sequenceNo: 2 },
+    { programCategoryName: 'INTEGRATED TEACHER EDUCATION PROGRAMME (ITEP)', pcShortName: 'ITEP', sequenceNo: 3 },
+    { programCategoryName: 'DIPLOMA PROGRAM', pcShortName: 'DIPLOMA', sequenceNo: 4 },
+  ];
+
+  const categoryMap = new Map<string, number>();
+
+  for (const cat of categories) {
+    let record = await prisma.programCategory.findFirst({
+      where: { programCategoryName: cat.programCategoryName },
+    });
+    if (!record) {
+      record = await prisma.programCategory.create({
+        data: {
+          programCategoryName: cat.programCategoryName,
+          pcShortName: cat.pcShortName,
+          sequenceNo: cat.sequenceNo,
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    } else {
+      record = await prisma.programCategory.update({
+        where: { programCategoryId: record.programCategoryId },
+        data: {
+          pcShortName: cat.pcShortName,
+          sequenceNo: cat.sequenceNo,
+          IsActive: true,
+          IsDeleted: false,
+          UpdatedBy: 'System Seed',
+        },
+      });
+    }
+    categoryMap.set(cat.programCategoryName, record.programCategoryId);
+  }
+  console.log('Seeded Program Categories successfully!');
+
+  // 4. Seed Programs (codes 1–14)
+  const programsData = [
+    { name: 'B.A.', short: 'BA', code: '1', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
+    { name: 'B.Sc.', short: 'B.Sc.', code: '2', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
+    { name: 'B.Com.', short: 'B.Com.', code: '3', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 50, examFee: 1375 },
+    { name: 'B.B.A.', short: 'BBA', code: '4', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
+    { name: 'B.C.A.', short: 'BCA', code: '5', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 3, terms: 6, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
+    { name: 'B.P.Ed.', short: 'BPEd', code: '6', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 1000, examFee: 1375 },
+    { name: 'B.Ed.', short: 'B.Ed.', code: '7', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 2, terms: 2, termType: 'ANNUAL', regFee: 0, examFee: 4250 },
+    { name: 'B.Sc. Ag.', short: 'B.Sc. Ag.', code: '8', cat: 'BACHELOR (UNDER-GRADUATE) PROGRAMMES', years: 4, terms: 8, termType: 'SEMESTER', regFee: 50, examFee: 1575 },
+    { name: 'M.A. Hindi', short: 'MA Hindi', code: '9', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
+    { name: 'M.A. History', short: 'MA History', code: '10', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
+    { name: 'M.A. Sociology', short: 'MA Socio', code: '11', cat: 'MASTER (POST-GRADIATION) PROGRAMMES', years: 2, terms: 4, termType: 'SEMESTER', regFee: 50, examFee: 1590 },
+    { name: 'B.A. B.Ed.', short: 'BA B.Ed.', code: '12', cat: 'INTEGRATED TEACHER EDUCATION PROGRAMME (ITEP)', years: 4, terms: 8, termType: 'SEMESTER', regFee: 100, examFee: 0 },
+    { name: 'B.Sc. B.Ed.', short: 'BSc B.Ed.', code: '13', cat: 'INTEGRATED TEACHER EDUCATION PROGRAMME (ITEP)', years: 4, terms: 8, termType: 'SEMESTER', regFee: 100, examFee: 0 },
+    { name: 'D.El.Ed.', short: 'DElEd', code: '14', cat: 'DIPLOMA PROGRAM', years: 2, terms: 4, termType: 'SEMESTER', regFee: 0, examFee: 0 },
+  ];
+
+  // 5. Seed Admission Session
+  const session = await prisma.admissionSession.upsert({
+    where: { admissionSessionName: '2026-2027' },
+    update: {},
+    create: {
+      admissionSessionName: '2026-2027',
+      CreatedBy: 'System Seed',
+      IsActive: true,
+      IsDeleted: false,
+    },
+  });
+  console.log('Seeded Admission Session successfully!');
+
+  const programIdByCode = new Map<string, number>();
+  let seq = 1;
+  for (const prog of programsData) {
+    const categoryId = categoryMap.get(prog.cat);
+    if (!categoryId) continue;
+
+    let programRecord = await prisma.program.findFirst({
+      where: { programCode: prog.code, IsDeleted: false },
+    });
+    if (!programRecord) {
+      programRecord = await prisma.program.findFirst({
+        where: { programName: prog.name, programCategoryId: categoryId },
+      });
+    }
+
+    if (!programRecord) {
+      programRecord = await prisma.program.create({
+        data: {
+          programCategoryId: categoryId,
+          programName: prog.name,
+          programShortName: prog.short,
+          programCode: prog.code,
+          durationYears: prog.years,
+          termType: prog.termType,
+          totalTerms: prog.terms,
+          sequenceNo: seq++,
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    } else {
+      programRecord = await prisma.program.update({
+        where: { programId: programRecord.programId },
+        data: {
+          programCategoryId: categoryId,
+          programName: prog.name,
+          programShortName: prog.short,
+          programCode: prog.code,
+          durationYears: prog.years,
+          termType: prog.termType,
+          totalTerms: prog.terms,
+          sequenceNo: seq++,
+          IsActive: true,
+          IsDeleted: false,
+          UpdatedBy: 'System Seed',
+        },
+      });
+    }
+    programIdByCode.set(prog.code, programRecord.programId);
+
+    const feeConfig = await prisma.programFeeConfig.findFirst({
+      where: { programId: programRecord.programId, admissionSessionId: session.admissionSessionId },
+    });
+    if (!feeConfig) {
+      await prisma.programFeeConfig.create({
+        data: {
+          programId: programRecord.programId,
+          admissionSessionId: session.admissionSessionId,
+          registrationBaseFee: prog.regFee,
+          registrationPgRate: 2.0,
+          registrationGstRate: 18.0,
+          registrationFinal: calculateFinal(prog.regFee),
+          examinationBaseFee: prog.examFee,
+          examinationPgRate: 2.0,
+          examinationGstRate: 18.0,
+          examinationFinal: calculateFinal(prog.examFee),
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    }
+  }
+
+  console.log('Seeded Programs and Program Fee Configurations successfully!');
+
+  // 5.5 Seed StreamMaster (program-wise allowed streams)
+  const STREAMS_COMMON = ['ART', 'SCIENCE', 'COMMERCE', 'AGRICULTURE', 'OTHER'];
+  const streamsByCode: Record<string, string[]> = {
+    '1': STREAMS_COMMON, // B.A.
+    '2': ['SCIENCE'], // B.Sc.
+    '3': STREAMS_COMMON, // B.Com.
+    '4': STREAMS_COMMON, // B.B.A.
+    '5': ['SCIENCE WITH MATHEMATICS SUBJECT'], // B.C.A.
+    '6': STREAMS_COMMON, // B.P.Ed.
+    '7': STREAMS_COMMON, // B.Ed.
+    '8': ['SCIENCE (BIO)', 'AGRICULTURE'], // B.Sc. Ag.
+    '9': STREAMS_COMMON, // M.A. Hindi
+    '10': STREAMS_COMMON,
+    '11': STREAMS_COMMON,
+    '12': STREAMS_COMMON, // B.A. B.Ed. (ITEP)
+    '13': ['SCIENCE'], // B.Sc. B.Ed.
+    '14': STREAMS_COMMON, // D.El.Ed.
+  };
+
+  for (const [code, streamNames] of Object.entries(streamsByCode)) {
+    const programId = programIdByCode.get(code);
+    if (!programId) continue;
+    for (const streamName of streamNames) {
+      const existing = await prisma.streamMaster.findFirst({
+        where: { programId, streamName, IsDeleted: false },
+      });
+      if (existing) {
+        await prisma.streamMaster.update({
+          where: { streamId: existing.streamId },
+          data: { IsActive: true, IsDeleted: false, UpdatedBy: 'System Seed' },
+        });
+      } else {
+        await prisma.streamMaster.create({
+          data: {
+            programId,
+            streamName,
+            CreatedBy: 'System Seed',
+            IsActive: true,
+            IsDeleted: false,
+          },
+        });
+      }
+    }
+  }
+  console.log('Seeded StreamMaster successfully!');
+
+  // 6. Seed Program Eligibility rules (Excel-aligned)
+  type EligRule = {
+    ruleType: string;
+    qualificationLevel: string;
+    category: string;
+    ruleKey?: string;
+    minPercent?: number;
+    severity: string;
+    displayOrder: number;
+    message: string;
+  };
+
+  const OTHER_STATE_NOTE: EligRule = {
+    ruleType: 'QUALIFICATION',
+    qualificationLevel: 'ALL',
+    category: 'ALL',
+    ruleKey: 'OTHER_STATE_GEN',
+    severity: 'Recommended',
+    displayOrder: 0,
+    message:
+      'Note: Other state students are considered as General Category students.',
+  };
+
+  const streamRule = (
+    ruleKey: string,
+    message: string,
+    displayOrder: number,
+  ): EligRule => ({
+    ruleType: 'STREAM',
+    qualificationLevel: '12TH',
+    category: 'ALL',
+    ruleKey,
+    severity: 'Compulsory',
+    displayOrder,
+    message,
+  });
+
+  const pct12 = (
+    category: 'GENERAL' | 'RESERVED',
+    minPercent: number,
+    displayOrder: number,
+  ): EligRule => ({
+    ruleType: 'MIN_PERCENT',
+    qualificationLevel: '12TH',
+    category,
+    ruleKey: 'AGGREGATE',
+    minPercent,
+    severity: 'Compulsory',
+    displayOrder,
+    message:
+      category === 'GENERAL'
+        ? `Compulsory: Minimum 12th aggregate ${minPercent}% required for GEN/OBC/Minority.`
+        : `Compulsory: Minimum 12th aggregate ${minPercent}% required for SC/ST.`,
+  });
+
+  const pctGrad = (
+    category: 'GENERAL' | 'RESERVED',
+    minPercent: number,
+    displayOrder: number,
+  ): EligRule => ({
+    ruleType: 'MIN_PERCENT',
+    qualificationLevel: 'GRAD',
+    category,
+    ruleKey: 'AGGREGATE',
+    minPercent,
+    severity: 'Compulsory',
+    displayOrder,
+    message:
+      category === 'GENERAL'
+        ? `Compulsory: Minimum Graduation aggregate ${minPercent}% required for GEN/OBC/Minority.`
+        : `Compulsory: Minimum Graduation aggregate ${minPercent}% required for SC/ST.`,
+  });
+
+  /** B.P.Ed. conditional graduation % — ruleKey SPORT_CERT | NO_SPORT_CERT */
+  const pctGradSport = (
+    category: 'GENERAL' | 'RESERVED',
+    minPercent: number,
+    displayOrder: number,
+    withSport: boolean,
+  ): EligRule => ({
+    ruleType: 'MIN_PERCENT',
+    qualificationLevel: 'GRAD',
+    category,
+    ruleKey: withSport ? 'SPORT_CERT' : 'NO_SPORT_CERT',
+    minPercent,
+    severity: 'Compulsory',
+    displayOrder,
+    message: withSport
+      ? category === 'GENERAL'
+        ? `Compulsory: With Sport Certificate — minimum Graduation aggregate ${minPercent}% for GEN/OBC/Minority.`
+        : `Compulsory: With Sport Certificate — minimum Graduation aggregate ${minPercent}% for SC/ST.`
+      : category === 'GENERAL'
+        ? `Compulsory: Without Sport Certificate — minimum Graduation aggregate ${minPercent}% for GEN/OBC/Minority.`
+        : `Compulsory: Without Sport Certificate — minimum Graduation aggregate ${minPercent}% for SC/ST.`,
+  });
+
+  const gradRequired = (displayOrder: number): EligRule => ({
+    ruleType: 'QUALIFICATION',
+    qualificationLevel: 'GRAD',
+    category: 'ALL',
+    ruleKey: 'GRADUATION',
+    severity: 'Compulsory',
+    displayOrder,
+    message: 'Compulsory: Graduation University/College details are required.',
+  });
+
+  const STREAM_KEY_COMMON = 'ART|SCIENCE|COMMERCE|AGRICULTURE|OTHER';
+
+  const eligibilityByCode: Record<string, EligRule[]> = {
+    // B.A.
+    '1': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_OR_POLY',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message: 'Eligibility: 12th Pass OR Polytechnic Diploma.',
+      },
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream in 12th (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        2,
+      ),
+    ],
+    // B.Sc.
+    '2': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_SCI_OR_POLY',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message:
+          'Eligibility: 12th Pass from Science OR Polytechnic Diploma (Engineering/Technology PCM-based OR Medical/Health PCB).',
+      },
+      streamRule('SCIENCE', 'Compulsory: 12th stream must be SCIENCE.', 2),
+    ],
+    // B.Com.
+    '3': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_COMMERCE',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message: 'Eligibility: 12th Pass from Commerce.',
+      },
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream in 12th (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        2,
+      ),
+    ],
+    // B.B.A.
+    '4': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_ANY',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message: 'Eligibility: Class 12 passed from any stream.',
+      },
+      pct12('GENERAL', 50, 2),
+      pct12('RESERVED', 45, 3),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream in 12th (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        4,
+      ),
+    ],
+    // B.C.A.
+    '5': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'SUBJECT',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12MATH',
+        severity: 'Compulsory',
+        displayOrder: 1,
+        message:
+          'Compulsory: Mathematics must be selected in 12th Subject Details (Subject Master).',
+      },
+      pct12('GENERAL', 50, 2),
+      pct12('RESERVED', 45, 3),
+      streamRule(
+        'SCIENCE WITH MATHEMATICS SUBJECT',
+        'Compulsory: 12th stream must be SCIENCE WITH MATHEMATICS SUBJECT.',
+        4,
+      ),
+    ],
+    // B.P.Ed.
+    '6': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'BPED_SPORTS_OR_PE',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message:
+          'BPEd: (A) Bachelor’s degree with 50% + recognized sports participation (SC/ST 45%); (B) Bachelor’s with 45% + 1st/2nd/3rd National/Inter-University (SC/ST 40%); (C) Bachelor’s with 45% in Physical Education / PE subject (SC/ST 40%); (D) Bachelor’s with international sports participation.',
+      },
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'BPED_CONFIRM',
+        severity: 'Compulsory',
+        displayOrder: 2,
+        message:
+          'Confirm: PE as subject in all 3 years of graduation OR District/State/University sport certificate OR NCC-C certificate.',
+      },
+      pct12('GENERAL', 50, 3),
+      pct12('RESERVED', 45, 4),
+      gradRequired(5),
+      // Without sport certificate
+      pctGradSport('GENERAL', 50, 6, false),
+      pctGradSport('RESERVED', 45, 7, false),
+      // With sport certificate (GEN/OBC 45%, SC/ST 40%)
+      pctGradSport('GENERAL', 45, 8, true),
+      pctGradSport('RESERVED', 40, 9, true),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        10,
+      ),
+    ],
+    // B.Ed.
+    '7': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: 'GRAD',
+        category: 'ALL',
+        ruleKey: 'GRAD_OR_PG',
+        severity: 'Recommended',
+        displayOrder: 1,
+        message:
+          'Eligibility: Minimum Graduate with required marks OR last qualified exam (PG).',
+      },
+      pctGrad('GENERAL', 50, 2),
+      pctGrad('RESERVED', 45, 3),
+      gradRequired(4),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        5,
+      ),
+    ],
+    // B.Sc. Ag.
+    '8': [
+      OTHER_STATE_NOTE,
+      {
+        ruleType: 'SUBJECT',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12BIO|12AGRI',
+        severity: 'Compulsory',
+        displayOrder: 1,
+        message:
+          'Compulsory: Biology or Agriculture must be selected in 12th Subject Details (Subject Master).',
+      },
+      {
+        ruleType: 'QUALIFICATION',
+        qualificationLevel: '12TH',
+        category: 'ALL',
+        ruleKey: '12TH_SCI_OR_AGRI_POLY',
+        severity: 'Recommended',
+        displayOrder: 2,
+        message:
+          'Eligibility: 12th Pass from Science OR Polytechnic Diploma from Agriculture/related fields.',
+      },
+      pct12('GENERAL', 50, 3),
+      pct12('RESERVED', 45, 4),
+      streamRule(
+        'SCIENCE (BIO)|AGRICULTURE',
+        'Compulsory: 12th stream must be SCIENCE (BIO) or AGRICULTURE.',
+        5,
+      ),
+    ],
+    // M.A. Hindi / History / Sociology
+    '9': [
+      OTHER_STATE_NOTE,
+      pctGrad('GENERAL', 50, 1),
+      pctGrad('RESERVED', 45, 2),
+      gradRequired(3),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        4,
+      ),
+    ],
+    // ITEP B.A. B.Ed. — treat like B.Ed. + streams
+    '12': [
+      OTHER_STATE_NOTE,
+      pctGrad('GENERAL', 50, 1),
+      pctGrad('RESERVED', 45, 2),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        3,
+      ),
+    ],
+    // ITEP B.Sc. B.Ed.
+    '13': [
+      OTHER_STATE_NOTE,
+      pctGrad('GENERAL', 50, 1),
+      pctGrad('RESERVED', 45, 2),
+      streamRule('SCIENCE', 'Compulsory: Stream must be SCIENCE.', 3),
+    ],
+    // D.El.Ed.
+    '14': [
+      OTHER_STATE_NOTE,
+      pctGrad('GENERAL', 50, 1),
+      pctGrad('RESERVED', 45, 2),
+      gradRequired(3),
+      streamRule(
+        STREAM_KEY_COMMON,
+        'Compulsory: Select Stream (ART / SCIENCE / COMMERCE / AGRICULTURE / OTHER).',
+        4,
+      ),
+    ],
+  };
+  eligibilityByCode['10'] = eligibilityByCode['9'];
+  eligibilityByCode['11'] = eligibilityByCode['9'];
+
+  for (const [code, rules] of Object.entries(eligibilityByCode)) {
+    const programId = programIdByCode.get(code);
+    if (!programId) continue;
+
+    // Soft-delete previous System Seed rules for this program (clean reseed)
+    await prisma.programEligibility.updateMany({
+      where: {
+        programId,
+        CreatedBy: 'System Seed',
+        IsDeleted: false,
+      },
+      data: {
+        IsDeleted: true,
+        IsActive: false,
+        DeletedOn: new Date(),
+        DeletedBy: 'System Seed',
+        DeletedRemarks: 'Reseeded from Excel eligibility sheet',
+      },
+    });
+
+    for (const rule of rules) {
+      await programEligibilityDb.create({
+        data: {
+          programId,
+          ruleType: rule.ruleType,
+          qualificationLevel: rule.qualificationLevel,
+          category: rule.category,
+          ruleKey: rule.ruleKey || null,
+          minPercent: rule.minPercent ?? null,
+          severity: rule.severity,
+          displayOrder: rule.displayOrder,
+          message: rule.message,
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    }
+  }
+  console.log('Seeded Program Eligibility rules successfully!');
+
+  const roleDb = (prisma as any).roleMaster;
+  const roles = [
+    { roleCode: 'SUPER_ADMIN', roleName: 'Super Admin' },
+    { roleCode: 'ADMIN', roleName: 'Admin' },
+  ];
+  for (const role of roles) {
+    const existing = await roleDb.findFirst({
+      where: { roleCode: role.roleCode },
+    });
+    if (!existing) {
+      await roleDb.create({
+        data: {
+          roleCode: role.roleCode,
+          roleName: role.roleName,
+          CreatedBy: 'System Seed',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+    }
+  }
+  console.log('Seeded Role Master successfully!');
+
+  const bcrypt = await import('bcryptjs');
+  const adminDb = (prisma as any).adminLoginMaster;
+  const superAdminRole = await roleDb.findFirst({
+    where: { roleCode: 'SUPER_ADMIN', IsDeleted: false },
+  });
+  if (superAdminRole) {
+    const loginName = 'superadmin';
+    const existingAdmin = await adminDb.findFirst({
+      where: {
+        OR: [{ LoginName: loginName }, { EmailId: 'superadmin@bacelar.edu.in' }],
+      },
+    });
+    if (!existingAdmin) {
+      const plainPassword = 'SuperAdmin@123';
+      const hashed = await bcrypt.hash(plainPassword, 10);
+      await adminDb.create({
+        data: {
+          LoginName: loginName,
+          EmailId: 'superadmin@bacelar.edu.in',
+          Mobile: '9999999999',
+          Password: hashed,
+          PlainPassword: plainPassword,
+          RoleId: superAdminRole.roleId,
+          CreatedBy: 'System Seed',
+          Remarks: 'Default Super Admin (seed)',
+          IsActive: true,
+          IsDeleted: false,
+        },
+      });
+      console.log('Seeded default Super Admin login: superadmin / SuperAdmin@123');
+    } else {
+      console.log('Super Admin login already exists, skipped.');
+    }
+  }
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

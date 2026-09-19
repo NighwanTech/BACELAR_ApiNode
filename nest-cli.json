@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/backend/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "webpackConfigPath": "webpack.config.js",
+    "tsConfigPath": "apps/backend/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "defaultLibraryNamespace": "@app",
+  "root": "apps/backend",
+  "projects": {
+    "backend": {
+      "type": "application",
+      "root": "apps/backend",
+      "entryFile": "main",
+      "sourceRoot": "apps/backend/src",
+      "compilerOptions": {
+        "webpack": true,
+        "webpackConfigPath": "webpack.config.js",
+        "tsConfigPath": "apps/backend/tsconfig.app.json"
+      }
+    },
+    "student-service": {
+      "type": "application",
+      "root": "apps/student-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/student-service/src",
+      "compilerOptions": {
+        "webpack": true,
+        "webpackConfigPath": "webpack.config.js",
+        "tsConfigPath": "apps/student-service/tsconfig.app.json"
+      }
+    },
+    "exam-result-service": {
+      "type": "application",
+      "root": "apps/exam-result-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/exam-result-service/src",
+      "compilerOptions": {
+        "webpack": true,
+        "webpackConfigPath": "webpack.config.js",
+        "tsConfigPath": "apps/exam-result-service/tsconfig.app.json"
+      }
+    },
+    "prisma": {
+      "type": "library",
+      "root": "libs/prisma",
+      "entryFile": "index",
+      "sourceRoot": "libs/prisma/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/prisma/tsconfig.lib.json"
+      }
+    }
+  }
+}

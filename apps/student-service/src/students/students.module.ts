@@ -1,0 +1,42 @@
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { PrismaModule } from '@app/prisma';
+import { StudentsController } from './students.controller';
+import { StudentsService } from './students.service';
+import { StudentProfileModule } from './student-profile/student-profile.module';
+import { StudentAcademicModule } from './student-academic/student-academic.module';
+import { StudentAcademicSubjectModule } from './student-academic-subject/student-academic-subject.module';
+import { StudentProgramSubjectModule } from './student-program-subject/student-program-subject.module';
+import { StudentPaymentModule } from './student-payment/student-payment.module';
+import { StudentAttachmentModule } from './student-attachment/student-attachment.module';
+import { StudentEnrollmentModule } from './student-enrollment/student-enrollment.module';
+import { ExamLoginModule } from './exam-login/exam-login.module';
+import { StudentRollNumberModule } from './student-roll-number/student-roll-number.module';
+import { ExamAdmitCardModule } from './exam-admit-card/exam-admit-card.module';
+import { StudentAttendanceModule } from './student-attendance/student-attendance.module';
+import { ExamGrevianceModule } from './exam-greviance/exam-greviance.module';
+
+@Module({
+  imports: [
+    PrismaModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'super-secret-jwt-key',
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
+    }),
+    StudentProfileModule,
+    StudentAcademicModule,
+    StudentAcademicSubjectModule,
+    StudentProgramSubjectModule,
+    StudentPaymentModule,
+    StudentAttachmentModule,
+    StudentEnrollmentModule,
+    ExamLoginModule,
+    StudentRollNumberModule,
+    ExamAdmitCardModule,
+    StudentAttendanceModule,
+    ExamGrevianceModule,
+  ],
+  controllers: [StudentsController],
+  providers: [StudentsService],
+})
+export class StudentsModule {}
