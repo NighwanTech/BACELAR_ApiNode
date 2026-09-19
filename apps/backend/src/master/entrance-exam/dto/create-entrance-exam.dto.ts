@@ -38,6 +38,11 @@ export class CreateEntranceExamDto {
   @IsOptional()
   toTime?: string;
 
+  @ApiProperty({ example: '202568601', required: false })
+  @IsString()
+  @IsOptional()
+  rollNumberSequence?: string;
+
   @ApiProperty({ example: 'Admin User' })
   @IsString()
   @IsNotEmpty()

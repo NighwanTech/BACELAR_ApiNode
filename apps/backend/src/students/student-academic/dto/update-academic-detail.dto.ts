@@ -72,6 +72,15 @@ export class UpdateAcademicDetailDto {
   @IsOptional()
   stream?: string;
 
+  @ApiProperty({
+    example: 'B.A.',
+    description: 'Graduation / PG degree name. Free text, not the admission program.',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  programName?: string;
+
   @ApiProperty({ example: true, description: 'Active status', required: false })
   @IsBoolean()
   @IsOptional()

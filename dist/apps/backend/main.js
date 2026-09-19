@@ -1722,6 +1722,16 @@ __decorate([
     __metadata("design:type", String)
 ], SaveQualificationDto.prototype, "stream", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'B.A.',
+        description: 'Graduation / PG degree name. Free text, not the admission program.',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SaveQualificationDto.prototype, "programName", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ type: [SaveSubjectDto], description: 'Subjects list', required: false }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsOptional)(),
@@ -1896,6 +1906,16 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateAcademicDetailDto.prototype, "stream", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: 'B.A.',
+        description: 'Graduation / PG degree name. Free text, not the admission program.',
+        required: false,
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateAcademicDetailDto.prototype, "programName", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: true, description: 'Active status', required: false }),
     (0, class_validator_1.IsBoolean)(),
@@ -13992,6 +14012,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateEntrancePaperDto = void 0;
+const class_transformer_1 = __webpack_require__(27);
 const class_validator_1 = __webpack_require__(13);
 const swagger_1 = __webpack_require__(4);
 class CreateEntrancePaperDto {
@@ -14003,6 +14024,20 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateEntrancePaperDto.prototype, "entrancePaperName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 100 }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateEntrancePaperDto.prototype, "maxMarks", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 33 }),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateEntrancePaperDto.prototype, "minMarks", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
     (0, class_validator_1.IsString)(),
@@ -14414,6 +14449,12 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateEntranceExamDto.prototype, "toTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '202568601', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateEntranceExamDto.prototype, "rollNumberSequence", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Admin User' }),
     (0, class_validator_1.IsString)(),

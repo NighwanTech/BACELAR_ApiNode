@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
-import { resolveFirstYearAndSemester } from '../resolve-first-year-semester';
+import { resolveYearAndSemesterForProgram } from '../resolve-first-year-semester';
 
 /** Compute percentage / grade / division for DB columns (best done on backend). */
 export function computeAcademicResult(input: {
@@ -148,19 +148,22 @@ export class StudentAcademicService {
         const isBped = String(program.programCode || '').trim() === '6';
         const sportFlag = isBped ? Boolean(hasSportCertificate) : false;
 
-        // First academic save → Year 1 + Sem 1. Later promote keeps existing values.
-        let assignedYearId = student.yearId ?? null;
-        let assignedSemId = student.semId ?? null;
-        let assignedYearName: string | null = null;
-        let assignedSemesterName: string | null = null;
+        // Program chosen here:
+        // B.P.Ed and B.Ed / ANNUAL → Previous Year, no semester
+        // Other semester courses → keep existing year/sem, else 1st Year + 1st Sem
+        const mapped = await resolveYearAndSemesterForProgram(tx, program);
+        const isAnnual =
+          String(program.termType || '').trim().toUpperCase() === 'ANNUAL' ||
+          String(program.programCode || '').trim() === '7';
 
-        if (!assignedYearId || !assignedSemId) {
-          const first = await resolveFirstYearAndSemester(tx);
-          assignedYearId = assignedYearId || first.yearId;
-          assignedSemId = assignedSemId || first.semId;
-          assignedYearName = first.yearName;
-          assignedSemesterName = first.semesterName;
-        } else {
+        let assignedYearId: number | null = mapped.yearId;
+        let assignedSemId: number | null = mapped.semId;
+        let assignedYearName: string | null = mapped.yearName;
+        let assignedSemesterName: string | null = mapped.semesterName;
+
+        if (!isBped && !isAnnual && student.yearId && student.semId) {
+          assignedYearId = student.yearId;
+          assignedSemId = student.semId;
           const [y, s] = await Promise.all([
             tx.yearMaster.findFirst({
               where: { yearId: assignedYearId, IsDeleted: false },
@@ -169,8 +172,8 @@ export class StudentAcademicService {
               where: { semId: assignedSemId, IsDeleted: false },
             }),
           ]);
-          assignedYearName = y?.yearName ?? null;
-          assignedSemesterName = s?.semesterName ?? null;
+          assignedYearName = y?.yearName ?? assignedYearName;
+          assignedSemesterName = s?.semesterName ?? assignedSemesterName;
         }
 
         const programSubjectIdList = Array.isArray(programSubjectIds)
@@ -243,6 +246,9 @@ export class StudentAcademicService {
               division: qual.division || computed.division,
               grade: qual.grade || computed.grade,
               stream: qual.stream || null,
+              programName: qual.programName
+                ? String(qual.programName).trim() || null
+                : null,
               CreatedBy: CreatedBy || 'System',
               IsActive: true,
               IsDeleted: false,
@@ -423,6 +429,12 @@ export class StudentAcademicService {
           ? data.grade
           : computed.grade,
         stream: data.stream,
+        programName:
+          data.programName !== undefined
+            ? data.programName
+              ? String(data.programName).trim() || null
+              : null
+            : undefined,
         UpdatedBy: data.UpdatedBy,
         IsActive: data.IsActive,
         Remarks: data.Remarks,

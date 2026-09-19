@@ -652,6 +652,7 @@ model StudentAcademicDetail {
   division         String?                  @db.VarChar(50)
   grade            String?                  @db.VarChar(20)
   stream           String?                  @db.VarChar(50) // "SCIENCE", "COMMERCE", "ARTS"
+  programName      String?                  @db.VarChar(100) // Graduation/PG degree name (B.A., M.Sc., custom)
   subjects         StudentAcademicSubject[]
   CreatedOn        DateTime                 @default(now())
   CreatedBy        String                   @db.VarChar(255)
@@ -2437,6 +2438,8 @@ model ExamGrevianceApplicationPaper {
 model EntrancePaperMaster {
   entrancePaperId   Int                    @id @default(autoincrement())
   entrancePaperName String                 @db.VarChar(100)
+  maxMarks          Float?
+  minMarks          Float?
   exams             EntranceExamMaster[]
   studentPapers     EntranceStudentPaper[]
   CreatedOn         DateTime             @default(now())
@@ -2470,6 +2473,7 @@ model EntranceExamMaster {
   examDate              String?              @db.VarChar(50)
   fromTime              String?              @db.VarChar(50)
   toTime                String?              @db.VarChar(50)
+  rollNumberSequence    String?              @db.VarChar(50)
   CreatedOn             DateTime             @default(now())
   CreatedBy             String               @db.VarChar(255)
   UpdatedOn             DateTime?            @updatedAt

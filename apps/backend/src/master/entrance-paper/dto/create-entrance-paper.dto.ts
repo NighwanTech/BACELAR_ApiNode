@@ -1,4 +1,5 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEntrancePaperDto {
@@ -6,6 +7,18 @@ export class CreateEntrancePaperDto {
   @IsString()
   @IsNotEmpty()
   entrancePaperName: string;
+
+  @ApiProperty({ example: 100 })
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  maxMarks: number;
+
+  @ApiProperty({ example: 33 })
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  minMarks: number;
 
   @ApiProperty({ example: 'Admin User' })
   @IsString()

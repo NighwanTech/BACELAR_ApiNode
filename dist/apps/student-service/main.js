@@ -1118,8 +1118,28 @@ module.exports = require("bcryptjs");
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.resolveFirstYearAndSemester = resolveFirstYearAndSemester;
+exports.resolveYearAndSemesterForProgram = resolveYearAndSemesterForProgram;
 const common_1 = __webpack_require__(5);
-async function resolveFirstYearAndSemester(tx) {
+const isFirstYearName = (name) => /^(year\s*)?(1|i|first|ist)\b/i.test(String(name || '').trim()) ||
+    /\b(1st|first)\b/i.test(String(name || ''));
+const isFirstSemName = (name) => /^(sem(ester)?\s*)?(1|i|first)\b/i.test(String(name || '').trim()) ||
+    /\b(1st|first)\b/i.test(String(name || ''));
+const isPreviousYearName = (name) => /previous/i.test(String(name || ''));
+function programLabel(program) {
+    const code = String(program.programCode || '').trim();
+    const termType = String(program.termType || '').trim().toUpperCase();
+    const name = `${program.programName || ''} ${program.programShortName || ''}`
+        .toLowerCase()
+        .replace(/\s+/g, ' ');
+    const isBped = code === '6' || /\bb\.?\s*p\.?\s*ed\b/.test(name) || /\bbped\b/.test(name);
+    const isBed = !isBped &&
+        (code === '7' ||
+            ((/\bb\.?\s*ed\b/.test(name) || /\bbed\b/.test(name)) &&
+                !/\bb\.?\s*a\b/.test(name) &&
+                !/\bb\.?\s*sc\b/.test(name)));
+    return { isBped, isBed, isAnnual: termType === 'ANNUAL' || isBed };
+}
+async function loadActiveYears(tx) {
     const years = await tx.yearMaster.findMany({
         where: { IsDeleted: false, IsActive: true },
         orderBy: { yearId: 'asc' },
@@ -1127,9 +1147,9 @@ async function resolveFirstYearAndSemester(tx) {
     if (!years.length) {
         throw new common_1.NotFoundException('No year found in yearMaster. Please add Year 1 in masters.');
     }
-    const isFirstYear = (name) => /^(year\s*)?(1|i|first|ist)\b/i.test(String(name || '').trim()) ||
-        /\b(1st|first)\b/i.test(String(name || ''));
-    const year = years.find((y) => isFirstYear(y.yearName)) || years[0];
+    return years;
+}
+async function resolveFirstSemesterForYear(tx, year) {
     const semsForYear = await tx.semesterMaster.findMany({
         where: {
             IsDeleted: false,
@@ -1147,15 +1167,36 @@ async function resolveFirstYearAndSemester(tx) {
     if (!allSems.length) {
         throw new common_1.NotFoundException('No semester found in semesterMaster. Please add Semester 1 in masters.');
     }
-    const isFirstSem = (name) => /^(sem(ester)?\s*)?(1|i|first)\b/i.test(String(name || '').trim()) ||
-        /\b(1st|first)\b/i.test(String(name || ''));
-    const semester = allSems.find((s) => isFirstSem(s.semesterName)) || allSems[0];
+    const semester = allSems.find((s) => isFirstSemName(s.semesterName)) || allSems[0];
     return {
         yearId: year.yearId,
         semId: semester.semId,
         yearName: year.yearName,
         semesterName: semester.semesterName,
     };
+}
+async function resolveFirstYearAndSemester(tx) {
+    const years = await loadActiveYears(tx);
+    const year = years.find((y) => isFirstYearName(y.yearName)) || years[0];
+    return resolveFirstSemesterForYear(tx, year);
+}
+async function resolveYearAndSemesterForProgram(tx, program) {
+    const years = await loadActiveYears(tx);
+    const firstYear = years.find((y) => isFirstYearName(y.yearName)) || years[0];
+    const { isBped, isAnnual } = programLabel(program);
+    if (isBped || isAnnual) {
+        const previousYear = years.find((y) => isPreviousYearName(y.yearName));
+        if (!previousYear) {
+            throw new common_1.NotFoundException('No "Previous Year" found in yearMaster. Please add it for B.Ed / B.P.Ed.');
+        }
+        return {
+            yearId: previousYear.yearId,
+            semId: null,
+            yearName: previousYear.yearName,
+            semesterName: null,
+        };
+    }
+    return resolveFirstSemesterForYear(tx, firstYear);
 }
 
 
@@ -1788,18 +1829,16 @@ let StudentAcademicService = class StudentAcademicService {
             const assignedAdmissionSessionName = matchedAdmission?.admissionSessionName || assignedAcademicSessionName;
             const isBped = String(program.programCode || '').trim() === '6';
             const sportFlag = isBped ? Boolean(hasSportCertificate) : false;
-            let assignedYearId = student.yearId ?? null;
-            let assignedSemId = student.semId ?? null;
-            let assignedYearName = null;
-            let assignedSemesterName = null;
-            if (!assignedYearId || !assignedSemId) {
-                const first = await (0, resolve_first_year_semester_1.resolveFirstYearAndSemester)(tx);
-                assignedYearId = assignedYearId || first.yearId;
-                assignedSemId = assignedSemId || first.semId;
-                assignedYearName = first.yearName;
-                assignedSemesterName = first.semesterName;
-            }
-            else {
+            const mapped = await (0, resolve_first_year_semester_1.resolveYearAndSemesterForProgram)(tx, program);
+            const isAnnual = String(program.termType || '').trim().toUpperCase() === 'ANNUAL' ||
+                String(program.programCode || '').trim() === '7';
+            let assignedYearId = mapped.yearId;
+            let assignedSemId = mapped.semId;
+            let assignedYearName = mapped.yearName;
+            let assignedSemesterName = mapped.semesterName;
+            if (!isBped && !isAnnual && student.yearId && student.semId) {
+                assignedYearId = student.yearId;
+                assignedSemId = student.semId;
                 const [y, s] = await Promise.all([
                     tx.yearMaster.findFirst({
                         where: { yearId: assignedYearId, IsDeleted: false },
@@ -1808,8 +1847,8 @@ let StudentAcademicService = class StudentAcademicService {
                         where: { semId: assignedSemId, IsDeleted: false },
                     }),
                 ]);
-                assignedYearName = y?.yearName ?? null;
-                assignedSemesterName = s?.semesterName ?? null;
+                assignedYearName = y?.yearName ?? assignedYearName;
+                assignedSemesterName = s?.semesterName ?? assignedSemesterName;
             }
             const programSubjectIdList = Array.isArray(programSubjectIds)
                 ? [
@@ -1870,6 +1909,9 @@ let StudentAcademicService = class StudentAcademicService {
                         division: qual.division || computed.division,
                         grade: qual.grade || computed.grade,
                         stream: qual.stream || null,
+                        programName: qual.programName
+                            ? String(qual.programName).trim() || null
+                            : null,
                         CreatedBy: CreatedBy || 'System',
                         IsActive: true,
                         IsDeleted: false,
@@ -2034,6 +2076,11 @@ let StudentAcademicService = class StudentAcademicService {
                     ? data.grade
                     : computed.grade,
                 stream: data.stream,
+                programName: data.programName !== undefined
+                    ? data.programName
+                        ? String(data.programName).trim() || null
+                        : null
+                    : undefined,
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
                 Remarks: data.Remarks,
@@ -16841,11 +16888,30 @@ let EntrancePaperService = class EntrancePaperService {
     db() {
         return this.prisma.entrancePaperMaster;
     }
+    parseMarks(value, label) {
+        if (value === '' || value == null || value === undefined) {
+            throw new common_1.BadRequestException(`${label} is required`);
+        }
+        const n = Number(value);
+        if (!Number.isFinite(n) || n < 0) {
+            throw new common_1.BadRequestException(`${label} must be a valid number`);
+        }
+        return n;
+    }
+    parseLimits(data) {
+        const maxMarks = this.parseMarks(data.maxMarks, 'Max marks');
+        const minMarks = this.parseMarks(data.minMarks, 'Min marks');
+        if (minMarks > maxMarks) {
+            throw new common_1.BadRequestException('Min marks cannot be greater than max marks');
+        }
+        return { maxMarks, minMarks };
+    }
     async create(data) {
         const entrancePaperName = String(data.entrancePaperName || '').trim();
         if (!entrancePaperName) {
             throw new common_1.BadRequestException('entrancePaperName is required');
         }
+        const { maxMarks, minMarks } = this.parseLimits(data);
         const existing = await this.db().findFirst({
             where: { entrancePaperName, IsDeleted: false },
         });
@@ -16855,6 +16921,8 @@ let EntrancePaperService = class EntrancePaperService {
         return this.db().create({
             data: {
                 entrancePaperName,
+                maxMarks,
+                minMarks,
                 CreatedBy: data.CreatedBy || 'Admin User',
                 Remarks: data.Remarks || null,
                 IsActive: data.IsActive !== undefined ? Boolean(data.IsActive) : true,
@@ -16886,12 +16954,14 @@ let EntrancePaperService = class EntrancePaperService {
             if (dup)
                 throw new common_1.ConflictException('Entrance paper name already exists');
         }
+        const limits = data.maxMarks !== undefined || data.minMarks !== undefined ? this.parseLimits(data) : null;
         return this.db().update({
             where: { entrancePaperId },
             data: {
                 ...(data.entrancePaperName !== undefined
                     ? { entrancePaperName: String(data.entrancePaperName).trim() }
                     : {}),
+                ...(limits ? { maxMarks: limits.maxMarks, minMarks: limits.minMarks } : {}),
                 UpdatedBy: data.UpdatedBy,
                 IsActive: data.IsActive,
                 Remarks: data.Remarks,
@@ -17224,12 +17294,71 @@ let EntranceExamService = class EntranceExamService {
         if (program.programCategoryId !== data.programCategoryId) {
             throw new common_1.BadRequestException('Program does not belong to selected category');
         }
+        const prefix = await this.buildRollNumberSequence(data.academicSessionId, data.programId);
         return {
             academicSessionName: session.academicSessionName,
             programCategoryName: category.programCategoryName,
             programName: program.programName,
             entrancePaperName: paper.entrancePaperName,
+            rollNumberSequence: `${prefix}${this.serialFromSequence(data.rollNumberSequence)}`,
         };
+    }
+    serialFromSequence(raw) {
+        const digits = String(raw || '').replace(/\D/g, '');
+        if (digits.length >= 3) {
+            const n = Number(digits.slice(-3));
+            if (Number.isFinite(n) && n >= 1)
+                return this.pad3(n);
+        }
+        return '001';
+    }
+    parseRollSequence(stored, fallbackPrefix) {
+        const digits = String(stored || '').replace(/\D/g, '');
+        if (digits.length >= 12) {
+            const startSerial = Number(digits.slice(-3));
+            return {
+                prefix: digits.slice(0, -3),
+                startSerial: Number.isFinite(startSerial) && startSerial >= 1 ? startSerial : 1,
+            };
+        }
+        if (digits.length >= 9) {
+            return { prefix: digits, startSerial: 1 };
+        }
+        return { prefix: fallbackPrefix, startSerial: 1 };
+    }
+    normalizeCollegeCode(code) {
+        const digits = String(code || '').replace(/\D/g, '');
+        if (!digits)
+            return '686';
+        if (digits.length >= 3)
+            return digits.slice(0, 3);
+        return digits.padStart(3, '0');
+    }
+    normalizeProgramCode(code, fallbackId) {
+        const digits = String(code || '').replace(/\D/g, '');
+        if (digits)
+            return digits.length >= 2 ? digits.slice(-2) : digits.padStart(2, '0');
+        if (fallbackId)
+            return this.pad2(Number(fallbackId));
+        return '01';
+    }
+    async buildRollNumberSequence(academicSessionId, programId) {
+        const session = await this.prisma.academicSession.findFirst({
+            where: { academicSessionId, IsDeleted: false },
+            include: { college: { select: { collegeCode: true } } },
+        });
+        const program = await this.prisma.program.findFirst({
+            where: { programId, IsDeleted: false },
+        });
+        if (!session)
+            throw new common_1.NotFoundException('Academic session not found');
+        if (!program)
+            throw new common_1.NotFoundException('Program not found');
+        const yearMatch = String(session.academicSessionName || '').match(/(20\d{2})/);
+        const year = yearMatch?.[1] || String(session.startYear || new Date().getFullYear());
+        const collegeCode = this.normalizeCollegeCode(session.college?.collegeCode);
+        const programCode = this.normalizeProgramCode(program.programCode, program.programId);
+        return `${year}${collegeCode}${programCode}`;
     }
     async create(data) {
         const academicSessionId = Number(data.academicSessionId);
@@ -17244,6 +17373,7 @@ let EntranceExamService = class EntranceExamService {
             programCategoryId,
             programId,
             entrancePaperId,
+            rollNumberSequence: data.rollNumberSequence,
         });
         const dup = await this.db().findFirst({
             where: {
@@ -17313,6 +17443,7 @@ let EntranceExamService = class EntranceExamService {
             programCategoryId,
             programId,
             entrancePaperId,
+            rollNumberSequence: data.rollNumberSequence,
         });
         const dup = await this.db().findFirst({
             where: {
@@ -17408,8 +17539,20 @@ let EntranceExamService = class EntranceExamService {
                 academicSessionId,
                 programId,
             },
+            include: { entrancePaper: true },
             orderBy: [{ examDate: 'asc' }, { entranceExamId: 'asc' }],
         });
+    }
+    paperMasterLimits(mapped) {
+        const src = mapped?.entrancePaper || {};
+        const maxRaw = src.maxMarks ?? mapped?.maxMarks;
+        const minRaw = src.minMarks ?? mapped?.minMarks;
+        const maxMarks = maxRaw === '' || maxRaw == null ? null : Number(maxRaw);
+        const minMarks = minRaw === '' || minRaw == null ? null : Number(minRaw);
+        return {
+            maxMarks: Number.isFinite(maxMarks) ? maxMarks : null,
+            minMarks: Number.isFinite(minMarks) ? minMarks : null,
+        };
     }
     latestAttachment(attachments, type) {
         const hit = (attachments || []).find((a) => String(a.documentType || '').toUpperCase() === type);
@@ -17428,34 +17571,17 @@ let EntranceExamService = class EntranceExamService {
     paperResult(obtained, minMarks) {
         if (obtained == null || minMarks == null)
             return null;
-        return obtained >= minMarks ? 'PASS' : 'FAIL';
+        return obtained >= minMarks ? 'QUALIFY' : 'NOT QUALIFY';
     }
-    async ensurePaperRows(row, papers, createdBy) {
-        const existing = await this.studentPaperDb().findMany({
-            where: { entranceStudentId: row.entranceStudentId, IsDeleted: false },
+    async deleteUnmarkedPapers(entranceStudentIds) {
+        if (!entranceStudentIds.length)
+            return;
+        await this.studentPaperDb().deleteMany({
+            where: {
+                entranceStudentId: { in: entranceStudentIds },
+                obtainedMarks: null,
+            },
         });
-        const have = new Set(existing.map((p) => Number(p.entrancePaperId)));
-        for (const paper of papers) {
-            if (have.has(Number(paper.entrancePaperId)))
-                continue;
-            await this.studentPaperDb().create({
-                data: {
-                    entranceStudentId: row.entranceStudentId,
-                    studentId: row.studentId,
-                    entranceExamId: paper.entranceExamId,
-                    entrancePaperId: paper.entrancePaperId,
-                    entrancePaperName: paper.entrancePaperName,
-                    examDate: paper.examDate,
-                    fromTime: paper.fromTime,
-                    toTime: paper.toTime,
-                    maxMarks: 100,
-                    minMarks: 33,
-                    CreatedBy: createdBy,
-                    IsDeleted: false,
-                    IsActive: true,
-                },
-            });
-        }
     }
     async generateRollsFallback(academicSessionId, programCategoryId, programId, updatedBy) {
         await this.prisma.$executeRawUnsafe(`SELECT GET_LOCK('sp_bulk_generate_entrance_roll', 15)`);
@@ -17482,13 +17608,11 @@ let EntranceExamService = class EntranceExamService {
             if (!papers.length) {
                 throw new common_1.BadRequestException('Map at least one entrance paper for this program and session first');
             }
-            const year = String(session.startYear || new Date().getFullYear());
-            const numericCode = String(program.programCode || '').match(/^\d+$/)
-                ? Number(program.programCode)
-                : program.programId;
-            const prefix = `${year}686${this.pad2(numericCode)}`;
+            const storedSequence = String(papers.find((p) => p.rollNumberSequence)?.rollNumberSequence || '');
+            const fallbackPrefix = await this.buildRollNumberSequence(academicSessionId, programId);
+            const { prefix, startSerial } = this.parseRollSequence(storedSequence, fallbackPrefix);
             const existingRolls = await this.studentDb().findMany({
-                where: { IsDeleted: false, NOT: { entranceRollnumber: null } },
+                where: { IsDeleted: false },
                 select: { entranceRollnumber: true },
             });
             let maxSerial = 0;
@@ -17532,7 +17656,7 @@ let EntranceExamService = class EntranceExamService {
             });
             const pending = candidates.filter((s) => !alreadyIds.has(Number(s.StudentRegistrationId)));
             const skipped = candidates.length - pending.length;
-            let serial = maxSerial;
+            let serial = Math.max(maxSerial, startSerial - 1);
             for (const student of pending) {
                 serial += 1;
                 const created = await this.studentDb().create({
@@ -17562,14 +17686,12 @@ let EntranceExamService = class EntranceExamService {
                         IsActive: true,
                     },
                 });
-                await this.ensurePaperRows(created, papers, updatedBy);
             }
             const existingRows = await this.studentDb().findMany({
                 where: { IsDeleted: false, academicSessionId, programId },
+                select: { entranceStudentId: true },
             });
-            for (const row of existingRows) {
-                await this.ensurePaperRows(row, papers, updatedBy);
-            }
+            await this.deleteUnmarkedPapers(existingRows.map((r) => Number(r.entranceStudentId)));
             return {
                 generated: pending.length,
                 skipped,
@@ -17604,24 +17726,7 @@ let EntranceExamService = class EntranceExamService {
             },
             orderBy: { entranceRollnumber: 'asc' },
         });
-        for (const row of rows) {
-            await this.ensurePaperRows(row, papers, 'Admin User');
-        }
-        const fresh = await this.studentDb().findMany({
-            where: {
-                IsDeleted: false,
-                academicSessionId,
-                programCategoryId,
-                programId,
-            },
-            include: {
-                papers: {
-                    where: { IsDeleted: false },
-                    orderBy: { entranceStudentPaperId: 'asc' },
-                },
-            },
-            orderBy: { entranceRollnumber: 'asc' },
-        });
+        await this.deleteUnmarkedPapers(rows.map((r) => Number(r.entranceStudentId)));
         return {
             papers: papers.map((p) => ({
                 entranceExamId: p.entranceExamId,
@@ -17631,30 +17736,39 @@ let EntranceExamService = class EntranceExamService {
                 fromTime: p.fromTime,
                 toTime: p.toTime,
             })),
-            students: fresh.map((row) => ({
-                entranceStudentId: row.entranceStudentId,
-                studentId: row.studentId,
-                entranceRollnumber: row.entranceRollnumber,
-                registrationNo: row.registrationNo,
-                candidateName: row.candidateName,
-                fatherName: row.fatherName,
-                motherName: row.motherName,
-                stream: row.stream,
-                papers: (row.papers || []).map((p) => ({
-                    entranceStudentPaperId: p.entranceStudentPaperId,
-                    entranceExamId: p.entranceExamId,
-                    entrancePaperId: p.entrancePaperId,
-                    entrancePaperName: p.entrancePaperName,
-                    examDate: p.examDate,
-                    fromTime: p.fromTime,
-                    toTime: p.toTime,
-                    maxMarks: p.maxMarks,
-                    minMarks: p.minMarks,
-                    obtainedMarks: p.obtainedMarks,
-                    attendanceStatus: p.attendanceStatus,
-                    result: p.result,
-                })),
-            })),
+            students: rows.map((row) => {
+                const savedByPaper = new Map((row.papers || [])
+                    .filter((p) => p.obtainedMarks != null)
+                    .map((p) => [Number(p.entrancePaperId), p]));
+                return {
+                    entranceStudentId: row.entranceStudentId,
+                    studentId: row.studentId,
+                    entranceRollnumber: row.entranceRollnumber,
+                    registrationNo: row.registrationNo,
+                    candidateName: row.candidateName,
+                    fatherName: row.fatherName,
+                    motherName: row.motherName,
+                    stream: row.stream,
+                    papers: papers.map((paper) => {
+                        const saved = savedByPaper.get(Number(paper.entrancePaperId));
+                        const limits = this.paperMasterLimits(paper);
+                        return {
+                            entranceStudentPaperId: saved?.entranceStudentPaperId,
+                            entranceExamId: paper.entranceExamId,
+                            entrancePaperId: paper.entrancePaperId,
+                            entrancePaperName: paper.entrancePaperName,
+                            examDate: paper.examDate,
+                            fromTime: paper.fromTime,
+                            toTime: paper.toTime,
+                            maxMarks: limits.maxMarks ?? saved?.maxMarks ?? null,
+                            minMarks: limits.minMarks ?? saved?.minMarks ?? null,
+                            obtainedMarks: saved?.obtainedMarks ?? null,
+                            attendanceStatus: saved?.attendanceStatus ?? null,
+                            result: saved?.result ?? null,
+                        };
+                    }),
+                };
+            }),
         };
     }
     async saveMarks(data) {
@@ -17668,7 +17782,10 @@ let EntranceExamService = class EntranceExamService {
         const items = Array.isArray(data.students) ? data.students : [];
         if (!items.length)
             throw new common_1.BadRequestException('No student marks to save');
+        const mappedPapers = await this.mappedPapers(academicSessionId, programId);
+        const mappedById = new Map(mappedPapers.map((p) => [Number(p.entrancePaperId), p]));
         let updated = 0;
+        let filledCount = 0;
         for (const item of items) {
             const entranceStudentId = Number(item.entranceStudentId);
             const row = await this.studentDb().findFirst({
@@ -17686,38 +17803,82 @@ let EntranceExamService = class EntranceExamService {
                 const paperId = Number(paper.entrancePaperId);
                 const paperRowId = Number(paper.entranceStudentPaperId || 0);
                 const raw = paper.obtainedMarks;
-                const obtained = raw === '' || raw == null || raw === undefined ? null : Number(raw);
-                if (obtained != null && !Number.isFinite(obtained)) {
+                if (raw === '' || raw == null || raw === undefined || String(raw).trim() === '') {
+                    continue;
+                }
+                filledCount += 1;
+                const obtained = Number(raw);
+                if (!Number.isFinite(obtained)) {
                     throw new common_1.BadRequestException('Marks must be a number');
                 }
+                if (obtained < 0) {
+                    throw new common_1.BadRequestException('Marks cannot be negative');
+                }
+                const mapped = mappedById.get(paperId);
+                if (!mapped) {
+                    throw new common_1.BadRequestException('Paper is not mapped for this program and session');
+                }
+                const limits = this.paperMasterLimits(mapped);
+                if (limits.maxMarks == null || limits.minMarks == null) {
+                    throw new common_1.BadRequestException(`Set max and min marks for ${mapped.entrancePaperName || 'this paper'} in Entrance Paper Master first`);
+                }
+                const maxMarks = limits.maxMarks;
+                const minMarks = limits.minMarks;
                 const existing = await this.studentPaperDb().findFirst({
                     where: {
-                        IsDeleted: false,
                         entranceStudentId,
                         ...(paperRowId ? { entranceStudentPaperId: paperRowId } : { entrancePaperId: paperId }),
                     },
                 });
-                if (!existing)
-                    continue;
-                if (obtained != null && existing.maxMarks != null && obtained > Number(existing.maxMarks)) {
-                    throw new common_1.BadRequestException(`Marks for ${existing.entrancePaperName || 'paper'} cannot be more than ${existing.maxMarks}`);
+                if (obtained > maxMarks) {
+                    throw new common_1.BadRequestException(`Marks for ${existing?.entrancePaperName || mapped.entrancePaperName || 'paper'} cannot be more than ${maxMarks}`);
                 }
-                if (obtained != null && obtained < 0) {
-                    throw new common_1.BadRequestException('Marks cannot be negative');
+                const attendanceStatus = paper.attendanceStatus
+                    ? String(paper.attendanceStatus).trim() || null
+                    : existing?.attendanceStatus ?? null;
+                const result = this.paperResult(obtained, minMarks);
+                if (existing) {
+                    await this.studentPaperDb().update({
+                        where: { entranceStudentPaperId: existing.entranceStudentPaperId },
+                        data: {
+                            obtainedMarks: obtained,
+                            maxMarks,
+                            minMarks,
+                            attendanceStatus,
+                            result,
+                            IsDeleted: false,
+                            IsActive: true,
+                            UpdatedBy: updatedBy,
+                        },
+                    });
                 }
-                await this.studentPaperDb().update({
-                    where: { entranceStudentPaperId: existing.entranceStudentPaperId },
-                    data: {
-                        obtainedMarks: obtained,
-                        attendanceStatus: paper.attendanceStatus
-                            ? String(paper.attendanceStatus).trim() || null
-                            : existing.attendanceStatus,
-                        result: this.paperResult(obtained, existing.minMarks == null ? null : Number(existing.minMarks)),
-                        UpdatedBy: updatedBy,
-                    },
-                });
+                else {
+                    await this.studentPaperDb().create({
+                        data: {
+                            entranceStudentId,
+                            studentId: row.studentId,
+                            entranceExamId: mapped.entranceExamId,
+                            entrancePaperId: paperId,
+                            entrancePaperName: mapped.entrancePaperName,
+                            examDate: mapped.examDate,
+                            fromTime: mapped.fromTime,
+                            toTime: mapped.toTime,
+                            maxMarks,
+                            minMarks,
+                            obtainedMarks: obtained,
+                            attendanceStatus,
+                            result,
+                            CreatedBy: updatedBy,
+                            IsDeleted: false,
+                            IsActive: true,
+                        },
+                    });
+                }
                 updated += 1;
             }
+        }
+        if (!filledCount) {
+            throw new common_1.BadRequestException('Fill at least one mark to save');
         }
         return { message: 'Entrance marks saved', updated };
     }
@@ -17732,16 +17893,11 @@ let EntranceExamService = class EntranceExamService {
                 IsDeleted: false,
                 ...(roll ? { entranceRollnumber: roll } : { studentId }),
             },
-            include: {
-                papers: {
-                    where: { IsDeleted: false },
-                    orderBy: [{ examDate: 'asc' }, { entranceStudentPaperId: 'asc' }],
-                },
-            },
         });
         if (!row) {
             throw new common_1.NotFoundException('Entrance roll number is not generated for this student. Run bulk generate first.');
         }
+        const papers = await this.mappedPapers(row.academicSessionId, row.programId);
         return {
             studentId: row.studentId,
             entranceRollnumber: row.entranceRollnumber,
@@ -17758,8 +17914,8 @@ let EntranceExamService = class EntranceExamService {
             stream: row.stream,
             photoUrl: row.photoUrl,
             signatureUrl: row.signatureUrl,
-            examDate: row.papers?.[0]?.examDate || null,
-            papers: (row.papers || []).map((p) => ({
+            examDate: papers?.[0]?.examDate || null,
+            papers: papers.map((p) => ({
                 entranceExamId: p.entranceExamId,
                 entrancePaperId: p.entrancePaperId,
                 entrancePaperName: p.entrancePaperName,

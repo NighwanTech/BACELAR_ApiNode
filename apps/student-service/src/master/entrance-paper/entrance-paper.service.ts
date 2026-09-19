@@ -10,11 +10,32 @@ export class EntrancePaperService {
     return (this.prisma as any).entrancePaperMaster;
   }
 
+  private parseMarks(value: any, label: string) {
+    if (value === '' || value == null || value === undefined) {
+      throw new BadRequestException(`${label} is required`);
+    }
+    const n = Number(value);
+    if (!Number.isFinite(n) || n < 0) {
+      throw new BadRequestException(`${label} must be a valid number`);
+    }
+    return n;
+  }
+
+  private parseLimits(data: any) {
+    const maxMarks = this.parseMarks(data.maxMarks, 'Max marks');
+    const minMarks = this.parseMarks(data.minMarks, 'Min marks');
+    if (minMarks > maxMarks) {
+      throw new BadRequestException('Min marks cannot be greater than max marks');
+    }
+    return { maxMarks, minMarks };
+  }
+
   async create(data: any) {
     const entrancePaperName = String(data.entrancePaperName || '').trim();
     if (!entrancePaperName) {
       throw new BadRequestException('entrancePaperName is required');
     }
+    const { maxMarks, minMarks } = this.parseLimits(data);
     const existing = await this.db().findFirst({
       where: { entrancePaperName, IsDeleted: false },
     });
@@ -24,6 +45,8 @@ export class EntrancePaperService {
     return this.db().create({
       data: {
         entrancePaperName,
+        maxMarks,
+        minMarks,
         CreatedBy: data.CreatedBy || 'Admin User',
         Remarks: data.Remarks || null,
         IsActive: data.IsActive !== undefined ? Boolean(data.IsActive) : true,
@@ -56,12 +79,15 @@ export class EntrancePaperService {
       });
       if (dup) throw new ConflictException('Entrance paper name already exists');
     }
+    const limits =
+      data.maxMarks !== undefined || data.minMarks !== undefined ? this.parseLimits(data) : null;
     return this.db().update({
       where: { entrancePaperId },
       data: {
         ...(data.entrancePaperName !== undefined
           ? { entrancePaperName: String(data.entrancePaperName).trim() }
           : {}),
+        ...(limits ? { maxMarks: limits.maxMarks, minMarks: limits.minMarks } : {}),
         UpdatedBy: data.UpdatedBy,
         IsActive: data.IsActive,
         Remarks: data.Remarks,

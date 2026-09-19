@@ -9,6 +9,8 @@ ALTER TABLE `students`
 CREATE TABLE IF NOT EXISTS `entrancePaperMaster` (
   `entrancePaperId` INTEGER NOT NULL AUTO_INCREMENT,
   `entrancePaperName` VARCHAR(100) NOT NULL,
+  `maxMarks` DOUBLE NULL,
+  `minMarks` DOUBLE NULL,
   `CreatedOn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `CreatedBy` VARCHAR(255) NOT NULL,
   `UpdatedOn` DATETIME(3) NULL,
@@ -35,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `entranceExamMaster` (
   `examDate` VARCHAR(50) NULL,
   `fromTime` VARCHAR(50) NULL,
   `toTime` VARCHAR(50) NULL,
+  `rollNumberSequence` VARCHAR(50) NULL,
   `CreatedOn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `CreatedBy` VARCHAR(255) NOT NULL,
   `UpdatedOn` DATETIME(3) NULL,

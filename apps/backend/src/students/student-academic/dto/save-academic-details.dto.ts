@@ -113,6 +113,15 @@ export class SaveQualificationDto {
   @IsOptional()
   stream?: string;
 
+  @ApiProperty({
+    example: 'B.A.',
+    description: 'Graduation / PG degree name. Free text, not the admission program.',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  programName?: string;
+
   @ApiProperty({ type: [SaveSubjectDto], description: 'Subjects list', required: false })
   @IsArray()
   @IsOptional()
