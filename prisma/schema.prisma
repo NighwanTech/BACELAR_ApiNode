@@ -1515,11 +1515,6 @@ model PaperDetailMaster {
   year              YearMaster?      @relation(fields: [yearId], references: [yearId], onDelete: SetNull)
   semId             Int?
   semester          SemesterMaster?  @relation(fields: [semId], references: [semId], onDelete: SetNull)
-
-  marksTypeId       Int?
-  marksTypeRelation MarksTypeMaster? @relation(fields: [marksTypeId], references: [marksTypeId], onDelete: SetNull)
-  marksTypeName     String?          @db.VarChar(100)
-
   subjectName String? @db.VarChar(255)
   paperType   String? @db.VarChar(100)
   paperName   String  @db.VarChar(255)
@@ -1562,7 +1557,6 @@ model PaperDetailMaster {
   @@index([programId])
   @@index([yearId])
   @@index([semId])
-  @@index([marksTypeId])
   @@map("paperDetailMaster")
 }
 
@@ -2161,8 +2155,6 @@ model MarksTypeMaster {
   DeletedOn      DateTime?
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
-
-  paperDetails PaperDetailMaster[]
 
   @@map("marksTypeMaster")
 }

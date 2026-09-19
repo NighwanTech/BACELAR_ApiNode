@@ -15618,7 +15618,6 @@ let PaperDetailService = class PaperDetailService {
     getIncludeRelations() {
         return {
             paperTypeRelation: true,
-            marksTypeRelation: true,
             examTypeRelation: true,
             program: {
                 include: {
@@ -15639,24 +15638,6 @@ let PaperDetailService = class PaperDetailService {
                     },
                 },
             },
-        };
-    }
-    async resolveMarksType(marksTypeId, marksTypeName) {
-        if (!marksTypeId) {
-            return {
-                marksTypeId: null,
-                marksTypeName: marksTypeName ? String(marksTypeName).trim() || null : null,
-            };
-        }
-        const marksTypeObj = await this.prisma.marksTypeMaster.findFirst({
-            where: { marksTypeId: Number(marksTypeId), IsDeleted: false },
-        });
-        if (!marksTypeObj) {
-            throw new common_1.NotFoundException(`Marks type with ID ${marksTypeId} not found`);
-        }
-        return {
-            marksTypeId: marksTypeObj.marksTypeId,
-            marksTypeName: marksTypeObj.marksTypeName,
         };
     }
     async create(data) {
@@ -15700,7 +15681,6 @@ let PaperDetailService = class PaperDetailService {
                 throw new common_1.NotFoundException(`Semester with ID ${data.semId} not found`);
             }
         }
-        const marksType = await this.resolveMarksType(data.marksTypeId, data.marksTypeName);
         if (data.paperCode) {
             const existingCode = await this.paperDb().findFirst({
                 where: { paperCode: data.paperCode, IsDeleted: false },
@@ -15716,8 +15696,6 @@ let PaperDetailService = class PaperDetailService {
                 programId: data.programId || null,
                 yearId: data.yearId || null,
                 semId: data.semId || null,
-                marksTypeId: marksType.marksTypeId,
-                marksTypeName: marksType.marksTypeName,
                 subjectName: data.subjectName || null,
                 paperType: data.paperType || null,
                 paperName: data.paperName,
@@ -15804,9 +15782,6 @@ let PaperDetailService = class PaperDetailService {
                 throw new common_1.NotFoundException(`Semester with ID ${data.semId} not found`);
             }
         }
-        const marksType = data.marksTypeId !== undefined || data.marksTypeName !== undefined
-            ? await this.resolveMarksType(data.marksTypeId, data.marksTypeName)
-            : null;
         if (data.paperCode) {
             const existingCode = await this.paperDb().findFirst({
                 where: {
@@ -15827,8 +15802,6 @@ let PaperDetailService = class PaperDetailService {
                 programId: data.programId !== undefined ? (data.programId || null) : undefined,
                 yearId: data.yearId !== undefined ? (data.yearId || null) : undefined,
                 semId: data.semId !== undefined ? (data.semId || null) : undefined,
-                marksTypeId: marksType ? marksType.marksTypeId : undefined,
-                marksTypeName: marksType ? marksType.marksTypeName : undefined,
                 subjectName: data.subjectName,
                 paperType: data.paperType,
                 paperName: data.paperName,
