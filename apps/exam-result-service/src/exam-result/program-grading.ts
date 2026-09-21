@@ -46,7 +46,14 @@ export function resolveGradeScheme(program?: {
     if (key.includes('BSCAG') || key.includes('BBA') || key.includes('BCA') || key.includes('BPED') || key.startsWith('MA')) {
       return 'PASS_40';
     }
-    if (key.includes('BCOM') || key === 'BSC' || key === 'BA') {
+    if (
+      key.includes('BCOM') ||
+      key.includes('BACHELOROFCOMMERCE') ||
+      key === 'BSC' ||
+      key === 'BA' ||
+      key.includes('BACHELOROFART') ||
+      (key.includes('BACHELOROFSCIENCE') && !key.includes('AG'))
+    ) {
       return 'PASS_33';
     }
     return null;
@@ -113,7 +120,7 @@ function round2(n: number) {
  * Paper %:
  * - Internal (sessional) + End-sem (theory) both filled → 30% IA + 70% ESE (university weightage)
  * - Only one component filled → that component's %
- * - Practical: extra rule — must be at least 40% or the paper is FAIL
+ * - Practical: extra rule — must be at least 40% or the paper is PROMOTED WITH BACK
  */
 export function computePaperGrade(
   marks: PaperMarkParts,
@@ -165,7 +172,7 @@ export function computePaperGrade(
       percentage,
       grade: null,
       gradePoint: null,
-      result: absent ? 'FAIL' : null,
+      result: absent ? 'PROMOTED WITH BACK' : null,
       creditObt: null,
     };
   }
@@ -190,7 +197,7 @@ export function computePaperGrade(
     percentage,
     grade: letter.grade,
     gradePoint: letter.gradePoint,
-    result: failed ? 'FAIL' : 'PASS',
+    result: failed ? 'PROMOTED WITH BACK' : 'PASS',
     creditObt: creditMax == null ? null : failed ? 0 : creditMax,
   };
 }

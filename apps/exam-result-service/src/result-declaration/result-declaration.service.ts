@@ -491,7 +491,7 @@ export class ResultDeclarationService {
         studentName: first.studentName,
         fatherName: first.fatherName,
         motherName: first.motherName,
-        examCategory: 'Regular',
+        examCategory: first.examTypeName || null,
         courseName,
         programName: declaration.programName || first.programName,
         yearName: declaration.yearName || first.yearName,

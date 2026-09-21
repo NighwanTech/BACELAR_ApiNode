@@ -252,7 +252,7 @@ export class ExamResultService {
     };
   }
 
-  /** Fill grade / GP / % / PASS-FAIL from the program's university chart. */
+  /** Fill grade / GP / % / PASS or PROMOTED WITH BACK from the program's university chart. */
   private applyProgramGrading(payload: any, extras: Record<string, any> = {}) {
     const scheme = resolveGradeScheme({
       programCode: extras.programCode,
@@ -262,13 +262,13 @@ export class ExamResultService {
     const graded = computePaperGrade(
       {
         theoryExternalObt: payload.theoryExternalObt,
-        theoryExternalMax: payload.theoryExternalMax,
+        theoryExternalMax: payload.theoryExternalMax ?? extras.theoryExternalMax,
         sessionalInternalObt: payload.sessionalInternalObt,
-        sessionalInternalMax: payload.sessionalInternalMax,
+        sessionalInternalMax: payload.sessionalInternalMax ?? extras.sessionalInternalMax,
         practicalObt: payload.practicalObt,
-        practicalMax: payload.practicalMax,
+        practicalMax: payload.practicalMax ?? extras.practicalMax,
         attendanceStatus: payload.attendanceStatus,
-        creditMax: payload.creditMax,
+        creditMax: payload.creditMax ?? extras.creditMax,
         paperType: payload.paperType,
       },
       scheme,
