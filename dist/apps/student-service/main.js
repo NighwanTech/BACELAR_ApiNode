@@ -322,9 +322,9 @@ let StudentsController = class StudentsController {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
-    async findAll() {
+    async findAll(data) {
         try {
-            return await this.studentsService.findAll();
+            return await this.studentsService.findAll(data?.programId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -417,8 +417,9 @@ __decorate([
 ], StudentsController.prototype, "create", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'find_all_students' }),
+    __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StudentsController.prototype, "findAll", null);
 __decorate([
@@ -760,11 +761,15 @@ let StudentsService = class StudentsService {
             student: sanitized,
         };
     }
-    async findAll() {
+    async findAll(programId) {
+        const whereClause = {
+            IsDeleted: false,
+        };
+        if (programId) {
+            whereClause.programId = Number(programId);
+        }
         const rows = await this.prisma.student.findMany({
-            where: {
-                IsDeleted: false,
-            },
+            where: whereClause,
             include: {
                 loginMaster: true,
                 program: {
@@ -7464,7 +7469,7 @@ let StudentAttendanceService = class StudentAttendanceService {
             }
         }
         if (!studentsList.length) {
-            let students = await this.prisma.student.findMany({
+            const students = await this.prisma.student.findMany({
                 where: {
                     IsDeleted: false,
                     programId,
@@ -7474,14 +7479,6 @@ let StudentAttendanceService = class StudentAttendanceService {
                 },
                 orderBy: { StudentRegistrationId: 'asc' },
             });
-            if (!students.length) {
-                students = await this.prisma.student.findMany({
-                    where: { IsDeleted: false },
-                    include: { studentProfile: true },
-                    take: 50,
-                    orderBy: { StudentRegistrationId: 'asc' },
-                });
-            }
             studentsList = students.map((s, index) => ({
                 srNo: index + 1,
                 attendanceDetailId: null,

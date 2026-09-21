@@ -273,8 +273,8 @@ let StudentsController = class StudentsController {
     create(createStudentDto) {
         return this.studentClient.send({ cmd: 'create_student' }, createStudentDto);
     }
-    findAll() {
-        return this.studentClient.send({ cmd: 'find_all_students' }, {});
+    findAll(programId) {
+        return this.studentClient.send({ cmd: 'find_all_students' }, { programId: programId ? Number(programId) : undefined });
     }
     findOne(id) {
         return this.studentClient.send({ cmd: 'find_one_student' }, { StudentRegistrationId: id });
@@ -353,9 +353,11 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all active students (where IsDeleted is false)' }),
+    (0, swagger_1.ApiQuery)({ name: 'programId', required: false }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all active students' }),
+    __param(0, (0, common_1.Query)('programId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
 ], StudentsController.prototype, "findAll", null);
 __decorate([

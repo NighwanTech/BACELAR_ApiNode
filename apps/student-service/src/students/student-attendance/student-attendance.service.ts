@@ -356,9 +356,9 @@ export class StudentAttendanceService {
       }
     }
 
-    // Level 4: Fallback to all active Students (filtered by programId if present, else all active students)
+    // Level 4: Search Students by programId (only for the requested program)
     if (!studentsList.length) {
-      let students = await this.prisma.student.findMany({
+      const students = await this.prisma.student.findMany({
         where: {
           IsDeleted: false,
           programId,
@@ -368,16 +368,6 @@ export class StudentAttendanceService {
         },
         orderBy: { StudentRegistrationId: 'asc' },
       });
-
-      if (!students.length) {
-        // Ultimate fallback: get any active students from database
-        students = await this.prisma.student.findMany({
-          where: { IsDeleted: false },
-          include: { studentProfile: true },
-          take: 50,
-          orderBy: { StudentRegistrationId: 'asc' },
-        });
-      }
 
       studentsList = students.map((s: any, index: number) => ({
         srNo: index + 1,

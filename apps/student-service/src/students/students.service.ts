@@ -308,11 +308,16 @@ export class StudentsService {
     };
   }
 
-  async findAll() {
+  async findAll(programId?: number) {
+    const whereClause: any = {
+      IsDeleted: false,
+    };
+    if (programId) {
+      whereClause.programId = Number(programId);
+    }
+
     const rows = await this.prisma.student.findMany({
-      where: {
-        IsDeleted: false,
-      },
+      where: whereClause,
       include: {
         loginMaster: true,
         program: {
