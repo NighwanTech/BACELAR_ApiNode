@@ -1,6 +1,7 @@
 import { Injectable, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
 import { isActiveOnly } from '../common/active-only';
+import { computePaperGrade, resolveGradeScheme } from './program-grading';
 
 @Injectable()
 export class ExamResultService {
@@ -133,6 +134,8 @@ export class ExamResultService {
       snapshot.programId = Number(data.programId);
       if (program) {
         snapshot.programName = program.programName;
+        snapshot.programCode = program.programCode;
+        snapshot.programShortName = program.programShortName;
         snapshot.programCategoryId = program.programCategoryId;
         snapshot.programCategoryName = program.programCategory?.programCategoryName || null;
       }
@@ -249,6 +252,114 @@ export class ExamResultService {
     };
   }
 
+  /** Fill grade / GP / % / PASS or PROMOTED WITH BACK from the program's university chart. */
+  private applyProgramGrading(payload: any, extras: Record<string, any> = {}) {
+    const scheme = resolveGradeScheme({
+      programCode: extras.programCode,
+    });
+    const graded = computePaperGrade(
+      {
+        theoryExternalObt: payload.theoryExternalObt,
+        theoryExternalMax: payload.theoryExternalMax ?? extras.theoryExternalMax,
+        theoryExternalMin: payload.theoryExternalMin ?? extras.theoryExternalMin,
+        sessionalInternalObt: payload.sessionalInternalObt,
+        sessionalInternalMax: payload.sessionalInternalMax ?? extras.sessionalInternalMax,
+        sessionalInternalMin: payload.sessionalInternalMin ?? extras.sessionalInternalMin,
+        practicalObt: payload.practicalObt,
+        practicalMax: payload.practicalMax ?? extras.practicalMax,
+        practicalMin: payload.practicalMin ?? extras.practicalMin,
+        attendanceStatus: payload.attendanceStatus,
+        creditMax: payload.creditMax ?? extras.creditMax,
+        paperType: payload.paperType,
+      },
+      scheme,
+    );
+    return {
+      ...payload,
+      totalMarks: graded.totalMarks,
+      percentage: graded.percentage,
+      grade: graded.grade,
+      gradePoint: graded.gradePoint,
+      result: graded.result,
+      creditObt: graded.creditObt,
+    };
+  }
+
+  /**
+   * SGPA = Σ(credit × GP) / Σ credits for this semester (non-qualifying papers).
+   * CGPA = same formula across all saved papers of the student in the program.
+   * Conversion % = CGPA × 9.5 is not stored on the paper row (paper.percentage is marks %).
+   */
+  private async refreshSemesterGpa(row: {
+    studentId?: number | null;
+    academicSessionId?: number | null;
+    programId?: number | null;
+    yearId?: number | null;
+    semId?: number | null;
+  }) {
+    const studentId = Number(row.studentId || 0);
+    if (!studentId) return;
+
+    const papers = await this.examResultDb().findMany({
+      where: {
+        studentId,
+        IsDeleted: false,
+        ...(row.programId ? { programId: Number(row.programId) } : {}),
+      },
+      select: {
+        examResultId: true,
+        academicSessionId: true,
+        yearId: true,
+        semId: true,
+        paperType: true,
+        creditMax: true,
+        gradePoint: true,
+      },
+    });
+
+    const gpaOf = (list: any[]) => {
+      let weighted = 0;
+      let credits = 0;
+      for (const p of list) {
+        if (this.isQualifyingPaper(p.paperType)) continue;
+        const gp = this.toNum(p.gradePoint);
+        const cr = this.toNum(p.creditMax);
+        if (gp == null || cr == null || cr <= 0) continue;
+        weighted += cr * gp;
+        credits += cr;
+      }
+      if (!credits) return null;
+      return Math.round((weighted / credits) * 100) / 100;
+    };
+
+    const cgpa = gpaOf(papers);
+    const sameSem = papers.filter(
+      (p: any) =>
+        Number(p.academicSessionId || 0) === Number(row.academicSessionId || 0) &&
+        Number(p.yearId || 0) === Number(row.yearId || 0) &&
+        Number(p.semId || 0) === Number(row.semId || 0),
+    );
+    const sgpa = gpaOf(sameSem);
+
+    const semIds = sameSem.map((p: any) => p.examResultId);
+    if (semIds.length) {
+      await this.examResultDb().updateMany({
+        where: { examResultId: { in: semIds } },
+        data: { sgpa, cgpa },
+      });
+    }
+
+    const otherIds = papers
+      .map((p: any) => p.examResultId)
+      .filter((id: number) => !semIds.includes(id));
+    if (otherIds.length) {
+      await this.examResultDb().updateMany({
+        where: { examResultId: { in: otherIds } },
+        data: { cgpa },
+      });
+    }
+  }
+
   async create(data: any) {
     if (!data?.studentId) {
       throw new NotFoundException('studentId is required');
@@ -257,7 +368,7 @@ export class ExamResultService {
     const studentSnap = await this.snapshotStudent(Number(data.studentId));
     const masterSnap = await this.snapshotMasters(data);
     const extras = { ...studentSnap, ...masterSnap };
-    const payload = this.buildPayload(data, extras);
+    const payload = this.applyProgramGrading(this.buildPayload(data, extras), extras);
 
     const existing = await this.examResultDb().findFirst({
       where: {
@@ -275,7 +386,7 @@ export class ExamResultService {
       throw new ConflictException('Exam result already exists for this student and paper');
     }
 
-    return this.examResultDb().create({
+    const created = await this.examResultDb().create({
       data: {
         ...payload,
         CreatedBy: data.CreatedBy,
@@ -283,6 +394,8 @@ export class ExamResultService {
         IsDeleted: false,
       },
     });
+    await this.refreshSemesterGpa(created);
+    return created;
   }
 
   async findAll(filters: any = {}) {
@@ -758,9 +871,10 @@ export class ExamResultService {
       ...data,
       studentId: data.studentId ?? existing.studentId,
     };
-    const payload = this.buildPayload(merged, { ...studentSnap, ...masterSnap });
+    const extras = { ...studentSnap, ...masterSnap };
+    const payload = this.applyProgramGrading(this.buildPayload(merged, extras), extras);
 
-    return this.examResultDb().update({
+    const updated = await this.examResultDb().update({
       where: { examResultId },
       data: {
         ...payload,
@@ -769,6 +883,8 @@ export class ExamResultService {
         Remarks: data.Remarks !== undefined ? data.Remarks : existing.Remarks,
       },
     });
+    await this.refreshSemesterGpa(updated);
+    return updated;
   }
 
   async updateStatus(examResultId: number, IsActive: boolean, UpdatedBy: string) {

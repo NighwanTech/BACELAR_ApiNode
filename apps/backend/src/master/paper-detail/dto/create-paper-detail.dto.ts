@@ -28,17 +28,6 @@ export class CreatePaperDetailDto {
   @IsOptional()
   semId?: number;
 
-  @ApiProperty({ example: 1, description: 'ID of the associated marks type (MarksTypeMaster)', required: false })
-  @Type(() => Number)
-  @IsInt()
-  @IsOptional()
-  marksTypeId?: number;
-
-  @ApiProperty({ example: 'THEORY', description: 'Marks type name (saved from MarksTypeMaster)', required: false })
-  @IsString()
-  @IsOptional()
-  marksTypeName?: string;
-
   @ApiProperty({ example: 'Mathematics', description: 'Subject Name', required: false })
   @IsString()
   @IsOptional()

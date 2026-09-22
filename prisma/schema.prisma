@@ -451,6 +451,74 @@ model FeeTypeMaster {
   @@map("feeTypeMaster")
 }
 
+model EmployeTypeMaster {
+  employeTypeId   Int       @id @default(autoincrement())
+  employeTypeName String    @unique @db.VarChar(100)
+  CreatedOn       DateTime  @default(now())
+  CreatedBy       String    @db.VarChar(255)
+  UpdatedOn       DateTime? @updatedAt
+  UpdatedBy       String?   @db.VarChar(255)
+  IsActive        Boolean   @default(true)
+  IsDeleted       Boolean   @default(false)
+  DeletedRemarks  String?   @db.VarChar(255)
+  DeletedOn       DateTime?
+  DeletedBy       String?   @db.VarChar(255)
+  Remarks         String?   @db.VarChar(255)
+
+  @@map("employeTypeMaster")
+}
+
+model EmployeeCategoryMaster {
+  employeeCategoryId   Int       @id @default(autoincrement())
+  employeeCategoryName String    @unique @db.VarChar(100)
+  CreatedOn            DateTime  @default(now())
+  CreatedBy            String    @db.VarChar(255)
+  UpdatedOn            DateTime? @updatedAt
+  UpdatedBy            String?   @db.VarChar(255)
+  IsActive             Boolean   @default(true)
+  IsDeleted            Boolean   @default(false)
+  DeletedRemarks       String?   @db.VarChar(255)
+  DeletedOn            DateTime?
+  DeletedBy            String?   @db.VarChar(255)
+  Remarks              String?   @db.VarChar(255)
+
+  @@map("employeeCategoryMaster")
+}
+
+model EmployeeDesignationMaster {
+  employeeDesignationId   Int       @id @default(autoincrement())
+  employeeDesignationName String    @unique @db.VarChar(100)
+  CreatedOn               DateTime  @default(now())
+  CreatedBy               String    @db.VarChar(255)
+  UpdatedOn               DateTime? @updatedAt
+  UpdatedBy               String?   @db.VarChar(255)
+  IsActive                Boolean   @default(true)
+  IsDeleted               Boolean   @default(false)
+  DeletedRemarks          String?   @db.VarChar(255)
+  DeletedOn               DateTime?
+  DeletedBy               String?   @db.VarChar(255)
+  Remarks                 String?   @db.VarChar(255)
+
+  @@map("employeeDesignationMaster")
+}
+
+model EmployeeDepartmentMaster {
+  employeeDepartmentId   Int       @id @default(autoincrement())
+  employeeDepartmentName String    @unique @db.VarChar(100)
+  CreatedOn              DateTime  @default(now())
+  CreatedBy              String    @db.VarChar(255)
+  UpdatedOn              DateTime? @updatedAt
+  UpdatedBy              String?   @db.VarChar(255)
+  IsActive               Boolean   @default(true)
+  IsDeleted              Boolean   @default(false)
+  DeletedRemarks         String?   @db.VarChar(255)
+  DeletedOn              DateTime?
+  DeletedBy              String?   @db.VarChar(255)
+  Remarks                String?   @db.VarChar(255)
+
+  @@map("employeeDepartmentMaster")
+}
+
 model GrevianceTypeMaster {
   grevianceTypeId   Int       @id @default(autoincrement())
   grevianceTypeName String    @unique @db.VarChar(100)
@@ -1515,11 +1583,6 @@ model PaperDetailMaster {
   year              YearMaster?      @relation(fields: [yearId], references: [yearId], onDelete: SetNull)
   semId             Int?
   semester          SemesterMaster?  @relation(fields: [semId], references: [semId], onDelete: SetNull)
-
-  marksTypeId       Int?
-  marksTypeRelation MarksTypeMaster? @relation(fields: [marksTypeId], references: [marksTypeId], onDelete: SetNull)
-  marksTypeName     String?          @db.VarChar(100)
-
   subjectName String? @db.VarChar(255)
   paperType   String? @db.VarChar(100)
   paperName   String  @db.VarChar(255)
@@ -1562,7 +1625,6 @@ model PaperDetailMaster {
   @@index([programId])
   @@index([yearId])
   @@index([semId])
-  @@index([marksTypeId])
   @@map("paperDetailMaster")
 }
 
@@ -2161,8 +2223,6 @@ model MarksTypeMaster {
   DeletedOn      DateTime?
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
-
-  paperDetails PaperDetailMaster[]
 
   @@map("marksTypeMaster")
 }

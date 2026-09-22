@@ -36,8 +36,8 @@ const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
 const students_module_1 = __webpack_require__(11);
 const master_module_1 = __webpack_require__(55);
-const website_module_1 = __webpack_require__(159);
-const admin_module_1 = __webpack_require__(214);
+const website_module_1 = __webpack_require__(171);
+const admin_module_1 = __webpack_require__(226);
 let StudentServiceModule = class StudentServiceModule {
 };
 exports.StudentServiceModule = StudentServiceModule;
@@ -322,9 +322,9 @@ let StudentsController = class StudentsController {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
-    async findAll() {
+    async findAll(data) {
         try {
-            return await this.studentsService.findAll();
+            return await this.studentsService.findAll(data?.programId);
         }
         catch (error) {
             return { status: 'error', message: error.message || 'Unknown error' };
@@ -417,8 +417,9 @@ __decorate([
 ], StudentsController.prototype, "create", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'find_all_students' }),
+    __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StudentsController.prototype, "findAll", null);
 __decorate([
@@ -760,11 +761,15 @@ let StudentsService = class StudentsService {
             student: sanitized,
         };
     }
-    async findAll() {
+    async findAll(programId) {
+        const whereClause = {
+            IsDeleted: false,
+        };
+        if (programId) {
+            whereClause.programId = Number(programId);
+        }
         const rows = await this.prisma.student.findMany({
-            where: {
-                IsDeleted: false,
-            },
+            where: whereClause,
             include: {
                 loginMaster: true,
                 program: {
@@ -7464,7 +7469,7 @@ let StudentAttendanceService = class StudentAttendanceService {
             }
         }
         if (!studentsList.length) {
-            let students = await this.prisma.student.findMany({
+            const students = await this.prisma.student.findMany({
                 where: {
                     IsDeleted: false,
                     programId,
@@ -7474,14 +7479,6 @@ let StudentAttendanceService = class StudentAttendanceService {
                 },
                 orderBy: { StudentRegistrationId: 'asc' },
             });
-            if (!students.length) {
-                students = await this.prisma.student.findMany({
-                    where: { IsDeleted: false },
-                    include: { studentProfile: true },
-                    take: 50,
-                    orderBy: { StudentRegistrationId: 'asc' },
-                });
-            }
             studentsList = students.map((s, index) => ({
                 srNo: index + 1,
                 attendanceDetailId: null,
@@ -8210,33 +8207,37 @@ const subject_module_1 = __webpack_require__(66);
 const program_module_1 = __webpack_require__(69);
 const board_module_1 = __webpack_require__(72);
 const fee_type_module_1 = __webpack_require__(75);
-const qualification_module_1 = __webpack_require__(78);
-const admission_session_module_1 = __webpack_require__(81);
-const academic_session_module_1 = __webpack_require__(84);
-const program_fee_config_module_1 = __webpack_require__(87);
-const college_module_1 = __webpack_require__(90);
-const zipcode_module_1 = __webpack_require__(93);
-const program_eligibility_module_1 = __webpack_require__(96);
-const stream_module_1 = __webpack_require__(99);
-const program_subject_module_1 = __webpack_require__(102);
-const examination_details_module_1 = __webpack_require__(105);
-const exam_scheme_module_1 = __webpack_require__(108);
-const paper_type_module_1 = __webpack_require__(111);
-const exam_type_module_1 = __webpack_require__(114);
-const year_module_1 = __webpack_require__(117);
-const semester_module_1 = __webpack_require__(120);
-const paper_detail_module_1 = __webpack_require__(123);
-const exam_subject_module_1 = __webpack_require__(126);
-const role_module_1 = __webpack_require__(129);
-const marks_type_module_1 = __webpack_require__(132);
-const entrance_paper_module_1 = __webpack_require__(135);
-const entrance_exam_module_1 = __webpack_require__(138);
-const exam_greviance_price_module_1 = __webpack_require__(141);
-const greviance_type_module_1 = __webpack_require__(144);
-const month_module_1 = __webpack_require__(147);
-const praman_module_1 = __webpack_require__(150);
-const praman_sub_parameter_module_1 = __webpack_require__(153);
-const praman_response_module_1 = __webpack_require__(156);
+const employe_type_module_1 = __webpack_require__(78);
+const employee_category_module_1 = __webpack_require__(81);
+const employee_designation_module_1 = __webpack_require__(84);
+const employee_department_module_1 = __webpack_require__(87);
+const qualification_module_1 = __webpack_require__(90);
+const admission_session_module_1 = __webpack_require__(93);
+const academic_session_module_1 = __webpack_require__(96);
+const program_fee_config_module_1 = __webpack_require__(99);
+const college_module_1 = __webpack_require__(102);
+const zipcode_module_1 = __webpack_require__(105);
+const program_eligibility_module_1 = __webpack_require__(108);
+const stream_module_1 = __webpack_require__(111);
+const program_subject_module_1 = __webpack_require__(114);
+const examination_details_module_1 = __webpack_require__(117);
+const exam_scheme_module_1 = __webpack_require__(120);
+const paper_type_module_1 = __webpack_require__(123);
+const exam_type_module_1 = __webpack_require__(126);
+const year_module_1 = __webpack_require__(129);
+const semester_module_1 = __webpack_require__(132);
+const paper_detail_module_1 = __webpack_require__(135);
+const exam_subject_module_1 = __webpack_require__(138);
+const role_module_1 = __webpack_require__(141);
+const marks_type_module_1 = __webpack_require__(144);
+const entrance_paper_module_1 = __webpack_require__(147);
+const entrance_exam_module_1 = __webpack_require__(150);
+const exam_greviance_price_module_1 = __webpack_require__(153);
+const greviance_type_module_1 = __webpack_require__(156);
+const month_module_1 = __webpack_require__(159);
+const praman_module_1 = __webpack_require__(162);
+const praman_sub_parameter_module_1 = __webpack_require__(165);
+const praman_response_module_1 = __webpack_require__(168);
 let MasterModule = class MasterModule {
 };
 exports.MasterModule = MasterModule;
@@ -8254,6 +8255,10 @@ exports.MasterModule = MasterModule = __decorate([
             program_eligibility_module_1.ProgramEligibilityModule,
             board_module_1.BoardModule,
             fee_type_module_1.FeeTypeModule,
+            employe_type_module_1.EmployeTypeModule,
+            employee_category_module_1.EmployeeCategoryModule,
+            employee_designation_module_1.EmployeeDesignationModule,
+            employee_department_module_1.EmployeeDepartmentModule,
             qualification_module_1.QualificationModule,
             admission_session_module_1.AdmissionSessionModule,
             academic_session_module_1.AcademicSessionModule,
@@ -8290,6 +8295,10 @@ exports.MasterModule = MasterModule = __decorate([
             program_eligibility_module_1.ProgramEligibilityModule,
             board_module_1.BoardModule,
             fee_type_module_1.FeeTypeModule,
+            employe_type_module_1.EmployeTypeModule,
+            employee_category_module_1.EmployeeCategoryModule,
+            employee_designation_module_1.EmployeeDesignationModule,
+            employee_department_module_1.EmployeeDepartmentModule,
             qualification_module_1.QualificationModule,
             admission_session_module_1.AdmissionSessionModule,
             academic_session_module_1.AcademicSessionModule,
@@ -10325,19 +10334,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.QualificationModule = void 0;
+exports.EmployeTypeModule = void 0;
 const common_1 = __webpack_require__(5);
-const qualification_controller_1 = __webpack_require__(79);
-const qualification_service_1 = __webpack_require__(80);
-let QualificationModule = class QualificationModule {
+const employe_type_controller_1 = __webpack_require__(79);
+const employe_type_service_1 = __webpack_require__(80);
+let EmployeTypeModule = class EmployeTypeModule {
 };
-exports.QualificationModule = QualificationModule;
-exports.QualificationModule = QualificationModule = __decorate([
+exports.EmployeTypeModule = EmployeTypeModule;
+exports.EmployeTypeModule = EmployeTypeModule = __decorate([
     (0, common_1.Module)({
-        controllers: [qualification_controller_1.QualificationController],
-        providers: [qualification_service_1.QualificationService],
+        controllers: [employe_type_controller_1.EmployeTypeController],
+        providers: [employe_type_service_1.EmployeTypeService],
     })
-], QualificationModule);
+], EmployeTypeModule);
 
 
 /***/ }),
@@ -10359,10 +10368,1314 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeTypeController = void 0;
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const employe_type_service_1 = __webpack_require__(80);
+let EmployeTypeController = class EmployeTypeController {
+    constructor(employeTypeService) {
+        this.employeTypeService = employeTypeService;
+    }
+    async create(data) {
+        try {
+            return await this.employeTypeService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.employeTypeService.findAll(data?.activeOnly);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.employeTypeService.findOne(data.employeTypeId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { employeTypeId, ...updateData } = data;
+            return await this.employeTypeService.update(employeTypeId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async updateStatus(data) {
+        try {
+            return await this.employeTypeService.updateStatus(data.employeTypeId, data.IsActive, data.UpdatedBy);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.employeTypeService.softDelete(data.employeTypeId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.employeTypeService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.EmployeTypeController = EmployeTypeController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_employe_type' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeTypeController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_employe_types' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeTypeController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_employe_type' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeTypeController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_employe_type' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeTypeController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_status_employe_type' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeTypeController.prototype, "updateStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_employe_type' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeTypeController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_employe_types' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeTypeController.prototype, "bulkSoftDelete", null);
+exports.EmployeTypeController = EmployeTypeController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employe_type_service_1.EmployeTypeService !== "undefined" && employe_type_service_1.EmployeTypeService) === "function" ? _a : Object])
+], EmployeTypeController);
+
+
+/***/ }),
+/* 80 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeTypeService = void 0;
+const common_1 = __webpack_require__(5);
+const prisma_1 = __webpack_require__(6);
+const active_only_1 = __webpack_require__(58);
+const CREATE_EMPLOYE_TYPE_TABLE = `
+CREATE TABLE IF NOT EXISTS \`employeTypeMaster\` (
+    \`employeTypeId\` INTEGER NOT NULL AUTO_INCREMENT,
+    \`employeTypeName\` VARCHAR(100) NOT NULL,
+    \`CreatedOn\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    \`CreatedBy\` VARCHAR(255) NOT NULL,
+    \`UpdatedOn\` DATETIME(3) NULL,
+    \`UpdatedBy\` VARCHAR(255) NULL,
+    \`IsActive\` BOOLEAN NOT NULL DEFAULT true,
+    \`IsDeleted\` BOOLEAN NOT NULL DEFAULT false,
+    \`DeletedRemarks\` VARCHAR(255) NULL,
+    \`DeletedOn\` DATETIME(3) NULL,
+    \`DeletedBy\` VARCHAR(255) NULL,
+    \`Remarks\` VARCHAR(255) NULL,
+    UNIQUE INDEX \`employeTypeMaster_employeTypeName_key\`(\`employeTypeName\`),
+    PRIMARY KEY (\`employeTypeId\`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+`;
+let EmployeTypeService = class EmployeTypeService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async onModuleInit() {
+        await this.prisma.$executeRawUnsafe(CREATE_EMPLOYE_TYPE_TABLE);
+    }
+    get employeTypeDb() {
+        const db = this.prisma.employeTypeMaster;
+        if (!db) {
+            throw new Error('Prisma model employeTypeMaster is missing. Restart API after prisma generate.');
+        }
+        return db;
+    }
+    async create(data) {
+        const existingName = await this.employeTypeDb.findFirst({
+            where: { employeTypeName: data.employeTypeName, IsDeleted: false },
+        });
+        if (existingName) {
+            throw new common_1.ConflictException('Employee type name already exists');
+        }
+        return this.employeTypeDb.create({
+            data: {
+                employeTypeName: data.employeTypeName,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll(activeOnly = false) {
+        return this.employeTypeDb.findMany({
+            where: { IsDeleted: false, ...((0, active_only_1.isActiveOnly)(activeOnly) ? { IsActive: true } : {}) },
+            orderBy: { employeTypeName: 'asc' },
+        });
+    }
+    async findOne(employeTypeId) {
+        const row = await this.employeTypeDb.findFirst({
+            where: { employeTypeId, IsDeleted: false },
+        });
+        if (!row) {
+            throw new common_1.NotFoundException(`Employee type with ID ${employeTypeId} not found`);
+        }
+        return row;
+    }
+    async update(employeTypeId, data) {
+        await this.findOne(employeTypeId);
+        if (data.employeTypeName) {
+            const existingName = await this.employeTypeDb.findFirst({
+                where: {
+                    employeTypeName: data.employeTypeName,
+                    IsDeleted: false,
+                    NOT: { employeTypeId },
+                },
+            });
+            if (existingName) {
+                throw new common_1.ConflictException('Employee type name already exists');
+            }
+        }
+        return this.employeTypeDb.update({
+            where: { employeTypeId },
+            data: {
+                employeTypeName: data.employeTypeName,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async updateStatus(employeTypeId, IsActive, UpdatedBy) {
+        await this.findOne(employeTypeId);
+        return this.employeTypeDb.update({
+            where: { employeTypeId },
+            data: {
+                IsActive,
+                UpdatedBy,
+            },
+        });
+    }
+    async softDelete(employeTypeId, DeletedBy, DeletedRemarks) {
+        await this.findOne(employeTypeId);
+        return this.employeTypeDb.update({
+            where: { employeTypeId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.employeTypeDb.updateMany({
+            where: {
+                employeTypeId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} employee type(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.EmployeTypeService = EmployeTypeService;
+exports.EmployeTypeService = EmployeTypeService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], EmployeTypeService);
+
+
+/***/ }),
+/* 81 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeCategoryModule = void 0;
+const common_1 = __webpack_require__(5);
+const employee_category_controller_1 = __webpack_require__(82);
+const employee_category_service_1 = __webpack_require__(83);
+let EmployeeCategoryModule = class EmployeeCategoryModule {
+};
+exports.EmployeeCategoryModule = EmployeeCategoryModule;
+exports.EmployeeCategoryModule = EmployeeCategoryModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [employee_category_controller_1.EmployeeCategoryController],
+        providers: [employee_category_service_1.EmployeeCategoryService],
+    })
+], EmployeeCategoryModule);
+
+
+/***/ }),
+/* 82 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeCategoryController = void 0;
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const employee_category_service_1 = __webpack_require__(83);
+let EmployeeCategoryController = class EmployeeCategoryController {
+    constructor(employeeCategoryService) {
+        this.employeeCategoryService = employeeCategoryService;
+    }
+    async create(data) {
+        try {
+            return await this.employeeCategoryService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.employeeCategoryService.findAll(data?.activeOnly);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.employeeCategoryService.findOne(data.employeeCategoryId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { employeeCategoryId, ...updateData } = data;
+            return await this.employeeCategoryService.update(employeeCategoryId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async updateStatus(data) {
+        try {
+            return await this.employeeCategoryService.updateStatus(data.employeeCategoryId, data.IsActive, data.UpdatedBy);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.employeeCategoryService.softDelete(data.employeeCategoryId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.employeeCategoryService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.EmployeeCategoryController = EmployeeCategoryController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_employee_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeCategoryController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_employee_categories' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeCategoryController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_employee_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeCategoryController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_employee_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeCategoryController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_status_employee_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeCategoryController.prototype, "updateStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_employee_category' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeCategoryController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_employee_categories' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeCategoryController.prototype, "bulkSoftDelete", null);
+exports.EmployeeCategoryController = EmployeeCategoryController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_category_service_1.EmployeeCategoryService !== "undefined" && employee_category_service_1.EmployeeCategoryService) === "function" ? _a : Object])
+], EmployeeCategoryController);
+
+
+/***/ }),
+/* 83 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeCategoryService = void 0;
+const common_1 = __webpack_require__(5);
+const prisma_1 = __webpack_require__(6);
+const active_only_1 = __webpack_require__(58);
+const CREATE_EMPLOYEE_CATEGORY_TABLE = `
+CREATE TABLE IF NOT EXISTS \`employeeCategoryMaster\` (
+    \`employeeCategoryId\` INTEGER NOT NULL AUTO_INCREMENT,
+    \`employeeCategoryName\` VARCHAR(100) NOT NULL,
+    \`CreatedOn\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    \`CreatedBy\` VARCHAR(255) NOT NULL,
+    \`UpdatedOn\` DATETIME(3) NULL,
+    \`UpdatedBy\` VARCHAR(255) NULL,
+    \`IsActive\` BOOLEAN NOT NULL DEFAULT true,
+    \`IsDeleted\` BOOLEAN NOT NULL DEFAULT false,
+    \`DeletedRemarks\` VARCHAR(255) NULL,
+    \`DeletedOn\` DATETIME(3) NULL,
+    \`DeletedBy\` VARCHAR(255) NULL,
+    \`Remarks\` VARCHAR(255) NULL,
+    UNIQUE INDEX \`employeeCategoryMaster_employeeCategoryName_key\`(\`employeeCategoryName\`),
+    PRIMARY KEY (\`employeeCategoryId\`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+`;
+let EmployeeCategoryService = class EmployeeCategoryService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async onModuleInit() {
+        await this.prisma.$executeRawUnsafe(CREATE_EMPLOYEE_CATEGORY_TABLE);
+    }
+    get employeeCategoryDb() {
+        const db = this.prisma.employeeCategoryMaster;
+        if (!db) {
+            throw new Error('Prisma model employeeCategoryMaster is missing. Restart API after prisma generate.');
+        }
+        return db;
+    }
+    async create(data) {
+        const existingName = await this.employeeCategoryDb.findFirst({
+            where: { employeeCategoryName: data.employeeCategoryName, IsDeleted: false },
+        });
+        if (existingName) {
+            throw new common_1.ConflictException('Employee category name already exists');
+        }
+        return this.employeeCategoryDb.create({
+            data: {
+                employeeCategoryName: data.employeeCategoryName,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll(activeOnly = false) {
+        return this.employeeCategoryDb.findMany({
+            where: { IsDeleted: false, ...((0, active_only_1.isActiveOnly)(activeOnly) ? { IsActive: true } : {}) },
+            orderBy: { employeeCategoryName: 'asc' },
+        });
+    }
+    async findOne(employeeCategoryId) {
+        const row = await this.employeeCategoryDb.findFirst({
+            where: { employeeCategoryId, IsDeleted: false },
+        });
+        if (!row) {
+            throw new common_1.NotFoundException(`Employee category with ID ${employeeCategoryId} not found`);
+        }
+        return row;
+    }
+    async update(employeeCategoryId, data) {
+        await this.findOne(employeeCategoryId);
+        if (data.employeeCategoryName) {
+            const existingName = await this.employeeCategoryDb.findFirst({
+                where: {
+                    employeeCategoryName: data.employeeCategoryName,
+                    IsDeleted: false,
+                    NOT: { employeeCategoryId },
+                },
+            });
+            if (existingName) {
+                throw new common_1.ConflictException('Employee category name already exists');
+            }
+        }
+        return this.employeeCategoryDb.update({
+            where: { employeeCategoryId },
+            data: {
+                employeeCategoryName: data.employeeCategoryName,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async updateStatus(employeeCategoryId, IsActive, UpdatedBy) {
+        await this.findOne(employeeCategoryId);
+        return this.employeeCategoryDb.update({
+            where: { employeeCategoryId },
+            data: {
+                IsActive,
+                UpdatedBy,
+            },
+        });
+    }
+    async softDelete(employeeCategoryId, DeletedBy, DeletedRemarks) {
+        await this.findOne(employeeCategoryId);
+        return this.employeeCategoryDb.update({
+            where: { employeeCategoryId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.employeeCategoryDb.updateMany({
+            where: {
+                employeeCategoryId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} employee category(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.EmployeeCategoryService = EmployeeCategoryService;
+exports.EmployeeCategoryService = EmployeeCategoryService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], EmployeeCategoryService);
+
+
+/***/ }),
+/* 84 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeDesignationModule = void 0;
+const common_1 = __webpack_require__(5);
+const employee_designation_controller_1 = __webpack_require__(85);
+const employee_designation_service_1 = __webpack_require__(86);
+let EmployeeDesignationModule = class EmployeeDesignationModule {
+};
+exports.EmployeeDesignationModule = EmployeeDesignationModule;
+exports.EmployeeDesignationModule = EmployeeDesignationModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [employee_designation_controller_1.EmployeeDesignationController],
+        providers: [employee_designation_service_1.EmployeeDesignationService],
+    })
+], EmployeeDesignationModule);
+
+
+/***/ }),
+/* 85 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeDesignationController = void 0;
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const employee_designation_service_1 = __webpack_require__(86);
+let EmployeeDesignationController = class EmployeeDesignationController {
+    constructor(employeeDesignationService) {
+        this.employeeDesignationService = employeeDesignationService;
+    }
+    async create(data) {
+        try {
+            return await this.employeeDesignationService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.employeeDesignationService.findAll(data?.activeOnly);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.employeeDesignationService.findOne(data.employeeDesignationId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { employeeDesignationId, ...updateData } = data;
+            return await this.employeeDesignationService.update(employeeDesignationId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async updateStatus(data) {
+        try {
+            return await this.employeeDesignationService.updateStatus(data.employeeDesignationId, data.IsActive, data.UpdatedBy);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.employeeDesignationService.softDelete(data.employeeDesignationId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.employeeDesignationService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.EmployeeDesignationController = EmployeeDesignationController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_employee_designation' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDesignationController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_employee_designations' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDesignationController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_employee_designation' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDesignationController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_employee_designation' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDesignationController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_status_employee_designation' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDesignationController.prototype, "updateStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_employee_designation' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDesignationController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_employee_designations' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDesignationController.prototype, "bulkSoftDelete", null);
+exports.EmployeeDesignationController = EmployeeDesignationController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_designation_service_1.EmployeeDesignationService !== "undefined" && employee_designation_service_1.EmployeeDesignationService) === "function" ? _a : Object])
+], EmployeeDesignationController);
+
+
+/***/ }),
+/* 86 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeDesignationService = void 0;
+const common_1 = __webpack_require__(5);
+const prisma_1 = __webpack_require__(6);
+const active_only_1 = __webpack_require__(58);
+const CREATE_EMPLOYEE_DESIGNATION_TABLE = `
+CREATE TABLE IF NOT EXISTS \`employeeDesignationMaster\` (
+    \`employeeDesignationId\` INTEGER NOT NULL AUTO_INCREMENT,
+    \`employeeDesignationName\` VARCHAR(100) NOT NULL,
+    \`CreatedOn\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    \`CreatedBy\` VARCHAR(255) NOT NULL,
+    \`UpdatedOn\` DATETIME(3) NULL,
+    \`UpdatedBy\` VARCHAR(255) NULL,
+    \`IsActive\` BOOLEAN NOT NULL DEFAULT true,
+    \`IsDeleted\` BOOLEAN NOT NULL DEFAULT false,
+    \`DeletedRemarks\` VARCHAR(255) NULL,
+    \`DeletedOn\` DATETIME(3) NULL,
+    \`DeletedBy\` VARCHAR(255) NULL,
+    \`Remarks\` VARCHAR(255) NULL,
+    UNIQUE INDEX \`employeeDesignationMaster_employeeDesignationName_key\`(\`employeeDesignationName\`),
+    PRIMARY KEY (\`employeeDesignationId\`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+`;
+let EmployeeDesignationService = class EmployeeDesignationService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async onModuleInit() {
+        await this.prisma.$executeRawUnsafe(CREATE_EMPLOYEE_DESIGNATION_TABLE);
+    }
+    get employeeDesignationDb() {
+        const db = this.prisma.employeeDesignationMaster;
+        if (!db) {
+            throw new Error('Prisma model employeeDesignationMaster is missing. Restart API after prisma generate.');
+        }
+        return db;
+    }
+    async create(data) {
+        const existingName = await this.employeeDesignationDb.findFirst({
+            where: { employeeDesignationName: data.employeeDesignationName, IsDeleted: false },
+        });
+        if (existingName) {
+            throw new common_1.ConflictException('Employee designation name already exists');
+        }
+        return this.employeeDesignationDb.create({
+            data: {
+                employeeDesignationName: data.employeeDesignationName,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll(activeOnly = false) {
+        return this.employeeDesignationDb.findMany({
+            where: { IsDeleted: false, ...((0, active_only_1.isActiveOnly)(activeOnly) ? { IsActive: true } : {}) },
+            orderBy: { employeeDesignationName: 'asc' },
+        });
+    }
+    async findOne(employeeDesignationId) {
+        const row = await this.employeeDesignationDb.findFirst({
+            where: { employeeDesignationId, IsDeleted: false },
+        });
+        if (!row) {
+            throw new common_1.NotFoundException(`Employee designation with ID ${employeeDesignationId} not found`);
+        }
+        return row;
+    }
+    async update(employeeDesignationId, data) {
+        await this.findOne(employeeDesignationId);
+        if (data.employeeDesignationName) {
+            const existingName = await this.employeeDesignationDb.findFirst({
+                where: {
+                    employeeDesignationName: data.employeeDesignationName,
+                    IsDeleted: false,
+                    NOT: { employeeDesignationId },
+                },
+            });
+            if (existingName) {
+                throw new common_1.ConflictException('Employee designation name already exists');
+            }
+        }
+        return this.employeeDesignationDb.update({
+            where: { employeeDesignationId },
+            data: {
+                employeeDesignationName: data.employeeDesignationName,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async updateStatus(employeeDesignationId, IsActive, UpdatedBy) {
+        await this.findOne(employeeDesignationId);
+        return this.employeeDesignationDb.update({
+            where: { employeeDesignationId },
+            data: {
+                IsActive,
+                UpdatedBy,
+            },
+        });
+    }
+    async softDelete(employeeDesignationId, DeletedBy, DeletedRemarks) {
+        await this.findOne(employeeDesignationId);
+        return this.employeeDesignationDb.update({
+            where: { employeeDesignationId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.employeeDesignationDb.updateMany({
+            where: {
+                employeeDesignationId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} employee designation(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.EmployeeDesignationService = EmployeeDesignationService;
+exports.EmployeeDesignationService = EmployeeDesignationService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], EmployeeDesignationService);
+
+
+/***/ }),
+/* 87 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeDepartmentModule = void 0;
+const common_1 = __webpack_require__(5);
+const employee_department_controller_1 = __webpack_require__(88);
+const employee_department_service_1 = __webpack_require__(89);
+let EmployeeDepartmentModule = class EmployeeDepartmentModule {
+};
+exports.EmployeeDepartmentModule = EmployeeDepartmentModule;
+exports.EmployeeDepartmentModule = EmployeeDepartmentModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [employee_department_controller_1.EmployeeDepartmentController],
+        providers: [employee_department_service_1.EmployeeDepartmentService],
+    })
+], EmployeeDepartmentModule);
+
+
+/***/ }),
+/* 88 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeDepartmentController = void 0;
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const employee_department_service_1 = __webpack_require__(89);
+let EmployeeDepartmentController = class EmployeeDepartmentController {
+    constructor(employeeDepartmentService) {
+        this.employeeDepartmentService = employeeDepartmentService;
+    }
+    async create(data) {
+        try {
+            return await this.employeeDepartmentService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.employeeDepartmentService.findAll(data?.activeOnly);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.employeeDepartmentService.findOne(data.employeeDepartmentId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { employeeDepartmentId, ...updateData } = data;
+            return await this.employeeDepartmentService.update(employeeDepartmentId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async updateStatus(data) {
+        try {
+            return await this.employeeDepartmentService.updateStatus(data.employeeDepartmentId, data.IsActive, data.UpdatedBy);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.employeeDepartmentService.softDelete(data.employeeDepartmentId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.employeeDepartmentService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.EmployeeDepartmentController = EmployeeDepartmentController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_employee_department' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDepartmentController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_employee_departments' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDepartmentController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_employee_department' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDepartmentController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_employee_department' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDepartmentController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_status_employee_department' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDepartmentController.prototype, "updateStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_employee_department' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDepartmentController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_employee_departments' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmployeeDepartmentController.prototype, "bulkSoftDelete", null);
+exports.EmployeeDepartmentController = EmployeeDepartmentController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof employee_department_service_1.EmployeeDepartmentService !== "undefined" && employee_department_service_1.EmployeeDepartmentService) === "function" ? _a : Object])
+], EmployeeDepartmentController);
+
+
+/***/ }),
+/* 89 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EmployeeDepartmentService = void 0;
+const common_1 = __webpack_require__(5);
+const prisma_1 = __webpack_require__(6);
+const active_only_1 = __webpack_require__(58);
+const CREATE_EMPLOYEE_DEPARTMENT_TABLE = `
+CREATE TABLE IF NOT EXISTS \`employeeDepartmentMaster\` (
+    \`employeeDepartmentId\` INTEGER NOT NULL AUTO_INCREMENT,
+    \`employeeDepartmentName\` VARCHAR(100) NOT NULL,
+    \`CreatedOn\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    \`CreatedBy\` VARCHAR(255) NOT NULL,
+    \`UpdatedOn\` DATETIME(3) NULL,
+    \`UpdatedBy\` VARCHAR(255) NULL,
+    \`IsActive\` BOOLEAN NOT NULL DEFAULT true,
+    \`IsDeleted\` BOOLEAN NOT NULL DEFAULT false,
+    \`DeletedRemarks\` VARCHAR(255) NULL,
+    \`DeletedOn\` DATETIME(3) NULL,
+    \`DeletedBy\` VARCHAR(255) NULL,
+    \`Remarks\` VARCHAR(255) NULL,
+    UNIQUE INDEX \`employeeDepartmentMaster_employeeDepartmentName_key\`(\`employeeDepartmentName\`),
+    PRIMARY KEY (\`employeeDepartmentId\`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+`;
+let EmployeeDepartmentService = class EmployeeDepartmentService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async onModuleInit() {
+        await this.prisma.$executeRawUnsafe(CREATE_EMPLOYEE_DEPARTMENT_TABLE);
+    }
+    get employeeDepartmentDb() {
+        const db = this.prisma.employeeDepartmentMaster;
+        if (!db) {
+            throw new Error('Prisma model employeeDepartmentMaster is missing. Restart API after prisma generate.');
+        }
+        return db;
+    }
+    async create(data) {
+        const existingName = await this.employeeDepartmentDb.findFirst({
+            where: { employeeDepartmentName: data.employeeDepartmentName, IsDeleted: false },
+        });
+        if (existingName) {
+            throw new common_1.ConflictException('Employee department name already exists');
+        }
+        return this.employeeDepartmentDb.create({
+            data: {
+                employeeDepartmentName: data.employeeDepartmentName,
+                CreatedBy: data.CreatedBy,
+                Remarks: data.Remarks || null,
+                IsActive: true,
+                IsDeleted: false,
+            },
+        });
+    }
+    async findAll(activeOnly = false) {
+        return this.employeeDepartmentDb.findMany({
+            where: { IsDeleted: false, ...((0, active_only_1.isActiveOnly)(activeOnly) ? { IsActive: true } : {}) },
+            orderBy: { employeeDepartmentName: 'asc' },
+        });
+    }
+    async findOne(employeeDepartmentId) {
+        const row = await this.employeeDepartmentDb.findFirst({
+            where: { employeeDepartmentId, IsDeleted: false },
+        });
+        if (!row) {
+            throw new common_1.NotFoundException(`Employee department with ID ${employeeDepartmentId} not found`);
+        }
+        return row;
+    }
+    async update(employeeDepartmentId, data) {
+        await this.findOne(employeeDepartmentId);
+        if (data.employeeDepartmentName) {
+            const existingName = await this.employeeDepartmentDb.findFirst({
+                where: {
+                    employeeDepartmentName: data.employeeDepartmentName,
+                    IsDeleted: false,
+                    NOT: { employeeDepartmentId },
+                },
+            });
+            if (existingName) {
+                throw new common_1.ConflictException('Employee department name already exists');
+            }
+        }
+        return this.employeeDepartmentDb.update({
+            where: { employeeDepartmentId },
+            data: {
+                employeeDepartmentName: data.employeeDepartmentName,
+                UpdatedBy: data.UpdatedBy,
+                IsActive: data.IsActive,
+                Remarks: data.Remarks,
+            },
+        });
+    }
+    async updateStatus(employeeDepartmentId, IsActive, UpdatedBy) {
+        await this.findOne(employeeDepartmentId);
+        return this.employeeDepartmentDb.update({
+            where: { employeeDepartmentId },
+            data: {
+                IsActive,
+                UpdatedBy,
+            },
+        });
+    }
+    async softDelete(employeeDepartmentId, DeletedBy, DeletedRemarks) {
+        await this.findOne(employeeDepartmentId);
+        return this.employeeDepartmentDb.update({
+            where: { employeeDepartmentId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.employeeDepartmentDb.updateMany({
+            where: {
+                employeeDepartmentId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy: DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} employee department(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.EmployeeDepartmentService = EmployeeDepartmentService;
+exports.EmployeeDepartmentService = EmployeeDepartmentService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], EmployeeDepartmentService);
+
+
+/***/ }),
+/* 90 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.QualificationModule = void 0;
+const common_1 = __webpack_require__(5);
+const qualification_controller_1 = __webpack_require__(91);
+const qualification_service_1 = __webpack_require__(92);
+let QualificationModule = class QualificationModule {
+};
+exports.QualificationModule = QualificationModule;
+exports.QualificationModule = QualificationModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [qualification_controller_1.QualificationController],
+        providers: [qualification_service_1.QualificationService],
+    })
+], QualificationModule);
+
+
+/***/ }),
+/* 91 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.QualificationController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const qualification_service_1 = __webpack_require__(80);
+const qualification_service_1 = __webpack_require__(92);
 let QualificationController = class QualificationController {
     constructor(qualificationService) {
         this.qualificationService = qualificationService;
@@ -10482,7 +11795,7 @@ exports.QualificationController = QualificationController = __decorate([
 
 
 /***/ }),
-/* 80 */
+/* 92 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10594,7 +11907,7 @@ exports.QualificationService = QualificationService = __decorate([
 
 
 /***/ }),
-/* 81 */
+/* 93 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10607,8 +11920,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionSessionModule = void 0;
 const common_1 = __webpack_require__(5);
-const admission_session_controller_1 = __webpack_require__(82);
-const admission_session_service_1 = __webpack_require__(83);
+const admission_session_controller_1 = __webpack_require__(94);
+const admission_session_service_1 = __webpack_require__(95);
 let AdmissionSessionModule = class AdmissionSessionModule {
 };
 exports.AdmissionSessionModule = AdmissionSessionModule;
@@ -10621,7 +11934,7 @@ exports.AdmissionSessionModule = AdmissionSessionModule = __decorate([
 
 
 /***/ }),
-/* 82 */
+/* 94 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10642,7 +11955,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionSessionController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const admission_session_service_1 = __webpack_require__(83);
+const admission_session_service_1 = __webpack_require__(95);
 let AdmissionSessionController = class AdmissionSessionController {
     constructor(sessionService) {
         this.sessionService = sessionService;
@@ -10762,7 +12075,7 @@ exports.AdmissionSessionController = AdmissionSessionController = __decorate([
 
 
 /***/ }),
-/* 83 */
+/* 95 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10874,7 +12187,7 @@ exports.AdmissionSessionService = AdmissionSessionService = __decorate([
 
 
 /***/ }),
-/* 84 */
+/* 96 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -10887,8 +12200,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionModule = void 0;
 const common_1 = __webpack_require__(5);
-const academic_session_service_1 = __webpack_require__(85);
-const academic_session_controller_1 = __webpack_require__(86);
+const academic_session_service_1 = __webpack_require__(97);
+const academic_session_controller_1 = __webpack_require__(98);
 const prisma_1 = __webpack_require__(6);
 let AcademicSessionModule = class AcademicSessionModule {
 };
@@ -10904,7 +12217,7 @@ exports.AcademicSessionModule = AcademicSessionModule = __decorate([
 
 
 /***/ }),
-/* 85 */
+/* 97 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11112,7 +12425,7 @@ exports.AcademicSessionService = AcademicSessionService = __decorate([
 
 
 /***/ }),
-/* 86 */
+/* 98 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11133,7 +12446,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const academic_session_service_1 = __webpack_require__(85);
+const academic_session_service_1 = __webpack_require__(97);
 let AcademicSessionController = class AcademicSessionController {
     constructor(academicSessionService) {
         this.academicSessionService = academicSessionService;
@@ -11256,7 +12569,7 @@ exports.AcademicSessionController = AcademicSessionController = __decorate([
 
 
 /***/ }),
-/* 87 */
+/* 99 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11269,8 +12582,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramFeeConfigModule = void 0;
 const common_1 = __webpack_require__(5);
-const program_fee_config_controller_1 = __webpack_require__(88);
-const program_fee_config_service_1 = __webpack_require__(89);
+const program_fee_config_controller_1 = __webpack_require__(100);
+const program_fee_config_service_1 = __webpack_require__(101);
 let ProgramFeeConfigModule = class ProgramFeeConfigModule {
 };
 exports.ProgramFeeConfigModule = ProgramFeeConfigModule;
@@ -11283,7 +12596,7 @@ exports.ProgramFeeConfigModule = ProgramFeeConfigModule = __decorate([
 
 
 /***/ }),
-/* 88 */
+/* 100 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11304,7 +12617,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramFeeConfigController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const program_fee_config_service_1 = __webpack_require__(89);
+const program_fee_config_service_1 = __webpack_require__(101);
 let ProgramFeeConfigController = class ProgramFeeConfigController {
     constructor(feeConfigService) {
         this.feeConfigService = feeConfigService;
@@ -11438,7 +12751,7 @@ exports.ProgramFeeConfigController = ProgramFeeConfigController = __decorate([
 
 
 /***/ }),
-/* 89 */
+/* 101 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11643,7 +12956,7 @@ exports.ProgramFeeConfigService = ProgramFeeConfigService = __decorate([
 
 
 /***/ }),
-/* 90 */
+/* 102 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11657,8 +12970,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CollegeModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const college_controller_1 = __webpack_require__(91);
-const college_service_1 = __webpack_require__(92);
+const college_controller_1 = __webpack_require__(103);
+const college_service_1 = __webpack_require__(104);
 let CollegeModule = class CollegeModule {
 };
 exports.CollegeModule = CollegeModule;
@@ -11673,7 +12986,7 @@ exports.CollegeModule = CollegeModule = __decorate([
 
 
 /***/ }),
-/* 91 */
+/* 103 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11694,7 +13007,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CollegeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const college_service_1 = __webpack_require__(92);
+const college_service_1 = __webpack_require__(104);
 let CollegeController = class CollegeController {
     constructor(collegeService) {
         this.collegeService = collegeService;
@@ -11799,7 +13112,7 @@ exports.CollegeController = CollegeController = __decorate([
 
 
 /***/ }),
-/* 92 */
+/* 104 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11911,7 +13224,7 @@ exports.CollegeService = CollegeService = __decorate([
 
 
 /***/ }),
-/* 93 */
+/* 105 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -11924,8 +13237,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ZipcodeModule = void 0;
 const common_1 = __webpack_require__(5);
-const zipcode_service_1 = __webpack_require__(94);
-const zipcode_controller_1 = __webpack_require__(95);
+const zipcode_service_1 = __webpack_require__(106);
+const zipcode_controller_1 = __webpack_require__(107);
 const prisma_1 = __webpack_require__(6);
 let ZipcodeModule = class ZipcodeModule {
 };
@@ -11941,7 +13254,7 @@ exports.ZipcodeModule = ZipcodeModule = __decorate([
 
 
 /***/ }),
-/* 94 */
+/* 106 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12073,7 +13386,7 @@ exports.ZipcodeService = ZipcodeService = __decorate([
 
 
 /***/ }),
-/* 95 */
+/* 107 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12094,7 +13407,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ZipcodeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const zipcode_service_1 = __webpack_require__(94);
+const zipcode_service_1 = __webpack_require__(106);
 let ZipcodeController = class ZipcodeController {
     constructor(zipcodeService) {
         this.zipcodeService = zipcodeService;
@@ -12199,7 +13512,7 @@ exports.ZipcodeController = ZipcodeController = __decorate([
 
 
 /***/ }),
-/* 96 */
+/* 108 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12212,8 +13525,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramEligibilityModule = void 0;
 const common_1 = __webpack_require__(5);
-const program_eligibility_service_1 = __webpack_require__(97);
-const program_eligibility_controller_1 = __webpack_require__(98);
+const program_eligibility_service_1 = __webpack_require__(109);
+const program_eligibility_controller_1 = __webpack_require__(110);
 const prisma_1 = __webpack_require__(6);
 let ProgramEligibilityModule = class ProgramEligibilityModule {
 };
@@ -12229,7 +13542,7 @@ exports.ProgramEligibilityModule = ProgramEligibilityModule = __decorate([
 
 
 /***/ }),
-/* 97 */
+/* 109 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12599,7 +13912,7 @@ exports.ProgramEligibilityService = ProgramEligibilityService = __decorate([
 
 
 /***/ }),
-/* 98 */
+/* 110 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12620,7 +13933,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramEligibilityController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const program_eligibility_service_1 = __webpack_require__(97);
+const program_eligibility_service_1 = __webpack_require__(109);
 let ProgramEligibilityController = class ProgramEligibilityController {
     constructor(eligibilityService) {
         this.eligibilityService = eligibilityService;
@@ -12740,7 +14053,7 @@ exports.ProgramEligibilityController = ProgramEligibilityController = __decorate
 
 
 /***/ }),
-/* 99 */
+/* 111 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12753,8 +14066,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StreamModule = void 0;
 const common_1 = __webpack_require__(5);
-const stream_service_1 = __webpack_require__(100);
-const stream_controller_1 = __webpack_require__(101);
+const stream_service_1 = __webpack_require__(112);
+const stream_controller_1 = __webpack_require__(113);
 const prisma_1 = __webpack_require__(6);
 let StreamModule = class StreamModule {
 };
@@ -12770,7 +14083,7 @@ exports.StreamModule = StreamModule = __decorate([
 
 
 /***/ }),
-/* 100 */
+/* 112 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12928,7 +14241,7 @@ exports.StreamService = StreamService = __decorate([
 
 
 /***/ }),
-/* 101 */
+/* 113 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -12949,7 +14262,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StreamController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const stream_service_1 = __webpack_require__(100);
+const stream_service_1 = __webpack_require__(112);
 let StreamController = class StreamController {
     constructor(streamService) {
         this.streamService = streamService;
@@ -13054,7 +14367,7 @@ exports.StreamController = StreamController = __decorate([
 
 
 /***/ }),
-/* 102 */
+/* 114 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13067,8 +14380,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramSubjectModule = void 0;
 const common_1 = __webpack_require__(5);
-const program_subject_service_1 = __webpack_require__(103);
-const program_subject_controller_1 = __webpack_require__(104);
+const program_subject_service_1 = __webpack_require__(115);
+const program_subject_controller_1 = __webpack_require__(116);
 const prisma_1 = __webpack_require__(6);
 let ProgramSubjectModule = class ProgramSubjectModule {
 };
@@ -13084,7 +14397,7 @@ exports.ProgramSubjectModule = ProgramSubjectModule = __decorate([
 
 
 /***/ }),
-/* 103 */
+/* 115 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13274,7 +14587,7 @@ exports.ProgramSubjectService = ProgramSubjectService = __decorate([
 
 
 /***/ }),
-/* 104 */
+/* 116 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13295,7 +14608,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramSubjectController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const program_subject_service_1 = __webpack_require__(103);
+const program_subject_service_1 = __webpack_require__(115);
 let ProgramSubjectController = class ProgramSubjectController {
     constructor(programSubjectService) {
         this.programSubjectService = programSubjectService;
@@ -13400,7 +14713,7 @@ exports.ProgramSubjectController = ProgramSubjectController = __decorate([
 
 
 /***/ }),
-/* 105 */
+/* 117 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13413,8 +14726,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExaminationDetailsModule = void 0;
 const common_1 = __webpack_require__(5);
-const examination_details_service_1 = __webpack_require__(106);
-const examination_details_controller_1 = __webpack_require__(107);
+const examination_details_service_1 = __webpack_require__(118);
+const examination_details_controller_1 = __webpack_require__(119);
 const prisma_1 = __webpack_require__(6);
 let ExaminationDetailsModule = class ExaminationDetailsModule {
 };
@@ -13430,7 +14743,7 @@ exports.ExaminationDetailsModule = ExaminationDetailsModule = __decorate([
 
 
 /***/ }),
-/* 106 */
+/* 118 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13624,7 +14937,7 @@ exports.ExaminationDetailsService = ExaminationDetailsService = __decorate([
 
 
 /***/ }),
-/* 107 */
+/* 119 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13645,7 +14958,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExaminationDetailsController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const examination_details_service_1 = __webpack_require__(106);
+const examination_details_service_1 = __webpack_require__(118);
 let ExaminationDetailsController = class ExaminationDetailsController {
     constructor(examinationDetailsService) {
         this.examinationDetailsService = examinationDetailsService;
@@ -13750,7 +15063,7 @@ exports.ExaminationDetailsController = ExaminationDetailsController = __decorate
 
 
 /***/ }),
-/* 108 */
+/* 120 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13763,8 +15076,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSchemeModule = void 0;
 const common_1 = __webpack_require__(5);
-const exam_scheme_controller_1 = __webpack_require__(109);
-const exam_scheme_service_1 = __webpack_require__(110);
+const exam_scheme_controller_1 = __webpack_require__(121);
+const exam_scheme_service_1 = __webpack_require__(122);
 let ExamSchemeModule = class ExamSchemeModule {
 };
 exports.ExamSchemeModule = ExamSchemeModule;
@@ -13778,7 +15091,7 @@ exports.ExamSchemeModule = ExamSchemeModule = __decorate([
 
 
 /***/ }),
-/* 109 */
+/* 121 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -13799,7 +15112,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSchemeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const exam_scheme_service_1 = __webpack_require__(110);
+const exam_scheme_service_1 = __webpack_require__(122);
 let ExamSchemeController = class ExamSchemeController {
     constructor(examSchemeService) {
         this.examSchemeService = examSchemeService;
@@ -13902,7 +15215,7 @@ exports.ExamSchemeController = ExamSchemeController = __decorate([
 
 
 /***/ }),
-/* 110 */
+/* 122 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14374,7 +15687,7 @@ exports.ExamSchemeService = ExamSchemeService = __decorate([
 
 
 /***/ }),
-/* 111 */
+/* 123 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14387,8 +15700,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperTypeModule = void 0;
 const common_1 = __webpack_require__(5);
-const paper_type_controller_1 = __webpack_require__(112);
-const paper_type_service_1 = __webpack_require__(113);
+const paper_type_controller_1 = __webpack_require__(124);
+const paper_type_service_1 = __webpack_require__(125);
 let PaperTypeModule = class PaperTypeModule {
 };
 exports.PaperTypeModule = PaperTypeModule;
@@ -14402,7 +15715,7 @@ exports.PaperTypeModule = PaperTypeModule = __decorate([
 
 
 /***/ }),
-/* 112 */
+/* 124 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14423,7 +15736,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperTypeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const paper_type_service_1 = __webpack_require__(113);
+const paper_type_service_1 = __webpack_require__(125);
 let PaperTypeController = class PaperTypeController {
     constructor(paperTypeService) {
         this.paperTypeService = paperTypeService;
@@ -14513,7 +15826,7 @@ exports.PaperTypeController = PaperTypeController = __decorate([
 
 
 /***/ }),
-/* 113 */
+/* 125 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14616,7 +15929,7 @@ exports.PaperTypeService = PaperTypeService = __decorate([
 
 
 /***/ }),
-/* 114 */
+/* 126 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14629,8 +15942,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamTypeModule = void 0;
 const common_1 = __webpack_require__(5);
-const exam_type_controller_1 = __webpack_require__(115);
-const exam_type_service_1 = __webpack_require__(116);
+const exam_type_controller_1 = __webpack_require__(127);
+const exam_type_service_1 = __webpack_require__(128);
 let ExamTypeModule = class ExamTypeModule {
 };
 exports.ExamTypeModule = ExamTypeModule;
@@ -14644,7 +15957,7 @@ exports.ExamTypeModule = ExamTypeModule = __decorate([
 
 
 /***/ }),
-/* 115 */
+/* 127 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14665,7 +15978,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamTypeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const exam_type_service_1 = __webpack_require__(116);
+const exam_type_service_1 = __webpack_require__(128);
 let ExamTypeController = class ExamTypeController {
     constructor(examTypeService) {
         this.examTypeService = examTypeService;
@@ -14755,7 +16068,7 @@ exports.ExamTypeController = ExamTypeController = __decorate([
 
 
 /***/ }),
-/* 116 */
+/* 128 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14856,7 +16169,7 @@ exports.ExamTypeService = ExamTypeService = __decorate([
 
 
 /***/ }),
-/* 117 */
+/* 129 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14869,8 +16182,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.YearModule = void 0;
 const common_1 = __webpack_require__(5);
-const year_controller_1 = __webpack_require__(118);
-const year_service_1 = __webpack_require__(119);
+const year_controller_1 = __webpack_require__(130);
+const year_service_1 = __webpack_require__(131);
 let YearModule = class YearModule {
 };
 exports.YearModule = YearModule;
@@ -14884,7 +16197,7 @@ exports.YearModule = YearModule = __decorate([
 
 
 /***/ }),
-/* 118 */
+/* 130 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -14905,7 +16218,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.YearController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const year_service_1 = __webpack_require__(119);
+const year_service_1 = __webpack_require__(131);
 let YearController = class YearController {
     constructor(yearService) {
         this.yearService = yearService;
@@ -14995,7 +16308,7 @@ exports.YearController = YearController = __decorate([
 
 
 /***/ }),
-/* 119 */
+/* 131 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15145,7 +16458,7 @@ exports.YearService = YearService = __decorate([
 
 
 /***/ }),
-/* 120 */
+/* 132 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15158,8 +16471,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemesterModule = void 0;
 const common_1 = __webpack_require__(5);
-const semester_controller_1 = __webpack_require__(121);
-const semester_service_1 = __webpack_require__(122);
+const semester_controller_1 = __webpack_require__(133);
+const semester_service_1 = __webpack_require__(134);
 let SemesterModule = class SemesterModule {
 };
 exports.SemesterModule = SemesterModule;
@@ -15173,7 +16486,7 @@ exports.SemesterModule = SemesterModule = __decorate([
 
 
 /***/ }),
-/* 121 */
+/* 133 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15194,7 +16507,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemesterController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const semester_service_1 = __webpack_require__(122);
+const semester_service_1 = __webpack_require__(134);
 let SemesterController = class SemesterController {
     constructor(semesterService) {
         this.semesterService = semesterService;
@@ -15284,7 +16597,7 @@ exports.SemesterController = SemesterController = __decorate([
 
 
 /***/ }),
-/* 122 */
+/* 134 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15450,7 +16763,7 @@ exports.SemesterService = SemesterService = __decorate([
 
 
 /***/ }),
-/* 123 */
+/* 135 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15463,8 +16776,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperDetailModule = void 0;
 const common_1 = __webpack_require__(5);
-const paper_detail_controller_1 = __webpack_require__(124);
-const paper_detail_service_1 = __webpack_require__(125);
+const paper_detail_controller_1 = __webpack_require__(136);
+const paper_detail_service_1 = __webpack_require__(137);
 let PaperDetailModule = class PaperDetailModule {
 };
 exports.PaperDetailModule = PaperDetailModule;
@@ -15478,7 +16791,7 @@ exports.PaperDetailModule = PaperDetailModule = __decorate([
 
 
 /***/ }),
-/* 124 */
+/* 136 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15499,7 +16812,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperDetailController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const paper_detail_service_1 = __webpack_require__(125);
+const paper_detail_service_1 = __webpack_require__(137);
 let PaperDetailController = class PaperDetailController {
     constructor(paperDetailService) {
         this.paperDetailService = paperDetailService;
@@ -15589,7 +16902,7 @@ exports.PaperDetailController = PaperDetailController = __decorate([
 
 
 /***/ }),
-/* 125 */
+/* 137 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15618,7 +16931,6 @@ let PaperDetailService = class PaperDetailService {
     getIncludeRelations() {
         return {
             paperTypeRelation: true,
-            marksTypeRelation: true,
             examTypeRelation: true,
             program: {
                 include: {
@@ -15639,24 +16951,6 @@ let PaperDetailService = class PaperDetailService {
                     },
                 },
             },
-        };
-    }
-    async resolveMarksType(marksTypeId, marksTypeName) {
-        if (!marksTypeId) {
-            return {
-                marksTypeId: null,
-                marksTypeName: marksTypeName ? String(marksTypeName).trim() || null : null,
-            };
-        }
-        const marksTypeObj = await this.prisma.marksTypeMaster.findFirst({
-            where: { marksTypeId: Number(marksTypeId), IsDeleted: false },
-        });
-        if (!marksTypeObj) {
-            throw new common_1.NotFoundException(`Marks type with ID ${marksTypeId} not found`);
-        }
-        return {
-            marksTypeId: marksTypeObj.marksTypeId,
-            marksTypeName: marksTypeObj.marksTypeName,
         };
     }
     async create(data) {
@@ -15700,7 +16994,6 @@ let PaperDetailService = class PaperDetailService {
                 throw new common_1.NotFoundException(`Semester with ID ${data.semId} not found`);
             }
         }
-        const marksType = await this.resolveMarksType(data.marksTypeId, data.marksTypeName);
         if (data.paperCode) {
             const existingCode = await this.paperDb().findFirst({
                 where: { paperCode: data.paperCode, IsDeleted: false },
@@ -15716,8 +17009,6 @@ let PaperDetailService = class PaperDetailService {
                 programId: data.programId || null,
                 yearId: data.yearId || null,
                 semId: data.semId || null,
-                marksTypeId: marksType.marksTypeId,
-                marksTypeName: marksType.marksTypeName,
                 subjectName: data.subjectName || null,
                 paperType: data.paperType || null,
                 paperName: data.paperName,
@@ -15804,9 +17095,6 @@ let PaperDetailService = class PaperDetailService {
                 throw new common_1.NotFoundException(`Semester with ID ${data.semId} not found`);
             }
         }
-        const marksType = data.marksTypeId !== undefined || data.marksTypeName !== undefined
-            ? await this.resolveMarksType(data.marksTypeId, data.marksTypeName)
-            : null;
         if (data.paperCode) {
             const existingCode = await this.paperDb().findFirst({
                 where: {
@@ -15827,8 +17115,6 @@ let PaperDetailService = class PaperDetailService {
                 programId: data.programId !== undefined ? (data.programId || null) : undefined,
                 yearId: data.yearId !== undefined ? (data.yearId || null) : undefined,
                 semId: data.semId !== undefined ? (data.semId || null) : undefined,
-                marksTypeId: marksType ? marksType.marksTypeId : undefined,
-                marksTypeName: marksType ? marksType.marksTypeName : undefined,
                 subjectName: data.subjectName,
                 paperType: data.paperType,
                 paperName: data.paperName,
@@ -15877,7 +17163,7 @@ exports.PaperDetailService = PaperDetailService = __decorate([
 
 
 /***/ }),
-/* 126 */
+/* 138 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15890,8 +17176,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSubjectModule = void 0;
 const common_1 = __webpack_require__(5);
-const exam_subject_controller_1 = __webpack_require__(127);
-const exam_subject_service_1 = __webpack_require__(128);
+const exam_subject_controller_1 = __webpack_require__(139);
+const exam_subject_service_1 = __webpack_require__(140);
 let ExamSubjectModule = class ExamSubjectModule {
 };
 exports.ExamSubjectModule = ExamSubjectModule;
@@ -15905,7 +17191,7 @@ exports.ExamSubjectModule = ExamSubjectModule = __decorate([
 
 
 /***/ }),
-/* 127 */
+/* 139 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -15926,7 +17212,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamSubjectController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const exam_subject_service_1 = __webpack_require__(128);
+const exam_subject_service_1 = __webpack_require__(140);
 let ExamSubjectController = class ExamSubjectController {
     constructor(examSubjectService) {
         this.examSubjectService = examSubjectService;
@@ -16016,7 +17302,7 @@ exports.ExamSubjectController = ExamSubjectController = __decorate([
 
 
 /***/ }),
-/* 128 */
+/* 140 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16165,7 +17451,7 @@ exports.ExamSubjectService = ExamSubjectService = __decorate([
 
 
 /***/ }),
-/* 129 */
+/* 141 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16178,8 +17464,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RoleModule = void 0;
 const common_1 = __webpack_require__(5);
-const role_controller_1 = __webpack_require__(130);
-const role_service_1 = __webpack_require__(131);
+const role_controller_1 = __webpack_require__(142);
+const role_service_1 = __webpack_require__(143);
 let RoleModule = class RoleModule {
 };
 exports.RoleModule = RoleModule;
@@ -16193,7 +17479,7 @@ exports.RoleModule = RoleModule = __decorate([
 
 
 /***/ }),
-/* 130 */
+/* 142 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16214,7 +17500,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RoleController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const role_service_1 = __webpack_require__(131);
+const role_service_1 = __webpack_require__(143);
 let RoleController = class RoleController {
     constructor(roleService) {
         this.roleService = roleService;
@@ -16334,7 +17620,7 @@ exports.RoleController = RoleController = __decorate([
 
 
 /***/ }),
-/* 131 */
+/* 143 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16453,7 +17739,7 @@ exports.RoleService = RoleService = __decorate([
 
 
 /***/ }),
-/* 132 */
+/* 144 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16466,8 +17752,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MarksTypeModule = void 0;
 const common_1 = __webpack_require__(5);
-const marks_type_controller_1 = __webpack_require__(133);
-const marks_type_service_1 = __webpack_require__(134);
+const marks_type_controller_1 = __webpack_require__(145);
+const marks_type_service_1 = __webpack_require__(146);
 let MarksTypeModule = class MarksTypeModule {
 };
 exports.MarksTypeModule = MarksTypeModule;
@@ -16481,7 +17767,7 @@ exports.MarksTypeModule = MarksTypeModule = __decorate([
 
 
 /***/ }),
-/* 133 */
+/* 145 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16502,7 +17788,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MarksTypeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const marks_type_service_1 = __webpack_require__(134);
+const marks_type_service_1 = __webpack_require__(146);
 let MarksTypeController = class MarksTypeController {
     constructor(marksTypeService) {
         this.marksTypeService = marksTypeService;
@@ -16592,7 +17878,7 @@ exports.MarksTypeController = MarksTypeController = __decorate([
 
 
 /***/ }),
-/* 134 */
+/* 146 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16693,7 +17979,7 @@ exports.MarksTypeService = MarksTypeService = __decorate([
 
 
 /***/ }),
-/* 135 */
+/* 147 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16706,8 +17992,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EntrancePaperModule = void 0;
 const common_1 = __webpack_require__(5);
-const entrance_paper_controller_1 = __webpack_require__(136);
-const entrance_paper_service_1 = __webpack_require__(137);
+const entrance_paper_controller_1 = __webpack_require__(148);
+const entrance_paper_service_1 = __webpack_require__(149);
 let EntrancePaperModule = class EntrancePaperModule {
 };
 exports.EntrancePaperModule = EntrancePaperModule;
@@ -16721,7 +18007,7 @@ exports.EntrancePaperModule = EntrancePaperModule = __decorate([
 
 
 /***/ }),
-/* 136 */
+/* 148 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -16742,7 +18028,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EntrancePaperController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const entrance_paper_service_1 = __webpack_require__(137);
+const entrance_paper_service_1 = __webpack_require__(149);
 let EntrancePaperController = class EntrancePaperController {
     constructor(service) {
         this.service = service;
@@ -16862,7 +18148,7 @@ exports.EntrancePaperController = EntrancePaperController = __decorate([
 
 
 /***/ }),
-/* 137 */
+/* 149 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17010,7 +18296,7 @@ exports.EntrancePaperService = EntrancePaperService = __decorate([
 
 
 /***/ }),
-/* 138 */
+/* 150 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17023,8 +18309,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EntranceExamModule = void 0;
 const common_1 = __webpack_require__(5);
-const entrance_exam_controller_1 = __webpack_require__(139);
-const entrance_exam_service_1 = __webpack_require__(140);
+const entrance_exam_controller_1 = __webpack_require__(151);
+const entrance_exam_service_1 = __webpack_require__(152);
 let EntranceExamModule = class EntranceExamModule {
 };
 exports.EntranceExamModule = EntranceExamModule;
@@ -17038,7 +18324,7 @@ exports.EntranceExamModule = EntranceExamModule = __decorate([
 
 
 /***/ }),
-/* 139 */
+/* 151 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17059,7 +18345,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EntranceExamController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const entrance_exam_service_1 = __webpack_require__(140);
+const entrance_exam_service_1 = __webpack_require__(152);
 let EntranceExamController = class EntranceExamController {
     constructor(service) {
         this.service = service;
@@ -17239,7 +18525,7 @@ exports.EntranceExamController = EntranceExamController = __decorate([
 
 
 /***/ }),
-/* 140 */
+/* 152 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17934,7 +19220,7 @@ exports.EntranceExamService = EntranceExamService = __decorate([
 
 
 /***/ }),
-/* 141 */
+/* 153 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17947,8 +19233,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamGreviancePriceModule = void 0;
 const common_1 = __webpack_require__(5);
-const exam_greviance_price_controller_1 = __webpack_require__(142);
-const exam_greviance_price_service_1 = __webpack_require__(143);
+const exam_greviance_price_controller_1 = __webpack_require__(154);
+const exam_greviance_price_service_1 = __webpack_require__(155);
 let ExamGreviancePriceModule = class ExamGreviancePriceModule {
 };
 exports.ExamGreviancePriceModule = ExamGreviancePriceModule;
@@ -17961,7 +19247,7 @@ exports.ExamGreviancePriceModule = ExamGreviancePriceModule = __decorate([
 
 
 /***/ }),
-/* 142 */
+/* 154 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -17982,7 +19268,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExamGreviancePriceController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const exam_greviance_price_service_1 = __webpack_require__(143);
+const exam_greviance_price_service_1 = __webpack_require__(155);
 let ExamGreviancePriceController = class ExamGreviancePriceController {
     constructor(greviancePriceService) {
         this.greviancePriceService = greviancePriceService;
@@ -18102,7 +19388,7 @@ exports.ExamGreviancePriceController = ExamGreviancePriceController = __decorate
 
 
 /***/ }),
-/* 143 */
+/* 155 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18297,7 +19583,7 @@ exports.ExamGreviancePriceMasterService = ExamGreviancePriceMasterService = __de
 
 
 /***/ }),
-/* 144 */
+/* 156 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18310,8 +19596,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GrevianceTypeModule = void 0;
 const common_1 = __webpack_require__(5);
-const greviance_type_controller_1 = __webpack_require__(145);
-const greviance_type_service_1 = __webpack_require__(146);
+const greviance_type_controller_1 = __webpack_require__(157);
+const greviance_type_service_1 = __webpack_require__(158);
 let GrevianceTypeModule = class GrevianceTypeModule {
 };
 exports.GrevianceTypeModule = GrevianceTypeModule;
@@ -18324,7 +19610,7 @@ exports.GrevianceTypeModule = GrevianceTypeModule = __decorate([
 
 
 /***/ }),
-/* 145 */
+/* 157 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18345,7 +19631,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GrevianceTypeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const greviance_type_service_1 = __webpack_require__(146);
+const greviance_type_service_1 = __webpack_require__(158);
 let GrevianceTypeController = class GrevianceTypeController {
     constructor(grevianceTypeService) {
         this.grevianceTypeService = grevianceTypeService;
@@ -18465,7 +19751,7 @@ exports.GrevianceTypeController = GrevianceTypeController = __decorate([
 
 
 /***/ }),
-/* 146 */
+/* 158 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18630,7 +19916,7 @@ exports.GrevianceTypeService = GrevianceTypeService = __decorate([
 
 
 /***/ }),
-/* 147 */
+/* 159 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18643,8 +19929,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MonthModule = void 0;
 const common_1 = __webpack_require__(5);
-const month_service_1 = __webpack_require__(148);
-const month_controller_1 = __webpack_require__(149);
+const month_service_1 = __webpack_require__(160);
+const month_controller_1 = __webpack_require__(161);
 let MonthModule = class MonthModule {
 };
 exports.MonthModule = MonthModule;
@@ -18658,7 +19944,7 @@ exports.MonthModule = MonthModule = __decorate([
 
 
 /***/ }),
-/* 148 */
+/* 160 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18822,7 +20108,7 @@ exports.MonthService = MonthService = __decorate([
 
 
 /***/ }),
-/* 149 */
+/* 161 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18843,7 +20129,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MonthController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const month_service_1 = __webpack_require__(148);
+const month_service_1 = __webpack_require__(160);
 let MonthController = class MonthController {
     constructor(monthService) {
         this.monthService = monthService;
@@ -18963,7 +20249,7 @@ exports.MonthController = MonthController = __decorate([
 
 
 /***/ }),
-/* 150 */
+/* 162 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -18976,8 +20262,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanModule = void 0;
 const common_1 = __webpack_require__(5);
-const praman_service_1 = __webpack_require__(151);
-const praman_controller_1 = __webpack_require__(152);
+const praman_service_1 = __webpack_require__(163);
+const praman_controller_1 = __webpack_require__(164);
 let PramanModule = class PramanModule {
 };
 exports.PramanModule = PramanModule;
@@ -18991,7 +20277,7 @@ exports.PramanModule = PramanModule = __decorate([
 
 
 /***/ }),
-/* 151 */
+/* 163 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19128,7 +20414,7 @@ exports.PramanService = PramanService = __decorate([
 
 
 /***/ }),
-/* 152 */
+/* 164 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19149,7 +20435,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const praman_service_1 = __webpack_require__(151);
+const praman_service_1 = __webpack_require__(163);
 let PramanController = class PramanController {
     constructor(pramanService) {
         this.pramanService = pramanService;
@@ -19269,7 +20555,7 @@ exports.PramanController = PramanController = __decorate([
 
 
 /***/ }),
-/* 153 */
+/* 165 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19282,8 +20568,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanSubParameterModule = void 0;
 const common_1 = __webpack_require__(5);
-const praman_sub_parameter_controller_1 = __webpack_require__(154);
-const praman_sub_parameter_service_1 = __webpack_require__(155);
+const praman_sub_parameter_controller_1 = __webpack_require__(166);
+const praman_sub_parameter_service_1 = __webpack_require__(167);
 let PramanSubParameterModule = class PramanSubParameterModule {
 };
 exports.PramanSubParameterModule = PramanSubParameterModule;
@@ -19297,7 +20583,7 @@ exports.PramanSubParameterModule = PramanSubParameterModule = __decorate([
 
 
 /***/ }),
-/* 154 */
+/* 166 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19318,7 +20604,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanSubParameterController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const praman_sub_parameter_service_1 = __webpack_require__(155);
+const praman_sub_parameter_service_1 = __webpack_require__(167);
 let PramanSubParameterController = class PramanSubParameterController {
     constructor(pramanSubParameterService) {
         this.pramanSubParameterService = pramanSubParameterService;
@@ -19438,7 +20724,7 @@ exports.PramanSubParameterController = PramanSubParameterController = __decorate
 
 
 /***/ }),
-/* 155 */
+/* 167 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19626,7 +20912,7 @@ exports.PramanSubParameterService = PramanSubParameterService = __decorate([
 
 
 /***/ }),
-/* 156 */
+/* 168 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19639,8 +20925,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanResponseModule = void 0;
 const common_1 = __webpack_require__(5);
-const praman_response_controller_1 = __webpack_require__(157);
-const praman_response_service_1 = __webpack_require__(158);
+const praman_response_controller_1 = __webpack_require__(169);
+const praman_response_service_1 = __webpack_require__(170);
 let PramanResponseModule = class PramanResponseModule {
 };
 exports.PramanResponseModule = PramanResponseModule;
@@ -19654,7 +20940,7 @@ exports.PramanResponseModule = PramanResponseModule = __decorate([
 
 
 /***/ }),
-/* 157 */
+/* 169 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19675,7 +20961,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanResponseController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const praman_response_service_1 = __webpack_require__(158);
+const praman_response_service_1 = __webpack_require__(170);
 let PramanResponseController = class PramanResponseController {
     constructor(pramanResponseService) {
         this.pramanResponseService = pramanResponseService;
@@ -19795,7 +21081,7 @@ exports.PramanResponseController = PramanResponseController = __decorate([
 
 
 /***/ }),
-/* 158 */
+/* 170 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19932,7 +21218,7 @@ exports.PramanResponseService = PramanResponseService = __decorate([
 
 
 /***/ }),
-/* 159 */
+/* 171 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19945,24 +21231,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.WebsiteModule = void 0;
 const common_1 = __webpack_require__(5);
-const campus_quick_link_module_1 = __webpack_require__(160);
-const latest_update_module_1 = __webpack_require__(163);
-const admission_enquiry_module_1 = __webpack_require__(166);
-const hero_section_module_1 = __webpack_require__(169);
-const notice_board_module_1 = __webpack_require__(172);
-const accreditation_slider_module_1 = __webpack_require__(175);
-const top_achiever_module_1 = __webpack_require__(178);
-const image_gallery_module_1 = __webpack_require__(181);
-const video_gallery_module_1 = __webpack_require__(184);
-const contact_enquiry_module_1 = __webpack_require__(187);
-const stats_counter_module_1 = __webpack_require__(190);
-const testimonial_module_1 = __webpack_require__(193);
-const header_button_module_1 = __webpack_require__(196);
-const committee_module_1 = __webpack_require__(199);
-const committee_submenu_module_1 = __webpack_require__(202);
-const examiner_registration_module_1 = __webpack_require__(205);
-const academic_year_module_1 = __webpack_require__(208);
-const praman_details_module_1 = __webpack_require__(211);
+const campus_quick_link_module_1 = __webpack_require__(172);
+const latest_update_module_1 = __webpack_require__(175);
+const admission_enquiry_module_1 = __webpack_require__(178);
+const hero_section_module_1 = __webpack_require__(181);
+const notice_board_module_1 = __webpack_require__(184);
+const accreditation_slider_module_1 = __webpack_require__(187);
+const top_achiever_module_1 = __webpack_require__(190);
+const image_gallery_module_1 = __webpack_require__(193);
+const video_gallery_module_1 = __webpack_require__(196);
+const contact_enquiry_module_1 = __webpack_require__(199);
+const stats_counter_module_1 = __webpack_require__(202);
+const testimonial_module_1 = __webpack_require__(205);
+const header_button_module_1 = __webpack_require__(208);
+const committee_module_1 = __webpack_require__(211);
+const committee_submenu_module_1 = __webpack_require__(214);
+const examiner_registration_module_1 = __webpack_require__(217);
+const academic_year_module_1 = __webpack_require__(220);
+const praman_details_module_1 = __webpack_require__(223);
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
@@ -19975,7 +21261,7 @@ exports.WebsiteModule = WebsiteModule = __decorate([
 
 
 /***/ }),
-/* 160 */
+/* 172 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -19989,8 +21275,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CampusQuickLinkModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const campus_quick_link_controller_1 = __webpack_require__(161);
-const campus_quick_link_service_1 = __webpack_require__(162);
+const campus_quick_link_controller_1 = __webpack_require__(173);
+const campus_quick_link_service_1 = __webpack_require__(174);
 let CampusQuickLinkModule = class CampusQuickLinkModule {
 };
 exports.CampusQuickLinkModule = CampusQuickLinkModule;
@@ -20005,7 +21291,7 @@ exports.CampusQuickLinkModule = CampusQuickLinkModule = __decorate([
 
 
 /***/ }),
-/* 161 */
+/* 173 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20026,7 +21312,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CampusQuickLinkController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const campus_quick_link_service_1 = __webpack_require__(162);
+const campus_quick_link_service_1 = __webpack_require__(174);
 let CampusQuickLinkController = class CampusQuickLinkController {
     constructor(campusQuickLinkService) {
         this.campusQuickLinkService = campusQuickLinkService;
@@ -20130,7 +21416,7 @@ exports.CampusQuickLinkController = CampusQuickLinkController = __decorate([
 
 
 /***/ }),
-/* 162 */
+/* 174 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20219,7 +21505,7 @@ exports.CampusQuickLinkService = CampusQuickLinkService = __decorate([
 
 
 /***/ }),
-/* 163 */
+/* 175 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20233,8 +21519,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LatestUpdateModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const latest_update_controller_1 = __webpack_require__(164);
-const latest_update_service_1 = __webpack_require__(165);
+const latest_update_controller_1 = __webpack_require__(176);
+const latest_update_service_1 = __webpack_require__(177);
 let LatestUpdateModule = class LatestUpdateModule {
 };
 exports.LatestUpdateModule = LatestUpdateModule;
@@ -20249,7 +21535,7 @@ exports.LatestUpdateModule = LatestUpdateModule = __decorate([
 
 
 /***/ }),
-/* 164 */
+/* 176 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20270,7 +21556,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LatestUpdateController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const latest_update_service_1 = __webpack_require__(165);
+const latest_update_service_1 = __webpack_require__(177);
 let LatestUpdateController = class LatestUpdateController {
     constructor(latestUpdateService) {
         this.latestUpdateService = latestUpdateService;
@@ -20374,7 +21660,7 @@ exports.LatestUpdateController = LatestUpdateController = __decorate([
 
 
 /***/ }),
-/* 165 */
+/* 177 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20487,7 +21773,7 @@ exports.LatestUpdateService = LatestUpdateService = __decorate([
 
 
 /***/ }),
-/* 166 */
+/* 178 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20501,8 +21787,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const admission_enquiry_controller_1 = __webpack_require__(167);
-const admission_enquiry_service_1 = __webpack_require__(168);
+const admission_enquiry_controller_1 = __webpack_require__(179);
+const admission_enquiry_service_1 = __webpack_require__(180);
 let AdmissionEnquiryModule = class AdmissionEnquiryModule {
 };
 exports.AdmissionEnquiryModule = AdmissionEnquiryModule;
@@ -20517,7 +21803,7 @@ exports.AdmissionEnquiryModule = AdmissionEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 167 */
+/* 179 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20538,7 +21824,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdmissionEnquiryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const admission_enquiry_service_1 = __webpack_require__(168);
+const admission_enquiry_service_1 = __webpack_require__(180);
 let AdmissionEnquiryController = class AdmissionEnquiryController {
     constructor(admissionEnquiryService) {
         this.admissionEnquiryService = admissionEnquiryService;
@@ -20642,7 +21928,7 @@ exports.AdmissionEnquiryController = AdmissionEnquiryController = __decorate([
 
 
 /***/ }),
-/* 168 */
+/* 180 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20783,7 +22069,7 @@ exports.AdmissionEnquiryService = AdmissionEnquiryService = __decorate([
 
 
 /***/ }),
-/* 169 */
+/* 181 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20797,8 +22083,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const hero_section_controller_1 = __webpack_require__(170);
-const hero_section_service_1 = __webpack_require__(171);
+const hero_section_controller_1 = __webpack_require__(182);
+const hero_section_service_1 = __webpack_require__(183);
 let HeroSectionModule = class HeroSectionModule {
 };
 exports.HeroSectionModule = HeroSectionModule;
@@ -20813,7 +22099,7 @@ exports.HeroSectionModule = HeroSectionModule = __decorate([
 
 
 /***/ }),
-/* 170 */
+/* 182 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -20834,7 +22120,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeroSectionController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const hero_section_service_1 = __webpack_require__(171);
+const hero_section_service_1 = __webpack_require__(183);
 let HeroSectionController = class HeroSectionController {
     constructor(heroSectionService) {
         this.heroSectionService = heroSectionService;
@@ -20938,7 +22224,7 @@ exports.HeroSectionController = HeroSectionController = __decorate([
 
 
 /***/ }),
-/* 171 */
+/* 183 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21054,7 +22340,7 @@ exports.HeroSectionService = HeroSectionService = __decorate([
 
 
 /***/ }),
-/* 172 */
+/* 184 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21068,8 +22354,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const notice_board_controller_1 = __webpack_require__(173);
-const notice_board_service_1 = __webpack_require__(174);
+const notice_board_controller_1 = __webpack_require__(185);
+const notice_board_service_1 = __webpack_require__(186);
 let NoticeBoardModule = class NoticeBoardModule {
 };
 exports.NoticeBoardModule = NoticeBoardModule;
@@ -21084,7 +22370,7 @@ exports.NoticeBoardModule = NoticeBoardModule = __decorate([
 
 
 /***/ }),
-/* 173 */
+/* 185 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21105,7 +22391,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NoticeBoardController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const notice_board_service_1 = __webpack_require__(174);
+const notice_board_service_1 = __webpack_require__(186);
 let NoticeBoardController = class NoticeBoardController {
     constructor(noticeBoardService) {
         this.noticeBoardService = noticeBoardService;
@@ -21209,7 +22495,7 @@ exports.NoticeBoardController = NoticeBoardController = __decorate([
 
 
 /***/ }),
-/* 174 */
+/* 186 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21325,7 +22611,7 @@ exports.NoticeBoardService = NoticeBoardService = __decorate([
 
 
 /***/ }),
-/* 175 */
+/* 187 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21339,8 +22625,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AccreditationSliderModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const accreditation_slider_controller_1 = __webpack_require__(176);
-const accreditation_slider_service_1 = __webpack_require__(177);
+const accreditation_slider_controller_1 = __webpack_require__(188);
+const accreditation_slider_service_1 = __webpack_require__(189);
 let AccreditationSliderModule = class AccreditationSliderModule {
 };
 exports.AccreditationSliderModule = AccreditationSliderModule;
@@ -21355,7 +22641,7 @@ exports.AccreditationSliderModule = AccreditationSliderModule = __decorate([
 
 
 /***/ }),
-/* 176 */
+/* 188 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21376,7 +22662,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AccreditationSliderController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const accreditation_slider_service_1 = __webpack_require__(177);
+const accreditation_slider_service_1 = __webpack_require__(189);
 let AccreditationSliderController = class AccreditationSliderController {
     constructor(accreditationSliderService) {
         this.accreditationSliderService = accreditationSliderService;
@@ -21480,7 +22766,7 @@ exports.AccreditationSliderController = AccreditationSliderController = __decora
 
 
 /***/ }),
-/* 177 */
+/* 189 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21578,7 +22864,7 @@ exports.AccreditationSliderService = AccreditationSliderService = __decorate([
 
 
 /***/ }),
-/* 178 */
+/* 190 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21592,8 +22878,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const top_achiever_controller_1 = __webpack_require__(179);
-const top_achiever_service_1 = __webpack_require__(180);
+const top_achiever_controller_1 = __webpack_require__(191);
+const top_achiever_service_1 = __webpack_require__(192);
 let TopAchieverModule = class TopAchieverModule {
 };
 exports.TopAchieverModule = TopAchieverModule;
@@ -21608,7 +22894,7 @@ exports.TopAchieverModule = TopAchieverModule = __decorate([
 
 
 /***/ }),
-/* 179 */
+/* 191 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21629,7 +22915,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TopAchieverController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const top_achiever_service_1 = __webpack_require__(180);
+const top_achiever_service_1 = __webpack_require__(192);
 let TopAchieverController = class TopAchieverController {
     constructor(topAchieverService) {
         this.topAchieverService = topAchieverService;
@@ -21733,7 +23019,7 @@ exports.TopAchieverController = TopAchieverController = __decorate([
 
 
 /***/ }),
-/* 180 */
+/* 192 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21846,7 +23132,7 @@ exports.TopAchieverService = TopAchieverService = __decorate([
 
 
 /***/ }),
-/* 181 */
+/* 193 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21860,8 +23146,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageGalleryModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const image_gallery_controller_1 = __webpack_require__(182);
-const image_gallery_service_1 = __webpack_require__(183);
+const image_gallery_controller_1 = __webpack_require__(194);
+const image_gallery_service_1 = __webpack_require__(195);
 let ImageGalleryModule = class ImageGalleryModule {
 };
 exports.ImageGalleryModule = ImageGalleryModule;
@@ -21876,7 +23162,7 @@ exports.ImageGalleryModule = ImageGalleryModule = __decorate([
 
 
 /***/ }),
-/* 182 */
+/* 194 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -21897,7 +23183,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageGalleryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const image_gallery_service_1 = __webpack_require__(183);
+const image_gallery_service_1 = __webpack_require__(195);
 let ImageGalleryController = class ImageGalleryController {
     constructor(imageGalleryService) {
         this.imageGalleryService = imageGalleryService;
@@ -22001,7 +23287,7 @@ exports.ImageGalleryController = ImageGalleryController = __decorate([
 
 
 /***/ }),
-/* 183 */
+/* 195 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22112,7 +23398,7 @@ exports.ImageGalleryService = ImageGalleryService = __decorate([
 
 
 /***/ }),
-/* 184 */
+/* 196 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22126,8 +23412,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const video_gallery_controller_1 = __webpack_require__(185);
-const video_gallery_service_1 = __webpack_require__(186);
+const video_gallery_controller_1 = __webpack_require__(197);
+const video_gallery_service_1 = __webpack_require__(198);
 let VideoGalleryModule = class VideoGalleryModule {
 };
 exports.VideoGalleryModule = VideoGalleryModule;
@@ -22142,7 +23428,7 @@ exports.VideoGalleryModule = VideoGalleryModule = __decorate([
 
 
 /***/ }),
-/* 185 */
+/* 197 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22163,7 +23449,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VideoGalleryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const video_gallery_service_1 = __webpack_require__(186);
+const video_gallery_service_1 = __webpack_require__(198);
 let VideoGalleryController = class VideoGalleryController {
     constructor(videoGalleryService) {
         this.videoGalleryService = videoGalleryService;
@@ -22267,7 +23553,7 @@ exports.VideoGalleryController = VideoGalleryController = __decorate([
 
 
 /***/ }),
-/* 186 */
+/* 198 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22377,7 +23663,7 @@ exports.VideoGalleryService = VideoGalleryService = __decorate([
 
 
 /***/ }),
-/* 187 */
+/* 199 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22391,8 +23677,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ContactEnquiryModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const contact_enquiry_controller_1 = __webpack_require__(188);
-const contact_enquiry_service_1 = __webpack_require__(189);
+const contact_enquiry_controller_1 = __webpack_require__(200);
+const contact_enquiry_service_1 = __webpack_require__(201);
 let ContactEnquiryModule = class ContactEnquiryModule {
 };
 exports.ContactEnquiryModule = ContactEnquiryModule;
@@ -22407,7 +23693,7 @@ exports.ContactEnquiryModule = ContactEnquiryModule = __decorate([
 
 
 /***/ }),
-/* 188 */
+/* 200 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22428,7 +23714,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ContactEnquiryController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const contact_enquiry_service_1 = __webpack_require__(189);
+const contact_enquiry_service_1 = __webpack_require__(201);
 let ContactEnquiryController = class ContactEnquiryController {
     constructor(contactEnquiryService) {
         this.contactEnquiryService = contactEnquiryService;
@@ -22532,7 +23818,7 @@ exports.ContactEnquiryController = ContactEnquiryController = __decorate([
 
 
 /***/ }),
-/* 189 */
+/* 201 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22639,7 +23925,7 @@ exports.ContactEnquiryService = ContactEnquiryService = __decorate([
 
 
 /***/ }),
-/* 190 */
+/* 202 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22653,8 +23939,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatsCounterModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const stats_counter_controller_1 = __webpack_require__(191);
-const stats_counter_service_1 = __webpack_require__(192);
+const stats_counter_controller_1 = __webpack_require__(203);
+const stats_counter_service_1 = __webpack_require__(204);
 let StatsCounterModule = class StatsCounterModule {
 };
 exports.StatsCounterModule = StatsCounterModule;
@@ -22669,7 +23955,7 @@ exports.StatsCounterModule = StatsCounterModule = __decorate([
 
 
 /***/ }),
-/* 191 */
+/* 203 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22690,7 +23976,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatsCounterController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const stats_counter_service_1 = __webpack_require__(192);
+const stats_counter_service_1 = __webpack_require__(204);
 let StatsCounterController = class StatsCounterController {
     constructor(statsCounterService) {
         this.statsCounterService = statsCounterService;
@@ -22794,7 +24080,7 @@ exports.StatsCounterController = StatsCounterController = __decorate([
 
 
 /***/ }),
-/* 192 */
+/* 204 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22901,7 +24187,7 @@ exports.StatsCounterService = StatsCounterService = __decorate([
 
 
 /***/ }),
-/* 193 */
+/* 205 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22915,8 +24201,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestimonialModule = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
-const testimonial_controller_1 = __webpack_require__(194);
-const testimonial_service_1 = __webpack_require__(195);
+const testimonial_controller_1 = __webpack_require__(206);
+const testimonial_service_1 = __webpack_require__(207);
 let TestimonialModule = class TestimonialModule {
 };
 exports.TestimonialModule = TestimonialModule;
@@ -22931,7 +24217,7 @@ exports.TestimonialModule = TestimonialModule = __decorate([
 
 
 /***/ }),
-/* 194 */
+/* 206 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -22952,7 +24238,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TestimonialController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const testimonial_service_1 = __webpack_require__(195);
+const testimonial_service_1 = __webpack_require__(207);
 let TestimonialController = class TestimonialController {
     constructor(testimonialService) {
         this.testimonialService = testimonialService;
@@ -23056,7 +24342,7 @@ exports.TestimonialController = TestimonialController = __decorate([
 
 
 /***/ }),
-/* 195 */
+/* 207 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23163,7 +24449,7 @@ exports.TestimonialService = TestimonialService = __decorate([
 
 
 /***/ }),
-/* 196 */
+/* 208 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23176,8 +24462,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderButtonModule = void 0;
 const common_1 = __webpack_require__(5);
-const header_button_controller_1 = __webpack_require__(197);
-const header_button_service_1 = __webpack_require__(198);
+const header_button_controller_1 = __webpack_require__(209);
+const header_button_service_1 = __webpack_require__(210);
 let HeaderButtonModule = class HeaderButtonModule {
 };
 exports.HeaderButtonModule = HeaderButtonModule;
@@ -23191,7 +24477,7 @@ exports.HeaderButtonModule = HeaderButtonModule = __decorate([
 
 
 /***/ }),
-/* 197 */
+/* 209 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23212,7 +24498,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderButtonController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const header_button_service_1 = __webpack_require__(198);
+const header_button_service_1 = __webpack_require__(210);
 let HeaderButtonController = class HeaderButtonController {
     constructor(headerButtonService) {
         this.headerButtonService = headerButtonService;
@@ -23316,7 +24602,7 @@ exports.HeaderButtonController = HeaderButtonController = __decorate([
 
 
 /***/ }),
-/* 198 */
+/* 210 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23420,7 +24706,7 @@ exports.HeaderButtonService = HeaderButtonService = __decorate([
 
 
 /***/ }),
-/* 199 */
+/* 211 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23433,8 +24719,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeModule = void 0;
 const common_1 = __webpack_require__(5);
-const committee_controller_1 = __webpack_require__(200);
-const committee_service_1 = __webpack_require__(201);
+const committee_controller_1 = __webpack_require__(212);
+const committee_service_1 = __webpack_require__(213);
 let CommitteeModule = class CommitteeModule {
 };
 exports.CommitteeModule = CommitteeModule;
@@ -23448,7 +24734,7 @@ exports.CommitteeModule = CommitteeModule = __decorate([
 
 
 /***/ }),
-/* 200 */
+/* 212 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23469,7 +24755,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const committee_service_1 = __webpack_require__(201);
+const committee_service_1 = __webpack_require__(213);
 let CommitteeController = class CommitteeController {
     constructor(committeeService) {
         this.committeeService = committeeService;
@@ -23558,7 +24844,7 @@ exports.CommitteeController = CommitteeController = __decorate([
 
 
 /***/ }),
-/* 201 */
+/* 213 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23650,7 +24936,7 @@ exports.CommitteeService = CommitteeService = __decorate([
 
 
 /***/ }),
-/* 202 */
+/* 214 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23663,8 +24949,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeSubmenuModule = void 0;
 const common_1 = __webpack_require__(5);
-const committee_submenu_controller_1 = __webpack_require__(203);
-const committee_submenu_service_1 = __webpack_require__(204);
+const committee_submenu_controller_1 = __webpack_require__(215);
+const committee_submenu_service_1 = __webpack_require__(216);
 let CommitteeSubmenuModule = class CommitteeSubmenuModule {
 };
 exports.CommitteeSubmenuModule = CommitteeSubmenuModule;
@@ -23678,7 +24964,7 @@ exports.CommitteeSubmenuModule = CommitteeSubmenuModule = __decorate([
 
 
 /***/ }),
-/* 203 */
+/* 215 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23699,7 +24985,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommitteeSubmenuController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const committee_submenu_service_1 = __webpack_require__(204);
+const committee_submenu_service_1 = __webpack_require__(216);
 let CommitteeSubmenuController = class CommitteeSubmenuController {
     constructor(committeeSubmenuService) {
         this.committeeSubmenuService = committeeSubmenuService;
@@ -23804,7 +25090,7 @@ exports.CommitteeSubmenuController = CommitteeSubmenuController = __decorate([
 
 
 /***/ }),
-/* 204 */
+/* 216 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23915,7 +25201,7 @@ exports.CommitteeSubmenuService = CommitteeSubmenuService = __decorate([
 
 
 /***/ }),
-/* 205 */
+/* 217 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23928,8 +25214,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExaminerRegistrationModule = void 0;
 const common_1 = __webpack_require__(5);
-const examiner_registration_controller_1 = __webpack_require__(206);
-const examiner_registration_service_1 = __webpack_require__(207);
+const examiner_registration_controller_1 = __webpack_require__(218);
+const examiner_registration_service_1 = __webpack_require__(219);
 let ExaminerRegistrationModule = class ExaminerRegistrationModule {
 };
 exports.ExaminerRegistrationModule = ExaminerRegistrationModule;
@@ -23943,7 +25229,7 @@ exports.ExaminerRegistrationModule = ExaminerRegistrationModule = __decorate([
 
 
 /***/ }),
-/* 206 */
+/* 218 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -23964,7 +25250,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExaminerRegistrationController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const examiner_registration_service_1 = __webpack_require__(207);
+const examiner_registration_service_1 = __webpack_require__(219);
 let ExaminerRegistrationController = class ExaminerRegistrationController {
     constructor(examinerRegistrationService) {
         this.examinerRegistrationService = examinerRegistrationService;
@@ -24068,7 +25354,7 @@ exports.ExaminerRegistrationController = ExaminerRegistrationController = __deco
 
 
 /***/ }),
-/* 207 */
+/* 219 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24220,7 +25506,7 @@ exports.ExaminerRegistrationService = ExaminerRegistrationService = __decorate([
 
 
 /***/ }),
-/* 208 */
+/* 220 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24233,8 +25519,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicYearModule = void 0;
 const common_1 = __webpack_require__(5);
-const academic_year_controller_1 = __webpack_require__(209);
-const academic_year_service_1 = __webpack_require__(210);
+const academic_year_controller_1 = __webpack_require__(221);
+const academic_year_service_1 = __webpack_require__(222);
 let AcademicYearModule = class AcademicYearModule {
 };
 exports.AcademicYearModule = AcademicYearModule;
@@ -24248,7 +25534,7 @@ exports.AcademicYearModule = AcademicYearModule = __decorate([
 
 
 /***/ }),
-/* 209 */
+/* 221 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24269,7 +25555,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicYearController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const academic_year_service_1 = __webpack_require__(210);
+const academic_year_service_1 = __webpack_require__(222);
 let AcademicYearController = class AcademicYearController {
     constructor(academicYearService) {
         this.academicYearService = academicYearService;
@@ -24389,7 +25675,7 @@ exports.AcademicYearController = AcademicYearController = __decorate([
 
 
 /***/ }),
-/* 210 */
+/* 222 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24526,7 +25812,7 @@ exports.AcademicYearService = AcademicYearService = __decorate([
 
 
 /***/ }),
-/* 211 */
+/* 223 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24539,8 +25825,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanDetailsModule = void 0;
 const common_1 = __webpack_require__(5);
-const praman_details_controller_1 = __webpack_require__(212);
-const praman_details_service_1 = __webpack_require__(213);
+const praman_details_controller_1 = __webpack_require__(224);
+const praman_details_service_1 = __webpack_require__(225);
 let PramanDetailsModule = class PramanDetailsModule {
 };
 exports.PramanDetailsModule = PramanDetailsModule;
@@ -24554,7 +25840,7 @@ exports.PramanDetailsModule = PramanDetailsModule = __decorate([
 
 
 /***/ }),
-/* 212 */
+/* 224 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24575,7 +25861,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PramanDetailsController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const praman_details_service_1 = __webpack_require__(213);
+const praman_details_service_1 = __webpack_require__(225);
 let PramanDetailsController = class PramanDetailsController {
     constructor(pramanDetailsService) {
         this.pramanDetailsService = pramanDetailsService;
@@ -24695,7 +25981,7 @@ exports.PramanDetailsController = PramanDetailsController = __decorate([
 
 
 /***/ }),
-/* 213 */
+/* 225 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -25009,7 +26295,7 @@ exports.PramanDetailsService = PramanDetailsService = __decorate([
 
 
 /***/ }),
-/* 214 */
+/* 226 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -25022,7 +26308,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminModule = void 0;
 const common_1 = __webpack_require__(5);
-const admin_login_module_1 = __webpack_require__(215);
+const admin_login_module_1 = __webpack_require__(227);
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -25035,7 +26321,7 @@ exports.AdminModule = AdminModule = __decorate([
 
 
 /***/ }),
-/* 215 */
+/* 227 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -25049,8 +26335,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminLoginModule = void 0;
 const common_1 = __webpack_require__(5);
 const jwt_1 = __webpack_require__(12);
-const admin_login_controller_1 = __webpack_require__(216);
-const admin_login_service_1 = __webpack_require__(217);
+const admin_login_controller_1 = __webpack_require__(228);
+const admin_login_service_1 = __webpack_require__(229);
 let AdminLoginModule = class AdminLoginModule {
 };
 exports.AdminLoginModule = AdminLoginModule;
@@ -25070,7 +26356,7 @@ exports.AdminLoginModule = AdminLoginModule = __decorate([
 
 
 /***/ }),
-/* 216 */
+/* 228 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -25091,7 +26377,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminLoginController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const admin_login_service_1 = __webpack_require__(217);
+const admin_login_service_1 = __webpack_require__(229);
 let AdminLoginController = class AdminLoginController {
     constructor(adminLoginService) {
         this.adminLoginService = adminLoginService;
@@ -25259,7 +26545,7 @@ exports.AdminLoginController = AdminLoginController = __decorate([
 
 
 /***/ }),
-/* 217 */
+/* 229 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 

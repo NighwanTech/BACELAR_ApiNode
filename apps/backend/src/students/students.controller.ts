@@ -69,9 +69,13 @@ export class StudentsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all active students (where IsDeleted is false)' })
+  @ApiQuery({ name: 'programId', required: false })
   @ApiResponse({ status: 200, description: 'Return all active students' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_students' }, {});
+  findAll(@Query('programId') programId?: string): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'find_all_students' },
+      { programId: programId ? Number(programId) : undefined },
+    );
   }
 
   @Get(':id')

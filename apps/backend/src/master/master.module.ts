@@ -6,6 +6,10 @@ import { SubjectModule } from './subject/subject.module';
 import { ProgramModule } from './program/program.module';
 import { BoardModule } from './board/board.module';
 import { FeeTypeModule } from './fee-type/fee-type.module';
+import { EmployeTypeModule } from './employe-type/employe-type.module';
+import { EmployeeCategoryModule } from './employee-category/employee-category.module';
+import { EmployeeDesignationModule } from './employee-designation/employee-designation.module';
+import { EmployeeDepartmentModule } from './employee-department/employee-department.module';
 import { QualificationModule } from './qualification/qualification.module';
 import { AdmissionSessionModule } from './admission-session/admission-session.module';
 import { AcademicSessionModule } from './academic-session/academic-session.module';
@@ -47,6 +51,10 @@ import { PramanResponseModule } from './praman-response/praman-response.module';
     ProgramEligibilityModule,
     BoardModule,
     FeeTypeModule,
+    EmployeTypeModule,
+    EmployeeCategoryModule,
+    EmployeeDesignationModule,
+    EmployeeDepartmentModule,
     QualificationModule,
     AdmissionSessionModule,
     AcademicSessionModule,
@@ -83,6 +91,10 @@ import { PramanResponseModule } from './praman-response/praman-response.module';
     ProgramEligibilityModule,
     BoardModule,
     FeeTypeModule,
+    EmployeTypeModule,
+    EmployeeCategoryModule,
+    EmployeeDesignationModule,
+    EmployeeDepartmentModule,
     QualificationModule,
     AdmissionSessionModule,
     AcademicSessionModule,
