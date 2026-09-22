@@ -20,46 +20,20 @@ export type LetterGrade = {
   performance: string;
 };
 
-/** Program master codes from prisma/seed.ts (1–14). */
+/** Program master codes from prisma/seed.ts (1–14). Lookup is by programCode only. */
 const PASS_40_PROGRAM_CODES = new Set([4, 5, 6, 8, 9, 10, 11]); // BBA, BCA, BPEd, B.Sc.Ag, MA*
 const PASS_33_PROGRAM_CODES = new Set([1, 2, 3]); // BA, B.Sc., B.Com.
 
 export function resolveGradeScheme(program?: {
   programCode?: string | null;
-  programShortName?: string | null;
-  programName?: string | null;
+  programId?: number | null;
 } | null): GradeSchemeId | null {
   if (!program) return null;
-
   const codeNum = Number(String(program.programCode || '').replace(/\D/g, ''));
+  if (!Number.isFinite(codeNum) || codeNum <= 0) return null;
   if (PASS_40_PROGRAM_CODES.has(codeNum)) return 'PASS_40';
   if (PASS_33_PROGRAM_CODES.has(codeNum)) return 'PASS_33';
-
-  const fromName = (raw?: string | null): GradeSchemeId | null => {
-    const key = String(raw || '')
-      .toUpperCase()
-      .replace(/[^A-Z0-9]+/g, '');
-    if (!key) return null;
-    if (key.includes('BSCBED') || key.includes('BABED') || key === 'BED' || key.includes('DELED')) {
-      return null;
-    }
-    if (key.includes('BSCAG') || key.includes('BBA') || key.includes('BCA') || key.includes('BPED') || key.startsWith('MA')) {
-      return 'PASS_40';
-    }
-    if (
-      key.includes('BCOM') ||
-      key.includes('BACHELOROFCOMMERCE') ||
-      key === 'BSC' ||
-      key === 'BA' ||
-      key.includes('BACHELOROFART') ||
-      (key.includes('BACHELOROFSCIENCE') && !key.includes('AG'))
-    ) {
-      return 'PASS_33';
-    }
-    return null;
-  };
-
-  return fromName(program.programShortName) ?? fromName(program.programName);
+  return null;
 }
 
 /**
@@ -94,10 +68,13 @@ function pct(obt: number | null, max: number | null): number | null {
 export type PaperMarkParts = {
   theoryExternalObt?: number | null;
   theoryExternalMax?: number | null;
+  theoryExternalMin?: number | null;
   sessionalInternalObt?: number | null;
   sessionalInternalMax?: number | null;
+  sessionalInternalMin?: number | null;
   practicalObt?: number | null;
   practicalMax?: number | null;
+  practicalMin?: number | null;
   attendanceStatus?: string | null;
   creditMax?: number | null;
   paperType?: string | null;
@@ -114,6 +91,62 @@ export type PaperGradeResult = {
 
 function round2(n: number) {
   return Math.round(n * 100) / 100;
+}
+
+function belowMin(obt: number | null, min: number | null) {
+  if (obt == null || min == null) return false;
+  return obt < min;
+}
+
+function isAbsentStatus(attendance?: string | null) {
+  const att = String(attendance || '').trim().toUpperCase();
+  return att === 'A' || att === 'ABS' || att.includes('ABSENT');
+}
+
+/** Back paper: API result, absent, or any filled component below min. */
+export function isBackPaper(row: {
+  result?: string | null;
+  grade?: string | null;
+  attendanceStatus?: string | null;
+  theoryExternalObt?: number | null;
+  theoryExternalMin?: number | null;
+  sessionalInternalObt?: number | null;
+  sessionalInternalMin?: number | null;
+  practicalObt?: number | null;
+  practicalMin?: number | null;
+}) {
+  const r = String(row.result || '').trim().toUpperCase();
+  if (r.includes('BACK') || r === 'F' || r === 'FAIL' || r === 'BP') return true;
+  const g = String(row.grade || '').trim().toUpperCase();
+  if (g === 'F') return true;
+  if (isAbsentStatus(row.attendanceStatus)) return true;
+  return (
+    belowMin(row.theoryExternalObt ?? null, row.theoryExternalMin ?? null) ||
+    belowMin(row.sessionalInternalObt ?? null, row.sessionalInternalMin ?? null) ||
+    belowMin(row.practicalObt ?? null, row.practicalMin ?? null)
+  );
+}
+
+export function remarkPaperCodes(
+  rows: Array<{ paperCode?: string | null } & Parameters<typeof isBackPaper>[0]>,
+) {
+  const seen = new Set<string>();
+  const codes: string[] = [];
+  for (const row of rows) {
+    if (!isBackPaper(row)) continue;
+    const code = String(row.paperCode || '').trim();
+    if (!code || seen.has(code)) continue;
+    seen.add(code);
+    codes.push(code);
+  }
+  return codes;
+}
+
+export function overallResultFromPapers(
+  rows: Array<Parameters<typeof isBackPaper>[0]>,
+) {
+  if (!rows.length) return null;
+  return rows.some(isBackPaper) ? 'PROMOTED WITH BACK' : 'PASS';
 }
 
 /**
@@ -137,19 +170,25 @@ export function computePaperGrade(
 
   const theoryObt = marks.theoryExternalObt ?? null;
   const theoryMax = marks.theoryExternalMax ?? null;
+  const theoryMin = marks.theoryExternalMin ?? null;
   const iaObt = marks.sessionalInternalObt ?? null;
   const iaMax = marks.sessionalInternalMax ?? null;
+  const iaMin = marks.sessionalInternalMin ?? null;
   const pracObt = marks.practicalObt ?? null;
   const pracMax = marks.practicalMax ?? null;
+  const pracMin = marks.practicalMin ?? null;
 
   const theoryPct = pct(theoryObt, theoryMax);
   const iaPct = pct(iaObt, iaMax);
   const pracPct = pct(pracObt, pracMax);
 
   const obtainedParts = [theoryObt, iaObt, pracObt].filter((v): v is number => v != null);
-  if (!obtainedParts.length) return empty;
+  const absent = isAbsentStatus(marks.attendanceStatus);
+  if (!obtainedParts.length && !absent) return empty;
 
-  const totalMarks = round2(obtainedParts.reduce((s, v) => s + v, 0));
+  const totalMarks = obtainedParts.length
+    ? round2(obtainedParts.reduce((s, v) => s + v, 0))
+    : null;
 
   let percentage: number | null = null;
   if (theoryPct != null && iaPct != null) {
@@ -161,29 +200,33 @@ export function computePaperGrade(
   } else if (pracPct != null) {
     percentage = pracPct;
   }
+  if (percentage != null) percentage = round2(percentage);
 
-  if (percentage == null) return { ...empty, totalMarks };
-  percentage = round2(percentage);
+  const minFailed =
+    belowMin(theoryObt, theoryMin) ||
+    belowMin(iaObt, iaMin) ||
+    belowMin(pracObt, pracMin);
 
-  const absent = String(marks.attendanceStatus || '').trim().toUpperCase() === 'A';
   if (!scheme) {
+    const failed = absent || minFailed;
     return {
       totalMarks,
       percentage,
       grade: null,
       gradePoint: null,
-      result: absent ? 'PROMOTED WITH BACK' : null,
+      result: failed ? 'PROMOTED WITH BACK' : obtainedParts.length ? 'PASS' : null,
       creditObt: null,
     };
   }
 
-  let letter = absent
+  if (percentage == null && !absent) return { ...empty, totalMarks };
+
+  let letter = absent || percentage == null
     ? { grade: 'F', gradePoint: 0, performance: 'Unsatisfactory' }
     : gradeFromPercentage(percentage, scheme);
 
-  // Practical / lab: minimum 40% on both charts, even if overall % is a pass.
   const practicalFailed = pracPct != null && pracPct < 40;
-  if (practicalFailed || absent) {
+  if (practicalFailed || absent || minFailed) {
     letter = { grade: 'F', gradePoint: 0, performance: 'Unsatisfactory' };
   }
 

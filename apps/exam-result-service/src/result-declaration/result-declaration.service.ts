@@ -6,6 +6,10 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
 import { isActiveOnly } from '../common/active-only';
+import {
+  overallResultFromPapers,
+  remarkPaperCodes,
+} from '../exam-result/program-grading';
 
 const STATUS_CURRENT = 'CURRENT';
 const STATUS_PREVIOUS = 'PREVIOUS';
@@ -446,8 +450,15 @@ export class ResultDeclarationService {
       rows.map((r) => r.grade).find((v) => v && String(v).trim() !== '') ||
       rows.map((r) => r.result).find((v) => v && String(v).trim() !== '') ||
       null;
-    const overallResult =
-      rows.map((r) => r.result).find((v) => v && String(v).trim() !== '') || null;
+    const remarkCodes = remarkPaperCodes(rows);
+    const remarkFromTable = Array.from(
+      new Set(
+        rows
+          .map((r) => String(r.Remarks || '').trim())
+          .filter(Boolean),
+      ),
+    ).join(', ');
+    const overallResult = overallResultFromPapers(rows);
 
     const collegeCode = college?.collegeCode ? String(college.collegeCode) : '';
     const collegeName = college?.collegeName ? String(college.collegeName) : '';
@@ -510,6 +521,8 @@ export class ResultDeclarationService {
         percentage,
         semesterGrade,
         result: overallResult,
+        remarkCodes,
+        remark: remarkFromTable || null,
       },
     };
   }

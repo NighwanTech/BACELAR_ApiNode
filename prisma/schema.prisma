@@ -451,6 +451,74 @@ model FeeTypeMaster {
   @@map("feeTypeMaster")
 }
 
+model EmployeTypeMaster {
+  employeTypeId   Int       @id @default(autoincrement())
+  employeTypeName String    @unique @db.VarChar(100)
+  CreatedOn       DateTime  @default(now())
+  CreatedBy       String    @db.VarChar(255)
+  UpdatedOn       DateTime? @updatedAt
+  UpdatedBy       String?   @db.VarChar(255)
+  IsActive        Boolean   @default(true)
+  IsDeleted       Boolean   @default(false)
+  DeletedRemarks  String?   @db.VarChar(255)
+  DeletedOn       DateTime?
+  DeletedBy       String?   @db.VarChar(255)
+  Remarks         String?   @db.VarChar(255)
+
+  @@map("employeTypeMaster")
+}
+
+model EmployeeCategoryMaster {
+  employeeCategoryId   Int       @id @default(autoincrement())
+  employeeCategoryName String    @unique @db.VarChar(100)
+  CreatedOn            DateTime  @default(now())
+  CreatedBy            String    @db.VarChar(255)
+  UpdatedOn            DateTime? @updatedAt
+  UpdatedBy            String?   @db.VarChar(255)
+  IsActive             Boolean   @default(true)
+  IsDeleted            Boolean   @default(false)
+  DeletedRemarks       String?   @db.VarChar(255)
+  DeletedOn            DateTime?
+  DeletedBy            String?   @db.VarChar(255)
+  Remarks              String?   @db.VarChar(255)
+
+  @@map("employeeCategoryMaster")
+}
+
+model EmployeeDesignationMaster {
+  employeeDesignationId   Int       @id @default(autoincrement())
+  employeeDesignationName String    @unique @db.VarChar(100)
+  CreatedOn               DateTime  @default(now())
+  CreatedBy               String    @db.VarChar(255)
+  UpdatedOn               DateTime? @updatedAt
+  UpdatedBy               String?   @db.VarChar(255)
+  IsActive                Boolean   @default(true)
+  IsDeleted               Boolean   @default(false)
+  DeletedRemarks          String?   @db.VarChar(255)
+  DeletedOn               DateTime?
+  DeletedBy               String?   @db.VarChar(255)
+  Remarks                 String?   @db.VarChar(255)
+
+  @@map("employeeDesignationMaster")
+}
+
+model EmployeeDepartmentMaster {
+  employeeDepartmentId   Int       @id @default(autoincrement())
+  employeeDepartmentName String    @unique @db.VarChar(100)
+  CreatedOn              DateTime  @default(now())
+  CreatedBy              String    @db.VarChar(255)
+  UpdatedOn              DateTime? @updatedAt
+  UpdatedBy              String?   @db.VarChar(255)
+  IsActive               Boolean   @default(true)
+  IsDeleted              Boolean   @default(false)
+  DeletedRemarks         String?   @db.VarChar(255)
+  DeletedOn              DateTime?
+  DeletedBy              String?   @db.VarChar(255)
+  Remarks                String?   @db.VarChar(255)
+
+  @@map("employeeDepartmentMaster")
+}
+
 model GrevianceTypeMaster {
   grevianceTypeId   Int       @id @default(autoincrement())
   grevianceTypeName String    @unique @db.VarChar(100)

@@ -256,17 +256,18 @@ export class ExamResultService {
   private applyProgramGrading(payload: any, extras: Record<string, any> = {}) {
     const scheme = resolveGradeScheme({
       programCode: extras.programCode,
-      programShortName: extras.programShortName,
-      programName: payload.programName || extras.programName,
     });
     const graded = computePaperGrade(
       {
         theoryExternalObt: payload.theoryExternalObt,
         theoryExternalMax: payload.theoryExternalMax ?? extras.theoryExternalMax,
+        theoryExternalMin: payload.theoryExternalMin ?? extras.theoryExternalMin,
         sessionalInternalObt: payload.sessionalInternalObt,
         sessionalInternalMax: payload.sessionalInternalMax ?? extras.sessionalInternalMax,
+        sessionalInternalMin: payload.sessionalInternalMin ?? extras.sessionalInternalMin,
         practicalObt: payload.practicalObt,
         practicalMax: payload.practicalMax ?? extras.practicalMax,
+        practicalMin: payload.practicalMin ?? extras.practicalMin,
         attendanceStatus: payload.attendanceStatus,
         creditMax: payload.creditMax ?? extras.creditMax,
         paperType: payload.paperType,
