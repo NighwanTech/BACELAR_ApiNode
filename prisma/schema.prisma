@@ -464,6 +464,7 @@ model EmployeTypeMaster {
   DeletedOn       DateTime?
   DeletedBy       String?   @db.VarChar(255)
   Remarks         String?   @db.VarChar(255)
+  faculties       FacultyMaster[]
 
   @@map("employeTypeMaster")
 }
@@ -481,6 +482,7 @@ model EmployeeCategoryMaster {
   DeletedOn            DateTime?
   DeletedBy            String?   @db.VarChar(255)
   Remarks              String?   @db.VarChar(255)
+  faculties            FacultyMaster[]
 
   @@map("employeeCategoryMaster")
 }
@@ -498,6 +500,7 @@ model EmployeeDesignationMaster {
   DeletedOn               DateTime?
   DeletedBy               String?   @db.VarChar(255)
   Remarks                 String?   @db.VarChar(255)
+  faculties               FacultyMaster[]
 
   @@map("employeeDesignationMaster")
 }
@@ -515,8 +518,197 @@ model EmployeeDepartmentMaster {
   DeletedOn              DateTime?
   DeletedBy              String?   @db.VarChar(255)
   Remarks                String?   @db.VarChar(255)
+  faculties              FacultyMaster[]
 
   @@map("employeeDepartmentMaster")
+}
+
+model FacultyMaster {
+  facultyId  Int    @id @default(autoincrement())
+  employeeId String @unique @db.Char(6)
+
+  employeTypeId   Int
+  employeType     EmployeTypeMaster @relation(fields: [employeTypeId], references: [employeTypeId])
+  employeTypeName String            @db.VarChar(100)
+
+  employeeCategoryId   Int
+  employeeCategory     EmployeeCategoryMaster @relation(fields: [employeeCategoryId], references: [employeeCategoryId])
+  employeeCategoryName String                 @db.VarChar(100)
+
+  employeeDesignationId   Int
+  employeeDesignation     EmployeeDesignationMaster @relation(fields: [employeeDesignationId], references: [employeeDesignationId])
+  employeeDesignationName String                    @db.VarChar(100)
+
+  employeeDepartmentId   Int
+  employeeDepartment     EmployeeDepartmentMaster @relation(fields: [employeeDepartmentId], references: [employeeDepartmentId])
+  employeeDepartmentName String                   @db.VarChar(100)
+
+  employeeName        String    @db.VarChar(255)
+  fatherOrHusbandName String?   @db.VarChar(255)
+  gender              String?   @db.VarChar(50)
+  dateOfBirth         DateTime?
+  aadharNo            String?   @unique @db.VarChar(50)
+  panNo               String?   @unique @db.VarChar(20)
+  maritalStatus       String?   @db.VarChar(50)
+  religion            String?   @db.VarChar(100)
+  category            String?   @db.VarChar(100)
+  bloodGroup          String?   @db.VarChar(20)
+
+  mobileNo          String? @db.VarChar(20)
+  alternateMobileNo String? @db.VarChar(20)
+  personalEmail     String? @db.VarChar(255)
+  officialEmail     String? @db.VarChar(255)
+
+  address   String? @db.Text
+  district  String? @db.VarChar(100)
+  stateId   Int?
+  state     String? @db.VarChar(100)
+  cityId    Int?
+  city      String? @db.VarChar(100)
+  zipcodeId Int?
+  pincode   String? @db.VarChar(20)
+
+  dateOfJoining      DateTime?
+  dateOfConfirmation DateTime?
+
+  bankName      String?  @db.VarChar(255)
+  ifscCode      String?  @db.VarChar(20)
+  accountNumber String?  @db.VarChar(30)
+  branch        String?  @db.VarChar(255)
+  payScale                 String?  @db.VarChar(100)
+  basicSalary              Decimal? @db.Decimal(12, 2)
+  pfApplicable             Boolean  @default(false)
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  documents   FacultyDocument[]
+  educations  FacultyEducation[]
+  experiences FacultyExperience[]
+  research    FacultyResearch?
+
+  @@index([employeTypeId])
+  @@index([employeeCategoryId])
+  @@index([employeeDesignationId])
+  @@index([employeeDepartmentId])
+  @@index([stateId])
+  @@index([cityId])
+  @@index([zipcodeId])
+  @@map("facultyMaster")
+}
+
+model FacultyDocument {
+  facultyDocumentId Int           @id @default(autoincrement())
+  facultyId         Int
+  faculty           FacultyMaster @relation(fields: [facultyId], references: [facultyId], onDelete: Cascade)
+  documentType      String        @db.VarChar(50)
+  fileUrl           String        @db.VarChar(2000)
+  fileName          String?       @db.VarChar(255)
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([facultyId])
+  @@index([documentType])
+  @@map("facultyDocument")
+}
+
+model FacultyEducation {
+  facultyEducationId    Int           @id @default(autoincrement())
+  facultyId             Int
+  faculty               FacultyMaster @relation(fields: [facultyId], references: [facultyId], onDelete: Cascade)
+  qualification         String?       @db.VarChar(255)
+  degreeName            String?       @db.VarChar(255)
+  specializationSubject String?       @db.VarChar(255)
+  university            String?       @db.VarChar(255)
+  collegeInstitute      String?       @db.VarChar(255)
+  passingYear           Int?
+  certificateUrl        String?       @db.VarChar(2000)
+  certificateName       String?       @db.VarChar(255)
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([facultyId])
+  @@map("facultyEducation")
+}
+
+model FacultyExperience {
+  facultyExperienceId  Int           @id @default(autoincrement())
+  facultyId            Int
+  faculty              FacultyMaster @relation(fields: [facultyId], references: [facultyId], onDelete: Cascade)
+  schoolName           String?       @db.VarChar(255)
+  ctc                  Decimal?      @db.Decimal(12, 2)
+  startYear            DateTime? @db.Date
+  endYear              DateTime? @db.Date
+  experienceLetterUrl  String?       @db.VarChar(2000)
+  experienceLetterName String?       @db.VarChar(255)
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([facultyId])
+  @@map("facultyExperience")
+}
+
+model FacultyResearch {
+  facultyResearchId       Int           @id @default(autoincrement())
+  facultyId               Int           @unique
+  faculty                 FacultyMaster @relation(fields: [facultyId], references: [facultyId], onDelete: Cascade)
+  scholarId               String?       @db.VarChar(100)
+  vidwanId                String?       @db.VarChar(100)
+  orcid                   String?       @db.VarChar(50)
+  scopusId                String?       @db.VarChar(100)
+  researcherId            String?       @db.VarChar(100)
+  researchArea            String?       @db.VarChar(255)
+  researchGateId          String?       @db.VarChar(100)
+  researchAcademicProfile String?       @db.Text
+
+  CreatedOn      DateTime  @default(now())
+  CreatedBy      String    @db.VarChar(255)
+  UpdatedOn      DateTime? @updatedAt
+  UpdatedBy      String?   @db.VarChar(255)
+  IsActive       Boolean   @default(true)
+  IsDeleted      Boolean   @default(false)
+  DeletedRemarks String?   @db.VarChar(255)
+  DeletedOn      DateTime?
+  DeletedBy      String?   @db.VarChar(255)
+  Remarks        String?   @db.VarChar(255)
+
+  @@index([facultyId])
+  @@map("facultyResearch")
 }
 
 model GrevianceTypeMaster {
@@ -2627,5 +2819,27 @@ model EntranceStudentPaper {
   @@index([studentId])
   @@index([entrancePaperId])
   @@map("entranceStudentPaper")
+}
+
+model ErrorLog {
+  ErrorID          Int      @id @default(autoincrement())
+  Source           String   @db.VarChar(20)
+  ErrorDescription String   @db.Text
+  StackTrace       String?  @db.MediumText
+  ApiUrl           String?  @db.VarChar(500)
+  HttpMethod       String?  @db.VarChar(10)
+  StatusCode       Int?
+  UserId           Int?
+  LoginBy          String?  @db.VarChar(255)
+  IpAddress        String?  @db.VarChar(64)
+  ErrorTime        DateTime  @default(now())
+  ErrorStatus      String    @default("Open") @db.VarChar(20)
+  ResolvedOn       DateTime?
+
+  @@index([Source])
+  @@index([ErrorTime])
+  @@index([ErrorStatus])
+  @@index([ResolvedOn])
+  @@map("errorLog")
 }
 

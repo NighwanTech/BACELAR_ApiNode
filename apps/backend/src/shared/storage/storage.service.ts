@@ -48,6 +48,11 @@ export class StorageService {
     return this.uploadToLocal(file, folder);
   }
 
+  /** Used when object storage cannot be reached, so the file URL can still be stored. */
+  saveLocalFile(file: any, folder = ''): Promise<string> {
+    return this.uploadToLocal(file, folder);
+  }
+
   /**
    * Stream/read an object by storage key (e.g. gallery/file.jpg).
    * Used by StorageController so private S3 buckets still display in Admin.

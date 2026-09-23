@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS `errorLog` (
+  `ErrorID` INT NOT NULL AUTO_INCREMENT,
+  `Source` VARCHAR(20) NOT NULL,
+  `ErrorDescription` TEXT NOT NULL,
+  `StackTrace` MEDIUMTEXT NULL,
+  `ApiUrl` VARCHAR(500) NULL,
+  `HttpMethod` VARCHAR(10) NULL,
+  `StatusCode` INT NULL,
+  `UserId` INT NULL,
+  `LoginBy` VARCHAR(255) NULL,
+  `IpAddress` VARCHAR(64) NULL,
+  `ErrorTime` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `ErrorStatus` VARCHAR(20) NOT NULL DEFAULT 'Open',
+  `ResolvedOn` DATETIME(3) NULL,
+  PRIMARY KEY (`ErrorID`),
+  INDEX `errorLog_Source_idx` (`Source`),
+  INDEX `errorLog_ErrorTime_idx` (`ErrorTime`),
+  INDEX `errorLog_ErrorStatus_idx` (`ErrorStatus`),
+  INDEX `errorLog_ResolvedOn_idx` (`ResolvedOn`)
+);

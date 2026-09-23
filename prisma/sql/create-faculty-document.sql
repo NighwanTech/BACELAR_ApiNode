@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS `facultyDocument` (
+    `facultyDocumentId` INTEGER NOT NULL AUTO_INCREMENT,
+    `facultyId` INTEGER NOT NULL,
+    `documentType` VARCHAR(50) NOT NULL,
+    `fileUrl` VARCHAR(2000) NOT NULL,
+    `fileName` VARCHAR(255) NULL,
+    `CreatedOn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `CreatedBy` VARCHAR(255) NOT NULL,
+    `UpdatedOn` DATETIME(3) NULL,
+    `UpdatedBy` VARCHAR(255) NULL,
+    `IsActive` BOOLEAN NOT NULL DEFAULT true,
+    `IsDeleted` BOOLEAN NOT NULL DEFAULT false,
+    `DeletedRemarks` VARCHAR(255) NULL,
+    `DeletedOn` DATETIME(3) NULL,
+    `DeletedBy` VARCHAR(255) NULL,
+    `Remarks` VARCHAR(255) NULL,
+    INDEX `facultyDocument_facultyId_idx`(`facultyId`),
+    INDEX `facultyDocument_documentType_idx`(`documentType`),
+    PRIMARY KEY (`facultyDocumentId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
