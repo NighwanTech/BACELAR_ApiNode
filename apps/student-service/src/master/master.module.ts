@@ -10,6 +10,8 @@ import { EmployeTypeModule } from './employe-type/employe-type.module';
 import { EmployeeCategoryModule } from './employee-category/employee-category.module';
 import { EmployeeDesignationModule } from './employee-designation/employee-designation.module';
 import { EmployeeDepartmentModule } from './employee-department/employee-department.module';
+import { FacultyQualificationModule } from './faculty-qualification/faculty-qualification.module';
+import { FacultySpecializationModule } from './faculty-specialization/faculty-specialization.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { QualificationModule } from './qualification/qualification.module';
 import { AdmissionSessionModule } from './admission-session/admission-session.module';
@@ -56,6 +58,8 @@ import { PramanResponseModule } from './praman-response/praman-response.module';
     EmployeeCategoryModule,
     EmployeeDesignationModule,
     EmployeeDepartmentModule,
+    FacultyQualificationModule,
+    FacultySpecializationModule,
     FacultyModule,
     QualificationModule,
     AdmissionSessionModule,
@@ -97,6 +101,8 @@ import { PramanResponseModule } from './praman-response/praman-response.module';
     EmployeeCategoryModule,
     EmployeeDesignationModule,
     EmployeeDepartmentModule,
+    FacultyQualificationModule,
+    FacultySpecializationModule,
     FacultyModule,
     QualificationModule,
     AdmissionSessionModule,

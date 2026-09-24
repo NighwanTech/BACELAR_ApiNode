@@ -96,8 +96,9 @@ const CREATE_FACULTY_EDUCATION_TABLE = `
 CREATE TABLE IF NOT EXISTS \`facultyEducation\` (
     \`facultyEducationId\` INTEGER NOT NULL AUTO_INCREMENT,
     \`facultyId\` INTEGER NOT NULL,
+    \`facultyQualificationId\` INTEGER NULL,
     \`qualification\` VARCHAR(255) NULL,
-    \`degreeName\` VARCHAR(255) NULL,
+    \`facultySpecializationId\` INTEGER NULL,
     \`specializationSubject\` VARCHAR(255) NULL,
     \`university\` VARCHAR(255) NULL,
     \`collegeInstitute\` VARCHAR(255) NULL,
@@ -236,6 +237,12 @@ export class FacultyService implements OnModuleInit {
     await this.prisma.$executeRawUnsafe(ALTER_FACULTY_ADDRESS);
     await this.prisma.$executeRawUnsafe(ALTER_FACULTY_ACCOUNT);
     await this.prisma.$executeRawUnsafe(CREATE_FACULTY_EDUCATION_TABLE);
+    await this.prisma.$executeRawUnsafe(`
+      ALTER TABLE \`facultyEducation\`
+        ADD COLUMN IF NOT EXISTS \`facultyQualificationId\` INTEGER NULL AFTER \`facultyId\`,
+        ADD COLUMN IF NOT EXISTS \`facultySpecializationId\` INTEGER NULL AFTER \`qualification\`,
+        DROP COLUMN IF EXISTS \`degreeName\`
+    `);
     await this.prisma.$executeRawUnsafe(CREATE_FACULTY_EXPERIENCE_TABLE);
     await this.prisma.$executeRawUnsafe(CREATE_FACULTY_RESEARCH_TABLE);
     await this.migrateLegacyEducationAndExperience();
@@ -254,10 +261,10 @@ export class FacultyService implements OnModuleInit {
     if (await this.columnExists('facultyMaster', 'qualification')) {
       await this.prisma.$executeRawUnsafe(`
         INSERT INTO \`facultyEducation\` (
-          \`facultyId\`, \`qualification\`, \`degreeName\`, \`specializationSubject\`, \`university\`, \`collegeInstitute\`, \`CreatedBy\`
+          \`facultyId\`, \`qualification\`, \`specializationSubject\`, \`university\`, \`collegeInstitute\`, \`CreatedBy\`
         )
         SELECT
-          \`facultyId\`, \`qualification\`, \`degreeName\`, \`specializationSubject\`, \`university\`, \`collegeInstitute\`, \`CreatedBy\`
+          \`facultyId\`, \`qualification\`, \`specializationSubject\`, \`university\`, \`collegeInstitute\`, \`CreatedBy\`
         FROM \`facultyMaster\`
         WHERE (
           \`qualification\` IS NOT NULL OR \`degreeName\` IS NOT NULL OR \`specializationSubject\` IS NOT NULL
@@ -522,8 +529,9 @@ export class FacultyService implements OnModuleInit {
 
   private educationFields(row: any) {
     return {
+      facultyQualificationId: parseOptionalInt(row.facultyQualificationId),
       qualification: str(row.qualification),
-      degreeName: str(row.degreeName),
+      facultySpecializationId: parseOptionalInt(row.facultySpecializationId),
       specializationSubject: str(row.specializationSubject),
       university: str(row.university),
       collegeInstitute: str(row.collegeInstitute),

@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS `facultyEducation` (
     `facultyEducationId` INTEGER NOT NULL AUTO_INCREMENT,
     `facultyId` INTEGER NOT NULL,
+    `facultyQualificationId` INTEGER NULL,
     `qualification` VARCHAR(255) NULL,
-    `degreeName` VARCHAR(255) NULL,
+    `facultySpecializationId` INTEGER NULL,
     `specializationSubject` VARCHAR(255) NULL,
     `university` VARCHAR(255) NULL,
     `collegeInstitute` VARCHAR(255) NULL,

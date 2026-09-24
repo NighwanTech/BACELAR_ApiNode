@@ -52,14 +52,21 @@ export class FacultyEducationInputDto {
   facultyEducationId?: number;
 
   @ApiProperty({ required: false })
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  facultyQualificationId?: number;
+
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
   qualification?: string;
 
   @ApiProperty({ required: false })
-  @IsString()
+  @Type(() => Number)
+  @IsInt()
   @IsOptional()
-  degreeName?: string;
+  facultySpecializationId?: number;
 
   @ApiProperty({ required: false })
   @IsString()

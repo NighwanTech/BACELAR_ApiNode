@@ -305,6 +305,7 @@ model Program {
   promotionsTo        Promotion[] @relation("PromotionCourseTo")
   entranceExams       EntranceExamMaster[]
   entranceStudents    EntranceStudent[]
+  employeeDepartmentPrograms EmployeeDepartmentProgram[]
 
   @@map("programs")
 }
@@ -519,8 +520,31 @@ model EmployeeDepartmentMaster {
   DeletedBy              String?   @db.VarChar(255)
   Remarks                String?   @db.VarChar(255)
   faculties              FacultyMaster[]
+  programs               EmployeeDepartmentProgram[]
 
   @@map("employeeDepartmentMaster")
+}
+
+model EmployeeDepartmentProgram {
+  employeeDepartmentProgramId Int                      @id @default(autoincrement())
+  employeeDepartmentId        Int
+  employeeDepartment          EmployeeDepartmentMaster @relation(fields: [employeeDepartmentId], references: [employeeDepartmentId])
+  programId                   Int
+  program                     Program                  @relation(fields: [programId], references: [programId])
+  CreatedOn                   DateTime                 @default(now())
+  CreatedBy                   String                   @db.VarChar(255)
+  UpdatedOn                   DateTime?                @updatedAt
+  UpdatedBy                   String?                  @db.VarChar(255)
+  IsActive                    Boolean                  @default(true)
+  IsDeleted                   Boolean                  @default(false)
+  DeletedRemarks              String?                  @db.VarChar(255)
+  DeletedOn                   DateTime?
+  DeletedBy                   String?                  @db.VarChar(255)
+  Remarks                     String?                  @db.VarChar(255)
+
+  @@unique([employeeDepartmentId, programId])
+  @@index([programId])
+  @@map("employeeDepartmentProgram")
 }
 
 model FacultyMaster {
@@ -629,13 +653,48 @@ model FacultyDocument {
   @@map("facultyDocument")
 }
 
+model FacultyQualificationMaster {
+  facultyQualificationId Int       @id @default(autoincrement())
+  qualificationName      String    @unique @db.VarChar(100)
+  CreatedOn              DateTime  @default(now())
+  CreatedBy              String    @db.VarChar(255)
+  UpdatedOn              DateTime? @updatedAt
+  UpdatedBy              String?   @db.VarChar(255)
+  IsActive               Boolean   @default(true)
+  IsDeleted              Boolean   @default(false)
+  DeletedRemarks         String?   @db.VarChar(255)
+  DeletedOn              DateTime?
+  DeletedBy              String?   @db.VarChar(255)
+  Remarks                String?   @db.VarChar(255)
+
+  @@map("facultyQualificationMaster")
+}
+
+model FacultySpecializationMaster {
+  facultySpecializationId Int       @id @default(autoincrement())
+  specializationName      String    @unique @db.VarChar(100)
+  CreatedOn               DateTime  @default(now())
+  CreatedBy               String    @db.VarChar(255)
+  UpdatedOn               DateTime? @updatedAt
+  UpdatedBy               String?   @db.VarChar(255)
+  IsActive                Boolean   @default(true)
+  IsDeleted               Boolean   @default(false)
+  DeletedRemarks          String?   @db.VarChar(255)
+  DeletedOn               DateTime?
+  DeletedBy              String?   @db.VarChar(255)
+  Remarks                 String?   @db.VarChar(255)
+
+  @@map("facultySpecializationMaster")
+}
+
 model FacultyEducation {
-  facultyEducationId    Int           @id @default(autoincrement())
-  facultyId             Int
-  faculty               FacultyMaster @relation(fields: [facultyId], references: [facultyId], onDelete: Cascade)
-  qualification         String?       @db.VarChar(255)
-  degreeName            String?       @db.VarChar(255)
-  specializationSubject String?       @db.VarChar(255)
+  facultyEducationId      Int           @id @default(autoincrement())
+  facultyId               Int
+  faculty                 FacultyMaster @relation(fields: [facultyId], references: [facultyId], onDelete: Cascade)
+  facultyQualificationId  Int?
+  qualification           String?       @db.VarChar(255)
+  facultySpecializationId Int?
+  specializationSubject   String?       @db.VarChar(255)
   university            String?       @db.VarChar(255)
   collegeInstitute      String?       @db.VarChar(255)
   passingYear           Int?
@@ -1943,6 +2002,22 @@ model ExamLoginMaster {
   @@index([registrationNo])
   @@index([studentId])
   @@map("examLoginMaster")
+}
+
+model ErpIdentityMapping {
+  id             Int       @id @default(autoincrement())
+  enrollmentNo   String    @unique @db.VarChar(100)
+  registrationNo String?   @db.VarChar(100)
+  moodleUserId   Int?
+  kohaPatronId   Int?
+  status         String    @default("pending") @db.VarChar(20)
+  lastSynced     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+
+  @@unique([moodleUserId])
+  @@unique([kohaPatronId])
+  @@map("local_erp_identity_mapping")
 }
 
 model StudentExam {

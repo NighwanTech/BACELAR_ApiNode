@@ -9,6 +9,7 @@ import { ResultDeclarationModule } from './result-declaration/result-declaration
 import { PromotionModule } from './promotion/promotion.module';
 import { ExamGrevianceModule } from './exam-greviance/exam-greviance.module';
 import { ErrorLogModule } from './common/error-log/error-log.module';
+import { IntegrationModule } from './integrations/integration.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ErrorLogModule } from './common/error-log/error-log.module';
     PromotionModule,
     ExamGrevianceModule,
     ErrorLogModule,
+    IntegrationModule,
   ],
   controllers: [],
 })
