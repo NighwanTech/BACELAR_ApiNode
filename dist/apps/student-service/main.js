@@ -37,7 +37,7 @@ const prisma_1 = __webpack_require__(6);
 const students_module_1 = __webpack_require__(11);
 const master_module_1 = __webpack_require__(55);
 const website_module_1 = __webpack_require__(174);
-const admin_module_1 = __webpack_require__(229);
+const admin_module_1 = __webpack_require__(232);
 let StudentServiceModule = class StudentServiceModule {
 };
 exports.StudentServiceModule = StudentServiceModule;
@@ -4576,7 +4576,7 @@ let StudentEnrollmentService = class StudentEnrollmentService {
             apaarNo: profile.apaarIdNo || null,
             gender: profile.gender || null,
             emailId: student.email || null,
-            sessionId: student.admissionSessionId || null,
+            sessionId: student.academicSessionId || null,
         };
     }
     async create(data) {
@@ -22535,13 +22535,14 @@ const committee_submenu_module_1 = __webpack_require__(217);
 const examiner_registration_module_1 = __webpack_require__(220);
 const academic_year_module_1 = __webpack_require__(223);
 const praman_details_module_1 = __webpack_require__(226);
+const attendance_days_module_1 = __webpack_require__(229);
 let WebsiteModule = class WebsiteModule {
 };
 exports.WebsiteModule = WebsiteModule;
 exports.WebsiteModule = WebsiteModule = __decorate([
     (0, common_1.Module)({
-        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule, committee_module_1.CommitteeModule, committee_submenu_module_1.CommitteeSubmenuModule, examiner_registration_module_1.ExaminerRegistrationModule, academic_year_module_1.AcademicYearModule, praman_details_module_1.PramanDetailsModule],
-        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule, committee_module_1.CommitteeModule, committee_submenu_module_1.CommitteeSubmenuModule, examiner_registration_module_1.ExaminerRegistrationModule, academic_year_module_1.AcademicYearModule, praman_details_module_1.PramanDetailsModule],
+        imports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule, committee_module_1.CommitteeModule, committee_submenu_module_1.CommitteeSubmenuModule, examiner_registration_module_1.ExaminerRegistrationModule, academic_year_module_1.AcademicYearModule, praman_details_module_1.PramanDetailsModule, attendance_days_module_1.AttendanceDaysModule],
+        exports: [campus_quick_link_module_1.CampusQuickLinkModule, latest_update_module_1.LatestUpdateModule, admission_enquiry_module_1.AdmissionEnquiryModule, hero_section_module_1.HeroSectionModule, notice_board_module_1.NoticeBoardModule, accreditation_slider_module_1.AccreditationSliderModule, top_achiever_module_1.TopAchieverModule, image_gallery_module_1.ImageGalleryModule, video_gallery_module_1.VideoGalleryModule, contact_enquiry_module_1.ContactEnquiryModule, stats_counter_module_1.StatsCounterModule, testimonial_module_1.TestimonialModule, header_button_module_1.HeaderButtonModule, committee_module_1.CommitteeModule, committee_submenu_module_1.CommitteeSubmenuModule, examiner_registration_module_1.ExaminerRegistrationModule, academic_year_module_1.AcademicYearModule, praman_details_module_1.PramanDetailsModule, attendance_days_module_1.AttendanceDaysModule],
     })
 ], WebsiteModule);
 
@@ -27592,18 +27593,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminModule = void 0;
+exports.AttendanceDaysModule = void 0;
 const common_1 = __webpack_require__(5);
-const admin_login_module_1 = __webpack_require__(230);
-let AdminModule = class AdminModule {
+const attendance_days_service_1 = __webpack_require__(230);
+const attendance_days_controller_1 = __webpack_require__(231);
+let AttendanceDaysModule = class AttendanceDaysModule {
 };
-exports.AdminModule = AdminModule;
-exports.AdminModule = AdminModule = __decorate([
+exports.AttendanceDaysModule = AttendanceDaysModule;
+exports.AttendanceDaysModule = AttendanceDaysModule = __decorate([
     (0, common_1.Module)({
-        imports: [admin_login_module_1.AdminLoginModule],
-        exports: [admin_login_module_1.AdminLoginModule],
+        controllers: [attendance_days_controller_1.AttendanceDaysController],
+        providers: [attendance_days_service_1.AttendanceDaysService],
+        exports: [attendance_days_service_1.AttendanceDaysService],
     })
-], AdminModule);
+], AttendanceDaysModule);
 
 
 /***/ }),
@@ -27617,28 +27620,620 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AdminLoginModule = void 0;
-const common_1 = __webpack_require__(5);
-const jwt_1 = __webpack_require__(12);
-const admin_login_controller_1 = __webpack_require__(231);
-const admin_login_service_1 = __webpack_require__(232);
-let AdminLoginModule = class AdminLoginModule {
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-exports.AdminLoginModule = AdminLoginModule;
-exports.AdminLoginModule = AdminLoginModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET || 'super-secret-jwt-key',
-                signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
-            }),
-        ],
-        controllers: [admin_login_controller_1.AdminLoginController],
-        providers: [admin_login_service_1.AdminLoginService],
-        exports: [admin_login_service_1.AdminLoginService],
-    })
-], AdminLoginModule);
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AttendanceDaysService = void 0;
+const common_1 = __webpack_require__(5);
+const prisma_1 = __webpack_require__(6);
+const active_only_1 = __webpack_require__(58);
+let AttendanceDaysService = class AttendanceDaysService {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    get db() {
+        return this.prisma.attendanceDays;
+    }
+    async create(data) {
+        let studentEnrollmentId = null;
+        let studentId = null;
+        let studentName = null;
+        let enrollmentNumber = null;
+        let fathersName = null;
+        const enrollmentInputId = data.studentEnrollmentId ?? data.enrollmentId;
+        if (enrollmentInputId !== undefined && enrollmentInputId !== null && enrollmentInputId !== '') {
+            studentEnrollmentId = Number(enrollmentInputId);
+            const enrollment = await this.prisma.studentEnrollment.findFirst({
+                where: { enrollmentId: studentEnrollmentId, IsDeleted: false },
+                include: { student: true },
+            });
+            if (enrollment) {
+                studentId = data.studentId ? Number(data.studentId) : (enrollment.studentId || null);
+                studentName = data.studentName ? String(data.studentName).trim() : (enrollment.studentName || enrollment.student?.candidateName || null);
+                fathersName = data.fathersName ? String(data.fathersName).trim() : (enrollment.fatherName || enrollment.student?.fatherName || null);
+                enrollmentNumber = data.enrollmentNumber ? String(data.enrollmentNumber).trim() : (enrollment.enrollmentNo || enrollment.registrationNo || null);
+            }
+            else {
+                studentName = data.studentName ? String(data.studentName).trim() : null;
+                enrollmentNumber = data.enrollmentNumber ? String(data.enrollmentNumber).trim() : null;
+                fathersName = data.fathersName ? String(data.fathersName).trim() : null;
+            }
+        }
+        else if (data.studentId !== undefined && data.studentId !== null && data.studentId !== '') {
+            studentId = Number(data.studentId);
+            const student = await this.prisma.student.findFirst({
+                where: { StudentRegistrationId: studentId, IsDeleted: false },
+                include: { studentEnrollments: true },
+            });
+            if (student) {
+                studentName = data.studentName ? String(data.studentName).trim() : student.candidateName;
+                fathersName = data.fathersName ? String(data.fathersName).trim() : student.fatherName;
+                const enrollment = student.studentEnrollments && student.studentEnrollments.length > 0
+                    ? student.studentEnrollments[0]
+                    : null;
+                studentEnrollmentId = enrollment ? enrollment.enrollmentId : null;
+                enrollmentNumber = data.enrollmentNumber
+                    ? String(data.enrollmentNumber).trim()
+                    : (enrollment?.enrollmentNo || student.registrationNo || null);
+            }
+            else {
+                studentName = data.studentName ? String(data.studentName).trim() : null;
+                enrollmentNumber = data.enrollmentNumber ? String(data.enrollmentNumber).trim() : null;
+                fathersName = data.fathersName ? String(data.fathersName).trim() : null;
+            }
+        }
+        else {
+            studentName = data.studentName ? String(data.studentName).trim() : null;
+            enrollmentNumber = data.enrollmentNumber ? String(data.enrollmentNumber).trim() : null;
+            fathersName = data.fathersName ? String(data.fathersName).trim() : null;
+        }
+        let academicSessionId = null;
+        let academicSessionName = null;
+        const sessionInputId = data.academicSessionId ?? data.sessionId;
+        const sessionInputName = data.academicSessionName ?? data.sessionName;
+        if (sessionInputId !== undefined && sessionInputId !== null && sessionInputId !== '') {
+            academicSessionId = Number(sessionInputId);
+            const acadSession = await this.prisma.academicSession.findFirst({
+                where: { academicSessionId, IsDeleted: false },
+            });
+            if (acadSession) {
+                academicSessionName = sessionInputName ? String(sessionInputName).trim() : acadSession.academicSessionName;
+            }
+            else {
+                academicSessionName = sessionInputName ? String(sessionInputName).trim() : null;
+            }
+        }
+        else if (sessionInputName) {
+            academicSessionName = String(sessionInputName).trim();
+        }
+        const sessionId = academicSessionId;
+        const sessionName = academicSessionName;
+        let programCategoryId = null;
+        let programCategoryName = null;
+        if (data.programCategoryId !== undefined && data.programCategoryId !== null && data.programCategoryId !== '') {
+            programCategoryId = Number(data.programCategoryId);
+            const category = await this.prisma.programCategory.findFirst({
+                where: { programCategoryId, IsDeleted: false },
+            });
+            if (category) {
+                programCategoryName = data.programCategoryName ? String(data.programCategoryName).trim() : category.programCategoryName;
+            }
+            else {
+                programCategoryName = data.programCategoryName ? String(data.programCategoryName).trim() : null;
+            }
+        }
+        else if (data.programCategoryName) {
+            programCategoryName = String(data.programCategoryName).trim();
+        }
+        let programId = null;
+        let programName = null;
+        if (data.programId !== undefined && data.programId !== null && data.programId !== '') {
+            programId = Number(data.programId);
+            const program = await this.prisma.program.findFirst({
+                where: { programId, IsDeleted: false },
+            });
+            if (program) {
+                programName = data.programName ? String(data.programName).trim() : program.programName;
+            }
+            else {
+                programName = data.programName ? String(data.programName).trim() : null;
+            }
+        }
+        else if (data.programName) {
+            programName = String(data.programName).trim();
+        }
+        let yearId = null;
+        let yearName = null;
+        if (data.yearId !== undefined && data.yearId !== null && data.yearId !== '') {
+            yearId = Number(data.yearId);
+            const yr = await this.prisma.yearMaster.findFirst({
+                where: { yearId, IsDeleted: false },
+            });
+            if (yr) {
+                yearName = data.yearName ? String(data.yearName).trim() : yr.yearName;
+            }
+            else {
+                yearName = data.yearName ? String(data.yearName).trim() : null;
+            }
+        }
+        else if (data.yearName) {
+            yearName = String(data.yearName).trim();
+        }
+        let semId = null;
+        let semName = null;
+        if (data.semId !== undefined && data.semId !== null && data.semId !== '') {
+            semId = Number(data.semId);
+            const sem = await this.prisma.semesterMaster.findFirst({
+                where: { semId, IsDeleted: false },
+            });
+            if (sem) {
+                semName = data.semName ? String(data.semName).trim() : sem.semesterName;
+            }
+            else {
+                semName = data.semName ? String(data.semName).trim() : null;
+            }
+        }
+        else if (data.semName) {
+            semName = String(data.semName).trim();
+        }
+        let monthId = null;
+        let monthName = null;
+        if (data.monthId !== undefined && data.monthId !== null && data.monthId !== '') {
+            monthId = Number(data.monthId);
+            const mn = await this.prisma.monthMaster.findFirst({
+                where: { monthId, IsDeleted: false },
+            });
+            if (mn) {
+                monthName = data.monthName ? String(data.monthName).trim() : mn.monthName;
+            }
+            else {
+                monthName = data.monthName ? String(data.monthName).trim() : null;
+            }
+        }
+        else if (data.monthName) {
+            monthName = String(data.monthName).trim();
+        }
+        let academicYearId = null;
+        let academicYearname = null;
+        if (data.academicYearId !== undefined && data.academicYearId !== null && data.academicYearId !== '') {
+            academicYearId = Number(data.academicYearId);
+            const acadYear = await this.prisma.academicYearMaster.findFirst({
+                where: { academicYearId, IsDeleted: false },
+            });
+            if (acadYear) {
+                academicYearname = (data.academicYearname || data.academicYearName)
+                    ? String(data.academicYearname || data.academicYearName).trim()
+                    : acadYear.academicYearName;
+            }
+            else {
+                academicYearname = (data.academicYearname || data.academicYearName)
+                    ? String(data.academicYearname || data.academicYearName).trim()
+                    : null;
+            }
+        }
+        else if (data.academicYearname || data.academicYearName) {
+            academicYearname = String(data.academicYearname || data.academicYearName).trim();
+        }
+        const teachingDays = data.teachingDays !== undefined && data.teachingDays !== null && data.teachingDays !== ''
+            ? Number(data.teachingDays)
+            : null;
+        const presentDays = data.presentDays !== undefined && data.presentDays !== null && data.presentDays !== ''
+            ? Number(data.presentDays)
+            : null;
+        let totalAttendancePercentage = null;
+        if (data.totalAttendancePercentage !== undefined && data.totalAttendancePercentage !== null && data.totalAttendancePercentage !== '') {
+            totalAttendancePercentage = Number(data.totalAttendancePercentage);
+        }
+        else if (teachingDays && teachingDays > 0 && presentDays !== null) {
+            totalAttendancePercentage = Number(((presentDays / teachingDays) * 100).toFixed(2));
+        }
+        return this.db.create({
+            data: {
+                studentId,
+                studentEnrollmentId,
+                studentName,
+                enrollmentNumber,
+                fathersName,
+                academicSessionId,
+                academicSessionName,
+                sessionId,
+                sessionName,
+                programCategoryId,
+                programCategoryName,
+                programId,
+                programName,
+                yearId,
+                yearName,
+                semId,
+                semName,
+                monthId,
+                monthName,
+                academicYearId,
+                academicYearname,
+                teachingDays,
+                presentDays,
+                totalAttendancePercentage,
+                CreatedBy: data.CreatedBy || 'Admin',
+                Remarks: data.Remarks || null,
+                IsActive: data.IsActive !== undefined ? Boolean(data.IsActive) : true,
+                IsDeleted: false,
+            },
+            include: {
+                student: true,
+                studentEnrollment: true,
+                academicSession: true,
+                programCategory: true,
+                program: true,
+                year: true,
+                semester: true,
+                month: true,
+                academicYear: true,
+            },
+        });
+    }
+    async findAll(params) {
+        const targetSessionId = params?.academicSessionId ?? params?.sessionId;
+        const targetEnrollmentId = params?.studentEnrollmentId ?? params?.enrollmentId;
+        return this.db.findMany({
+            where: {
+                IsDeleted: false,
+                ...((0, active_only_1.isActiveOnly)(params?.activeOnly) ? { IsActive: true } : {}),
+                ...(params?.studentId ? { studentId: params.studentId } : {}),
+                ...(targetEnrollmentId ? { studentEnrollmentId: targetEnrollmentId } : {}),
+                ...(targetSessionId ? { OR: [{ academicSessionId: targetSessionId }, { sessionId: targetSessionId }] } : {}),
+                ...(params?.programCategoryId ? { programCategoryId: params.programCategoryId } : {}),
+                ...(params?.programId ? { programId: params.programId } : {}),
+                ...(params?.yearId ? { yearId: params.yearId } : {}),
+                ...(params?.semId ? { semId: params.semId } : {}),
+                ...(params?.monthId ? { monthId: params.monthId } : {}),
+                ...(params?.academicYearId ? { academicYearId: params.academicYearId } : {}),
+            },
+            include: {
+                student: true,
+                studentEnrollment: true,
+                academicSession: true,
+                programCategory: true,
+                program: true,
+                year: true,
+                semester: true,
+                month: true,
+                academicYear: true,
+            },
+            orderBy: { attendanceDaysId: 'asc' },
+        });
+    }
+    async findOne(attendanceDaysId) {
+        const row = await this.db.findFirst({
+            where: { attendanceDaysId, IsDeleted: false },
+            include: {
+                student: true,
+                studentEnrollment: true,
+                academicSession: true,
+                programCategory: true,
+                program: true,
+                year: true,
+                semester: true,
+                month: true,
+                academicYear: true,
+            },
+        });
+        if (!row) {
+            throw new common_1.NotFoundException(`Attendance days record with ID ${attendanceDaysId} not found`);
+        }
+        return row;
+    }
+    async update(attendanceDaysId, data) {
+        const existing = await this.findOne(attendanceDaysId);
+        let studentEnrollmentId = existing.studentEnrollmentId;
+        let studentId = existing.studentId;
+        let studentName = existing.studentName;
+        let enrollmentNumber = existing.enrollmentNumber;
+        let fathersName = existing.fathersName;
+        const enrollmentInputId = data.studentEnrollmentId !== undefined ? data.studentEnrollmentId : data.enrollmentId;
+        if (enrollmentInputId !== undefined) {
+            if (enrollmentInputId === null || enrollmentInputId === '') {
+                studentEnrollmentId = null;
+            }
+            else {
+                studentEnrollmentId = Number(enrollmentInputId);
+                const enrollment = await this.prisma.studentEnrollment.findFirst({
+                    where: { enrollmentId: studentEnrollmentId, IsDeleted: false },
+                    include: { student: true },
+                });
+                if (enrollment) {
+                    studentId = enrollment.studentId || studentId;
+                    studentName = enrollment.studentName || enrollment.student?.candidateName || studentName;
+                    fathersName = enrollment.fatherName || enrollment.student?.fatherName || fathersName;
+                    enrollmentNumber = enrollment.enrollmentNo || enrollment.registrationNo || enrollmentNumber;
+                }
+            }
+        }
+        if (data.studentId !== undefined) {
+            if (data.studentId === null || data.studentId === '') {
+                studentId = null;
+                studentName = null;
+                enrollmentNumber = null;
+                fathersName = null;
+            }
+            else {
+                studentId = Number(data.studentId);
+                const student = await this.prisma.student.findFirst({
+                    where: { StudentRegistrationId: studentId, IsDeleted: false },
+                    include: { studentEnrollments: true },
+                });
+                if (student) {
+                    studentName = student.candidateName;
+                    fathersName = student.fatherName;
+                    const enrollment = student.studentEnrollments && student.studentEnrollments.length > 0
+                        ? student.studentEnrollments[0]
+                        : null;
+                    enrollmentNumber = enrollment?.enrollmentNo || student.registrationNo || null;
+                }
+            }
+        }
+        if (data.studentName !== undefined && data.studentName !== null) {
+            studentName = String(data.studentName).trim();
+        }
+        if (data.enrollmentNumber !== undefined && data.enrollmentNumber !== null) {
+            enrollmentNumber = String(data.enrollmentNumber).trim();
+        }
+        if (data.fathersName !== undefined && data.fathersName !== null) {
+            fathersName = String(data.fathersName).trim();
+        }
+        let academicSessionId = existing.academicSessionId;
+        let academicSessionName = existing.academicSessionName;
+        const sessionInputId = data.academicSessionId !== undefined ? data.academicSessionId : data.sessionId;
+        const sessionInputName = data.academicSessionName !== undefined ? data.academicSessionName : data.sessionName;
+        if (sessionInputId !== undefined) {
+            if (sessionInputId === null || sessionInputId === '') {
+                academicSessionId = null;
+                academicSessionName = null;
+            }
+            else {
+                academicSessionId = Number(sessionInputId);
+                const acadSession = await this.prisma.academicSession.findFirst({
+                    where: { academicSessionId, IsDeleted: false },
+                });
+                if (acadSession)
+                    academicSessionName = acadSession.academicSessionName;
+            }
+        }
+        if (sessionInputName !== undefined && sessionInputName !== null) {
+            academicSessionName = String(sessionInputName).trim();
+        }
+        const sessionId = academicSessionId;
+        const sessionName = academicSessionName;
+        let programCategoryId = existing.programCategoryId;
+        let programCategoryName = existing.programCategoryName;
+        if (data.programCategoryId !== undefined) {
+            if (data.programCategoryId === null || data.programCategoryId === '') {
+                programCategoryId = null;
+                programCategoryName = null;
+            }
+            else {
+                programCategoryId = Number(data.programCategoryId);
+                const cat = await this.prisma.programCategory.findFirst({
+                    where: { programCategoryId, IsDeleted: false },
+                });
+                if (cat)
+                    programCategoryName = cat.programCategoryName;
+            }
+        }
+        if (data.programCategoryName !== undefined && data.programCategoryName !== null) {
+            programCategoryName = String(data.programCategoryName).trim();
+        }
+        let programId = existing.programId;
+        let programName = existing.programName;
+        if (data.programId !== undefined) {
+            if (data.programId === null || data.programId === '') {
+                programId = null;
+                programName = null;
+            }
+            else {
+                programId = Number(data.programId);
+                const prog = await this.prisma.program.findFirst({
+                    where: { programId, IsDeleted: false },
+                });
+                if (prog)
+                    programName = prog.programName;
+            }
+        }
+        if (data.programName !== undefined && data.programName !== null) {
+            programName = String(data.programName).trim();
+        }
+        let yearId = existing.yearId;
+        let yearName = existing.yearName;
+        if (data.yearId !== undefined) {
+            if (data.yearId === null || data.yearId === '') {
+                yearId = null;
+                yearName = null;
+            }
+            else {
+                yearId = Number(data.yearId);
+                const yr = await this.prisma.yearMaster.findFirst({
+                    where: { yearId, IsDeleted: false },
+                });
+                if (yr)
+                    yearName = yr.yearName;
+            }
+        }
+        if (data.yearName !== undefined && data.yearName !== null) {
+            yearName = String(data.yearName).trim();
+        }
+        let semId = existing.semId;
+        let semName = existing.semName;
+        if (data.semId !== undefined) {
+            if (data.semId === null || data.semId === '') {
+                semId = null;
+                semName = null;
+            }
+            else {
+                semId = Number(data.semId);
+                const sem = await this.prisma.semesterMaster.findFirst({
+                    where: { semId, IsDeleted: false },
+                });
+                if (sem)
+                    semName = sem.semesterName;
+            }
+        }
+        if (data.semName !== undefined && data.semName !== null) {
+            semName = String(data.semName).trim();
+        }
+        let monthId = existing.monthId;
+        let monthName = existing.monthName;
+        if (data.monthId !== undefined) {
+            if (data.monthId === null || data.monthId === '') {
+                monthId = null;
+                monthName = null;
+            }
+            else {
+                monthId = Number(data.monthId);
+                const mn = await this.prisma.monthMaster.findFirst({
+                    where: { monthId, IsDeleted: false },
+                });
+                if (mn)
+                    monthName = mn.monthName;
+            }
+        }
+        if (data.monthName !== undefined && data.monthName !== null) {
+            monthName = String(data.monthName).trim();
+        }
+        let academicYearId = existing.academicYearId;
+        let academicYearname = existing.academicYearname;
+        if (data.academicYearId !== undefined) {
+            if (data.academicYearId === null || data.academicYearId === '') {
+                academicYearId = null;
+                academicYearname = null;
+            }
+            else {
+                academicYearId = Number(data.academicYearId);
+                const acadYear = await this.prisma.academicYearMaster.findFirst({
+                    where: { academicYearId, IsDeleted: false },
+                });
+                if (acadYear)
+                    academicYearname = acadYear.academicYearName;
+            }
+        }
+        if ((data.academicYearname !== undefined && data.academicYearname !== null) || (data.academicYearName !== undefined && data.academicYearName !== null)) {
+            academicYearname = String(data.academicYearname || data.academicYearName).trim();
+        }
+        const teachingDays = data.teachingDays !== undefined
+            ? (data.teachingDays !== null && data.teachingDays !== '' ? Number(data.teachingDays) : null)
+            : existing.teachingDays;
+        const presentDays = data.presentDays !== undefined
+            ? (data.presentDays !== null && data.presentDays !== '' ? Number(data.presentDays) : null)
+            : existing.presentDays;
+        let totalAttendancePercentage = existing.totalAttendancePercentage;
+        if (data.totalAttendancePercentage !== undefined) {
+            totalAttendancePercentage = data.totalAttendancePercentage !== null && data.totalAttendancePercentage !== ''
+                ? Number(data.totalAttendancePercentage)
+                : null;
+        }
+        else if (teachingDays && teachingDays > 0 && presentDays !== null) {
+            totalAttendancePercentage = Number(((presentDays / teachingDays) * 100).toFixed(2));
+        }
+        return this.db.update({
+            where: { attendanceDaysId },
+            data: {
+                studentId,
+                studentEnrollmentId,
+                studentName,
+                enrollmentNumber,
+                fathersName,
+                academicSessionId,
+                academicSessionName,
+                sessionId,
+                sessionName,
+                programCategoryId,
+                programCategoryName,
+                programId,
+                programName,
+                yearId,
+                yearName,
+                semId,
+                semName,
+                monthId,
+                monthName,
+                academicYearId,
+                academicYearname,
+                teachingDays,
+                presentDays,
+                totalAttendancePercentage,
+                UpdatedBy: data.UpdatedBy || 'Admin',
+                IsActive: data.IsActive !== undefined ? Boolean(data.IsActive) : undefined,
+                Remarks: data.Remarks,
+            },
+            include: {
+                student: true,
+                studentEnrollment: true,
+                academicSession: true,
+                programCategory: true,
+                program: true,
+                year: true,
+                semester: true,
+                month: true,
+                academicYear: true,
+            },
+        });
+    }
+    async updateStatus(attendanceDaysId, IsActive, UpdatedBy) {
+        await this.findOne(attendanceDaysId);
+        return this.db.update({
+            where: { attendanceDaysId },
+            data: { IsActive, UpdatedBy },
+            include: {
+                student: true,
+                studentEnrollment: true,
+                academicSession: true,
+                programCategory: true,
+                program: true,
+                year: true,
+                semester: true,
+                month: true,
+                academicYear: true,
+            },
+        });
+    }
+    async softDelete(attendanceDaysId, DeletedBy, DeletedRemarks) {
+        await this.findOne(attendanceDaysId);
+        return this.db.update({
+            where: { attendanceDaysId },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+    }
+    async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
+        const result = await this.db.updateMany({
+            where: {
+                attendanceDaysId: { in: ids },
+                IsDeleted: false,
+            },
+            data: {
+                IsDeleted: true,
+                IsActive: false,
+                DeletedOn: new Date(),
+                DeletedBy,
+                DeletedRemarks: DeletedRemarks || null,
+            },
+        });
+        return {
+            message: `Successfully soft-deleted ${result.count} attendance days record(s)`,
+            count: result.count,
+        };
+    }
+};
+exports.AttendanceDaysService = AttendanceDaysService;
+exports.AttendanceDaysService = AttendanceDaysService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object])
+], AttendanceDaysService);
 
 
 /***/ }),
@@ -27660,10 +28255,212 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AttendanceDaysController = void 0;
+const common_1 = __webpack_require__(5);
+const microservices_1 = __webpack_require__(3);
+const attendance_days_service_1 = __webpack_require__(230);
+let AttendanceDaysController = class AttendanceDaysController {
+    constructor(attendanceDaysService) {
+        this.attendanceDaysService = attendanceDaysService;
+    }
+    async create(data) {
+        try {
+            return await this.attendanceDaysService.create(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            return await this.attendanceDaysService.findAll(data);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findOne(data) {
+        try {
+            return await this.attendanceDaysService.findOne(data.attendanceDaysId);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async update(data) {
+        try {
+            const { attendanceDaysId, ...updateData } = data;
+            return await this.attendanceDaysService.update(attendanceDaysId, updateData);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async updateStatus(data) {
+        try {
+            return await this.attendanceDaysService.updateStatus(data.attendanceDaysId, data.IsActive, data.UpdatedBy);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async softDelete(data) {
+        try {
+            return await this.attendanceDaysService.softDelete(data.attendanceDaysId, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async bulkSoftDelete(data) {
+        try {
+            return await this.attendanceDaysService.bulkSoftDelete(data.ids, data.DeletedBy, data.DeletedRemarks);
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+};
+exports.AttendanceDaysController = AttendanceDaysController;
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'create_attendance_days' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AttendanceDaysController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_attendance_days' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AttendanceDaysController.prototype, "findAll", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_one_attendance_days' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AttendanceDaysController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_attendance_days' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AttendanceDaysController.prototype, "update", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_status_attendance_days' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AttendanceDaysController.prototype, "updateStatus", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_attendance_days' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AttendanceDaysController.prototype, "softDelete", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'bulk_delete_attendance_days' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AttendanceDaysController.prototype, "bulkSoftDelete", null);
+exports.AttendanceDaysController = AttendanceDaysController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof attendance_days_service_1.AttendanceDaysService !== "undefined" && attendance_days_service_1.AttendanceDaysService) === "function" ? _a : Object])
+], AttendanceDaysController);
+
+
+/***/ }),
+/* 232 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminModule = void 0;
+const common_1 = __webpack_require__(5);
+const admin_login_module_1 = __webpack_require__(233);
+let AdminModule = class AdminModule {
+};
+exports.AdminModule = AdminModule;
+exports.AdminModule = AdminModule = __decorate([
+    (0, common_1.Module)({
+        imports: [admin_login_module_1.AdminLoginModule],
+        exports: [admin_login_module_1.AdminLoginModule],
+    })
+], AdminModule);
+
+
+/***/ }),
+/* 233 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AdminLoginModule = void 0;
+const common_1 = __webpack_require__(5);
+const jwt_1 = __webpack_require__(12);
+const admin_login_controller_1 = __webpack_require__(234);
+const admin_login_service_1 = __webpack_require__(235);
+let AdminLoginModule = class AdminLoginModule {
+};
+exports.AdminLoginModule = AdminLoginModule;
+exports.AdminLoginModule = AdminLoginModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET || 'super-secret-jwt-key',
+                signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
+            }),
+        ],
+        controllers: [admin_login_controller_1.AdminLoginController],
+        providers: [admin_login_service_1.AdminLoginService],
+        exports: [admin_login_service_1.AdminLoginService],
+    })
+], AdminLoginModule);
+
+
+/***/ }),
+/* 234 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AdminLoginController = void 0;
 const common_1 = __webpack_require__(5);
 const microservices_1 = __webpack_require__(3);
-const admin_login_service_1 = __webpack_require__(232);
+const admin_login_service_1 = __webpack_require__(235);
 let AdminLoginController = class AdminLoginController {
     constructor(adminLoginService) {
         this.adminLoginService = adminLoginService;
@@ -27831,7 +28628,7 @@ exports.AdminLoginController = AdminLoginController = __decorate([
 
 
 /***/ }),
-/* 232 */
+/* 235 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 

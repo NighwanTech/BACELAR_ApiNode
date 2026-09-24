@@ -23,7 +23,7 @@ const enrollmentInclude = {
 
 @Injectable()
 export class StudentEnrollmentService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   private enrollment() {
     return (this.prisma as any).studentEnrollment;
@@ -115,7 +115,7 @@ export class StudentEnrollmentService {
       apaarNo: profile.apaarIdNo || null,
       gender: profile.gender || null,
       emailId: student.email || null,
-      sessionId: student.admissionSessionId || null,
+      sessionId: student.academicSessionId || null,
     };
   }
 

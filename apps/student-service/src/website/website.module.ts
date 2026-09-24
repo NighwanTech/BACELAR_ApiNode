@@ -17,10 +17,11 @@ import { CommitteeSubmenuModule } from './committee-submenu/committee-submenu.mo
 import { ExaminerRegistrationModule } from './examiner-registration/examiner-registration.module';
 import { AcademicYearModule } from './academic-year/academic-year.module';
 import { PramanDetailsModule } from './praman-details/praman-details.module';
+import { AttendanceDaysModule } from './attendance-days/attendance-days.module';
 
 @Module({
-  imports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule, ExaminerRegistrationModule, AcademicYearModule, PramanDetailsModule],
-  exports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule, ExaminerRegistrationModule, AcademicYearModule, PramanDetailsModule],
+  imports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule, ExaminerRegistrationModule, AcademicYearModule, PramanDetailsModule, AttendanceDaysModule],
+  exports: [CampusQuickLinkModule, LatestUpdateModule, AdmissionEnquiryModule, HeroSectionModule, NoticeBoardModule, AccreditationSliderModule, TopAchieverModule, ImageGalleryModule, VideoGalleryModule, ContactEnquiryModule, StatsCounterModule, TestimonialModule, HeaderButtonModule, CommitteeModule, CommitteeSubmenuModule, ExaminerRegistrationModule, AcademicYearModule, PramanDetailsModule, AttendanceDaysModule],
 })
 export class WebsiteModule {}
 

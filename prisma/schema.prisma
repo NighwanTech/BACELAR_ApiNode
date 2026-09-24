@@ -55,6 +55,7 @@ model Student {
   promotionDetails      PromotionDetail[]
   examGrevianceApplications ExamGrevianceApplication[]
   entranceStudents      EntranceStudent[]
+  attendanceDays        AttendanceDays[]
 
   @@index([yearId])
   @@index([semId])
@@ -179,6 +180,7 @@ model ProgramCategory {
   examSchemes         ExamScheme[]
   promotionsFrom      Promotion[] @relation("PromotionCourseCategoryFrom")
   promotionsTo        Promotion[] @relation("PromotionCourseCategoryTo")
+  attendanceDays      AttendanceDays[]
   entranceExams       EntranceExamMaster[]
   entranceStudents    EntranceStudent[]
 
@@ -305,6 +307,7 @@ model Program {
   promotionsTo        Promotion[] @relation("PromotionCourseTo")
   entranceExams       EntranceExamMaster[]
   entranceStudents    EntranceStudent[]
+  attendanceDays      AttendanceDays[]
 
   @@map("programs")
 }
@@ -746,6 +749,7 @@ model MonthMaster {
   DeletedOn      DateTime?
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
+  attendanceDays AttendanceDays[]
 
   @@map("monthMaster")
 }
@@ -828,6 +832,7 @@ model AcademicYearMaster {
   Remarks          String?   @db.VarChar(255)
 
   pramanDetails    PramanDetailsMaster[]
+  attendanceDays   AttendanceDays[]
 
   @@map("academicYearMaster")
 }
@@ -960,7 +965,6 @@ model AdmissionSession {
   admissionSessionName String             @unique @db.VarChar(50)
   feeConfigs           ProgramFeeConfig[]
   students             Student[]
-  studentEnrollments   StudentEnrollment[]
   studentExams         StudentExam[]
   studentRollNumbers   StudentRollNumber[]
 
@@ -1151,7 +1155,7 @@ model StudentEnrollment {
   gender          String? @db.VarChar(20)
   emailId         String? @db.VarChar(255)
   sessionId       Int?
-  session         AdmissionSession? @relation(fields: [sessionId], references: [admissionSessionId], onDelete: SetNull)
+  session         AcademicSession? @relation(fields: [sessionId], references: [academicSessionId], onDelete: SetNull)
 
   CreatedOn      DateTime  @default(now())
   CreatedBy      String    @db.VarChar(255)
@@ -1166,6 +1170,7 @@ model StudentEnrollment {
   examLoginMasters ExamLoginMaster[]
   studentExamPapers StudentExamPaper[]
   studentRollNumbers StudentRollNumber[]
+  attendanceDays     AttendanceDays[]
 
   @@index([studentId])
   @@index([programId])
@@ -1497,6 +1502,8 @@ model AcademicSession {
   promotionsTo        Promotion[]          @relation("PromotionSessionTo")
   entranceExams       EntranceExamMaster[]
   entranceStudents    EntranceStudent[]
+  attendanceDays      AttendanceDays[]
+  studentEnrollments  StudentEnrollment[]
   CreatedOn           DateTime             @default(now())
   CreatedBy           String               @db.VarChar(255)
   UpdatedOn           DateTime?            @updatedAt
@@ -1728,6 +1735,7 @@ model YearMaster {
   resultDeclarations ResultDeclaration[]
   promotionsFrom     Promotion[] @relation("PromotionYearFrom")
   promotionsTo       Promotion[] @relation("PromotionYearTo")
+  attendanceDays     AttendanceDays[]
 
   @@index([typeId])
   @@map("yearMaster")
@@ -1751,6 +1759,7 @@ model SemesterMaster {
   paperDetailMasters PaperDetailMaster[]
   students           Student[]
   studentPayments    StudentPayment[]
+  attendanceDays     AttendanceDays[]
   studentEnrollments StudentEnrollment[]
   studentExams       StudentExam[]
   examSchemes        ExamScheme[]
@@ -2842,4 +2851,74 @@ model ErrorLog {
   @@index([ResolvedOn])
   @@map("errorLog")
 }
+
+model AttendanceDays {
+  attendanceDaysId          Int                @id @default(autoincrement())
+  studentId                 Int?
+  student                   Student?           @relation(fields: [studentId], references: [StudentRegistrationId], onDelete: SetNull)
+  studentEnrollmentId       Int?
+  studentEnrollment         StudentEnrollment? @relation(fields: [studentEnrollmentId], references: [enrollmentId], onDelete: SetNull)
+  studentName               String?            @db.VarChar(255)
+  enrollmentNumber          String?            @db.VarChar(100)
+  fathersName               String?            @db.VarChar(255)
+
+  academicSessionId         Int?
+  academicSession           AcademicSession?   @relation(fields: [academicSessionId], references: [academicSessionId], onDelete: SetNull)
+  academicSessionName       String?            @db.VarChar(100)
+
+  // Fallback / legacy alias fields
+  sessionId                 Int?
+  sessionName               String?            @db.VarChar(100)
+
+  programCategoryId         Int?
+  programCategory           ProgramCategory?   @relation(fields: [programCategoryId], references: [programCategoryId], onDelete: SetNull)
+  programCategoryName       String?            @db.VarChar(100)
+
+  programId                 Int?
+  program                   Program?           @relation(fields: [programId], references: [programId], onDelete: SetNull)
+  programName               String?            @db.VarChar(100)
+
+  yearId                    Int?
+  year                      YearMaster?        @relation(fields: [yearId], references: [yearId], onDelete: SetNull)
+  yearName                  String?            @db.VarChar(100)
+
+  semId                     Int?
+  semester                  SemesterMaster?    @relation(fields: [semId], references: [semId], onDelete: SetNull)
+  semName                   String?            @db.VarChar(100)
+
+  monthId                   Int?
+  month                     MonthMaster?       @relation(fields: [monthId], references: [monthId], onDelete: SetNull)
+  monthName                 String?            @db.VarChar(100)
+
+  academicYearId            Int?
+  academicYear              AcademicYearMaster? @relation(fields: [academicYearId], references: [academicYearId], onDelete: SetNull)
+  academicYearname          String?            @db.VarChar(100)
+
+  teachingDays              Int?
+  presentDays               Int?
+  totalAttendancePercentage Float?
+
+  CreatedOn                 DateTime           @default(now())
+  CreatedBy                 String             @db.VarChar(255)
+  UpdatedOn                 DateTime?          @updatedAt
+  UpdatedBy                 String?            @db.VarChar(255)
+  IsActive                  Boolean            @default(true)
+  IsDeleted                 Boolean            @default(false)
+  DeletedRemarks            String?            @db.VarChar(255)
+  DeletedOn                 DateTime?
+  DeletedBy                 String?            @db.VarChar(255)
+  Remarks                   String?            @db.VarChar(255)
+
+  @@index([studentId])
+  @@index([studentEnrollmentId])
+  @@index([academicSessionId])
+  @@index([programCategoryId])
+  @@index([programId])
+  @@index([yearId])
+  @@index([semId])
+  @@index([monthId])
+  @@index([academicYearId])
+  @@map("attendanceDays")
+}
+
 
