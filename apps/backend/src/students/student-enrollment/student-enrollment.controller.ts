@@ -49,8 +49,66 @@ export class StudentEnrollmentController {
   @Get()
   @ApiOperation({ summary: 'Get all student enrollment records' })
   @ApiResponse({ status: 200, description: 'Return all enrollments' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_student_enrollments' }, {});
+  findAll(
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('search') search?: string,
+    @Query('sessionId') sessionId?: string,
+    @Query('programId') programId?: string,
+    @Query('programCategoryId') programCategoryId?: string,
+    @Query('yearId') yearId?: string,
+    @Query('semesterId') semesterId?: string,
+    @Query('sortKey') sortKey?: string,
+    @Query('sortDir') sortDir?: string,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'find_all_student_enrollments' },
+      {
+        page: page ? Number(page) : undefined,
+        pageSize: pageSize ? Number(pageSize) : undefined,
+        search,
+        sessionId: sessionId ? Number(sessionId) : undefined,
+        programId: programId ? Number(programId) : undefined,
+        programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+        yearId: yearId ? Number(yearId) : undefined,
+        semesterId: semesterId ? Number(semesterId) : undefined,
+        sortKey,
+        sortDir,
+      },
+    );
+  }
+
+  @Get('exam-details')
+  @ApiOperation({ summary: 'Paged exam-details rows (latest enrollment per student)' })
+  findExamDetails(
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('search') search?: string,
+    @Query('programId') programId?: string,
+    @Query('programCategoryId') programCategoryId?: string,
+    @Query('yearId') yearId?: string,
+    @Query('semId') semId?: string,
+    @Query('examType') examType?: string,
+    @Query('filled') filled?: string,
+    @Query('sortKey') sortKey?: string,
+    @Query('sortDir') sortDir?: string,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'find_exam_details_page' },
+      {
+        page: page ? Number(page) : 1,
+        pageSize: pageSize ? Number(pageSize) : 10,
+        search,
+        programId: programId ? Number(programId) : undefined,
+        programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+        yearId: yearId ? Number(yearId) : undefined,
+        semId: semId ? Number(semId) : undefined,
+        examType,
+        filled,
+        sortKey,
+        sortDir,
+      },
+    );
   }
 
   @Get('student/:studentId')

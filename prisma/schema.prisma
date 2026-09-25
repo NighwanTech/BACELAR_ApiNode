@@ -61,6 +61,9 @@ model Student {
   @@index([semId])
   @@index([academicSessionId])
   @@index([programId])
+  @@index([IsDeleted, CreatedOn])
+  @@index([mobileNo])
+  @@index([IsDeleted, academicSessionId, programId])
   @@map("students")
 }
 
@@ -1165,6 +1168,7 @@ model StudentPayment {
   @@index([yearId])
   @@index([semesterId])
   @@index([feeTypeId])
+  @@index([studentId, feeType, paymentStatus])
   @@map("studentPayments")
 }
 
@@ -1187,6 +1191,7 @@ model StudentAttachment {
   DeletedBy      String?   @db.VarChar(255)
   Remarks        String?   @db.VarChar(255)
 
+  @@index([studentId, documentType])
   @@map("studentAttachments")
 }
 

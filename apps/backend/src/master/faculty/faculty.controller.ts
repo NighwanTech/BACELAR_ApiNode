@@ -38,19 +38,19 @@ export class FacultyController {
     private readonly storageService: StorageService,
   ) {}
 
+  /**
+   * Always prefer MinIO/S3 when STORAGE_PROVIDER=s3.
+   * Do not silently fall back to local disk — that saved localhost /uploads URLs before.
+   */
   private async storeFacultyFile(file: any, folder: string): Promise<string> {
-    const remote = this.storageService.uploadFile(file, folder);
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const timeout = new Promise<never>((_, reject) => {
-      timer = setTimeout(() => reject(new Error('storage timeout')), 8000);
-    });
+    const provider = String(process.env.STORAGE_PROVIDER || 'local').trim().toLowerCase();
+    if (provider === 's3') {
+      return this.storageService.uploadFile(file, folder);
+    }
     try {
-      return await Promise.race([remote, timeout]);
+      return await this.storageService.uploadFile(file, folder);
     } catch {
-      remote.catch(() => undefined);
       return this.storageService.saveLocalFile(file, folder);
-    } finally {
-      if (timer) clearTimeout(timer);
     }
   }
 

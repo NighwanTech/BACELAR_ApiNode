@@ -12,7 +12,9 @@ function getDbConfig() {
 			user: decodeURIComponent(url.username),
 			password: decodeURIComponent(url.password),
 			database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
-			connectionLimit: 2,
+			// Backend, student-service, and exam-result each open a pool.
+			// The DB user cap is 75, so 15 per process stays under that cap.
+			connectionLimit: 15,
 			connectTimeout: 30000,
 			acquireTimeout: 30000,
 			ssl: false,

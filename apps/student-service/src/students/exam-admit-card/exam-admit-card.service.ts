@@ -176,6 +176,7 @@ export class ExamAdmitCardService {
   }
 
   async list(query: any) {
+    if (query?.page) return this.listPage(query);
     const examinationDetailId = this.toNum(query.examinationDetailId);
     const academicSessionId = this.toNum(query.academicSessionId ?? query.sessionId);
     const programCategoryId = this.toNum(query.programCategoryId);
@@ -422,6 +423,144 @@ export class ExamAdmitCardService {
         shift: paper.shift || null,
       })),
     };
+  }
+
+  private async listPage(query: any) {
+    const page = Math.max(1, Number(query.page) || 1);
+    const pageSize = Math.min(200, Math.max(1, Number(query.pageSize) || 10));
+    const programId = this.toNum(query.programId);
+    const yearId = this.toNum(query.yearId);
+    const semId = this.toNum(query.semId);
+    const programCategoryId = this.toNum(query.programCategoryId);
+    const academicSessionId = this.toNum(query.academicSessionId ?? query.sessionId);
+    const search = String(query.search || '').trim();
+    const where: any = {
+      IsDeleted: false,
+      enrollmentNo: { not: null },
+      student: { studentRollNumbers: { some: { IsDeleted: false } } },
+    };
+    if (programId != null) where.programId = programId;
+    if (yearId != null) where.yearId = yearId;
+    if (semId != null) where.semId = semId;
+    if (academicSessionId != null) {
+      where.student = { ...where.student, academicSessionId };
+    }
+    if (programCategoryId != null) {
+      where.AND = [
+        {
+          OR: [
+            { program: { programCategoryId } },
+            { student: { program: { programCategoryId } } },
+          ],
+        },
+      ];
+    }
+    if (search) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: [
+            { enrollmentNo: { contains: search } },
+            { studentName: { contains: search } },
+            { fatherName: { contains: search } },
+            { motherName: { contains: search } },
+            { student: { mobileNo: { contains: search } } },
+            { student: { candidateName: { contains: search } } },
+          ],
+        },
+      ];
+    }
+    const dir = String(query.sortDir || 'asc').toLowerCase() === 'desc' ? 'desc' : 'asc';
+    const sortMap: Record<string, any> = {
+      studentName: { studentName: dir },
+      enrollmentNo: { enrollmentNo: dir },
+      fatherName: { fatherName: dir },
+      rollNo: { studentName: dir },
+    };
+    const orderBy = sortMap[String(query.sortKey || 'studentName')] || { studentName: 'asc' };
+    const [total, rows] = await Promise.all([
+      this.enrollment().count({ where }),
+      this.enrollment().findMany({
+        where,
+        include: {
+          student: {
+            include: {
+              studentProfile: true,
+              studentAttachments: true,
+              program: { include: { programCategory: true } },
+              academicSession: true,
+            },
+          },
+          program: { include: { programCategory: true } },
+          year: true,
+          semester: true,
+          session: true,
+        },
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+    const built = await this.buildAdmitItems(rows, query);
+    return { items: built, page, pageSize, total };
+  }
+
+  private async buildAdmitItems(rows: any[], query: any) {
+    const examinationDetailId = this.toNum(query.examinationDetailId);
+    const examType = String(query.examType || '').trim().toLowerCase();
+    const studentIds = Array.from(new Set(rows.map((e: any) => Number(e.studentId)).filter(Boolean)));
+    const rolls = studentIds.length
+      ? await this.roll().findMany({ where: { IsDeleted: false, studentId: { in: studentIds } } })
+      : [];
+    const rollByStudent = new Map<number, any>();
+    for (const roll of rolls) {
+      const sid = Number(roll.studentId);
+      const current = rollByStudent.get(sid);
+      if (!current || Number(roll.rollId) > Number(current.rollId)) rollByStudent.set(sid, roll);
+    }
+    const exams = studentIds.length
+      ? await this.studentExam().findMany({
+          where: { IsDeleted: false, studentId: { in: studentIds } },
+          include: this.examInclude(),
+          orderBy: { studentExamId: 'desc' },
+        })
+      : [];
+    const examByStudent = new Map<number, any>();
+    for (const exam of exams || []) {
+      const sid = Number(exam.studentId);
+      if (!examByStudent.has(sid)) examByStudent.set(sid, exam);
+    }
+    const examination = examinationDetailId
+      ? await this.prisma.examinationDetails.findFirst({
+          where: { examinationId: examinationDetailId, IsDeleted: false },
+          include: { academicSession: true },
+        })
+      : null;
+    const items = [];
+    for (const e of rows) {
+      const studentId = Number(e.studentId);
+      const exam = examByStudent.get(studentId);
+      const roll = rollByStudent.get(studentId);
+      const schemeKey = [examinationDetailId || exam?.examinationDetailId, e.programId, e.yearId, e.semId].join(':');
+      const schemeMap = await this.schemePaperMap({
+        examinationDetailId: examinationDetailId || exam?.examinationDetailId,
+        programId: e.programId,
+        yearId: e.yearId,
+        semId: e.semId,
+      });
+      const mapped = exam ? this.mapRow(exam, schemeMap) : this.mapEnrollmentRow(e, roll, schemeMap);
+      if (roll?.rollNo) mapped.rollNo = roll.rollNo;
+      if (examination) {
+        mapped.examinationDetailId = examination.examinationId;
+        mapped.examinationName = examination.examinationName;
+        mapped.academicSessionId = examination.academicId || mapped.academicSessionId;
+        mapped.academicSessionName = examination.academicSession?.academicSessionName || mapped.academicSessionName;
+      }
+      if (examType && String(mapped.examType || '').trim().toLowerCase() !== examType) continue;
+      void schemeKey;
+      items.push(mapped);
+    }
+    return items;
   }
 
   async findOne(studentExamId: number) {

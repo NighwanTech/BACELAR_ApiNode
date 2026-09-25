@@ -893,6 +893,106 @@ export class StudentPaymentService {
     return updated;
   }
 
+  async findPage(query: any) {
+    const page = Math.max(1, Number(query.page) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 15));
+    const where: any = { IsDeleted: false };
+    const student: any = {};
+    if (query.paymentStatus && query.paymentStatus !== 'ALL') {
+      where.paymentStatus = String(query.paymentStatus).toUpperCase();
+    }
+    if (query.yearId) where.yearId = Number(query.yearId);
+    if (query.semesterId) where.semesterId = Number(query.semesterId);
+    if (query.feeTypeId) where.feeTypeId = Number(query.feeTypeId);
+    if (query.programId) student.programId = Number(query.programId);
+    if (query.programCategoryId) student.program = { programCategoryId: Number(query.programCategoryId) };
+    if (query.academicSessionId) {
+      const session = await this.prisma.academicSession.findFirst({
+        where: { academicSessionId: Number(query.academicSessionId), IsDeleted: false },
+      });
+      const name = session?.academicSessionName || '';
+      student.OR = [
+        { academicSessionId: Number(query.academicSessionId) },
+        ...(name
+          ? [
+              { academicSession: { academicSessionName: name } },
+              { admissionSession: { admissionSessionName: name } },
+            ]
+          : []),
+      ];
+    }
+    if (Object.keys(student).length) where.student = student;
+    if (query.fromDate || query.toDate) {
+      const range: any = {};
+      if (query.fromDate) range.gte = new Date(`${query.fromDate}T00:00:00`);
+      if (query.toDate) range.lte = new Date(`${query.toDate}T23:59:59`);
+      where.OR = [{ paymentDateTime: range }, { paymentDateTime: null, CreatedOn: range }];
+    }
+    const search = String(query.search || '').trim();
+    if (search) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: [
+            { registrationNo: { contains: search } },
+            { studentName: { contains: search } },
+            { fatherName: { contains: search } },
+            { studentEmail: { contains: search } },
+            { contactNo: { contains: search } },
+            { enrollNo: { contains: search } },
+            { merchantOrderId: { contains: search } },
+            { bankRrnNo: { contains: search } },
+            { razorpayPaymentId: { contains: search } },
+            { razorpayOrderId: { contains: search } },
+          ],
+        },
+      ];
+    }
+    const dir = String(query.sortDir || 'desc').toLowerCase() === 'asc' ? 'asc' : 'desc';
+    const sortMap: Record<string, any> = {
+      studentName: { studentName: dir },
+      registrationNo: { registrationNo: dir },
+      amountPaid: { amountPaid: dir },
+      paymentStatus: { paymentStatus: dir },
+      paymentDateTime: { paymentDateTime: dir },
+      enrollNo: { enrollNo: dir },
+    };
+    const orderBy = sortMap[String(query.sortKey || '')] || { CreatedOn: 'desc' };
+    const include = {
+      student: { include: { academicSession: true, admissionSession: true, program: true } },
+      year: true,
+      semester: true,
+      feeTypeMaster: true,
+    };
+    const statusFilter = where.paymentStatus ? String(where.paymentStatus) : '';
+    const [total, items, sum, successCount, pendingCount] = await Promise.all([
+      this.prisma.studentPayment.count({ where }),
+      this.prisma.studentPayment.findMany({
+        where,
+        include,
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.studentPayment.aggregate({ where, _sum: { amountPaid: true } }),
+      !statusFilter || statusFilter === 'SUCCESS'
+        ? this.prisma.studentPayment.count({ where: { ...where, paymentStatus: 'SUCCESS' } })
+        : Promise.resolve(0),
+      !statusFilter || statusFilter === 'PENDING'
+        ? this.prisma.studentPayment.count({ where: { ...where, paymentStatus: 'PENDING' } })
+        : Promise.resolve(0),
+    ]);
+    return {
+      items,
+      page,
+      pageSize,
+      total,
+      totalAmount: Number(sum._sum.amountPaid || 0),
+      successCount,
+      pendingCount,
+    };
+  }
+
   async findAll() {
     return this.prisma.studentPayment.findMany({
       where: { IsDeleted: false },

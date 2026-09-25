@@ -32,10 +32,28 @@ export class ExamAdmitCardController {
     @Query('semId') semId?: string,
     @Query('examType') examType?: string,
     @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('sortKey') sortKey?: string,
+    @Query('sortDir') sortDir?: string,
   ): Observable<any> {
     return this.studentClient.send(
       { cmd: 'list_exam_admit_cards' },
-      { examinationDetailId, sessionId, academicSessionId, programCategoryId, programId, yearId, semId, examType, search },
+      {
+        examinationDetailId,
+        sessionId,
+        academicSessionId,
+        programCategoryId,
+        programId,
+        yearId,
+        semId,
+        examType,
+        search,
+        page: page ? Number(page) : undefined,
+        pageSize: pageSize ? Number(pageSize) : undefined,
+        sortKey,
+        sortDir,
+      },
     );
   }
 

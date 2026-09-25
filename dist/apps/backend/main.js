@@ -281,8 +281,21 @@ let StudentsController = class StudentsController {
     create(createStudentDto) {
         return this.studentClient.send({ cmd: 'create_student' }, createStudentDto);
     }
-    findAll(programId) {
-        return this.studentClient.send({ cmd: 'find_all_students' }, { programId: programId ? Number(programId) : undefined });
+    findAll(programId, page, pageSize, search, academicSessionId, programCategoryId, paymentStatus, fromDate, toDate, sortKey, sortDir, source) {
+        return this.studentClient.send({ cmd: 'find_all_students' }, {
+            programId: programId ? Number(programId) : undefined,
+            page: page ? Number(page) : undefined,
+            pageSize: pageSize ? Number(pageSize) : undefined,
+            search,
+            academicSessionId: academicSessionId ? Number(academicSessionId) : undefined,
+            programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+            paymentStatus,
+            fromDate,
+            toDate,
+            sortKey,
+            sortDir,
+            source,
+        });
     }
     findOne(id) {
         return this.studentClient.send({ cmd: 'find_one_student' }, { StudentRegistrationId: id });
@@ -364,8 +377,19 @@ __decorate([
     (0, swagger_1.ApiQuery)({ name: 'programId', required: false }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all active students' }),
     __param(0, (0, common_1.Query)('programId')),
+    __param(1, (0, common_1.Query)('page')),
+    __param(2, (0, common_1.Query)('pageSize')),
+    __param(3, (0, common_1.Query)('search')),
+    __param(4, (0, common_1.Query)('academicSessionId')),
+    __param(5, (0, common_1.Query)('programCategoryId')),
+    __param(6, (0, common_1.Query)('paymentStatus')),
+    __param(7, (0, common_1.Query)('fromDate')),
+    __param(8, (0, common_1.Query)('toDate')),
+    __param(9, (0, common_1.Query)('sortKey')),
+    __param(10, (0, common_1.Query)('sortDir')),
+    __param(11, (0, common_1.Query)('source')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String, String, String, String, String, String]),
     __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
 ], StudentsController.prototype, "findAll", null);
 __decorate([
@@ -2593,8 +2617,23 @@ let StudentPaymentController = class StudentPaymentController {
     syncRazorpayStatus(dto) {
         return this.studentClient.send({ cmd: 'sync_razorpay_payment_status' }, dto);
     }
-    findAll() {
-        return this.studentClient.send({ cmd: 'find_all_student_payments' }, {});
+    findAll(page, pageSize, search, paymentStatus, yearId, semesterId, programId, programCategoryId, feeTypeId, academicSessionId, fromDate, toDate, sortKey, sortDir) {
+        return this.studentClient.send({ cmd: 'find_all_student_payments' }, {
+            page: page ? Number(page) : undefined,
+            pageSize: pageSize ? Number(pageSize) : undefined,
+            search,
+            paymentStatus,
+            yearId: yearId ? Number(yearId) : undefined,
+            semesterId: semesterId ? Number(semesterId) : undefined,
+            programId: programId ? Number(programId) : undefined,
+            programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+            feeTypeId: feeTypeId ? Number(feeTypeId) : undefined,
+            academicSessionId: academicSessionId ? Number(academicSessionId) : undefined,
+            fromDate,
+            toDate,
+            sortKey,
+            sortDir,
+        });
     }
     findByStudent(studentId) {
         return this.studentClient.send({ cmd: 'find_student_payments_by_student' }, { studentId });
@@ -2678,8 +2717,22 @@ __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all student payment records' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all payments' }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('pageSize')),
+    __param(2, (0, common_1.Query)('search')),
+    __param(3, (0, common_1.Query)('paymentStatus')),
+    __param(4, (0, common_1.Query)('yearId')),
+    __param(5, (0, common_1.Query)('semesterId')),
+    __param(6, (0, common_1.Query)('programId')),
+    __param(7, (0, common_1.Query)('programCategoryId')),
+    __param(8, (0, common_1.Query)('feeTypeId')),
+    __param(9, (0, common_1.Query)('academicSessionId')),
+    __param(10, (0, common_1.Query)('fromDate')),
+    __param(11, (0, common_1.Query)('toDate')),
+    __param(12, (0, common_1.Query)('sortKey')),
+    __param(13, (0, common_1.Query)('sortDir')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String, String, String, String, String, String, String, String]),
     __metadata("design:returntype", typeof (_p = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _p : Object)
 ], StudentPaymentController.prototype, "findAll", null);
 __decorate([
@@ -4280,7 +4333,7 @@ function getDbConfig() {
             user: decodeURIComponent(url.username),
             password: decodeURIComponent(url.password),
             database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
-            connectionLimit: 2,
+            connectionLimit: 15,
             connectTimeout: 30000,
             acquireTimeout: 30000,
             ssl: false,
@@ -5104,7 +5157,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StudentEnrollmentController = void 0;
 const common_1 = __webpack_require__(2);
@@ -5142,8 +5195,34 @@ let StudentEnrollmentController = class StudentEnrollmentController {
             return { ...enrollment, integration };
         }));
     }
-    findAll() {
-        return this.studentClient.send({ cmd: 'find_all_student_enrollments' }, {});
+    findAll(page, pageSize, search, sessionId, programId, programCategoryId, yearId, semesterId, sortKey, sortDir) {
+        return this.studentClient.send({ cmd: 'find_all_student_enrollments' }, {
+            page: page ? Number(page) : undefined,
+            pageSize: pageSize ? Number(pageSize) : undefined,
+            search,
+            sessionId: sessionId ? Number(sessionId) : undefined,
+            programId: programId ? Number(programId) : undefined,
+            programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+            yearId: yearId ? Number(yearId) : undefined,
+            semesterId: semesterId ? Number(semesterId) : undefined,
+            sortKey,
+            sortDir,
+        });
+    }
+    findExamDetails(page, pageSize, search, programId, programCategoryId, yearId, semId, examType, filled, sortKey, sortDir) {
+        return this.studentClient.send({ cmd: 'find_exam_details_page' }, {
+            page: page ? Number(page) : 1,
+            pageSize: pageSize ? Number(pageSize) : 10,
+            search,
+            programId: programId ? Number(programId) : undefined,
+            programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+            yearId: yearId ? Number(yearId) : undefined,
+            semId: semId ? Number(semId) : undefined,
+            examType,
+            filled,
+            sortKey,
+            sortDir,
+        });
     }
     findByStudent(studentId) {
         return this.studentClient.send({ cmd: 'find_student_enrollments_by_student' }, { studentId });
@@ -5184,10 +5263,38 @@ __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all student enrollment records' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all enrollments' }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('pageSize')),
+    __param(2, (0, common_1.Query)('search')),
+    __param(3, (0, common_1.Query)('sessionId')),
+    __param(4, (0, common_1.Query)('programId')),
+    __param(5, (0, common_1.Query)('programCategoryId')),
+    __param(6, (0, common_1.Query)('yearId')),
+    __param(7, (0, common_1.Query)('semesterId')),
+    __param(8, (0, common_1.Query)('sortKey')),
+    __param(9, (0, common_1.Query)('sortDir')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String, String, String, String]),
     __metadata("design:returntype", typeof (_g = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _g : Object)
 ], StudentEnrollmentController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('exam-details'),
+    (0, swagger_1.ApiOperation)({ summary: 'Paged exam-details rows (latest enrollment per student)' }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('pageSize')),
+    __param(2, (0, common_1.Query)('search')),
+    __param(3, (0, common_1.Query)('programId')),
+    __param(4, (0, common_1.Query)('programCategoryId')),
+    __param(5, (0, common_1.Query)('yearId')),
+    __param(6, (0, common_1.Query)('semId')),
+    __param(7, (0, common_1.Query)('examType')),
+    __param(8, (0, common_1.Query)('filled')),
+    __param(9, (0, common_1.Query)('sortKey')),
+    __param(10, (0, common_1.Query)('sortDir')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String, String, String, String, String]),
+    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+], StudentEnrollmentController.prototype, "findExamDetails", null);
 __decorate([
     (0, common_1.Get)('student/:studentId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get all enrollment records for a specific Student Registration ID' }),
@@ -5195,7 +5302,7 @@ __decorate([
     __param(0, (0, common_1.Param)('studentId', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", typeof (_h = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _h : Object)
+    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
 ], StudentEnrollmentController.prototype, "findByStudent", null);
 __decorate([
     (0, common_1.Get)(':id'),
@@ -5204,7 +5311,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", typeof (_j = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _j : Object)
+    __metadata("design:returntype", typeof (_k = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _k : Object)
 ], StudentEnrollmentController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Put)(':id'),
@@ -5213,8 +5320,8 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_k = typeof update_student_enrollment_dto_1.UpdateStudentEnrollmentDto !== "undefined" && update_student_enrollment_dto_1.UpdateStudentEnrollmentDto) === "function" ? _k : Object]),
-    __metadata("design:returntype", typeof (_l = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _l : Object)
+    __metadata("design:paramtypes", [Number, typeof (_l = typeof update_student_enrollment_dto_1.UpdateStudentEnrollmentDto !== "undefined" && update_student_enrollment_dto_1.UpdateStudentEnrollmentDto) === "function" ? _l : Object]),
+    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
 ], StudentEnrollmentController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
@@ -5227,7 +5334,7 @@ __decorate([
     __param(2, (0, common_1.Query)('DeletedRemarks')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, String, String]),
-    __metadata("design:returntype", typeof (_m = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _m : Object)
+    __metadata("design:returntype", typeof (_o = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _o : Object)
 ], StudentEnrollmentController.prototype, "remove", null);
 __decorate([
     (0, common_1.Post)('bulk-delete'),
@@ -5235,8 +5342,8 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Enrollment records bulk soft deleted successfully' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_o = typeof bulk_delete_student_enrollments_dto_1.BulkDeleteStudentEnrollmentsDto !== "undefined" && bulk_delete_student_enrollments_dto_1.BulkDeleteStudentEnrollmentsDto) === "function" ? _o : Object]),
-    __metadata("design:returntype", typeof (_p = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _p : Object)
+    __metadata("design:paramtypes", [typeof (_p = typeof bulk_delete_student_enrollments_dto_1.BulkDeleteStudentEnrollmentsDto !== "undefined" && bulk_delete_student_enrollments_dto_1.BulkDeleteStudentEnrollmentsDto) === "function" ? _p : Object]),
+    __metadata("design:returntype", typeof (_q = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _q : Object)
 ], StudentEnrollmentController.prototype, "bulkRemove", null);
 exports.StudentEnrollmentController = StudentEnrollmentController = __decorate([
     (0, swagger_1.ApiTags)('Student - Enrollments'),
@@ -6081,8 +6188,21 @@ let StudentRollNumberController = class StudentRollNumberController {
     constructor(studentClient) {
         this.studentClient = studentClient;
     }
-    list(sessionId, academicSessionId, programCategoryId, programId, yearId, semId, search) {
-        return this.studentClient.send({ cmd: 'list_student_roll_numbers' }, { sessionId, academicSessionId, programCategoryId, programId, yearId, semId, search });
+    list(sessionId, academicSessionId, programCategoryId, programId, yearId, semId, search, page, pageSize, sortKey, sortDir, rollStatus) {
+        return this.studentClient.send({ cmd: 'list_student_roll_numbers' }, {
+            sessionId,
+            academicSessionId,
+            programCategoryId,
+            programId,
+            yearId,
+            semId,
+            search,
+            page: page ? Number(page) : undefined,
+            pageSize: pageSize ? Number(pageSize) : undefined,
+            sortKey,
+            sortDir,
+            rollStatus,
+        });
     }
     generate(dto) {
         return this.studentClient.send({ cmd: 'generate_student_roll_numbers' }, dto);
@@ -6113,8 +6233,13 @@ __decorate([
     __param(4, (0, common_1.Query)('yearId')),
     __param(5, (0, common_1.Query)('semId')),
     __param(6, (0, common_1.Query)('search')),
+    __param(7, (0, common_1.Query)('page')),
+    __param(8, (0, common_1.Query)('pageSize')),
+    __param(9, (0, common_1.Query)('sortKey')),
+    __param(10, (0, common_1.Query)('sortDir')),
+    __param(11, (0, common_1.Query)('rollStatus')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String, String, String, String, String, String]),
     __metadata("design:returntype", typeof (_b = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _b : Object)
 ], StudentRollNumberController.prototype, "list", null);
 __decorate([
@@ -6356,8 +6481,22 @@ let ExamAdmitCardController = class ExamAdmitCardController {
     constructor(studentClient) {
         this.studentClient = studentClient;
     }
-    list(examinationDetailId, sessionId, academicSessionId, programCategoryId, programId, yearId, semId, examType, search) {
-        return this.studentClient.send({ cmd: 'list_exam_admit_cards' }, { examinationDetailId, sessionId, academicSessionId, programCategoryId, programId, yearId, semId, examType, search });
+    list(examinationDetailId, sessionId, academicSessionId, programCategoryId, programId, yearId, semId, examType, search, page, pageSize, sortKey, sortDir) {
+        return this.studentClient.send({ cmd: 'list_exam_admit_cards' }, {
+            examinationDetailId,
+            sessionId,
+            academicSessionId,
+            programCategoryId,
+            programId,
+            yearId,
+            semId,
+            examType,
+            search,
+            page: page ? Number(page) : undefined,
+            pageSize: pageSize ? Number(pageSize) : undefined,
+            sortKey,
+            sortDir,
+        });
     }
     findOne(id) {
         return this.studentClient.send({ cmd: 'find_one_exam_admit_card' }, { studentExamId: id });
@@ -6386,8 +6525,12 @@ __decorate([
     __param(6, (0, common_1.Query)('semId')),
     __param(7, (0, common_1.Query)('examType')),
     __param(8, (0, common_1.Query)('search')),
+    __param(9, (0, common_1.Query)('page')),
+    __param(10, (0, common_1.Query)('pageSize')),
+    __param(11, (0, common_1.Query)('sortKey')),
+    __param(12, (0, common_1.Query)('sortDir')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String, String, String, String, String, String, String, String, String, String]),
     __metadata("design:returntype", typeof (_b = typeof rxjs_1.Observable !== "undefined" && rxjs_1.Observable) === "function" ? _b : Object)
 ], ExamAdmitCardController.prototype, "list", null);
 __decorate([
@@ -10885,21 +11028,15 @@ let FacultyController = class FacultyController {
         this.storageService = storageService;
     }
     async storeFacultyFile(file, folder) {
-        const remote = this.storageService.uploadFile(file, folder);
-        let timer;
-        const timeout = new Promise((_, reject) => {
-            timer = setTimeout(() => reject(new Error('storage timeout')), 8000);
-        });
+        const provider = String(process.env.STORAGE_PROVIDER || 'local').trim().toLowerCase();
+        if (provider === 's3') {
+            return this.storageService.uploadFile(file, folder);
+        }
         try {
-            return await Promise.race([remote, timeout]);
+            return await this.storageService.uploadFile(file, folder);
         }
         catch {
-            remote.catch(() => undefined);
             return this.storageService.saveLocalFile(file, folder);
-        }
-        finally {
-            if (timer)
-                clearTimeout(timer);
         }
     }
     create(createDto) {

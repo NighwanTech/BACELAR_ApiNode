@@ -71,10 +71,36 @@ export class StudentsController {
   @ApiOperation({ summary: 'Get all active students (where IsDeleted is false)' })
   @ApiQuery({ name: 'programId', required: false })
   @ApiResponse({ status: 200, description: 'Return all active students' })
-  findAll(@Query('programId') programId?: string): Observable<any> {
+  findAll(
+    @Query('programId') programId?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('search') search?: string,
+    @Query('academicSessionId') academicSessionId?: string,
+    @Query('programCategoryId') programCategoryId?: string,
+    @Query('paymentStatus') paymentStatus?: string,
+    @Query('fromDate') fromDate?: string,
+    @Query('toDate') toDate?: string,
+    @Query('sortKey') sortKey?: string,
+    @Query('sortDir') sortDir?: string,
+    @Query('source') source?: string,
+  ): Observable<any> {
     return this.studentClient.send(
       { cmd: 'find_all_students' },
-      { programId: programId ? Number(programId) : undefined },
+      {
+        programId: programId ? Number(programId) : undefined,
+        page: page ? Number(page) : undefined,
+        pageSize: pageSize ? Number(pageSize) : undefined,
+        search,
+        academicSessionId: academicSessionId ? Number(academicSessionId) : undefined,
+        programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+        paymentStatus,
+        fromDate,
+        toDate,
+        sortKey,
+        sortDir,
+        source,
+      },
     );
   }
 

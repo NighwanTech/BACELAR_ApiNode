@@ -69,8 +69,9 @@ export class StudentsController {
   }
 
   @MessagePattern({ cmd: 'find_all_students' })
-  async findAll(@Payload() data?: { programId?: number }) {
+  async findAll(@Payload() data?: { programId?: number; page?: number }) {
     try {
+      if (data?.page) return await this.studentsService.findPage(data);
       return await this.studentsService.findAll(data?.programId);
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };

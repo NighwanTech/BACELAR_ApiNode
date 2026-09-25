@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { clearMasterCache, readMasterCache } from '../master-cache';
 import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
@@ -7,7 +8,7 @@ export class ProgramService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: any) {
-    return this.prisma.program.create({
+    const created = await this.prisma.program.create({
       data: {
         programCategoryId: Number(data.programCategoryId),
         programName: data.programName,
@@ -23,6 +24,8 @@ export class ProgramService {
         IsDeleted: false,
       },
     });
+    clearMasterCache('program');
+    return created;
   }
 
   async findAll(categoryId?: number, activeOnly = false) {
@@ -33,13 +36,13 @@ export class ProgramService {
     if (categoryId) {
       whereClause.programCategoryId = categoryId;
     }
-    return this.prisma.program.findMany({
+    return readMasterCache(`program:list:${categoryId || 0}:${activeOnly}`, () => this.prisma.program.findMany({
       where: whereClause,
       include: {
         programCategory: true,
       },
       orderBy: { sequenceNo: 'asc' },
-    });
+    }));
   }
 
   async findOne(programId: number) {
@@ -58,7 +61,7 @@ export class ProgramService {
   async update(programId: number, data: any) {
     await this.findOne(programId);
 
-    return this.prisma.program.update({
+    const updated = await this.prisma.program.update({
       where: { programId },
       data: {
         programCategoryId: data.programCategoryId !== undefined ? Number(data.programCategoryId) : undefined,
@@ -74,24 +77,28 @@ export class ProgramService {
         Remarks: data.Remarks,
       },
     });
+    clearMasterCache('program');
+    return updated;
   }
 
   
   async updateStatus(programId: number, IsActive: boolean, UpdatedBy: string) {
     await this.findOne(programId);
-    return this.prisma.program.update({
+    const updated = await this.prisma.program.update({
       where: { programId },
       data: {
         IsActive,
         UpdatedBy,
       },
     });
+    clearMasterCache('program');
+    return updated;
   }
 
   async softDelete(programId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(programId);
 
-    return this.prisma.program.update({
+    const deleted = await this.prisma.program.update({
       where: { programId },
       data: {
         IsDeleted: true,
@@ -101,6 +108,8 @@ export class ProgramService {
         DeletedRemarks: DeletedRemarks || null,
       },
     });
+    clearMasterCache('program');
+    return deleted;
   }
 
   async bulkSoftDelete(ids: number[], DeletedBy: string, DeletedRemarks?: string) {
@@ -118,6 +127,7 @@ export class ProgramService {
       },
     });
 
+    clearMasterCache('program');
     return {
       message: `Successfully soft-deleted ${result.count} program(s)`,
       count: result.count,

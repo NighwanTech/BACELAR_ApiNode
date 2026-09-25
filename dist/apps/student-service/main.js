@@ -136,7 +136,7 @@ function getDbConfig() {
             user: decodeURIComponent(url.username),
             password: decodeURIComponent(url.password),
             database: decodeURIComponent(url.pathname.split('?')[0].replace(/^\//, '')),
-            connectionLimit: 2,
+            connectionLimit: 15,
             connectTimeout: 30000,
             acquireTimeout: 30000,
             ssl: false,
@@ -324,6 +324,8 @@ let StudentsController = class StudentsController {
     }
     async findAll(data) {
         try {
+            if (data?.page)
+                return await this.studentsService.findPage(data);
             return await this.studentsService.findAll(data?.programId);
         }
         catch (error) {
@@ -519,6 +521,7 @@ const jwt_1 = __webpack_require__(12);
 const bcrypt = __importStar(__webpack_require__(15));
 const resolve_first_year_semester_1 = __webpack_require__(16);
 const STUDENT_ROLE_ID = 1;
+const studentPageInflight = new Map();
 function parseOptionalCreatedOn(value) {
     if (value instanceof Date && !Number.isNaN(value.getTime()))
         return value;
@@ -772,6 +775,7 @@ let StudentsService = class StudentsService {
             where: whereClause,
             include: {
                 loginMaster: true,
+                studentProfile: true,
                 program: {
                     include: { programCategory: true },
                 },
@@ -785,6 +789,146 @@ let StudentsService = class StudentsService {
             },
         });
         return rows.map((s) => this.sanitizeStudent(s));
+    }
+    async findPage(query) {
+        const page = Math.max(1, Number(query.page) || 1);
+        const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 10));
+        const where = { IsDeleted: false };
+        if (query.programId)
+            where.programId = Number(query.programId);
+        if (query.source)
+            where.source = String(query.source).trim();
+        if (query.academicSessionId)
+            where.academicSessionId = Number(query.academicSessionId);
+        if (query.programCategoryId) {
+            where.program = { programCategoryId: Number(query.programCategoryId) };
+        }
+        if (query.paymentStatus && query.paymentStatus !== 'ALL') {
+            where.studentPayments = {
+                some: { IsDeleted: false, paymentStatus: String(query.paymentStatus).toUpperCase() },
+            };
+        }
+        if (query.fromDate || query.toDate) {
+            where.CreatedOn = {};
+            if (query.fromDate)
+                where.CreatedOn.gte = new Date(`${query.fromDate}T00:00:00`);
+            if (query.toDate)
+                where.CreatedOn.lte = new Date(`${query.toDate}T23:59:59`);
+        }
+        const search = String(query.search || '').trim();
+        if (search) {
+            where.OR = [
+                { candidateName: { contains: search } },
+                { fatherName: { contains: search } },
+                { registrationNo: { contains: search } },
+                { mobileNo: { contains: search } },
+                { email: { contains: search } },
+                { studentProfile: { motherName: { contains: search } } },
+                { studentProfile: { fatherMobileNumber: { contains: search } } },
+                { studentProfile: { aadharIdNo: { contains: search } } },
+                { studentProfile: { apaarIdNo: { contains: search } } },
+                { studentEnrollments: { some: { enrollmentNo: { contains: search }, IsDeleted: false } } },
+            ];
+        }
+        const dir = String(query.sortDir || 'desc').toLowerCase() === 'asc' ? 'asc' : 'desc';
+        const sortMap = {
+            candidateName: { candidateName: dir },
+            fatherName: { fatherName: dir },
+            registrationNo: { registrationNo: dir },
+            mobileNo: { mobileNo: dir },
+            email: { email: dir },
+        };
+        const orderBy = sortMap[String(query.sortKey || '')] || { CreatedOn: 'desc' };
+        const flightKey = JSON.stringify({
+            page,
+            pageSize,
+            where,
+            sortKey: query.sortKey || '',
+            sortDir: dir,
+        });
+        const inflight = studentPageInflight.get(flightKey);
+        if (inflight)
+            return inflight;
+        const promise = this.loadStudentPage(where, orderBy, page, pageSize).finally(() => {
+            studentPageInflight.delete(flightKey);
+        });
+        studentPageInflight.set(flightKey, promise);
+        return promise;
+    }
+    async loadStudentPage(where, orderBy, page, pageSize) {
+        const include = {
+            loginMaster: { select: { PlainPassword: true, IsPasswordUpdated: true, LastLogin: true } },
+            studentProfile: {
+                select: {
+                    motherName: true,
+                    fatherMobileNumber: true,
+                    aadharIdNo: true,
+                    apaarIdNo: true,
+                    dateOfBirth: true,
+                    gender: true,
+                },
+            },
+            program: {
+                select: {
+                    programId: true,
+                    programName: true,
+                    programShortName: true,
+                    programCategoryId: true,
+                    programCategory: {
+                        select: { programCategoryId: true, programCategoryName: true, pcShortName: true },
+                    },
+                },
+            },
+            academicSession: { select: { academicSessionId: true, academicSessionName: true } },
+            admissionSession: { select: { admissionSessionId: true, admissionSessionName: true } },
+            year: { select: { yearId: true, yearName: true } },
+            semester: { select: { semId: true, semesterName: true } },
+            studentPayments: {
+                where: { IsDeleted: false },
+                orderBy: { CreatedOn: 'desc' },
+                take: 8,
+                select: {
+                    paymentId: true,
+                    studentId: true,
+                    feeType: true,
+                    paymentStatus: true,
+                    amountPaid: true,
+                    razorpayPaymentId: true,
+                    razorpayOrderId: true,
+                    CreatedOn: true,
+                    IsDeleted: true,
+                },
+            },
+            studentEnrollments: {
+                where: { IsDeleted: false },
+                orderBy: { CreatedOn: 'desc' },
+                take: 3,
+                select: {
+                    enrollmentId: true,
+                    studentId: true,
+                    enrollmentNo: true,
+                    CreatedOn: true,
+                    CreatedBy: true,
+                    IsDeleted: true,
+                },
+            },
+        };
+        const [total, rows] = await Promise.all([
+            this.prisma.student.count({ where }),
+            this.prisma.student.findMany({
+                where,
+                include,
+                orderBy,
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+            }),
+        ]);
+        return {
+            items: rows.map((s) => this.sanitizeStudent(s)),
+            page,
+            pageSize,
+            total,
+        };
     }
     async findOne(StudentRegistrationId) {
         const student = await this.prisma.student.findFirst({
@@ -2732,8 +2876,10 @@ let StudentPaymentController = class StudentPaymentController {
             return { status: 'error', message: (0, student_payment_service_1.extractErrorMessage)(error) };
         }
     }
-    async findAll() {
+    async findAll(data) {
         try {
+            if (data?.page)
+                return await this.paymentService.findPage(data);
             return await this.paymentService.findAll();
         }
         catch (error) {
@@ -2839,8 +2985,9 @@ __decorate([
 ], StudentPaymentController.prototype, "verifyRazorpayPayment", null);
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'find_all_student_payments' }),
+    __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StudentPaymentController.prototype, "findAll", null);
 __decorate([
@@ -3662,6 +3809,113 @@ let StudentPaymentService = class StudentPaymentService {
         await this.syncStudentExamPayment(updated);
         return updated;
     }
+    async findPage(query) {
+        const page = Math.max(1, Number(query.page) || 1);
+        const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 15));
+        const where = { IsDeleted: false };
+        const student = {};
+        if (query.paymentStatus && query.paymentStatus !== 'ALL') {
+            where.paymentStatus = String(query.paymentStatus).toUpperCase();
+        }
+        if (query.yearId)
+            where.yearId = Number(query.yearId);
+        if (query.semesterId)
+            where.semesterId = Number(query.semesterId);
+        if (query.feeTypeId)
+            where.feeTypeId = Number(query.feeTypeId);
+        if (query.programId)
+            student.programId = Number(query.programId);
+        if (query.programCategoryId)
+            student.program = { programCategoryId: Number(query.programCategoryId) };
+        if (query.academicSessionId) {
+            const session = await this.prisma.academicSession.findFirst({
+                where: { academicSessionId: Number(query.academicSessionId), IsDeleted: false },
+            });
+            const name = session?.academicSessionName || '';
+            student.OR = [
+                { academicSessionId: Number(query.academicSessionId) },
+                ...(name
+                    ? [
+                        { academicSession: { academicSessionName: name } },
+                        { admissionSession: { admissionSessionName: name } },
+                    ]
+                    : []),
+            ];
+        }
+        if (Object.keys(student).length)
+            where.student = student;
+        if (query.fromDate || query.toDate) {
+            const range = {};
+            if (query.fromDate)
+                range.gte = new Date(`${query.fromDate}T00:00:00`);
+            if (query.toDate)
+                range.lte = new Date(`${query.toDate}T23:59:59`);
+            where.OR = [{ paymentDateTime: range }, { paymentDateTime: null, CreatedOn: range }];
+        }
+        const search = String(query.search || '').trim();
+        if (search) {
+            where.AND = [
+                ...(where.AND || []),
+                {
+                    OR: [
+                        { registrationNo: { contains: search } },
+                        { studentName: { contains: search } },
+                        { fatherName: { contains: search } },
+                        { studentEmail: { contains: search } },
+                        { contactNo: { contains: search } },
+                        { enrollNo: { contains: search } },
+                        { merchantOrderId: { contains: search } },
+                        { bankRrnNo: { contains: search } },
+                        { razorpayPaymentId: { contains: search } },
+                        { razorpayOrderId: { contains: search } },
+                    ],
+                },
+            ];
+        }
+        const dir = String(query.sortDir || 'desc').toLowerCase() === 'asc' ? 'asc' : 'desc';
+        const sortMap = {
+            studentName: { studentName: dir },
+            registrationNo: { registrationNo: dir },
+            amountPaid: { amountPaid: dir },
+            paymentStatus: { paymentStatus: dir },
+            paymentDateTime: { paymentDateTime: dir },
+            enrollNo: { enrollNo: dir },
+        };
+        const orderBy = sortMap[String(query.sortKey || '')] || { CreatedOn: 'desc' };
+        const include = {
+            student: { include: { academicSession: true, admissionSession: true, program: true } },
+            year: true,
+            semester: true,
+            feeTypeMaster: true,
+        };
+        const statusFilter = where.paymentStatus ? String(where.paymentStatus) : '';
+        const [total, items, sum, successCount, pendingCount] = await Promise.all([
+            this.prisma.studentPayment.count({ where }),
+            this.prisma.studentPayment.findMany({
+                where,
+                include,
+                orderBy,
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+            }),
+            this.prisma.studentPayment.aggregate({ where, _sum: { amountPaid: true } }),
+            !statusFilter || statusFilter === 'SUCCESS'
+                ? this.prisma.studentPayment.count({ where: { ...where, paymentStatus: 'SUCCESS' } })
+                : Promise.resolve(0),
+            !statusFilter || statusFilter === 'PENDING'
+                ? this.prisma.studentPayment.count({ where: { ...where, paymentStatus: 'PENDING' } })
+                : Promise.resolve(0),
+        ]);
+        return {
+            items,
+            page,
+            pageSize,
+            total,
+            totalAmount: Number(sum._sum.amountPaid || 0),
+            successCount,
+            pendingCount,
+        };
+    }
     async findAll() {
         return this.prisma.studentPayment.findMany({
             where: { IsDeleted: false },
@@ -4339,8 +4593,18 @@ let StudentEnrollmentController = class StudentEnrollmentController {
             return { status: 'error', message: error.message || 'Unknown error' };
         }
     }
-    async findAll() {
+    async findExamDetailsPage(data) {
         try {
+            return await this.enrollmentService.findExamDetailsPage(data || {});
+        }
+        catch (error) {
+            return { status: 'error', message: error.message || 'Unknown error' };
+        }
+    }
+    async findAll(data) {
+        try {
+            if (data?.page)
+                return await this.enrollmentService.findPage(data);
             return await this.enrollmentService.findAll();
         }
         catch (error) {
@@ -4405,9 +4669,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], StudentEnrollmentController.prototype, "confirm", null);
 __decorate([
-    (0, microservices_1.MessagePattern)({ cmd: 'find_all_student_enrollments' }),
+    (0, microservices_1.MessagePattern)({ cmd: 'find_exam_details_page' }),
+    __param(0, (0, microservices_1.Payload)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StudentEnrollmentController.prototype, "findExamDetailsPage", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'find_all_student_enrollments' }),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StudentEnrollmentController.prototype, "findAll", null);
 __decorate([
@@ -4539,9 +4811,8 @@ let StudentEnrollmentService = class StudentEnrollmentService {
     }
     async nextEnrollmentNo(year, programCode) {
         const prefix = `${COLLEGE_PREFIX}${year}${programCode}`;
-        const rows = await this.enrollment().findMany({
-            select: { enrollmentNo: true },
-        });
+        const yearText = String(year).replace(/[^0-9]/g, '');
+        const rows = await this.prisma.$queryRawUnsafe(`SELECT enrollmentNo FROM studentEnrollment WHERE SUBSTRING(enrollmentNo, 1, 8) = 'BACE${yearText}'`);
         let maxSerial = 0;
         const pattern = new RegExp(`^${COLLEGE_PREFIX}${year}\\d{2}(\\d{4})$`);
         for (const row of rows) {
@@ -4682,6 +4953,196 @@ let StudentEnrollmentService = class StudentEnrollmentService {
             include: enrollmentInclude,
             orderBy: { CreatedOn: 'desc' },
         });
+    }
+    async findPage(query) {
+        const page = Math.max(1, Number(query.page) || 1);
+        const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 10));
+        const where = { IsDeleted: false };
+        if (query.programId)
+            where.programId = Number(query.programId);
+        if (query.yearId)
+            where.yearId = Number(query.yearId);
+        if (query.semesterId)
+            where.semId = Number(query.semesterId);
+        if (query.programCategoryId) {
+            where.program = { programCategoryId: Number(query.programCategoryId) };
+        }
+        if (query.sessionId) {
+            const sessionId = Number(query.sessionId);
+            where.OR = [
+                { sessionId },
+                { student: { academicSessionId: sessionId } },
+            ];
+        }
+        const search = String(query.search || '').trim();
+        if (search) {
+            const searchOr = [
+                { registrationNo: { contains: search } },
+                { enrollmentNo: { contains: search } },
+                { studentName: { contains: search } },
+                { fatherName: { contains: search } },
+                { motherName: { contains: search } },
+                { emailId: { contains: search } },
+                { fatherMobNo: { contains: search } },
+                { adharNo: { contains: search } },
+                { apaarNo: { contains: search } },
+                { student: { mobileNo: { contains: search } } },
+            ];
+            where.AND = [...(where.AND || []), { OR: searchOr }];
+        }
+        const dir = String(query.sortDir || 'asc').toLowerCase() === 'desc' ? 'desc' : 'asc';
+        const sortMap = {
+            studentName: { studentName: dir },
+            enrollmentNo: { enrollmentNo: dir },
+            registrationNo: { registrationNo: dir },
+            fatherName: { fatherName: dir },
+        };
+        const orderBy = sortMap[String(query.sortKey || '')] || { studentName: 'asc' };
+        const [total, items] = await Promise.all([
+            this.enrollment().count({ where }),
+            this.enrollment().findMany({
+                where,
+                include: enrollmentInclude,
+                orderBy,
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+            }),
+        ]);
+        return { items, page, pageSize, total };
+    }
+    async findExamDetailsPage(query) {
+        const page = Math.max(1, Number(query.page) || 1);
+        const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 10));
+        const examType = String(query.examType || '').trim().toUpperCase();
+        if (examType.includes('BACK')) {
+            return { items: [], page, pageSize, total: 0 };
+        }
+        const where = { IsDeleted: false };
+        if (query.programId)
+            where.programId = Number(query.programId);
+        if (query.yearId)
+            where.yearId = Number(query.yearId);
+        if (query.semId)
+            where.semId = Number(query.semId);
+        if (query.programCategoryId) {
+            where.OR = [
+                { program: { programCategoryId: Number(query.programCategoryId) } },
+                { student: { program: { programCategoryId: Number(query.programCategoryId) } } },
+            ];
+        }
+        const search = String(query.search || '').trim();
+        if (search) {
+            const searchOr = [
+                { registrationNo: { contains: search } },
+                { enrollmentNo: { contains: search } },
+                { studentName: { contains: search } },
+                { fatherMobNo: { contains: search } },
+                { student: { mobileNo: { contains: search } } },
+                { student: { candidateName: { contains: search } } },
+            ];
+            where.AND = [...(where.AND || []), { OR: searchOr }];
+        }
+        const light = await this.enrollment().findMany({
+            where,
+            select: { enrollmentId: true, studentId: true, studentName: true, fatherName: true, registrationNo: true, enrollmentNo: true },
+            orderBy: { enrollmentId: 'asc' },
+        });
+        const latest = new Map();
+        for (const row of light) {
+            const prev = latest.get(row.studentId);
+            if (!prev || row.enrollmentId > prev.enrollmentId)
+                latest.set(row.studentId, row);
+        }
+        let rows = [...latest.values()];
+        const studentIds = rows.map((row) => Number(row.studentId)).filter(Boolean);
+        const payments = studentIds.length
+            ? await this.prisma.studentPayment.findMany({
+                where: { IsDeleted: false, studentId: { in: studentIds } },
+                include: { feeTypeMaster: true },
+                orderBy: { CreatedOn: 'desc' },
+            })
+            : [];
+        const paymentByStudent = new Map();
+        for (const payment of payments) {
+            const fee = String(payment.feeType || payment.feeTypeMaster?.feeTypeName || '').toUpperCase();
+            if (!fee.includes('EXAM'))
+                continue;
+            const sid = Number(payment.studentId);
+            const current = paymentByStudent.get(sid);
+            const success = String(payment.paymentStatus || '').toUpperCase() === 'SUCCESS';
+            if (!current || (success && String(current.paymentStatus || '').toUpperCase() !== 'SUCCESS')) {
+                paymentByStudent.set(sid, payment);
+            }
+        }
+        const wantFilled = String(query.filled ?? 'true') !== 'false';
+        rows = rows.filter((row) => Boolean(paymentByStudent.get(Number(row.studentId))) === wantFilled);
+        const dir = String(query.sortDir || 'asc').toLowerCase() === 'desc' ? -1 : 1;
+        const sortKey = String(query.sortKey || 'studentName');
+        rows.sort((a, b) => {
+            const av = String(a[sortKey] || a.studentName || '').toLowerCase();
+            const bv = String(b[sortKey] || b.studentName || '').toLowerCase();
+            if (av < bv)
+                return -1 * dir;
+            if (av > bv)
+                return 1 * dir;
+            return 0;
+        });
+        const total = rows.length;
+        const pageRows = rows.slice((page - 1) * pageSize, page * pageSize);
+        const ids = pageRows.map((row) => row.enrollmentId);
+        const full = ids.length
+            ? await this.enrollment().findMany({
+                where: { enrollmentId: { in: ids } },
+                include: {
+                    student: { include: { studentProfile: true, loginMaster: true, program: { include: { programCategory: true } } } },
+                    program: { include: { programCategory: true } },
+                    year: true,
+                    semester: true,
+                },
+            })
+            : [];
+        const byId = new Map(full.map((row) => [row.enrollmentId, row]));
+        const items = pageRows.map((lightRow) => {
+            const enr = byId.get(lightRow.enrollmentId) || lightRow;
+            const student = enr.student || {};
+            const program = enr.program || student.program || {};
+            const category = program.programCategory || student.program?.programCategory || {};
+            const payment = paymentByStudent.get(Number(enr.studentId));
+            const programName = program.programName || '';
+            const programShort = program.programShortName || '';
+            const bedText = `${programName} ${programShort} ${category.programCategoryName || ''} ${category.pcShortName || ''}`;
+            const isBed = /\bB\.?\s*ED\.?\b/i.test(bedText) || /bachelor\s+of\s+education/i.test(bedText);
+            const dobRaw = enr.dateOfBirth || student.studentProfile?.dateOfBirth;
+            const when = payment?.paymentDateTime || payment?.CreatedOn;
+            return {
+                key: `enr-${enr.enrollmentId}`,
+                studentId: enr.studentId,
+                enrollmentId: enr.enrollmentId,
+                registrationNo: enr.registrationNo || student.registrationNo || '',
+                enrollmentNo: enr.enrollmentNo || '',
+                loginPassword: enr.examPassword || enr.loginPassword || student.loginMaster?.PlainPassword || '',
+                studentName: enr.studentName || student.candidateName || '',
+                fatherName: enr.fatherName || student.fatherName || '',
+                dob: dobRaw ? new Date(dobRaw).toLocaleDateString('en-GB').replace(/\//g, '-') : '',
+                mobileNo: student.mobileNo || enr.fatherMobNo || '',
+                program: programName,
+                programId: enr.programId || student.programId || null,
+                programCategoryId: program.programCategoryId || category.programCategoryId || null,
+                year: enr.year?.yearName || '',
+                yearId: enr.yearId || null,
+                semester: enr.semester?.semesterName || '',
+                semId: enr.semId || null,
+                examType: 'REGULAR',
+                examFee: Number(payment?.amountPaid || 0),
+                paymentStatus: payment?.paymentStatus || '',
+                utr: payment?.bankRrnNo || '',
+                paymentId: payment?.razorpayPaymentId || payment?.merchantOrderId || '',
+                dateAndTime: when ? new Date(when).toLocaleString('en-GB', { hour12: false }).replace(',', '') : '',
+                filled: Boolean(payment),
+                isBed,
+            };
+        });
+        return { items, page, pageSize, total };
     }
     async findOne(enrollmentId) {
         const enrollment = await this.enrollment().findFirst({
@@ -6234,6 +6695,32 @@ let StudentRollNumberService = class StudentRollNumberService {
         }
         return rows;
     }
+    async loadForGenerate(filters) {
+        const where = this.enrollmentWhere(filters);
+        const rows = await this.enrollment().findMany({
+            where,
+            select: {
+                enrollmentId: true,
+                studentId: true,
+                enrollmentNo: true,
+                studentName: true,
+                fatherName: true,
+                programId: true,
+                sessionId: true,
+                program: { select: { programId: true, programCode: true } },
+                student: {
+                    select: {
+                        candidateName: true,
+                        fatherName: true,
+                        academicSessionId: true,
+                        admissionSessionId: true,
+                        program: { select: { programId: true, programCode: true } },
+                    },
+                },
+            },
+        });
+        return rows.filter((row) => String(row.enrollmentNo || '').trim());
+    }
     findRoll(rollMap, studentId, admissionYear) {
         if (admissionYear) {
             const hit = rollMap.get(`${studentId}:${admissionYear}`);
@@ -6281,7 +6768,115 @@ let StudentRollNumberService = class StudentRollNumberService {
             serialNo: roll?.serialNo || null,
         };
     }
+    enrollmentWhere(filters) {
+        const sessionId = this.toNum(filters.sessionId);
+        const academicSessionId = this.toNum(filters.academicSessionId);
+        const programId = this.toNum(filters.programId);
+        const programCategoryId = this.toNum(filters.programCategoryId);
+        const yearId = this.toNum(filters.yearId);
+        const semId = this.toNum(filters.semId);
+        const where = { IsDeleted: false, enrollmentNo: { not: null } };
+        if (academicSessionId != null)
+            where.student = { academicSessionId, IsDeleted: false };
+        else if (sessionId != null)
+            where.sessionId = sessionId;
+        if (programId != null)
+            where.programId = programId;
+        if (yearId != null)
+            where.yearId = yearId;
+        if (semId != null)
+            where.semId = semId;
+        if (programCategoryId != null) {
+            where.AND = [
+                ...(where.AND || []),
+                {
+                    OR: [
+                        { program: { programCategoryId } },
+                        { student: { program: { programCategoryId } } },
+                    ],
+                },
+            ];
+        }
+        const q = String(filters.search || '').trim();
+        if (q) {
+            where.AND = [
+                ...(where.AND || []),
+                {
+                    OR: [
+                        { enrollmentNo: { contains: q } },
+                        { studentName: { contains: q } },
+                        { fatherName: { contains: q } },
+                        { motherName: { contains: q } },
+                        { fatherMobNo: { contains: q } },
+                        { student: { candidateName: { contains: q } } },
+                        { student: { fatherName: { contains: q } } },
+                        { student: { mobileNo: { contains: q } } },
+                        { student: { studentProfile: { motherName: { contains: q } } } },
+                    ],
+                },
+            ];
+        }
+        return where;
+    }
+    async listPage(filters) {
+        const page = Math.max(1, Number(filters.page) || 1);
+        const pageSize = Math.min(100, Math.max(1, Number(filters.pageSize) || 10));
+        const admissionYear = await this.resolveRollYear(filters);
+        const where = this.enrollmentWhere(filters);
+        if (String(filters.rollStatus || '') === 'generated') {
+            where.student = {
+                ...(where.student || {}),
+                studentRollNumbers: {
+                    some: { IsDeleted: false, ...(admissionYear ? { admissionYear } : {}) },
+                },
+            };
+        }
+        const dir = String(filters.sortDir || 'asc').toLowerCase() === 'desc' ? 'desc' : 'asc';
+        const sortMap = {
+            enrollmentNo: { enrollmentNo: dir },
+            studentName: [{ studentName: dir }, { fatherName: 'asc' }],
+            fatherName: { fatherName: dir },
+            motherName: { motherName: dir },
+            mobileNo: { student: { mobileNo: dir } },
+        };
+        const orderBy = sortMap[String(filters.sortKey || 'studentName')] || [{ studentName: 'asc' }, { fatherName: 'asc' }];
+        const [total, enrollments] = await Promise.all([
+            this.enrollment().count({ where }),
+            this.enrollment().findMany({
+                where,
+                include: {
+                    student: { include: { studentProfile: true, program: { include: { programCategory: true } }, academicSession: true } },
+                    program: { include: { programCategory: true } },
+                    year: true,
+                    semester: true,
+                    session: true,
+                },
+                orderBy,
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+            }),
+        ]);
+        const studentIds = Array.from(new Set(enrollments.map((e) => Number(e.studentId)).filter(Boolean)));
+        const rolls = studentIds.length
+            ? await this.roll().findMany({
+                where: { IsDeleted: false, studentId: { in: studentIds }, ...(admissionYear ? { admissionYear } : {}) },
+            })
+            : [];
+        const rollMap = new Map();
+        for (const r of rolls)
+            rollMap.set(`${r.studentId}:${r.admissionYear}`, r);
+        return {
+            collegeCode: await this.resolveCollegeCode(),
+            admissionYear: admissionYear || null,
+            page,
+            pageSize,
+            total,
+            items: enrollments.map((e) => this.mapListRow(e, rollMap, admissionYear)),
+        };
+    }
     async list(filters = {}) {
+        if (filters.page)
+            return this.listPage(filters);
         const admissionYear = await this.resolveRollYear(filters);
         const enrollments = await this.loadEnrollments(filters);
         const studentIds = Array.from(new Set(enrollments.map((e) => Number(e.studentId)).filter(Boolean)));
@@ -6360,7 +6955,7 @@ let StudentRollNumberService = class StudentRollNumberService {
         }
         const CreatedBy = String(payload.CreatedBy || 'Admin User').trim() || 'Admin User';
         const collegeCode = await this.resolveCollegeCode();
-        const enrollments = await this.loadEnrollments(payload);
+        const enrollments = await this.loadForGenerate(payload);
         if (!enrollments.length) {
             throw new common_1.BadRequestException('No enrolled students found for selected filters');
         }
@@ -6784,6 +7379,8 @@ let ExamAdmitCardService = class ExamAdmitCardService {
         };
     }
     async list(query) {
+        if (query?.page)
+            return this.listPage(query);
         const examinationDetailId = this.toNum(query.examinationDetailId);
         const academicSessionId = this.toNum(query.academicSessionId ?? query.sessionId);
         const programCategoryId = this.toNum(query.programCategoryId);
@@ -7010,6 +7607,149 @@ let ExamAdmitCardService = class ExamAdmitCardService {
                 shift: paper.shift || null,
             })),
         };
+    }
+    async listPage(query) {
+        const page = Math.max(1, Number(query.page) || 1);
+        const pageSize = Math.min(200, Math.max(1, Number(query.pageSize) || 10));
+        const programId = this.toNum(query.programId);
+        const yearId = this.toNum(query.yearId);
+        const semId = this.toNum(query.semId);
+        const programCategoryId = this.toNum(query.programCategoryId);
+        const academicSessionId = this.toNum(query.academicSessionId ?? query.sessionId);
+        const search = String(query.search || '').trim();
+        const where = {
+            IsDeleted: false,
+            enrollmentNo: { not: null },
+            student: { studentRollNumbers: { some: { IsDeleted: false } } },
+        };
+        if (programId != null)
+            where.programId = programId;
+        if (yearId != null)
+            where.yearId = yearId;
+        if (semId != null)
+            where.semId = semId;
+        if (academicSessionId != null) {
+            where.student = { ...where.student, academicSessionId };
+        }
+        if (programCategoryId != null) {
+            where.AND = [
+                {
+                    OR: [
+                        { program: { programCategoryId } },
+                        { student: { program: { programCategoryId } } },
+                    ],
+                },
+            ];
+        }
+        if (search) {
+            where.AND = [
+                ...(where.AND || []),
+                {
+                    OR: [
+                        { enrollmentNo: { contains: search } },
+                        { studentName: { contains: search } },
+                        { fatherName: { contains: search } },
+                        { motherName: { contains: search } },
+                        { student: { mobileNo: { contains: search } } },
+                        { student: { candidateName: { contains: search } } },
+                    ],
+                },
+            ];
+        }
+        const dir = String(query.sortDir || 'asc').toLowerCase() === 'desc' ? 'desc' : 'asc';
+        const sortMap = {
+            studentName: { studentName: dir },
+            enrollmentNo: { enrollmentNo: dir },
+            fatherName: { fatherName: dir },
+            rollNo: { studentName: dir },
+        };
+        const orderBy = sortMap[String(query.sortKey || 'studentName')] || { studentName: 'asc' };
+        const [total, rows] = await Promise.all([
+            this.enrollment().count({ where }),
+            this.enrollment().findMany({
+                where,
+                include: {
+                    student: {
+                        include: {
+                            studentProfile: true,
+                            studentAttachments: true,
+                            program: { include: { programCategory: true } },
+                            academicSession: true,
+                        },
+                    },
+                    program: { include: { programCategory: true } },
+                    year: true,
+                    semester: true,
+                    session: true,
+                },
+                orderBy,
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+            }),
+        ]);
+        const built = await this.buildAdmitItems(rows, query);
+        return { items: built, page, pageSize, total };
+    }
+    async buildAdmitItems(rows, query) {
+        const examinationDetailId = this.toNum(query.examinationDetailId);
+        const examType = String(query.examType || '').trim().toLowerCase();
+        const studentIds = Array.from(new Set(rows.map((e) => Number(e.studentId)).filter(Boolean)));
+        const rolls = studentIds.length
+            ? await this.roll().findMany({ where: { IsDeleted: false, studentId: { in: studentIds } } })
+            : [];
+        const rollByStudent = new Map();
+        for (const roll of rolls) {
+            const sid = Number(roll.studentId);
+            const current = rollByStudent.get(sid);
+            if (!current || Number(roll.rollId) > Number(current.rollId))
+                rollByStudent.set(sid, roll);
+        }
+        const exams = studentIds.length
+            ? await this.studentExam().findMany({
+                where: { IsDeleted: false, studentId: { in: studentIds } },
+                include: this.examInclude(),
+                orderBy: { studentExamId: 'desc' },
+            })
+            : [];
+        const examByStudent = new Map();
+        for (const exam of exams || []) {
+            const sid = Number(exam.studentId);
+            if (!examByStudent.has(sid))
+                examByStudent.set(sid, exam);
+        }
+        const examination = examinationDetailId
+            ? await this.prisma.examinationDetails.findFirst({
+                where: { examinationId: examinationDetailId, IsDeleted: false },
+                include: { academicSession: true },
+            })
+            : null;
+        const items = [];
+        for (const e of rows) {
+            const studentId = Number(e.studentId);
+            const exam = examByStudent.get(studentId);
+            const roll = rollByStudent.get(studentId);
+            const schemeKey = [examinationDetailId || exam?.examinationDetailId, e.programId, e.yearId, e.semId].join(':');
+            const schemeMap = await this.schemePaperMap({
+                examinationDetailId: examinationDetailId || exam?.examinationDetailId,
+                programId: e.programId,
+                yearId: e.yearId,
+                semId: e.semId,
+            });
+            const mapped = exam ? this.mapRow(exam, schemeMap) : this.mapEnrollmentRow(e, roll, schemeMap);
+            if (roll?.rollNo)
+                mapped.rollNo = roll.rollNo;
+            if (examination) {
+                mapped.examinationDetailId = examination.examinationId;
+                mapped.examinationName = examination.examinationName;
+                mapped.academicSessionId = examination.academicId || mapped.academicSessionId;
+                mapped.academicSessionName = examination.academicSession?.academicSessionName || mapped.academicSessionName;
+            }
+            if (examType && String(mapped.examType || '').trim().toLowerCase() !== examType)
+                continue;
+            void schemeKey;
+            items.push(mapped);
+        }
+        return items;
     }
     async findOne(studentExamId) {
         const exam = await this.studentExam().findFirst({
@@ -9648,13 +10388,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProgramService = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
+const master_cache_1 = __webpack_require__(242);
 const active_only_1 = __webpack_require__(58);
 let ProgramService = class ProgramService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async create(data) {
-        return this.prisma.program.create({
+        const created = await this.prisma.program.create({
             data: {
                 programCategoryId: Number(data.programCategoryId),
                 programName: data.programName,
@@ -9670,6 +10411,8 @@ let ProgramService = class ProgramService {
                 IsDeleted: false,
             },
         });
+        (0, master_cache_1.clearMasterCache)('program');
+        return created;
     }
     async findAll(categoryId, activeOnly = false) {
         const whereClause = {
@@ -9679,13 +10422,13 @@ let ProgramService = class ProgramService {
         if (categoryId) {
             whereClause.programCategoryId = categoryId;
         }
-        return this.prisma.program.findMany({
+        return (0, master_cache_1.readMasterCache)(`program:list:${categoryId || 0}:${activeOnly}`, () => this.prisma.program.findMany({
             where: whereClause,
             include: {
                 programCategory: true,
             },
             orderBy: { sequenceNo: 'asc' },
-        });
+        }));
     }
     async findOne(programId) {
         const program = await this.prisma.program.findFirst({
@@ -9701,7 +10444,7 @@ let ProgramService = class ProgramService {
     }
     async update(programId, data) {
         await this.findOne(programId);
-        return this.prisma.program.update({
+        const updated = await this.prisma.program.update({
             where: { programId },
             data: {
                 programCategoryId: data.programCategoryId !== undefined ? Number(data.programCategoryId) : undefined,
@@ -9717,20 +10460,24 @@ let ProgramService = class ProgramService {
                 Remarks: data.Remarks,
             },
         });
+        (0, master_cache_1.clearMasterCache)('program');
+        return updated;
     }
     async updateStatus(programId, IsActive, UpdatedBy) {
         await this.findOne(programId);
-        return this.prisma.program.update({
+        const updated = await this.prisma.program.update({
             where: { programId },
             data: {
                 IsActive,
                 UpdatedBy,
             },
         });
+        (0, master_cache_1.clearMasterCache)('program');
+        return updated;
     }
     async softDelete(programId, DeletedBy, DeletedRemarks) {
         await this.findOne(programId);
-        return this.prisma.program.update({
+        const deleted = await this.prisma.program.update({
             where: { programId },
             data: {
                 IsDeleted: true,
@@ -9740,6 +10487,8 @@ let ProgramService = class ProgramService {
                 DeletedRemarks: DeletedRemarks || null,
             },
         });
+        (0, master_cache_1.clearMasterCache)('program');
+        return deleted;
     }
     async bulkSoftDelete(ids, DeletedBy, DeletedRemarks) {
         const result = await this.prisma.program.updateMany({
@@ -9755,6 +10504,7 @@ let ProgramService = class ProgramService {
                 DeletedRemarks: DeletedRemarks || null,
             },
         });
+        (0, master_cache_1.clearMasterCache)('program');
         return {
             message: `Successfully soft-deleted ${result.count} program(s)`,
             count: result.count,
@@ -14294,6 +15044,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AcademicSessionService = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
+const master_cache_1 = __webpack_require__(242);
 let AcademicSessionService = class AcademicSessionService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -14313,7 +15064,7 @@ let AcademicSessionService = class AcademicSessionService {
         });
     }
     async findCurrent() {
-        return this.prisma.academicSession.findFirst({
+        return (0, master_cache_1.readMasterCache)('academic-session:current', () => this.prisma.academicSession.findFirst({
             where: { isCurrent: true, IsDeleted: false, IsActive: true },
             include: {
                 college: {
@@ -14326,7 +15077,7 @@ let AcademicSessionService = class AcademicSessionService {
                 },
             },
             orderBy: { startYear: 'desc' },
-        });
+        }));
     }
     async assertCollege(collegeId) {
         const college = await this.prisma.collegeMaster.findFirst({
@@ -14369,11 +15120,13 @@ let AcademicSessionService = class AcademicSessionService {
         if (created.isCurrent) {
             await this.setOnlyCurrent(created.academicSessionId);
         }
+        (0, master_cache_1.clearMasterCache)('academic-session');
         return this.findOne(created.academicSessionId);
     }
     async findAll(collegeId, activeOnly = false) {
         const onlyActive = this.toBool(activeOnly, false);
-        return this.prisma.academicSession.findMany({
+        const cacheKey = `academic-session:list:${collegeId || 0}:${onlyActive}`;
+        return (0, master_cache_1.readMasterCache)(cacheKey, () => this.prisma.academicSession.findMany({
             where: {
                 IsDeleted: false,
                 ...(onlyActive ? { IsActive: true } : {}),
@@ -14390,7 +15143,7 @@ let AcademicSessionService = class AcademicSessionService {
                 },
             },
             orderBy: [{ collegeId: 'asc' }, { startYear: 'desc' }, { academicSessionName: 'asc' }],
-        });
+        }));
     }
     async findOne(academicSessionId) {
         const session = await this.prisma.academicSession.findFirst({
@@ -14450,21 +15203,24 @@ let AcademicSessionService = class AcademicSessionService {
         if (updated.isCurrent) {
             await this.setOnlyCurrent(updated.academicSessionId);
         }
+        (0, master_cache_1.clearMasterCache)('academic-session');
         return this.findOne(updated.academicSessionId);
     }
     async updateStatus(academicSessionId, IsActive, UpdatedBy) {
         await this.findOne(academicSessionId);
-        return this.prisma.academicSession.update({
+        const updated = await this.prisma.academicSession.update({
             where: { academicSessionId },
             data: {
                 IsActive,
                 UpdatedBy,
             },
         });
+        (0, master_cache_1.clearMasterCache)('academic-session');
+        return updated;
     }
     async softDelete(academicSessionId, DeletedBy, DeletedRemarks) {
         await this.findOne(academicSessionId);
-        return this.prisma.academicSession.update({
+        const deleted = await this.prisma.academicSession.update({
             where: { academicSessionId },
             data: {
                 IsDeleted: true,
@@ -14474,6 +15230,8 @@ let AcademicSessionService = class AcademicSessionService {
                 DeletedRemarks: DeletedRemarks || null,
             },
         });
+        (0, master_cache_1.clearMasterCache)('academic-session');
+        return deleted;
     }
 };
 exports.AcademicSessionService = AcademicSessionService;
@@ -18385,6 +19143,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.YearService = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
+const master_cache_1 = __webpack_require__(242);
 const active_only_1 = __webpack_require__(58);
 let YearService = class YearService {
     constructor(prisma) {
@@ -18415,7 +19174,7 @@ let YearService = class YearService {
         if (existingYear) {
             throw new common_1.ConflictException(`Year '${data.yearName}' already exists`);
         }
-        return this.prisma.yearMaster.create({
+        const created = await this.prisma.yearMaster.create({
             data: {
                 typeId: data.typeId ? data.typeId : null,
                 yearName: data.yearName,
@@ -18428,15 +19187,17 @@ let YearService = class YearService {
                 examType: true,
             },
         });
+        (0, master_cache_1.clearMasterCache)('year');
+        return created;
     }
     async findAll(activeOnly = false) {
-        return this.prisma.yearMaster.findMany({
+        return (0, master_cache_1.readMasterCache)(`year:list:${activeOnly}`, () => this.prisma.yearMaster.findMany({
             where: { IsDeleted: false, ...((0, active_only_1.isActiveOnly)(activeOnly) ? { IsActive: true } : {}) },
             include: {
                 examType: true,
             },
             orderBy: { yearName: 'asc' },
-        });
+        }));
     }
     async findOne(yearId) {
         const year = await this.prisma.yearMaster.findFirst({
@@ -18481,7 +19242,7 @@ let YearService = class YearService {
                 throw new common_1.ConflictException(`Year '${targetYearName}' already exists`);
             }
         }
-        return this.prisma.yearMaster.update({
+        const updated = await this.prisma.yearMaster.update({
             where: { yearId },
             data: {
                 typeId: data.typeId !== undefined ? (data.typeId || null) : undefined,
@@ -18494,10 +19255,12 @@ let YearService = class YearService {
                 examType: true,
             },
         });
+        (0, master_cache_1.clearMasterCache)('year');
+        return updated;
     }
     async softDelete(yearId, DeletedBy, DeletedRemarks) {
         await this.findOne(yearId);
-        return this.prisma.yearMaster.update({
+        const deleted = await this.prisma.yearMaster.update({
             where: { yearId },
             data: {
                 IsDeleted: true,
@@ -18507,6 +19270,8 @@ let YearService = class YearService {
                 DeletedRemarks: DeletedRemarks || null,
             },
         });
+        (0, master_cache_1.clearMasterCache)('year');
+        return deleted;
     }
 };
 exports.YearService = YearService;
@@ -18674,6 +19439,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SemesterService = void 0;
 const common_1 = __webpack_require__(5);
 const prisma_1 = __webpack_require__(6);
+const master_cache_1 = __webpack_require__(242);
 const active_only_1 = __webpack_require__(58);
 let SemesterService = class SemesterService {
     constructor(prisma) {
@@ -18704,7 +19470,7 @@ let SemesterService = class SemesterService {
         if (existingSemester) {
             throw new common_1.ConflictException(`Semester '${data.semesterName}' already exists`);
         }
-        return this.prisma.semesterMaster.create({
+        const created = await this.prisma.semesterMaster.create({
             data: {
                 yearId: data.yearId ? data.yearId : null,
                 semesterName: data.semesterName,
@@ -18721,9 +19487,11 @@ let SemesterService = class SemesterService {
                 },
             },
         });
+        (0, master_cache_1.clearMasterCache)('semester');
+        return created;
     }
     async findAll(activeOnly = false) {
-        return this.prisma.semesterMaster.findMany({
+        return (0, master_cache_1.readMasterCache)(`semester:list:${activeOnly}`, () => this.prisma.semesterMaster.findMany({
             where: { IsDeleted: false, ...((0, active_only_1.isActiveOnly)(activeOnly) ? { IsActive: true } : {}) },
             include: {
                 year: {
@@ -18733,7 +19501,7 @@ let SemesterService = class SemesterService {
                 },
             },
             orderBy: { semesterName: 'asc' },
-        });
+        }));
     }
     async findOne(semId) {
         const semester = await this.prisma.semesterMaster.findFirst({
@@ -18782,7 +19550,7 @@ let SemesterService = class SemesterService {
                 throw new common_1.ConflictException(`Semester '${targetSemesterName}' already exists`);
             }
         }
-        return this.prisma.semesterMaster.update({
+        const updated = await this.prisma.semesterMaster.update({
             where: { semId },
             data: {
                 yearId: data.yearId !== undefined ? (data.yearId || null) : undefined,
@@ -18799,10 +19567,12 @@ let SemesterService = class SemesterService {
                 },
             },
         });
+        (0, master_cache_1.clearMasterCache)('semester');
+        return updated;
     }
     async softDelete(semId, DeletedBy, DeletedRemarks) {
         await this.findOne(semId);
-        return this.prisma.semesterMaster.update({
+        const deleted = await this.prisma.semesterMaster.update({
             where: { semId },
             data: {
                 IsDeleted: true,
@@ -18812,6 +19582,8 @@ let SemesterService = class SemesterService {
                 DeletedRemarks: DeletedRemarks || null,
             },
         });
+        (0, master_cache_1.clearMasterCache)('semester');
+        return deleted;
     }
 };
 exports.SemesterService = SemesterService;
@@ -29709,6 +30481,47 @@ exports.AdminLoginService = AdminLoginService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof prisma_1.PrismaService !== "undefined" && prisma_1.PrismaService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
 ], AdminLoginService);
+
+
+/***/ }),
+/* 242 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readMasterCache = readMasterCache;
+exports.clearMasterCache = clearMasterCache;
+const hits = new Map();
+const pending = new Map();
+const TTL_MS = 60_000;
+function readMasterCache(key, load) {
+    const row = hits.get(key);
+    if (row && Date.now() - row.at < TTL_MS)
+        return Promise.resolve(row.value);
+    const inflight = pending.get(key);
+    if (inflight)
+        return inflight;
+    const promise = load()
+        .then((value) => {
+        hits.set(key, { at: Date.now(), value });
+        pending.delete(key);
+        return value;
+    })
+        .catch((error) => {
+        pending.delete(key);
+        throw error;
+    });
+    pending.set(key, promise);
+    return promise;
+}
+function clearMasterCache(prefix) {
+    for (const key of [...hits.keys(), ...pending.keys()]) {
+        if (key.startsWith(prefix)) {
+            hits.delete(key);
+            pending.delete(key);
+        }
+    }
+}
 
 
 /***/ })

@@ -49,8 +49,9 @@ export class StudentPaymentController {
   }
 
   @MessagePattern({ cmd: 'find_all_student_payments' })
-  async findAll() {
+  async findAll(@Payload() data?: { page?: number }) {
     try {
+      if (data?.page) return await this.paymentService.findPage(data);
       return await this.paymentService.findAll();
     } catch (error: unknown) {
       return { status: 'error', message: extractErrorMessage(error) };
