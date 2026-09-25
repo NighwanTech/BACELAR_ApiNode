@@ -88,7 +88,14 @@ export class KohaClient {
     return list.find((row: any) => String(row.cardnumber) === enrollmentNo) || list[0] || null;
   }
 
-  async upsert(input: { enrollmentNo: string; studentName?: string | null; email?: string | null; active: boolean }): Promise<RemoteResult> {
+  async setPassword(patronId: number, password: string) {
+    await this.request('POST', `/api/v1/patrons/${patronId}/password`, {
+      password,
+      password_2: password,
+    });
+  }
+
+  async upsert(input: { enrollmentNo: string; studentName?: string | null; email?: string | null; active: boolean; password?: string | null }): Promise<RemoteResult> {
     const { libraryId, categoryId } = this.settings();
     const name = splitName(input.studentName);
     const existing = await this.findByCardNumber(input.enrollmentNo);
@@ -101,13 +108,18 @@ export class KohaClient {
       ...(input.email ? { email: input.email } : {}),
     };
     if (!input.active) payload.expiry_date = new Date().toISOString().slice(0, 10);
+    let remoteId = 0;
+    let action: RemoteResult['action'] = 'created';
     if (existing?.patron_id) {
-      await this.request('PUT', `/api/v1/patrons/${existing.patron_id}`, payload);
-      return { action: input.active ? 'updated' : 'suspended', remoteId: Number(existing.patron_id) };
+      remoteId = Number(existing.patron_id);
+      await this.request('PUT', `/api/v1/patrons/${remoteId}`, payload);
+      action = input.active ? 'updated' : 'suspended';
+    } else {
+      const created = await this.request('POST', '/api/v1/patrons', payload);
+      remoteId = Number(created?.patron_id);
+      if (!remoteId) throw new Error('Koha did not return a patron id');
     }
-    const created = await this.request('POST', '/api/v1/patrons', payload);
-    const id = Number(created?.patron_id);
-    if (!id) throw new Error('Koha did not return a patron id');
-    return { action: 'created', remoteId: id };
+    if (input.password) await this.setPassword(remoteId, input.password);
+    return { action, remoteId };
   }
 }

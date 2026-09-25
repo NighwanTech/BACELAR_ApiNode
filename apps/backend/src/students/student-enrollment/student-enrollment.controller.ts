@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, 
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { IdentitySyncService } from '../../integrations/identity-sync.service';
 import { CreateStudentEnrollmentDto } from './dto/create-student-enrollment.dto';
 import { ConfirmStudentEnrollmentDto } from './dto/confirm-student-enrollment.dto';
 import { UpdateStudentEnrollmentDto } from './dto/update-student-enrollment.dto';
@@ -12,6 +14,7 @@ import { BulkDeleteStudentEnrollmentsDto } from './dto/bulk-delete-student-enrol
 export class StudentEnrollmentController {
   constructor(
     @Inject('STUDENT_SERVICE') private readonly studentClient: ClientProxy,
+    private readonly identitySync: IdentitySyncService,
   ) {}
 
   @Post()
@@ -25,7 +28,22 @@ export class StudentEnrollmentController {
   @ApiOperation({ summary: 'Confirm admission: snapshot student data and generate unique enrollment no' })
   @ApiResponse({ status: 201, description: 'Enrollment confirmed / already exists' })
   confirm(@Body() confirmDto: ConfirmStudentEnrollmentDto): Observable<any> {
-    return this.studentClient.send({ cmd: 'confirm_student_enrollment' }, confirmDto);
+    return this.studentClient.send({ cmd: 'confirm_student_enrollment' }, confirmDto).pipe(
+      mergeMap(async (enrollment) => {
+        const enrollmentNo = String(enrollment?.enrollmentNo || '').trim();
+        if (!enrollmentNo) return enrollment;
+        const integration = await this.identitySync.syncStudent(enrollmentNo).catch((error: any) => ({
+          enrollmentNo,
+          moodle: 'failed',
+          koha: 'failed',
+          status: 'failed',
+          moodleUserId: null,
+          kohaPatronId: null,
+          error: error?.message || 'Identity sync failed',
+        }));
+        return { ...enrollment, integration };
+      }),
+    );
   }
 
   @Get()
