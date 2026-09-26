@@ -68,8 +68,41 @@ export class StudentPaymentController {
   @Get()
   @ApiOperation({ summary: 'Get all student payment records' })
   @ApiResponse({ status: 200, description: 'Return all payments' })
-  findAll(): Observable<any> {
-    return this.studentClient.send({ cmd: 'find_all_student_payments' }, {});
+  findAll(
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('search') search?: string,
+    @Query('paymentStatus') paymentStatus?: string,
+    @Query('yearId') yearId?: string,
+    @Query('semesterId') semesterId?: string,
+    @Query('programId') programId?: string,
+    @Query('programCategoryId') programCategoryId?: string,
+    @Query('feeTypeId') feeTypeId?: string,
+    @Query('academicSessionId') academicSessionId?: string,
+    @Query('fromDate') fromDate?: string,
+    @Query('toDate') toDate?: string,
+    @Query('sortKey') sortKey?: string,
+    @Query('sortDir') sortDir?: string,
+  ): Observable<any> {
+    return this.studentClient.send(
+      { cmd: 'find_all_student_payments' },
+      {
+        page: page ? Number(page) : undefined,
+        pageSize: pageSize ? Number(pageSize) : undefined,
+        search,
+        paymentStatus,
+        yearId: yearId ? Number(yearId) : undefined,
+        semesterId: semesterId ? Number(semesterId) : undefined,
+        programId: programId ? Number(programId) : undefined,
+        programCategoryId: programCategoryId ? Number(programCategoryId) : undefined,
+        feeTypeId: feeTypeId ? Number(feeTypeId) : undefined,
+        academicSessionId: academicSessionId ? Number(academicSessionId) : undefined,
+        fromDate,
+        toDate,
+        sortKey,
+        sortDir,
+      },
+    );
   }
 
   @Get('student/:studentId')

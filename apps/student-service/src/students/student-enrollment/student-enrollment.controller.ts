@@ -24,9 +24,19 @@ export class StudentEnrollmentController {
     }
   }
 
-  @MessagePattern({ cmd: 'find_all_student_enrollments' })
-  async findAll() {
+  @MessagePattern({ cmd: 'find_exam_details_page' })
+  async findExamDetailsPage(@Payload() data: any) {
     try {
+      return await this.enrollmentService.findExamDetailsPage(data || {});
+    } catch (error: any) {
+      return { status: 'error', message: error.message || 'Unknown error' };
+    }
+  }
+
+  @MessagePattern({ cmd: 'find_all_student_enrollments' })
+  async findAll(@Payload() data?: { page?: number }) {
+    try {
+      if (data?.page) return await this.enrollmentService.findPage(data);
       return await this.enrollmentService.findAll();
     } catch (error: any) {
       return { status: 'error', message: error.message || 'Unknown error' };

@@ -30,10 +30,28 @@ export class StudentRollNumberController {
     @Query('yearId') yearId?: string,
     @Query('semId') semId?: string,
     @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('sortKey') sortKey?: string,
+    @Query('sortDir') sortDir?: string,
+    @Query('rollStatus') rollStatus?: string,
   ): Observable<any> {
     return this.studentClient.send(
       { cmd: 'list_student_roll_numbers' },
-      { sessionId, academicSessionId, programCategoryId, programId, yearId, semId, search },
+      {
+        sessionId,
+        academicSessionId,
+        programCategoryId,
+        programId,
+        yearId,
+        semId,
+        search,
+        page: page ? Number(page) : undefined,
+        pageSize: pageSize ? Number(pageSize) : undefined,
+        sortKey,
+        sortDir,
+        rollStatus,
+      },
     );
   }
 

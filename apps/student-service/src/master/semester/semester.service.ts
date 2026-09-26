@@ -1,5 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { clearMasterCache, readMasterCache } from '../master-cache';
 import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
@@ -33,7 +34,7 @@ export class SemesterService {
       throw new ConflictException(`Semester '${data.semesterName}' already exists`);
     }
 
-    return this.prisma.semesterMaster.create({
+    const created = await this.prisma.semesterMaster.create({
       data: {
         yearId: data.yearId ? data.yearId : null,
         semesterName: data.semesterName,
@@ -50,10 +51,12 @@ export class SemesterService {
         },
       },
     });
+    clearMasterCache('semester');
+    return created;
   }
 
   async findAll(activeOnly = false) {
-    return this.prisma.semesterMaster.findMany({
+    return readMasterCache(`semester:list:${activeOnly}`, () => this.prisma.semesterMaster.findMany({
       where: { IsDeleted: false, ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}) },
       include: {
         year: {
@@ -63,7 +66,7 @@ export class SemesterService {
         },
       },
       orderBy: { semesterName: 'asc' },
-    });
+    }));
   }
 
   async findOne(semId: number) {
@@ -118,7 +121,7 @@ export class SemesterService {
       }
     }
 
-    return this.prisma.semesterMaster.update({
+    const updated = await this.prisma.semesterMaster.update({
       where: { semId },
       data: {
         yearId: data.yearId !== undefined ? (data.yearId || null) : undefined,
@@ -135,12 +138,14 @@ export class SemesterService {
         },
       },
     });
+    clearMasterCache('semester');
+    return updated;
   }
 
   async softDelete(semId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(semId);
 
-    return this.prisma.semesterMaster.update({
+    const deleted = await this.prisma.semesterMaster.update({
       where: { semId },
       data: {
         IsDeleted: true,
@@ -150,5 +155,7 @@ export class SemesterService {
         DeletedRemarks: DeletedRemarks || null,
       },
     });
+    clearMasterCache('semester');
+    return deleted;
   }
 }

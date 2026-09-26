@@ -222,6 +222,33 @@ export class StudentRollNumberService {
     return rows;
   }
 
+  private async loadForGenerate(filters: ListFilters) {
+    const where = this.enrollmentWhere(filters);
+    const rows = await this.enrollment().findMany({
+      where,
+      select: {
+        enrollmentId: true,
+        studentId: true,
+        enrollmentNo: true,
+        studentName: true,
+        fatherName: true,
+        programId: true,
+        sessionId: true,
+        program: { select: { programId: true, programCode: true } },
+        student: {
+          select: {
+            candidateName: true,
+            fatherName: true,
+            academicSessionId: true,
+            admissionSessionId: true,
+            program: { select: { programId: true, programCode: true } },
+          },
+        },
+      },
+    });
+    return rows.filter((row: any) => String(row.enrollmentNo || '').trim());
+  }
+
   private findRoll(rollMap: Map<string, any>, studentId: number, admissionYear?: string) {
     if (admissionYear) {
       const hit = rollMap.get(`${studentId}:${admissionYear}`);
@@ -272,7 +299,110 @@ export class StudentRollNumberService {
     };
   }
 
-  async list(filters: ListFilters = {}) {
+  private enrollmentWhere(filters: ListFilters) {
+    const sessionId = this.toNum(filters.sessionId);
+    const academicSessionId = this.toNum(filters.academicSessionId);
+    const programId = this.toNum(filters.programId);
+    const programCategoryId = this.toNum(filters.programCategoryId);
+    const yearId = this.toNum(filters.yearId);
+    const semId = this.toNum(filters.semId);
+    const where: any = { IsDeleted: false, enrollmentNo: { not: null } };
+    if (academicSessionId != null) where.student = { academicSessionId, IsDeleted: false };
+    else if (sessionId != null) where.sessionId = sessionId;
+    if (programId != null) where.programId = programId;
+    if (yearId != null) where.yearId = yearId;
+    if (semId != null) where.semId = semId;
+    if (programCategoryId != null) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: [
+            { program: { programCategoryId } },
+            { student: { program: { programCategoryId } } },
+          ],
+        },
+      ];
+    }
+    const q = String(filters.search || '').trim();
+    if (q) {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: [
+            { enrollmentNo: { contains: q } },
+            { studentName: { contains: q } },
+            { fatherName: { contains: q } },
+            { motherName: { contains: q } },
+            { fatherMobNo: { contains: q } },
+            { student: { candidateName: { contains: q } } },
+            { student: { fatherName: { contains: q } } },
+            { student: { mobileNo: { contains: q } } },
+            { student: { studentProfile: { motherName: { contains: q } } } },
+          ],
+        },
+      ];
+    }
+    return where;
+  }
+
+  private async listPage(filters: ListFilters & { page?: number; pageSize?: number; sortKey?: string; sortDir?: string; rollStatus?: string }) {
+    const page = Math.max(1, Number(filters.page) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number(filters.pageSize) || 10));
+    const admissionYear = await this.resolveRollYear(filters);
+    const where = this.enrollmentWhere(filters);
+    if (String(filters.rollStatus || '') === 'generated') {
+      where.student = {
+        ...(where.student || {}),
+        studentRollNumbers: {
+          some: { IsDeleted: false, ...(admissionYear ? { admissionYear } : {}) },
+        },
+      };
+    }
+    const dir = String(filters.sortDir || 'asc').toLowerCase() === 'desc' ? 'desc' : 'asc';
+    const sortMap: Record<string, any> = {
+      enrollmentNo: { enrollmentNo: dir },
+      studentName: [{ studentName: dir }, { fatherName: 'asc' }],
+      fatherName: { fatherName: dir },
+      motherName: { motherName: dir },
+      mobileNo: { student: { mobileNo: dir } },
+    };
+    const orderBy = sortMap[String(filters.sortKey || 'studentName')] || [{ studentName: 'asc' }, { fatherName: 'asc' }];
+    const [total, enrollments] = await Promise.all([
+      this.enrollment().count({ where }),
+      this.enrollment().findMany({
+        where,
+        include: {
+          student: { include: { studentProfile: true, program: { include: { programCategory: true } }, academicSession: true } },
+          program: { include: { programCategory: true } },
+          year: true,
+          semester: true,
+          session: true,
+        },
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+    const studentIds = Array.from(new Set(enrollments.map((e: any) => Number(e.studentId)).filter(Boolean)));
+    const rolls = studentIds.length
+      ? await this.roll().findMany({
+          where: { IsDeleted: false, studentId: { in: studentIds }, ...(admissionYear ? { admissionYear } : {}) },
+        })
+      : [];
+    const rollMap = new Map<string, any>();
+    for (const r of rolls) rollMap.set(`${r.studentId}:${r.admissionYear}`, r);
+    return {
+      collegeCode: await this.resolveCollegeCode(),
+      admissionYear: admissionYear || null,
+      page,
+      pageSize,
+      total,
+      items: enrollments.map((e: any) => this.mapListRow(e, rollMap, admissionYear)),
+    };
+  }
+
+  async list(filters: ListFilters & { page?: number; pageSize?: number; sortKey?: string; sortDir?: string; rollStatus?: string } = {}) {
+    if (filters.page) return this.listPage(filters);
     const admissionYear = await this.resolveRollYear(filters);
 
     const enrollments = await this.loadEnrollments(filters);
@@ -367,7 +497,7 @@ export class StudentRollNumberService {
 
     const CreatedBy = String(payload.CreatedBy || 'Admin User').trim() || 'Admin User';
     const collegeCode = await this.resolveCollegeCode();
-    const enrollments = await this.loadEnrollments(payload);
+    const enrollments = await this.loadForGenerate(payload);
 
     if (!enrollments.length) {
       throw new BadRequestException('No enrolled students found for selected filters');

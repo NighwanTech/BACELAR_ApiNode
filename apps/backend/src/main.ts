@@ -4,7 +4,10 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
+import { HttpAdapterHost } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ErrorLogFilter } from './common/error-log/error-log.filter';
+import { ErrorLogService } from './common/error-log/error-log.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -20,6 +23,7 @@ async function bootstrap() {
   );
 
   app.enableCors();
+  app.useGlobalFilters(new ErrorLogFilter(app.get(HttpAdapterHost), app.get(ErrorLogService)));
 
   const config = new DocumentBuilder()
     .setTitle('Backend API')

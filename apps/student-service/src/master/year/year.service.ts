@@ -1,5 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { clearMasterCache, readMasterCache } from '../master-cache';
 import { isActiveOnly } from '../../common/active-only';
 
 @Injectable()
@@ -33,7 +34,7 @@ export class YearService {
       throw new ConflictException(`Year '${data.yearName}' already exists`);
     }
 
-    return this.prisma.yearMaster.create({
+    const created = await this.prisma.yearMaster.create({
       data: {
         typeId: data.typeId ? data.typeId : null,
         yearName: data.yearName,
@@ -46,16 +47,18 @@ export class YearService {
         examType: true,
       },
     });
+    clearMasterCache('year');
+    return created;
   }
 
   async findAll(activeOnly = false) {
-    return this.prisma.yearMaster.findMany({
+    return readMasterCache(`year:list:${activeOnly}`, () => this.prisma.yearMaster.findMany({
       where: { IsDeleted: false, ...(isActiveOnly(activeOnly) ? { IsActive: true } : {}) },
       include: {
         examType: true,
       },
       orderBy: { yearName: 'asc' },
-    });
+    }));
   }
 
   async findOne(yearId: number) {
@@ -106,7 +109,7 @@ export class YearService {
       }
     }
 
-    return this.prisma.yearMaster.update({
+    const updated = await this.prisma.yearMaster.update({
       where: { yearId },
       data: {
         typeId: data.typeId !== undefined ? (data.typeId || null) : undefined,
@@ -119,12 +122,14 @@ export class YearService {
         examType: true,
       },
     });
+    clearMasterCache('year');
+    return updated;
   }
 
   async softDelete(yearId: number, DeletedBy: string, DeletedRemarks?: string) {
     await this.findOne(yearId);
 
-    return this.prisma.yearMaster.update({
+    const deleted = await this.prisma.yearMaster.update({
       where: { yearId },
       data: {
         IsDeleted: true,
@@ -134,5 +139,7 @@ export class YearService {
         DeletedRemarks: DeletedRemarks || null,
       },
     });
+    clearMasterCache('year');
+    return deleted;
   }
 }

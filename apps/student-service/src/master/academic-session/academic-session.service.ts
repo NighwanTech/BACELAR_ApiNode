@@ -1,5 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@app/prisma';
+import { clearMasterCache, readMasterCache } from '../master-cache';
 
 @Injectable()
 export class AcademicSessionService {
@@ -20,7 +21,7 @@ export class AcademicSessionService {
   }
 
   async findCurrent() {
-    return this.prisma.academicSession.findFirst({
+    return readMasterCache('academic-session:current', () => this.prisma.academicSession.findFirst({
       where: { isCurrent: true, IsDeleted: false, IsActive: true },
       include: {
         college: {
@@ -33,7 +34,7 @@ export class AcademicSessionService {
         },
       },
       orderBy: { startYear: 'desc' },
-    });
+    }));
   }
 
   private async assertCollege(collegeId: number) {
@@ -85,12 +86,14 @@ export class AcademicSessionService {
       await this.setOnlyCurrent(created.academicSessionId);
     }
 
+    clearMasterCache('academic-session');
     return this.findOne(created.academicSessionId);
   }
 
   async findAll(collegeId?: number, activeOnly: any = false) {
     const onlyActive = this.toBool(activeOnly, false);
-    return this.prisma.academicSession.findMany({
+    const cacheKey = `academic-session:list:${collegeId || 0}:${onlyActive}`;
+    return readMasterCache(cacheKey, () => this.prisma.academicSession.findMany({
       where: {
         IsDeleted: false,
         ...(onlyActive ? { IsActive: true } : {}),
@@ -107,7 +110,7 @@ export class AcademicSessionService {
         },
       },
       orderBy: [{ collegeId: 'asc' }, { startYear: 'desc' }, { academicSessionName: 'asc' }],
-    });
+    }));
   }
 
   async findOne(academicSessionId: number) {
@@ -185,19 +188,22 @@ export class AcademicSessionService {
       await this.setOnlyCurrent(updated.academicSessionId);
     }
 
+    clearMasterCache('academic-session');
     return this.findOne(updated.academicSessionId);
   }
 
   
   async updateStatus(academicSessionId: number, IsActive: boolean, UpdatedBy: string) {
     await this.findOne(academicSessionId);
-    return this.prisma.academicSession.update({
+    const updated = await this.prisma.academicSession.update({
       where: { academicSessionId },
       data: {
         IsActive,
         UpdatedBy,
       },
     });
+    clearMasterCache('academic-session');
+    return updated;
   }
 
   async softDelete(
@@ -207,7 +213,7 @@ export class AcademicSessionService {
   ) {
     await this.findOne(academicSessionId);
 
-    return this.prisma.academicSession.update({
+    const deleted = await this.prisma.academicSession.update({
       where: { academicSessionId },
       data: {
         IsDeleted: true,
@@ -217,5 +223,7 @@ export class AcademicSessionService {
         DeletedRemarks: DeletedRemarks || null,
       },
     });
+    clearMasterCache('academic-session');
+    return deleted;
   }
 }

@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { IntegrationModule } from '../../integrations/integration.module';
 import { ExamLoginController } from './exam-login.controller';
 
 @Module({
   imports: [
+    IntegrationModule,
     ClientsModule.registerAsync([
       {
         name: 'STUDENT_SERVICE',

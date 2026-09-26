@@ -6,6 +6,7 @@ import { resolveFirstYearAndSemester } from './resolve-first-year-semester';
 
 /** Student role in loginMaster */
 const STUDENT_ROLE_ID = 1;
+const studentPageInflight = new Map<string, Promise<any>>();
 
 function parseOptionalCreatedOn(value?: string | Date | null): Date | undefined {
   if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
@@ -320,6 +321,7 @@ export class StudentsService {
       where: whereClause,
       include: {
         loginMaster: true,
+        studentProfile: true,
         program: {
           include: { programCategory: true },
         },
@@ -333,6 +335,155 @@ export class StudentsService {
       },
     });
     return rows.map((s) => this.sanitizeStudent(s));
+  }
+
+  async findPage(query: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    academicSessionId?: number;
+    programId?: number;
+    programCategoryId?: number;
+    paymentStatus?: string;
+    fromDate?: string;
+    toDate?: string;
+    sortKey?: string;
+    sortDir?: string;
+    source?: string;
+  }) {
+    const page = Math.max(1, Number(query.page) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 10));
+    const where: any = { IsDeleted: false };
+    if (query.programId) where.programId = Number(query.programId);
+    if (query.source) where.source = String(query.source).trim();
+    if (query.academicSessionId) where.academicSessionId = Number(query.academicSessionId);
+    if (query.programCategoryId) {
+      where.program = { programCategoryId: Number(query.programCategoryId) };
+    }
+    if (query.paymentStatus && query.paymentStatus !== 'ALL') {
+      where.studentPayments = {
+        some: { IsDeleted: false, paymentStatus: String(query.paymentStatus).toUpperCase() },
+      };
+    }
+    if (query.fromDate || query.toDate) {
+      where.CreatedOn = {};
+      if (query.fromDate) where.CreatedOn.gte = new Date(`${query.fromDate}T00:00:00`);
+      if (query.toDate) where.CreatedOn.lte = new Date(`${query.toDate}T23:59:59`);
+    }
+    const search = String(query.search || '').trim();
+    if (search) {
+      where.OR = [
+        { candidateName: { contains: search } },
+        { fatherName: { contains: search } },
+        { registrationNo: { contains: search } },
+        { mobileNo: { contains: search } },
+        { email: { contains: search } },
+        { studentProfile: { motherName: { contains: search } } },
+        { studentProfile: { fatherMobileNumber: { contains: search } } },
+        { studentProfile: { aadharIdNo: { contains: search } } },
+        { studentProfile: { apaarIdNo: { contains: search } } },
+        { studentEnrollments: { some: { enrollmentNo: { contains: search }, IsDeleted: false } } },
+      ];
+    }
+    const dir = String(query.sortDir || 'desc').toLowerCase() === 'asc' ? 'asc' : 'desc';
+    const sortMap: Record<string, any> = {
+      candidateName: { candidateName: dir },
+      fatherName: { fatherName: dir },
+      registrationNo: { registrationNo: dir },
+      mobileNo: { mobileNo: dir },
+      email: { email: dir },
+    };
+    const orderBy = sortMap[String(query.sortKey || '')] || { CreatedOn: 'desc' };
+    const flightKey = JSON.stringify({
+      page,
+      pageSize,
+      where,
+      sortKey: query.sortKey || '',
+      sortDir: dir,
+    });
+    const inflight = studentPageInflight.get(flightKey);
+    if (inflight) return inflight;
+    const promise = this.loadStudentPage(where, orderBy, page, pageSize).finally(() => {
+      studentPageInflight.delete(flightKey);
+    });
+    studentPageInflight.set(flightKey, promise);
+    return promise;
+  }
+
+  private async loadStudentPage(where: any, orderBy: any, page: number, pageSize: number) {
+    const include = {
+      loginMaster: { select: { PlainPassword: true, IsPasswordUpdated: true, LastLogin: true } },
+      studentProfile: {
+        select: {
+          motherName: true,
+          fatherMobileNumber: true,
+          aadharIdNo: true,
+          apaarIdNo: true,
+          dateOfBirth: true,
+          gender: true,
+        },
+      },
+      program: {
+        select: {
+          programId: true,
+          programName: true,
+          programShortName: true,
+          programCategoryId: true,
+          programCategory: {
+            select: { programCategoryId: true, programCategoryName: true, pcShortName: true },
+          },
+        },
+      },
+      academicSession: { select: { academicSessionId: true, academicSessionName: true } },
+      admissionSession: { select: { admissionSessionId: true, admissionSessionName: true } },
+      year: { select: { yearId: true, yearName: true } },
+      semester: { select: { semId: true, semesterName: true } },
+      studentPayments: {
+        where: { IsDeleted: false },
+        orderBy: { CreatedOn: 'desc' as const },
+        take: 8,
+        select: {
+          paymentId: true,
+          studentId: true,
+          feeType: true,
+          paymentStatus: true,
+          amountPaid: true,
+          razorpayPaymentId: true,
+          razorpayOrderId: true,
+          CreatedOn: true,
+          IsDeleted: true,
+        },
+      },
+      studentEnrollments: {
+        where: { IsDeleted: false },
+        orderBy: { CreatedOn: 'desc' as const },
+        take: 3,
+        select: {
+          enrollmentId: true,
+          studentId: true,
+          enrollmentNo: true,
+          CreatedOn: true,
+          CreatedBy: true,
+          IsDeleted: true,
+        },
+      },
+    };
+    const [total, rows] = await Promise.all([
+      this.prisma.student.count({ where }),
+      this.prisma.student.findMany({
+        where,
+        include,
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+    return {
+      items: rows.map((s) => this.sanitizeStudent(s)),
+      page,
+      pageSize,
+      total,
+    };
   }
 
   async findOne(StudentRegistrationId: number) {

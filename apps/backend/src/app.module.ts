@@ -8,6 +8,8 @@ import { ExamResultModule } from './exam-result/exam-result.module';
 import { ResultDeclarationModule } from './result-declaration/result-declaration.module';
 import { PromotionModule } from './promotion/promotion.module';
 import { ExamGrevianceModule } from './exam-greviance/exam-greviance.module';
+import { ErrorLogModule } from './common/error-log/error-log.module';
+import { IntegrationModule } from './integrations/integration.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { ExamGrevianceModule } from './exam-greviance/exam-greviance.module';
     ResultDeclarationModule,
     PromotionModule,
     ExamGrevianceModule,
+    ErrorLogModule,
+    IntegrationModule,
   ],
   controllers: [],
 })

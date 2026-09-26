@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Put, HttpException, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, mergeMap, throwError } from 'rxjs';
+import { IdentitySyncService } from '../../integrations/identity-sync.service';
 
 import { VerifyEnrollmentDto } from './dto/verify-enrollment.dto';
 import { CreateExamPasswordDto } from './dto/create-exam-password.dto';
@@ -14,6 +15,7 @@ import { SubmitExamFormDto } from './dto/submit-exam-form.dto';
 export class ExamLoginController {
   constructor(
     @Inject('STUDENT_SERVICE') private readonly studentClient: ClientProxy,
+    private readonly identitySync: IdentitySyncService,
   ) {}
 
   private handleError(error: any) {
@@ -40,6 +42,12 @@ export class ExamLoginController {
   @ApiResponse({ status: 201, description: 'Password created successfully' })
   createPassword(@Body() createPasswordDto: CreateExamPasswordDto): Observable<any> {
     return this.studentClient.send({ cmd: 'create_exam_password' }, createPasswordDto).pipe(
+      mergeMap(async (result) => {
+        const enrollmentNo = String(result?.enrollmentNo || createPasswordDto.enrollmentNo || '').trim();
+        if (!enrollmentNo) return result;
+        const integration = await this.identitySync.syncStudent(enrollmentNo).catch(() => null);
+        return { ...result, integration };
+      }),
       catchError((error) => this.handleError(error)),
     );
   }

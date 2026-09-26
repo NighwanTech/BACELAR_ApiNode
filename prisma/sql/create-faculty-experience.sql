@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS `facultyExperience` (
+    `facultyExperienceId` INTEGER NOT NULL AUTO_INCREMENT,
+    `facultyId` INTEGER NOT NULL,
+    `schoolName` VARCHAR(255) NULL,
+    `ctc` DECIMAL(12, 2) NULL,
+    `startYear` DATE NULL,
+    `endYear` DATE NULL,
+    `experienceLetterUrl` VARCHAR(2000) NULL,
+    `experienceLetterName` VARCHAR(255) NULL,
+    `CreatedOn` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `CreatedBy` VARCHAR(255) NOT NULL,
+    `UpdatedOn` DATETIME(3) NULL,
+    `UpdatedBy` VARCHAR(255) NULL,
+    `IsActive` BOOLEAN NOT NULL DEFAULT true,
+    `IsDeleted` BOOLEAN NOT NULL DEFAULT false,
+    `DeletedRemarks` VARCHAR(255) NULL,
+    `DeletedOn` DATETIME(3) NULL,
+    `DeletedBy` VARCHAR(255) NULL,
+    `Remarks` VARCHAR(255) NULL,
+    INDEX `facultyExperience_facultyId_idx`(`facultyId`),
+    PRIMARY KEY (`facultyExperienceId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

@@ -23,7 +23,7 @@ const enrollmentInclude = {
 
 @Injectable()
 export class StudentEnrollmentService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   private enrollment() {
     return (this.prisma as any).studentEnrollment;
@@ -76,11 +76,10 @@ export class StudentEnrollmentService {
     const prefix = `${COLLEGE_PREFIX}${year}${programCode}`;
     // Avoid Prisma startsWith/LIKE: MariaDB adapter binds strings as utf8mb4_bin
     // while enrollmentNo is utf8mb4_unicode_ci (error 1267 collation mix).
-    const rows = await this.enrollment().findMany({
-      select: { enrollmentNo: true },
-    });
-
-    // Serial is year-wide (all programs), so it keeps increasing: 0001, 0002, ...
+    const yearText = String(year).replace(/[^0-9]/g, '');
+    const rows = await this.prisma.$queryRawUnsafe<{ enrollmentNo: string | null }[]>(
+      `SELECT enrollmentNo FROM studentEnrollment WHERE SUBSTRING(enrollmentNo, 1, 8) = 'BACE${yearText}'`,
+    );
     let maxSerial = 0;
     const pattern = new RegExp(`^${COLLEGE_PREFIX}${year}\\d{2}(\\d{4})$`);
     for (const row of rows) {
@@ -115,7 +114,7 @@ export class StudentEnrollmentService {
       apaarNo: profile.apaarIdNo || null,
       gender: profile.gender || null,
       emailId: student.email || null,
-      sessionId: student.admissionSessionId || null,
+      sessionId: student.academicSessionId || null,
     };
   }
 
@@ -232,6 +231,211 @@ export class StudentEnrollmentService {
       include: enrollmentInclude,
       orderBy: { CreatedOn: 'desc' },
     });
+  }
+
+  async findPage(query: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    sessionId?: number;
+    programId?: number;
+    programCategoryId?: number;
+    yearId?: number;
+    semesterId?: number;
+    sortKey?: string;
+    sortDir?: string;
+  }) {
+    const page = Math.max(1, Number(query.page) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 10));
+    const where: any = { IsDeleted: false };
+    if (query.programId) where.programId = Number(query.programId);
+    if (query.yearId) where.yearId = Number(query.yearId);
+    if (query.semesterId) where.semId = Number(query.semesterId);
+    if (query.programCategoryId) {
+      where.program = { programCategoryId: Number(query.programCategoryId) };
+    }
+    if (query.sessionId) {
+      const sessionId = Number(query.sessionId);
+      where.OR = [
+        { sessionId },
+        { student: { academicSessionId: sessionId } },
+      ];
+    }
+    const search = String(query.search || '').trim();
+    if (search) {
+      const searchOr = [
+        { registrationNo: { contains: search } },
+        { enrollmentNo: { contains: search } },
+        { studentName: { contains: search } },
+        { fatherName: { contains: search } },
+        { motherName: { contains: search } },
+        { emailId: { contains: search } },
+        { fatherMobNo: { contains: search } },
+        { adharNo: { contains: search } },
+        { apaarNo: { contains: search } },
+        { student: { mobileNo: { contains: search } } },
+      ];
+      where.AND = [...(where.AND || []), { OR: searchOr }];
+    }
+    const dir = String(query.sortDir || 'asc').toLowerCase() === 'desc' ? 'desc' : 'asc';
+    const sortMap: Record<string, any> = {
+      studentName: { studentName: dir },
+      enrollmentNo: { enrollmentNo: dir },
+      registrationNo: { registrationNo: dir },
+      fatherName: { fatherName: dir },
+    };
+    const orderBy = sortMap[String(query.sortKey || '')] || { studentName: 'asc' };
+    const [total, items] = await Promise.all([
+      this.enrollment().count({ where }),
+      this.enrollment().findMany({
+        where,
+        include: enrollmentInclude,
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+    return { items, page, pageSize, total };
+  }
+
+  async findExamDetailsPage(query: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    programId?: number;
+    programCategoryId?: number;
+    yearId?: number;
+    semId?: number;
+    examType?: string;
+    filled?: boolean | string;
+    sortKey?: string;
+    sortDir?: string;
+  }) {
+    const page = Math.max(1, Number(query.page) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 10));
+    const examType = String(query.examType || '').trim().toUpperCase();
+    if (examType.includes('BACK')) {
+      return { items: [], page, pageSize, total: 0 };
+    }
+    const where: any = { IsDeleted: false };
+    if (query.programId) where.programId = Number(query.programId);
+    if (query.yearId) where.yearId = Number(query.yearId);
+    if (query.semId) where.semId = Number(query.semId);
+    if (query.programCategoryId) {
+      where.OR = [
+        { program: { programCategoryId: Number(query.programCategoryId) } },
+        { student: { program: { programCategoryId: Number(query.programCategoryId) } } },
+      ];
+    }
+    const search = String(query.search || '').trim();
+    if (search) {
+      const searchOr = [
+        { registrationNo: { contains: search } },
+        { enrollmentNo: { contains: search } },
+        { studentName: { contains: search } },
+        { fatherMobNo: { contains: search } },
+        { student: { mobileNo: { contains: search } } },
+        { student: { candidateName: { contains: search } } },
+      ];
+      where.AND = [...(where.AND || []), { OR: searchOr }];
+    }
+    const light = await this.enrollment().findMany({
+      where,
+      select: { enrollmentId: true, studentId: true, studentName: true, fatherName: true, registrationNo: true, enrollmentNo: true },
+      orderBy: { enrollmentId: 'asc' },
+    });
+    const latest = new Map<number, any>();
+    for (const row of light) {
+      const prev = latest.get(row.studentId);
+      if (!prev || row.enrollmentId > prev.enrollmentId) latest.set(row.studentId, row);
+    }
+    let rows = [...latest.values()];
+    const studentIds = rows.map((row) => Number(row.studentId)).filter(Boolean);
+    const payments = studentIds.length
+      ? await this.prisma.studentPayment.findMany({
+          where: { IsDeleted: false, studentId: { in: studentIds } },
+          include: { feeTypeMaster: true },
+          orderBy: { CreatedOn: 'desc' },
+        })
+      : [];
+    const paymentByStudent = new Map<number, any>();
+    for (const payment of payments) {
+      const fee = String(payment.feeType || payment.feeTypeMaster?.feeTypeName || '').toUpperCase();
+      if (!fee.includes('EXAM')) continue;
+      const sid = Number(payment.studentId);
+      const current = paymentByStudent.get(sid);
+      const success = String(payment.paymentStatus || '').toUpperCase() === 'SUCCESS';
+      if (!current || (success && String(current.paymentStatus || '').toUpperCase() !== 'SUCCESS')) {
+        paymentByStudent.set(sid, payment);
+      }
+    }
+    const wantFilled = String(query.filled ?? 'true') !== 'false';
+    rows = rows.filter((row) => Boolean(paymentByStudent.get(Number(row.studentId))) === wantFilled);
+    const dir = String(query.sortDir || 'asc').toLowerCase() === 'desc' ? -1 : 1;
+    const sortKey = String(query.sortKey || 'studentName');
+    rows.sort((a, b) => {
+      const av = String(a[sortKey] || a.studentName || '').toLowerCase();
+      const bv = String(b[sortKey] || b.studentName || '').toLowerCase();
+      if (av < bv) return -1 * dir;
+      if (av > bv) return 1 * dir;
+      return 0;
+    });
+    const total = rows.length;
+    const pageRows = rows.slice((page - 1) * pageSize, page * pageSize);
+    const ids = pageRows.map((row) => row.enrollmentId);
+    const full = ids.length
+      ? await this.enrollment().findMany({
+          where: { enrollmentId: { in: ids } },
+          include: {
+            student: { include: { studentProfile: true, loginMaster: true, program: { include: { programCategory: true } } } },
+            program: { include: { programCategory: true } },
+            year: true,
+            semester: true,
+          },
+        })
+      : [];
+    const byId = new Map(full.map((row: any) => [row.enrollmentId, row]));
+    const items = pageRows.map((lightRow) => {
+      const enr: any = byId.get(lightRow.enrollmentId) || lightRow;
+      const student = enr.student || {};
+      const program = enr.program || student.program || {};
+      const category = program.programCategory || student.program?.programCategory || {};
+      const payment = paymentByStudent.get(Number(enr.studentId));
+      const programName = program.programName || '';
+      const programShort = program.programShortName || '';
+      const bedText = `${programName} ${programShort} ${category.programCategoryName || ''} ${category.pcShortName || ''}`;
+      const isBed = /\bB\.?\s*ED\.?\b/i.test(bedText) || /bachelor\s+of\s+education/i.test(bedText);
+      const dobRaw = enr.dateOfBirth || student.studentProfile?.dateOfBirth;
+      const when = payment?.paymentDateTime || payment?.CreatedOn;
+      return {
+        key: `enr-${enr.enrollmentId}`,
+        studentId: enr.studentId,
+        enrollmentId: enr.enrollmentId,
+        registrationNo: enr.registrationNo || student.registrationNo || '',
+        enrollmentNo: enr.enrollmentNo || '',
+        loginPassword: enr.examPassword || enr.loginPassword || student.loginMaster?.PlainPassword || '',
+        studentName: enr.studentName || student.candidateName || '',
+        fatherName: enr.fatherName || student.fatherName || '',
+        dob: dobRaw ? new Date(dobRaw).toLocaleDateString('en-GB').replace(/\//g, '-') : '',
+        mobileNo: student.mobileNo || enr.fatherMobNo || '',
+        program: programName,
+        programId: enr.programId || student.programId || null,
+        programCategoryId: program.programCategoryId || category.programCategoryId || null,
+        year: enr.year?.yearName || '',
+        yearId: enr.yearId || null,
+        semester: enr.semester?.semesterName || '',
+        semId: enr.semId || null,
+        examType: 'REGULAR',
+        examFee: Number(payment?.amountPaid || 0),
+        paymentStatus: payment?.paymentStatus || '',
+        utr: payment?.bankRrnNo || '',
+        paymentId: payment?.razorpayPaymentId || payment?.merchantOrderId || '',
+        dateAndTime: when ? new Date(when).toLocaleString('en-GB', { hour12: false }).replace(',', '') : '',
+        filled: Boolean(payment),
+        isBed,
+      };
+    });
+    return { items, page, pageSize, total };
   }
 
   async findOne(enrollmentId: number) {
